@@ -1,0 +1,948 @@
+{
+  "reviewer": "rev-513",
+  "commit": "a670f988a701f23edb08ee4fa216896a7ef45567",
+  "base": "a04069678c02881cd41a25b850e14f79d581c083",
+  "readerSha256": "a72090179eb44ac5c6b349edcdbcf74dbc6be68173c54be57ba2d11e63833e9b",
+  "testSha256": {
+    "base": "914d929d72fcc57c1d6b2db7701dab500829026c5f04a628a3c8274e0fcd86c6",
+    "fix": "89b2f9c0a19a0568c1dc5abd04f777b54848678ff266e82f5f9d74a379c7e853"
+  },
+  "command": "TMPDIR=<fresh empty dir> CI=1 npx vitest run --project @syzygy/polaris-dossier --reporter=json --outputFile=<scratch>/reports/<id>.json [extra] packages/polaris-dossier/src/waiting-sessions.test.ts",
+  "results": [
+    {
+      "id": "U-fix",
+      "tests": "fix",
+      "testSha256": "89b2f9c0a19a0568c1dc5abd04f777b54848678ff266e82f5f9d74a379c7e853",
+      "edits": [],
+      "extraArgs": [],
+      "expectation": "pass, no stray",
+      "exitCode": 0,
+      "counts": {
+        "numTotalTests": 116,
+        "numPassedTests": 116,
+        "numFailedTests": 0
+      },
+      "failedTests": [],
+      "row": [
+        {
+          "test": "the v1.2 gate opens on no record when the record names a review outside the records root (mutant: drop the review-path check)",
+          "status": "passed",
+          "firstErrorLine": null,
+          "retryCount": null
+        }
+      ],
+      "tmpdir": "/tmp/r513-rev/t1",
+      "listingBefore": {
+        "top": [],
+        "deep": []
+      },
+      "listingAfter": {
+        "top": [
+          "node-compile-cache"
+        ],
+        "deep": []
+      },
+      "strayDossierAfter": [],
+      "restored": true,
+      "outputTail": [
+        "JSON report written to /tmp/claude-1000/-home-tze-GitHub-syzygy/9297eba3-858b-4aca-a313-05ea0802ad02/scratchpad/rev-513/reports/U-fix.json"
+      ]
+    },
+    {
+      "id": "U-base",
+      "tests": "base",
+      "testSha256": "914d929d72fcc57c1d6b2db7701dab500829026c5f04a628a3c8274e0fcd86c6",
+      "edits": [],
+      "extraArgs": [],
+      "expectation": "pass, one stray (the leak reproduced)",
+      "exitCode": 0,
+      "counts": {
+        "numTotalTests": 116,
+        "numPassedTests": 116,
+        "numFailedTests": 0
+      },
+      "failedTests": [],
+      "row": [
+        {
+          "test": "the v1.2 gate opens on no record when the record names a review outside the records root (mutant: drop the review-path check)",
+          "status": "passed",
+          "firstErrorLine": null,
+          "retryCount": null
+        }
+      ],
+      "tmpdir": "/tmp/r513-rev/t2",
+      "listingBefore": {
+        "top": [],
+        "deep": []
+      },
+      "listingAfter": {
+        "top": [
+          "dossier-signoff-naWaoW-outside-RAW.md",
+          "node-compile-cache"
+        ],
+        "deep": [
+          "dossier-signoff-naWaoW-outside-RAW.md"
+        ]
+      },
+      "strayDossierAfter": [
+        "dossier-signoff-naWaoW-outside-RAW.md"
+      ],
+      "restored": true,
+      "outputTail": [
+        "JSON report written to /tmp/claude-1000/-home-tze-GitHub-syzygy/9297eba3-858b-4aca-a313-05ea0802ad02/scratchpad/rev-513/reports/U-base.json"
+      ]
+    },
+    {
+      "id": "R1-fix",
+      "tests": "fix",
+      "testSha256": "89b2f9c0a19a0568c1dc5abd04f777b54848678ff266e82f5f9d74a379c7e853",
+      "edits": [
+        {
+          "file": "packages/polaris-dossier/src/waiting-sessions.ts",
+          "old": "  if (review === undefined || review.split('/').includes('..')) return false;",
+          "new": "  if (review === undefined) return false;"
+        }
+      ],
+      "extraArgs": [],
+      "expectation": "killed by the row, no stray",
+      "exitCode": 1,
+      "counts": {
+        "numTotalTests": 116,
+        "numPassedTests": 115,
+        "numFailedTests": 1
+      },
+      "failedTests": [
+        {
+          "test": "the v1.2 gate opens on no record when the record names a review outside the records root (mutant: drop the review-path check)",
+          "firstErrorLine": "AssertionError: expected true to be false // Object.is equality"
+        }
+      ],
+      "row": [
+        {
+          "test": "the v1.2 gate opens on no record when the record names a review outside the records root (mutant: drop the review-path check)",
+          "status": "failed",
+          "firstErrorLine": "AssertionError: expected true to be false // Object.is equality",
+          "retryCount": null
+        }
+      ],
+      "tmpdir": "/tmp/r513-rev/t3",
+      "listingBefore": {
+        "top": [],
+        "deep": []
+      },
+      "listingAfter": {
+        "top": [
+          "node-compile-cache"
+        ],
+        "deep": []
+      },
+      "strayDossierAfter": [],
+      "restored": true,
+      "outputTail": [
+        "JSON report written to /tmp/claude-1000/-home-tze-GitHub-syzygy/9297eba3-858b-4aca-a313-05ea0802ad02/scratchpad/rev-513/reports/R1-fix.json"
+      ]
+    },
+    {
+      "id": "R1-base",
+      "tests": "base",
+      "testSha256": "914d929d72fcc57c1d6b2db7701dab500829026c5f04a628a3c8274e0fcd86c6",
+      "edits": [
+        {
+          "file": "packages/polaris-dossier/src/waiting-sessions.ts",
+          "old": "  if (review === undefined || review.split('/').includes('..')) return false;",
+          "new": "  if (review === undefined) return false;"
+        }
+      ],
+      "extraArgs": [],
+      "expectation": "killed by the row, one stray",
+      "exitCode": 1,
+      "counts": {
+        "numTotalTests": 116,
+        "numPassedTests": 115,
+        "numFailedTests": 1
+      },
+      "failedTests": [
+        {
+          "test": "the v1.2 gate opens on no record when the record names a review outside the records root (mutant: drop the review-path check)",
+          "firstErrorLine": "AssertionError: expected true to be false // Object.is equality"
+        }
+      ],
+      "row": [
+        {
+          "test": "the v1.2 gate opens on no record when the record names a review outside the records root (mutant: drop the review-path check)",
+          "status": "failed",
+          "firstErrorLine": "AssertionError: expected true to be false // Object.is equality",
+          "retryCount": null
+        }
+      ],
+      "tmpdir": "/tmp/r513-rev/t4",
+      "listingBefore": {
+        "top": [],
+        "deep": []
+      },
+      "listingAfter": {
+        "top": [
+          "dossier-signoff-TzToKO-outside-RAW.md",
+          "node-compile-cache"
+        ],
+        "deep": [
+          "dossier-signoff-TzToKO-outside-RAW.md"
+        ]
+      },
+      "strayDossierAfter": [
+        "dossier-signoff-TzToKO-outside-RAW.md"
+      ],
+      "restored": true,
+      "outputTail": [
+        "JSON report written to /tmp/claude-1000/-home-tze-GitHub-syzygy/9297eba3-858b-4aca-a313-05ea0802ad02/scratchpad/rev-513/reports/R1-base.json"
+      ]
+    },
+    {
+      "id": "R2-fix",
+      "tests": "fix",
+      "testSha256": "89b2f9c0a19a0568c1dc5abd04f777b54848678ff266e82f5f9d74a379c7e853",
+      "edits": [
+        {
+          "file": "packages/polaris-dossier/src/waiting-sessions.ts",
+          "old": "  if (review === undefined || review.split('/').includes('..')) return false;",
+          "new": "  if (review === undefined || review.split('/')[0] === '..') return false;"
+        }
+      ],
+      "extraArgs": [],
+      "expectation": "reviewer mutant: leading-segment-only check; predicted to survive (row uses a leading ..)",
+      "exitCode": 0,
+      "counts": {
+        "numTotalTests": 116,
+        "numPassedTests": 116,
+        "numFailedTests": 0
+      },
+      "failedTests": [],
+      "row": [
+        {
+          "test": "the v1.2 gate opens on no record when the record names a review outside the records root (mutant: drop the review-path check)",
+          "status": "passed",
+          "firstErrorLine": null,
+          "retryCount": null
+        }
+      ],
+      "tmpdir": "/tmp/r513-rev/t5",
+      "listingBefore": {
+        "top": [],
+        "deep": []
+      },
+      "listingAfter": {
+        "top": [
+          "node-compile-cache"
+        ],
+        "deep": []
+      },
+      "strayDossierAfter": [],
+      "restored": true,
+      "outputTail": [
+        "JSON report written to /tmp/claude-1000/-home-tze-GitHub-syzygy/9297eba3-858b-4aca-a313-05ea0802ad02/scratchpad/rev-513/reports/R2-fix.json"
+      ]
+    },
+    {
+      "id": "T-eager+R1-fix",
+      "tests": "fix",
+      "testSha256": "89b2f9c0a19a0568c1dc5abd04f777b54848678ff266e82f5f9d74a379c7e853",
+      "edits": [
+        {
+          "file": "packages/polaris-dossier/src/waiting-sessions.test.ts",
+          "old": "      fs.writeFileSync(outside, reviewHead(digest));\n",
+          "new": "      fs.writeFileSync(outside, reviewHead(digest));\n      fs.rmSync(outside);\n"
+        },
+        {
+          "file": "packages/polaris-dossier/src/waiting-sessions.ts",
+          "old": "  if (review === undefined || review.split('/').includes('..')) return false;",
+          "new": "  if (review === undefined) return false;"
+        }
+      ],
+      "extraArgs": [],
+      "expectation": "cleanup moved before the assertion; predicted R1 survives (shows timing is load-bearing)",
+      "exitCode": 0,
+      "counts": {
+        "numTotalTests": 116,
+        "numPassedTests": 116,
+        "numFailedTests": 0
+      },
+      "failedTests": [],
+      "row": [
+        {
+          "test": "the v1.2 gate opens on no record when the record names a review outside the records root (mutant: drop the review-path check)",
+          "status": "passed",
+          "firstErrorLine": null,
+          "retryCount": null
+        }
+      ],
+      "tmpdir": "/tmp/r513-rev/t6",
+      "listingBefore": {
+        "top": [],
+        "deep": []
+      },
+      "listingAfter": {
+        "top": [
+          "node-compile-cache"
+        ],
+        "deep": []
+      },
+      "strayDossierAfter": [],
+      "restored": true,
+      "outputTail": [
+        "JSON report written to /tmp/claude-1000/-home-tze-GitHub-syzygy/9297eba3-858b-4aca-a313-05ea0802ad02/scratchpad/rev-513/reports/T-eager+R1-fix.json"
+      ]
+    },
+    {
+      "id": "T-drop-fix",
+      "tests": "fix",
+      "testSha256": "89b2f9c0a19a0568c1dc5abd04f777b54848678ff266e82f5f9d74a379c7e853",
+      "edits": [
+        {
+          "file": "packages/polaris-dossier/src/waiting-sessions.test.ts",
+          "old": "      cleanups.push(() => fs.rmSync(outside, { force: true }));\n",
+          "new": ""
+        }
+      ],
+      "extraArgs": [],
+      "expectation": "cleanup registration dropped; predicted stray returns (listing detects the leak)",
+      "exitCode": 0,
+      "counts": {
+        "numTotalTests": 116,
+        "numPassedTests": 116,
+        "numFailedTests": 0
+      },
+      "failedTests": [],
+      "row": [
+        {
+          "test": "the v1.2 gate opens on no record when the record names a review outside the records root (mutant: drop the review-path check)",
+          "status": "passed",
+          "firstErrorLine": null,
+          "retryCount": null
+        }
+      ],
+      "tmpdir": "/tmp/r513-rev/t7",
+      "listingBefore": {
+        "top": [],
+        "deep": []
+      },
+      "listingAfter": {
+        "top": [
+          "dossier-signoff-u7P9A4-outside-RAW.md",
+          "node-compile-cache"
+        ],
+        "deep": [
+          "dossier-signoff-u7P9A4-outside-RAW.md"
+        ]
+      },
+      "strayDossierAfter": [
+        "dossier-signoff-u7P9A4-outside-RAW.md"
+      ],
+      "restored": true,
+      "outputTail": [
+        "JSON report written to /tmp/claude-1000/-home-tze-GitHub-syzygy/9297eba3-858b-4aca-a313-05ea0802ad02/scratchpad/rev-513/reports/T-drop-fix.json"
+      ]
+    },
+    {
+      "id": "P-throw-fix",
+      "tests": "fix",
+      "testSha256": "89b2f9c0a19a0568c1dc5abd04f777b54848678ff266e82f5f9d74a379c7e853",
+      "edits": [
+        {
+          "file": "packages/polaris-dossier/src/waiting-sessions.test.ts",
+          "old": "      fs.writeFileSync(outside, reviewHead(digest));\n",
+          "new": "      fs.writeFileSync(outside, reviewHead(digest));\n      throw new Error('probe: thrown after the write');\n"
+        }
+      ],
+      "extraArgs": [],
+      "expectation": "throw after the write; row fails, predicted no stray",
+      "exitCode": 1,
+      "counts": {
+        "numTotalTests": 116,
+        "numPassedTests": 115,
+        "numFailedTests": 1
+      },
+      "failedTests": [
+        {
+          "test": "the v1.2 gate opens on no record when the record names a review outside the records root (mutant: drop the review-path check)",
+          "firstErrorLine": "Error: probe: thrown after the write"
+        }
+      ],
+      "row": [
+        {
+          "test": "the v1.2 gate opens on no record when the record names a review outside the records root (mutant: drop the review-path check)",
+          "status": "failed",
+          "firstErrorLine": "Error: probe: thrown after the write",
+          "retryCount": null
+        }
+      ],
+      "tmpdir": "/tmp/r513-rev/t8",
+      "listingBefore": {
+        "top": [],
+        "deep": []
+      },
+      "listingAfter": {
+        "top": [
+          "node-compile-cache"
+        ],
+        "deep": []
+      },
+      "strayDossierAfter": [],
+      "restored": true,
+      "outputTail": [
+        "JSON report written to /tmp/claude-1000/-home-tze-GitHub-syzygy/9297eba3-858b-4aca-a313-05ea0802ad02/scratchpad/rev-513/reports/P-throw-fix.json"
+      ]
+    },
+    {
+      "id": "P-retry+R1-fix",
+      "tests": "fix",
+      "testSha256": "89b2f9c0a19a0568c1dc5abd04f777b54848678ff266e82f5f9d74a379c7e853",
+      "edits": [
+        {
+          "file": "packages/polaris-dossier/src/waiting-sessions.ts",
+          "old": "  if (review === undefined || review.split('/').includes('..')) return false;",
+          "new": "  if (review === undefined) return false;"
+        }
+      ],
+      "extraArgs": [
+        "--retry=2"
+      ],
+      "expectation": "row fails on all 3 tries; predicted no stray",
+      "exitCode": 1,
+      "counts": {
+        "numTotalTests": 116,
+        "numPassedTests": 115,
+        "numFailedTests": 1
+      },
+      "failedTests": [
+        {
+          "test": "the v1.2 gate opens on no record when the record names a review outside the records root (mutant: drop the review-path check)",
+          "firstErrorLine": "AssertionError: expected true to be false // Object.is equality"
+        }
+      ],
+      "row": [
+        {
+          "test": "the v1.2 gate opens on no record when the record names a review outside the records root (mutant: drop the review-path check)",
+          "status": "failed",
+          "firstErrorLine": "AssertionError: expected true to be false // Object.is equality",
+          "retryCount": null
+        }
+      ],
+      "tmpdir": "/tmp/r513-rev/t9",
+      "listingBefore": {
+        "top": [],
+        "deep": []
+      },
+      "listingAfter": {
+        "top": [
+          "node-compile-cache"
+        ],
+        "deep": []
+      },
+      "strayDossierAfter": [],
+      "restored": true,
+      "outputTail": [
+        "JSON report written to /tmp/claude-1000/-home-tze-GitHub-syzygy/9297eba3-858b-4aca-a313-05ea0802ad02/scratchpad/rev-513/reports/P-retry+R1-fix.json"
+      ]
+    },
+    {
+      "id": "P-timeout-fix",
+      "tests": "fix",
+      "testSha256": "89b2f9c0a19a0568c1dc5abd04f777b54848678ff266e82f5f9d74a379c7e853",
+      "edits": [],
+      "extraArgs": [
+        "--testTimeout=1"
+      ],
+      "expectation": "every test given 1 ms; record stray outcome",
+      "exitCode": 1,
+      "counts": {
+        "numTotalTests": 116,
+        "numPassedTests": 2,
+        "numFailedTests": 114
+      },
+      "failedTests": [
+        {
+          "test": "the v1.2 gate refuses session-prompt all, await and a delivery while v1.2 is not signed off (mutant: drop the signed check)",
+          "firstErrorLine": "Error: STACK_TRACE_ERROR"
+        },
+        {
+          "test": "the v1.2 gate reads the sign-off from the decisions directory: 1.1 is not enough, 1.2 and later are (mutant: compare the minor only)",
+          "firstErrorLine": "Error: STACK_TRACE_ERROR"
+        },
+        {
+          "test": "the v1.2 gate opens on no file that only carries the name (mutant: drop the head check)",
+          "firstErrorLine": "Error: STACK_TRACE_ERROR"
+        },
+        {
+          "test": "the v1.2 gate opens on no record whose review did not confirm (mutant: drop the verdict check)",
+          "firstErrorLine": "Error: STACK_TRACE_ERROR"
+        },
+        {
+          "test": "the v1.2 gate opens on no record whose head misstates its title (mutant: drop that head field)",
+          "firstErrorLine": "Error: STACK_TRACE_ERROR"
+        },
+        {
+          "test": "the v1.2 gate opens on no record whose head misstates its package (mutant: drop that head field)",
+          "firstErrorLine": "Error: STACK_TRACE_ERROR"
+        },
+        {
+          "test": "the v1.2 gate opens on no record whose head misstates its version (mutant: drop that head field)",
+          "firstErrorLine": "Error: STACK_TRACE_ERROR"
+        },
+        {
+          "test": "the v1.2 gate opens on no record whose head misstates its tag (mutant: drop that head field)",
+          "firstErrorLine": "Error: STACK_TRACE_ERROR"
+        },
+        {
+          "test": "the v1.2 gate opens on no record whose head misstates its reviewed commit (mutant: drop that head field)",
+          "firstErrorLine": "Error: STACK_TRACE_ERROR"
+        },
+        {
+          "test": "the v1.2 gate opens on no record whose aggregate holds no aggregate record at all (mutant: drop the aggregate check)",
+          "firstErrorLine": "Error: STACK_TRACE_ERROR"
+        },
+        {
+          "test": "the v1.2 gate opens on no record whose aggregate holds only the opening marker (mutant: drop the aggregate check)",
+          "firstErrorLine": "Error: STACK_TRACE_ERROR"
+        },
+        {
+          "test": "the v1.2 gate opens on no record whose aggregate holds the closing marker before the opening one (mutant: drop the aggregate check)",
+          "firstErrorLine": "Error: STACK_TRACE_ERROR"
+        },
+        {
+          "test": "the v1.2 gate opens on no record whose aggregate holds two opening markers and one closing marker (mutant: drop the aggregate check)",
+          "firstErrorLine": "Error: STACK_TRACE_ERROR"
+        },
+        {
+          "test": "the v1.2 gate opens on no record whose aggregate holds one opening marker and two closing markers (mutant: drop the aggregate check)",
+          "firstErrorLine": "Error: STACK_TRACE_ERROR"
+        },
+        {
+          "test": "the v1.2 gate opens on no record whose aggregate holds no marked block (mutant: drop the aggregate check)",
+          "firstErrorLine": "Error: STACK_TRACE_ERROR"
+        },
+        {
+          "test": "the v1.2 gate opens on no record whose aggregate holds two marked blocks (mutant: drop the aggregate check)",
+          "firstErrorLine": "Error: STACK_TRACE_ERROR"
+        },
+        {
+          "test": "the v1.2 gate reads the recorder's real v1.1 record as one it wrote (the head predicate matches the recorder's output)",
+          "firstErrorLine": "Error: STACK_TRACE_ERROR"
+        },
+        {
+          "test": "the v1.2 gate opens on no record when the installed spec was edited after its review (mutant: drop the digest comparison)",
+          "firstErrorLine": "Error: STACK_TRACE_ERROR"
+        },
+        {
+          "test": "the v1.2 gate opens on no record when the spec's head names another version (mutant: drop the version check)",
+          "firstErrorLine": "Error: STACK_TRACE_ERROR"
+        },
+        {
+          "test": "the v1.2 gate opens on no record when the review's head carries two digests (mutant: take the first digest of several)",
+          "firstErrorLine": "Error: STACK_TRACE_ERROR"
+        },
+        {
+          "test": "the v1.2 gate opens on no record when the digest lies past the review's head (mutant: read the whole review)",
+          "firstErrorLine": "Error: STACK_TRACE_ERROR"
+        },
+        {
+          "test": "the v1.2 gate opens on no record when the record names a review outside the records root (mutant: drop the review-path check)",
+          "firstErrorLine": "Error: STACK_TRACE_ERROR"
+        },
+        {
+          "test": "session-prompt <run> all makes the three session directories, writes only the inventory brief, and records each prompt as waiting",
+          "firstErrorLine": "Error: STACK_TRACE_ERROR"
+        },
+        {
+          "test": "session-prompt <run> all prints each command with only its role's permission rules and SEC-3's rule, never a permission (mutant: drop a rule or widen one)",
+          "firstErrorLine": "Error: STACK_TRACE_ERROR"
+        },
+        {
+          "test": "session-prompt <run> all prints no pre-approval for Codex, and says so (mutant: print the Claude rules for Codex)",
+          "firstErrorLine": "Error: STACK_TRACE_ERROR"
+        },
+        {
+          "test": "session-prompt <run> all refuses a sessions root a permission rule cannot carry unquoted (mutant: drop the plain-path check)",
+          "firstErrorLine": "Error: STACK_TRACE_ERROR"
+        },
+        {
+          "test": "session-prompt <run> all keeps the session pair's provider-statement check from PR #406 (mutant: skip sessionStatementRefusal for all)",
+          "firstErrorLine": "Error: STACK_TRACE_ERROR"
+        },
+        {
+          "test": "the wait-mode argument grammar (review-408 round 2, finding 6) takes --stdin once only: given twice it is a usage error, exit 2 (mutant: allow --stdin twice)",
+          "firstErrorLine": "Error: STACK_TRACE_ERROR"
+        },
+        {
+          "test": "the wait-mode argument grammar (review-408 round 2, finding 6) takes --fresh once only: given twice it is a usage error, exit 2 (mutant: allow --fresh twice)",
+          "firstErrorLine": "Error: STACK_TRACE_ERROR"
+        },
+        {
+          "test": "launch-form for a waiting session (review-408 round 2, finding 2) records no bang form for a session started to wait, only the terminal form printed for it (mutant: drop the waiting-mode check)",
+          "firstErrorLine": "Error: STACK_TRACE_ERROR"
+        },
+        {
+          "test": "await re-hashes the inventory brief and refuses a changed one (mutant: skip the brief digest)",
+          "firstErrorLine": "Error: STACK_TRACE_ERROR"
+        },
+        {
+          "test": "await waits a bounded slice, on the local file system, and says to run it again (mutant: no slice bound)",
+          "firstErrorLine": "Error: STACK_TRACE_ERROR"
+        },
+        {
+          "test": "await never waits past the run's deadline (mutant: bound the slice by its minutes alone)",
+          "firstErrorLine": "Error: STACK_TRACE_ERROR"
+        },
+        {
+          "test": "await ends once the run is closed (mutant: ignore the Execution Record)",
+          "firstErrorLine": "Error: STACK_TRACE_ERROR"
+        },
+        {
+          "test": "await refuses a session directory given without its trailing slash (mutant: drop that directory check)",
+          "firstErrorLine": "Error: STACK_TRACE_ERROR"
+        },
+        {
+          "test": "await refuses a session directory given with a doubled slash (mutant: drop that directory check)",
+          "firstErrorLine": "Error: STACK_TRACE_ERROR"
+        },
+        {
+          "test": "await refuses a session directory given through a parent segment (mutant: drop that directory check)",
+          "firstErrorLine": "Error: STACK_TRACE_ERROR"
+        },
+        {
+          "test": "await refuses a session directory given relative (mutant: drop that directory check)",
+          "firstErrorLine": "Error: STACK_TRACE_ERROR"
+        },
+        {
+          "test": "await refuses a session directory given outside a sessions root (mutant: drop that directory check)",
+          "firstErrorLine": "Error: STACK_TRACE_ERROR"
+        },
+        {
+          "test": "await refuses a session directory given under a sessions root named for no run (mutant: drop that directory check)",
+          "firstErrorLine": "Error: STACK_TRACE_ERROR"
+        },
+        {
+          "test": "await refuses a session directory given naming no session (mutant: drop that directory check)",
+          "firstErrorLine": "Error: STACK_TRACE_ERROR"
+        },
+        {
+          "test": "await refuses a session handed over at once, which does not wait (mutant: drop the waiting-mode check)",
+          "firstErrorLine": "Error: STACK_TRACE_ERROR"
+        },
+        {
+          "test": "await checks only a file inside the session directory (mutant: drop the containment check)",
+          "firstErrorLine": "Error: STACK_TRACE_ERROR"
+        },
+        {
+          "test": "await checks nothing from a session a newer one replaced (mutant: drop the latest-session check)",
+          "firstErrorLine": "Error: STACK_TRACE_ERROR"
+        },
+        {
+          "test": "await exits 1 when a submitted file has findings, and says to repair it (mutant: exit 0 on any submission)",
+          "firstErrorLine": "Error: STACK_TRACE_ERROR"
+        },
+        {
+          "test": "await --submit --stdin: the session writes nothing, Syzygy writes its file writes the inventory from standard input into the session directory, byte for byte, and checks it (mutant: check without writing)",
+          "firstErrorLine": "Error: STACK_TRACE_ERROR"
+        },
+        {
+          "test": "await --submit --stdin: the session writes nothing, Syzygy writes its file replaces an earlier submission when the session resubmits after a repair (mutant: create the file only once)",
+          "firstErrorLine": "Error: STACK_TRACE_ERROR"
+        },
+        {
+          "test": "await --submit --stdin: the session writes nothing, Syzygy writes its file writes nothing for an inventory session, any name but inventory.json (mutant: drop the file-name rule)",
+          "firstErrorLine": "Error: STACK_TRACE_ERROR"
+        },
+        {
+          "test": "await --submit --stdin: the session writes nothing, Syzygy writes its file writes nothing for an inventory session, a path out of its directory (mutant: drop the file-name rule)",
+          "firstErrorLine": "Error: STACK_TRACE_ERROR"
+        },
+        {
+          "test": "await --submit --stdin: the session writes nothing, Syzygy writes its file writes nothing for a review session, a verdict outside a round (mutant: drop the file-name rule)",
+          "firstErrorLine": "Error: STACK_TRACE_ERROR"
+        },
+        {
+          "test": "await --submit --stdin: the session writes nothing, Syzygy writes its file writes nothing for a review session, a round not delivered (mutant: drop the file-name rule)",
+          "firstErrorLine": "Error: STACK_TRACE_ERROR"
+        },
+        {
+          "test": "await --submit --stdin: the session writes nothing, Syzygy writes its file writes nothing for a review session, another file in a delivered round (mutant: drop the file-name rule)",
+          "firstErrorLine": "Error: STACK_TRACE_ERROR"
+        },
+        {
+          "test": "await --submit --stdin: the session writes nothing, Syzygy writes its file writes nothing for a review session, a round whose delivery note is missing (mutant: drop the file-name rule)",
+          "firstErrorLine": "Error: STACK_TRACE_ERROR"
+        },
+        {
+          "test": "await --submit --stdin: the session writes nothing, Syzygy writes its file refuses standard input that is empty, writing nothing (mutant: drop the bound)",
+          "firstErrorLine": "Error: STACK_TRACE_ERROR"
+        },
+        {
+          "test": "await --submit --stdin: the session writes nothing, Syzygy writes its file refuses standard input that is over the draft size bound, writing nothing (mutant: drop the bound)",
+          "firstErrorLine": "Error: STACK_TRACE_ERROR"
+        },
+        {
+          "test": "await --submit --stdin: the session writes nothing, Syzygy writes its file never follows a link left at the pending name (mutant: write the pending file without removing it first)",
+          "firstErrorLine": "Error: STACK_TRACE_ERROR"
+        },
+        {
+          "test": "await --submit --stdin: the session writes nothing, Syzygy writes its file takes --stdin only with --submit (mutant: ignore a stray --stdin)",
+          "firstErrorLine": "Error: STACK_TRACE_ERROR"
+        },
+        {
+          "test": "delivery to a waiting review session delivers the packet as round 1, which await re-hashes and names (mutant: deliver into the session root)",
+          "firstErrorLine": "Error: STACK_TRACE_ERROR"
+        },
+        {
+          "test": "delivery to a waiting review session refuses a round whose the packet no longer matches (mutant: compare one digest only)",
+          "firstErrorLine": "Error: STACK_TRACE_ERROR"
+        },
+        {
+          "test": "delivery to a waiting review session refuses a round whose the run's delivery record no longer matches (mutant: compare one digest only)",
+          "firstErrorLine": "Error: STACK_TRACE_ERROR"
+        },
+        {
+          "test": "delivery to a waiting review session refuses a round whose the digest file no longer matches (mutant: compare one digest only)",
+          "firstErrorLine": "Error: STACK_TRACE_ERROR"
+        },
+        {
+          "test": "delivery to a waiting review session refuses a round whose the session's delivery file no longer matches (mutant: compare one digest only)",
+          "firstErrorLine": "Error: STACK_TRACE_ERROR"
+        },
+        {
+          "test": "delivery to a waiting review session takes no new tool, version or model for a waiting session (mutant: let --tool through)",
+          "firstErrorLine": "Error: STACK_TRACE_ERROR"
+        },
+        {
+          "test": "delivery to a waiting review session checks the waiting session's own provider statement at delivery (mutant: check the run's pair instead)",
+          "firstErrorLine": "Error: STACK_TRACE_ERROR"
+        },
+        {
+          "test": "delivery to a waiting review session refuses a delivery when a successor replaced the statement the waiting session was started under (mutant: drop the citation recheck)",
+          "firstErrorLine": "Error: STACK_TRACE_ERROR"
+        },
+        {
+          "test": "delivery to a waiting review session says no packet is delivered when the waiting session's record cites no statement (mutant: string-replace the counting phrase)",
+          "firstErrorLine": "Error: STACK_TRACE_ERROR"
+        },
+        {
+          "test": "delivery to a waiting review session with --fresh hands the packet to a new session instead (mutant: ignore --fresh)",
+          "firstErrorLine": "Error: STACK_TRACE_ERROR"
+        },
+        {
+          "test": "a reviewer that continues across revisions discloses a first-round reviewer as such on the review page (mutant: omit the continuity item)",
+          "firstErrorLine": "Error: STACK_TRACE_ERROR"
+        },
+        {
+          "test": "a reviewer that continues across revisions delivers the repaired subject to the same session as round 2 and discloses it on the review page and in the machine view (mutant: never mark continuing)",
+          "firstErrorLine": "Error: STACK_TRACE_ERROR"
+        },
+        {
+          "test": "a reviewer that continues across revisions discloses a fresh session that declares an earlier verdict's session identifier as continuing (mutant: read delivery records only)",
+          "firstErrorLine": "Error: STACK_TRACE_ERROR"
+        },
+        {
+          "test": "a reviewer that continues across revisions does not mark a fresh session with a new identifier as continuing (mutant: mark every later verdict continuing)",
+          "firstErrorLine": "Error: STACK_TRACE_ERROR"
+        },
+        {
+          "test": "a rendered-design reviewer's continuity, disclosed in the review-status region says a first-round design reviewer had no earlier packet (mutant: disclose a continuing design reviewer only)",
+          "firstErrorLine": "Error: STACK_TRACE_ERROR"
+        },
+        {
+          "test": "a rendered-design reviewer's continuity, disclosed in the review-status region discloses a design reviewer that continued to round 2 (mutant: drop the design continuity sentence)",
+          "firstErrorLine": "Error: STACK_TRACE_ERROR"
+        },
+        {
+          "test": "link-safe session directories (review-408 F1) refuses to write an inventory through a session directory replaced by a link (mutant: skip the directory check in await)",
+          "firstErrorLine": "Error: STACK_TRACE_ERROR"
+        },
+        {
+          "test": "link-safe session directories (review-408 F1) refuses a session directory that is not a directory of its own (mutant: drop the lstat check)",
+          "firstErrorLine": "Error: STACK_TRACE_ERROR"
+        },
+        {
+          "test": "link-safe session directories (review-408 F1) refuses a directory whose real path is not the sessions root's entry of its name (mutant: drop the real-path check)",
+          "firstErrorLine": "Error: STACK_TRACE_ERROR"
+        },
+        {
+          "test": "link-safe session directories (review-408 F1) delivers nothing into a review session directory replaced by a link (mutant: skip the directory check in delivery)",
+          "firstErrorLine": "Error: STACK_TRACE_ERROR"
+        },
+        {
+          "test": "link-safe session directories (review-408 F1) delivers nothing to a prompt record naming a directory outside the sessions root, even one that resolves into it (mutant: drop the lexical sessions-root check)",
+          "firstErrorLine": "Error: STACK_TRACE_ERROR"
+        },
+        {
+          "test": "link-safe session directories (review-408 F1) writes no verdict into a round directory that links to another session's round (mutant: drop the round containment check)",
+          "firstErrorLine": "Error: STACK_TRACE_ERROR"
+        },
+        {
+          "test": "a link-safe sessions root (review-408 round 2, finding 1) writes no inventory through a sessions root replaced by a link (mutant: skip the root checks)",
+          "firstErrorLine": "Error: STACK_TRACE_ERROR"
+        },
+        {
+          "test": "a link-safe sessions root (review-408 round 2, finding 1) delivers no packet through a sessions root replaced by a link (mutant: skip the root checks)",
+          "firstErrorLine": "Error: STACK_TRACE_ERROR"
+        },
+        {
+          "test": "a link-safe sessions root (review-408 round 2, finding 1) refuses a sessions root that is a link, by its own lstat (mutant: drop the root lstat check)",
+          "firstErrorLine": "Error: STACK_TRACE_ERROR"
+        },
+        {
+          "test": "the predicates review-408 F4 named reads standard input whole, and no further than its bound (mutant: drop the reader's bound)",
+          "firstErrorLine": "Error: STACK_TRACE_ERROR"
+        },
+        {
+          "test": "the predicates review-408 F4 named delivers nothing to a prompt record that names no directory (mutant: drop the directory-type check)",
+          "firstErrorLine": "Error: STACK_TRACE_ERROR"
+        },
+        {
+          "test": "the predicates review-408 F4 named hands a packet over at once when the latest session of its kind was not started to wait (mutant: drop the waiting-mode check on delivery)",
+          "firstErrorLine": "Error: STACK_TRACE_ERROR"
+        },
+        {
+          "test": "the predicates review-408 F4 named counts no delivery record with a round that disagrees with its name (mutant: drop that record check)",
+          "firstErrorLine": "Error: STACK_TRACE_ERROR"
+        },
+        {
+          "test": "the predicates review-408 F4 named counts no delivery record with no packet digest (mutant: drop that record check)",
+          "firstErrorLine": "Error: STACK_TRACE_ERROR"
+        },
+        {
+          "test": "the predicates review-408 F4 named refuses --round 0 (mutant: loosen that grammar or drop the cap)",
+          "firstErrorLine": "Error: STACK_TRACE_ERROR"
+        },
+        {
+          "test": "the predicates review-408 F4 named refuses --round two (mutant: loosen that grammar or drop the cap)",
+          "firstErrorLine": "Error: STACK_TRACE_ERROR"
+        },
+        {
+          "test": "the predicates review-408 F4 named refuses --wait-minutes 0 (mutant: loosen that grammar or drop the cap)",
+          "firstErrorLine": "Error: STACK_TRACE_ERROR"
+        },
+        {
+          "test": "the predicates review-408 F4 named refuses --wait-minutes 61, past the cap (mutant: loosen that grammar or drop the cap)",
+          "firstErrorLine": "Error: STACK_TRACE_ERROR"
+        },
+        {
+          "test": "the predicates review-408 F4 named refuses --submit with --round (mutant: let --submit take it)",
+          "firstErrorLine": "Error: STACK_TRACE_ERROR"
+        },
+        {
+          "test": "the predicates review-408 F4 named refuses --submit with --wait-minutes (mutant: let --submit take it)",
+          "firstErrorLine": "Error: STACK_TRACE_ERROR"
+        },
+        {
+          "test": "the predicates review-408 F4 named gives an inventory session one round only (mutant: drop the inventory round check)",
+          "firstErrorLine": "Error: STACK_TRACE_ERROR"
+        },
+        {
+          "test": "the predicates review-408 F4 named refuses a prompt record whose prompt no longer matches its digest (mutant: drop that part of the prompt record check)",
+          "firstErrorLine": "Error: STACK_TRACE_ERROR"
+        },
+        {
+          "test": "the predicates review-408 F4 named refuses a prompt record with no prompt (mutant: drop that part of the prompt record check)",
+          "firstErrorLine": "Error: STACK_TRACE_ERROR"
+        },
+        {
+          "test": "the predicates review-408 F4 named refuses a prompt record that is missing (mutant: drop that part of the prompt record check)",
+          "firstErrorLine": "Error: STACK_TRACE_ERROR"
+        },
+        {
+          "test": "the predicates review-408 F4 named refuses a delivery note that names another round, even with the right digest (mutant: drop that field of the note check)",
+          "firstErrorLine": "Error: STACK_TRACE_ERROR"
+        },
+        {
+          "test": "the predicates review-408 F4 named refuses a delivery note that names another kind, even with the right digest (mutant: drop that field of the note check)",
+          "firstErrorLine": "Error: STACK_TRACE_ERROR"
+        },
+        {
+          "test": "the predicates review-408 F4 named refuses a delivery note that names another session, even with the right digest (mutant: drop that field of the note check)",
+          "firstErrorLine": "Error: STACK_TRACE_ERROR"
+        },
+        {
+          "test": "the predicates review-408 F4 named delivers nothing when the waiting session's record names no agent tool (mutant: drop the recorded-tool check)",
+          "firstErrorLine": "Error: STACK_TRACE_ERROR"
+        },
+        {
+          "test": "the predicates review-408 F4 named delivers no design packet before a render, and no fidelity packet before the inventory counts (mutant: deliver a packet that failed to build)",
+          "firstErrorLine": "Error: STACK_TRACE_ERROR"
+        },
+        {
+          "test": "the predicates review-408 F4 named refuses a prompt record that names another directory (mutant: drop the record's directory check)",
+          "firstErrorLine": "Error: STACK_TRACE_ERROR"
+        },
+        {
+          "test": "the predicates review-408 F4 named verifies the gates again when a packet arrives, and reads nothing past the deadline (mutant: drop the re-check)",
+          "firstErrorLine": "Error: STACK_TRACE_ERROR"
+        },
+        {
+          "test": "the predicates review-408 F4 named refuses session-prompt all once the run's deadline has passed (mutant: drop that step's gate check)",
+          "firstErrorLine": "Error: STACK_TRACE_ERROR"
+        },
+        {
+          "test": "the predicates review-408 F4 named refuses await once the run's deadline has passed (mutant: drop that step's gate check)",
+          "firstErrorLine": "Error: STACK_TRACE_ERROR"
+        },
+        {
+          "test": "the predicates review-408 F4 named refuses a delivery once the run's deadline has passed (mutant: drop that step's gate check)",
+          "firstErrorLine": "Error: STACK_TRACE_ERROR"
+        },
+        {
+          "test": "the predicates review-408 F4 named refuses a sessions root that resolves into the clone (mutant: drop the sessions-root check of session-prompt all)",
+          "firstErrorLine": "Error: STACK_TRACE_ERROR"
+        },
+        {
+          "test": "the predicates review-408 F4 named refuses session-prompt for all with --kind (mutant: drop that refusal)",
+          "firstErrorLine": "Error: STACK_TRACE_ERROR"
+        },
+        {
+          "test": "the predicates review-408 F4 named refuses session-prompt for all with --fresh (mutant: drop that refusal)",
+          "firstErrorLine": "Error: STACK_TRACE_ERROR"
+        },
+        {
+          "test": "the predicates review-408 F4 named refuses session-prompt for an inventory with --fresh (mutant: drop that refusal)",
+          "firstErrorLine": "Error: STACK_TRACE_ERROR"
+        },
+        {
+          "test": "await --stdin validates before it writes (review-408 F5) keeps the inventory that passed when the next submission is not JSON (mutant: drop that check)",
+          "firstErrorLine": "Error: STACK_TRACE_ERROR"
+        },
+        {
+          "test": "await --stdin validates before it writes (review-408 F5) keeps the inventory that passed when the next submission is not UTF-8 (mutant: drop that check)",
+          "firstErrorLine": "Error: STACK_TRACE_ERROR"
+        },
+        {
+          "test": "await --stdin validates before it writes (review-408 F5) keeps the inventory that passed when the next submission is deeper than the bound (mutant: drop that check)",
+          "firstErrorLine": "Error: STACK_TRACE_ERROR"
+        }
+      ],
+      "row": [
+        {
+          "test": "the v1.2 gate opens on no record when the record names a review outside the records root (mutant: drop the review-path check)",
+          "status": "failed",
+          "firstErrorLine": "Error: STACK_TRACE_ERROR",
+          "retryCount": null
+        }
+      ],
+      "tmpdir": "/tmp/r513-rev/t10",
+      "listingBefore": {
+        "top": [],
+        "deep": []
+      },
+      "listingAfter": {
+        "top": [
+          "node-compile-cache"
+        ],
+        "deep": []
+      },
+      "strayDossierAfter": [],
+      "restored": true,
+      "outputTail": [
+        "JSON report written to /tmp/claude-1000/-home-tze-GitHub-syzygy/9297eba3-858b-4aca-a313-05ea0802ad02/scratchpad/rev-513/reports/P-timeout-fix.json"
+      ]
+    }
+  ],
+  "trackedTreeCleanAfter": true,
+  "harnessSha256": "2b4c763bb051d6057f47c8ffe63710cd33379c05fe47ec9f8fe21a3c205e6b90"
+}
