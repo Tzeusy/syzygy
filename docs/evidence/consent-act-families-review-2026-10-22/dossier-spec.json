@@ -1,0 +1,55 @@
+{
+ "project": "@syzygy/polaris-generation-consent",
+ "mutants": [
+  {
+   "id": "db-fieldstems",
+   "file": "packages/polaris-generation-consent/src/package-reader.ts",
+   "old": "return { stems: form.stems, needles: [artifact], fields: everyField([...form.stems, ...(form.fieldStems ?? []), artifact]), quoted: true, loose: true, citations: true };",
+   "new": "return { stems: form.stems, needles: [artifact], fields: everyField([...form.stems, artifact]), quoted: true, loose: true, citations: true };",
+   "tests": [
+    "packages/polaris-dossier/src/gate-acts.test.ts"
+   ],
+   "project": "@syzygy/polaris-dossier"
+  },
+  {
+   "id": "g-exempt",
+   "file": "packages/polaris-generation-consent/src/package-reader.ts",
+   "old": "    if ((family.exempt ?? []).some(exempt => exempt.file === rel && templateFields(exempt.template, text) !== null)) continue;\n",
+   "new": "",
+   "tests": [
+    "packages/polaris-dossier/src/gate-acts.test.ts"
+   ],
+   "project": "@syzygy/polaris-dossier"
+  },
+  {
+   "id": "g-exempt-bytes",
+   "file": "packages/polaris-generation-consent/src/package-reader.ts",
+   "old": "exempt.file === rel && templateFields(exempt.template, text) !== null",
+   "new": "exempt.file === rel",
+   "tests": [
+    "packages/polaris-dossier/src/gate-acts.test.ts"
+   ],
+   "project": "@syzygy/polaris-dossier"
+  },
+  {
+   "id": "g-why",
+   "file": "packages/polaris-generation-consent/src/package-reader.ts",
+   "old": "names the act without being its record: a withdrawal or a form this reader does not define`",
+   "new": "names the act without being its record`",
+   "tests": [
+    "packages/polaris-dossier/src/gate-acts.test.ts"
+   ],
+   "project": "@syzygy/polaris-dossier"
+  },
+  {
+   "id": "g-template",
+   "file": "packages/polaris-generation-consent/src/package-reader.ts",
+   "old": "if (form.template !== undefined) fromTemplate(form.template, text);",
+   "new": "if (false) fromTemplate(form.template, text);",
+   "tests": [
+    "packages/polaris-dossier/src/gate-acts.test.ts"
+   ],
+   "project": "@syzygy/polaris-dossier"
+  }
+ ]
+}
