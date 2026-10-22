@@ -1,10 +1,10 @@
 {
  "tool": "kill_then_fresh_run.py",
- "treeCommit": "d59d76c36987f1f36580d741962266aa6f4537b6",
+ "treeCommit": "caef076acf9ea3b3d0130d81e7fb78e608617b6b",
  "mode": "sweep",
  "command": "npx vitest run --project @syzygy/three-surface-poc-app (TMPDIR=<emptied private directory>)",
  "sha256AtCommit": {
-  "vitest.config.ts": "19ce11f72818ed2c256812af7054540b64154b1a9a5c63d5a66adb5f797d5a42"
+  "vitest.config.ts": "8e8d698a90f37b1a340e4b9c6500981dda87bb56bd348980a648d1f3d89b625d"
  },
  "minCopiesBeforeKill": 3,
  "killedRun": {
@@ -12,7 +12,7 @@
   "sentToTheProcessGroupOfTheRunItStarted": true,
   "runFinishedBeforeTheSignal": false,
   "atKill": {
-   "secondsIntoTheRun": 25.1,
+   "secondsIntoTheRun": 31.6,
    "fixtureDirectories": 5,
    "ofDeadProcesses": {
     "count": 0,
@@ -28,7 +28,7 @@
    "withoutAnOwnerPid": {
     "count": 0
    },
-   "otherEntries": 13
+   "otherEntries": 14
   },
   "fiveSecondsAfterKill": {
    "fixtureDirectories": 5,
@@ -37,8 +37,8 @@
     "copies": 3,
     "templates": 2,
     "ownerPids": [
-     3555936,
-     3555976
+     340684,
+     340746
     ]
    },
    "ofLiveProcesses": {
@@ -49,21 +49,32 @@
    "withoutAnOwnerPid": {
     "count": 0
    },
-   "otherEntries": 13
+   "otherEntries": 14
   }
  },
  "freshRun": {
-  "exit": 0,
-  "seconds": 229.7,
+  "exit": 1,
+  "seconds": 293.6,
   "numTotalTestSuites": 263,
   "numPassedTests": 1104,
-  "numFailedTests": 0,
+  "numFailedTests": 2,
   "numPendingTests": 2,
-  "numTotalTests": 1106,
-  "success": true,
+  "numTotalTests": 1108,
+  "success": false,
   "testFiles": 90,
-  "testFilesFailed": 0,
-  "failing": [],
+  "testFilesFailed": 2,
+  "failing": [
+   {
+    "file": "three-surface-poc/src/build-output.test.ts",
+    "test": "POC build output integrity re-emits ignored JavaScript before the launcher executes it",
+    "firstErrorLine": "Error: STACK_TRACE_ERROR"
+   },
+   {
+    "file": "three-surface-poc/src/polaris-generation/pipeline-demo.test.ts",
+    "test": "concrete source-to-draft pipeline exercise runs the README command after a clean install and requires exactly seven synthetic output files",
+    "firstErrorLine": "Error: Command failed: npm ci"
+   }
+  ],
   "left": {
    "fixtureDirectories": 0,
    "ofDeadProcesses": {
@@ -80,15 +91,19 @@
    "withoutAnOwnerPid": {
     "count": 0
    },
-   "otherEntries": 14
+   "otherEntries": 19
   }
  },
  "processesStillNamingThisTmpdir": [
+  341948,
+  341966,
+  341969,
+  342000,
+  342025,
+  342029,
+  343734,
+  346044,
   3557269,
-  3557313,
-  3557315,
-  3557441,
-  3557462,
-  3557465
+  3557441
  ]
 }

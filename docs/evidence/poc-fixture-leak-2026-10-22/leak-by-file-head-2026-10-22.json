@@ -1,6 +1,6 @@
 {
  "tool": "leak_by_file.py",
- "treeCommit": "d59d76c36987f1f36580d741962266aa6f4537b6",
+ "treeCommit": "caef076acf9ea3b3d0130d81e7fb78e608617b6b",
  "project": "@syzygy/three-surface-poc-app",
  "testFilesInDirectory": 90,
  "fixtureUsingTestFiles": 43,
@@ -8,7 +8,11 @@
  "filesWithTemplatesLeft": 0,
  "copiesLeftTotal": 0,
  "templatesLeftTotal": 0,
- "nonzeroExits": [],
+ "nonzeroExits": [
+  "apps/three-surface-poc/src/polaris-authority-sweep.test.ts",
+  "apps/three-surface-poc/src/test-model-fixture.test.ts",
+  "apps/three-surface-poc/src/trajectory-narrowing.browser.test.ts"
+ ],
  "results": [
   {
    "file": "apps/three-surface-poc/src/block-provenance-sweep.test.ts",
@@ -144,10 +148,10 @@
   },
   {
    "file": "apps/three-surface-poc/src/polaris-authority-sweep.test.ts",
-   "exit": 0,
+   "exit": 1,
    "summary": [
-    "Test Files  1 passed (1)",
-    "Tests  5 passed (5)"
+    "Test Files  1 failed (1)",
+    "Tests  1 failed | 4 passed (5)"
    ],
    "templatesLeft": 0,
    "copiesLeft": 0,
@@ -408,10 +412,10 @@
   },
   {
    "file": "apps/three-surface-poc/src/test-model-fixture.test.ts",
-   "exit": 0,
+   "exit": 1,
    "summary": [
-    "Test Files  1 passed (1)",
-    "Tests  5 passed (5)"
+    "Test Files  1 failed (1)",
+    "Tests  1 failed | 4 passed (5)"
    ],
    "templatesLeft": 0,
    "copiesLeft": 0,
@@ -419,14 +423,14 @@
   },
   {
    "file": "apps/three-surface-poc/src/trajectory-narrowing.browser.test.ts",
-   "exit": 0,
+   "exit": 1,
    "summary": [
-    "Test Files  1 passed (1)",
-    "Tests  2 passed (2)"
+    "Test Files  1 failed (1)",
+    "Tests  2 failed (2)"
    ],
    "templatesLeft": 0,
    "copiesLeft": 0,
-   "otherEntriesLeft": 1
+   "otherEntriesLeft": 2
   },
   {
    "file": "apps/three-surface-poc/src/trajectory.test.ts",

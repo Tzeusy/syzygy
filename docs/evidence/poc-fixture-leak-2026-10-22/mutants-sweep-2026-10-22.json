@@ -5,14 +5,14 @@
   "apps/three-surface-poc/src/test-model-fixture.test.ts"
  ],
  "command": "npx vitest run apps/three-surface-poc/src/fixture-directories.test.ts apps/three-surface-poc/src/test-model-fixture.test.ts --project @syzygy/three-surface-poc-app",
- "treeCommit": "d59d76c36987f1f36580d741962266aa6f4537b6",
+ "treeCommit": "caef076acf9ea3b3d0130d81e7fb78e608617b6b",
  "sha256AtCommit": {
   "apps/three-surface-poc/src/fixture-directories.test.ts": "68a7729e687e655518cb9b2ac3bdd5f491602e121e6c10050ee22b0f4b7bd812",
   "apps/three-surface-poc/src/fixture-directories.ts": "5a2eeb0ea9e4b60e75acbcb0174ff80bcbd37bc35cf9c36b7b09b2ea0f2dbb0e",
   "apps/three-surface-poc/src/test-fixture-sweep.global-setup.ts": "8f68850a773daf21fde1174532826c5ded2ae372dd89db9ab3b32487e9135317",
   "apps/three-surface-poc/src/test-model-fixture.test.ts": "5ab5d79893e2ff2a178b4b5de0da9f1054e85adb4ff1112554b7e3bb1c544e2e",
   "apps/three-surface-poc/src/test-model-fixture.ts": "58497e91d23c7244a76ceff055d590dd264c9c09dddbdd647604689b820d413e",
-  "vitest.config.ts": "19ce11f72818ed2c256812af7054540b64154b1a9a5c63d5a66adb5f797d5a42"
+  "vitest.config.ts": "8e8d698a90f37b1a340e4b9c6500981dda87bb56bd348980a648d1f3d89b625d"
  },
  "control": {
   "exit": 0,
@@ -140,7 +140,7 @@
    "failing": [
     {
      "test": "fixture directories a killed run left behind (syzygy-bpyt.4.10) keeps a name that carries no pid segment, whatever its suffix",
-     "firstErrorLine": "AssertionError: expected [ \u2026(7) ] to deeply equal [ \u2026(8) ]"
+     "firstErrorLine": "AssertionError: expected [ 'other-fixture-p52750-AbCdEf', \u2026(6) ] to deeply equal [ \u2026(8) ]"
     }
    ],
    "fixtureDirectoriesLeftInPrivateTmpdir": 0

@@ -1,9 +1,9 @@
 {
  "subject": {
   "baseCommit": "0d4d50984f6aa501217fe7109b6aec1b9679e4c9",
-  "mergedMainCommit": "c55acb73753dc8d29d53b34b38b5d2af0cee6080",
-  "codeCommit": "d59d76c36987f1f36580d741962266aa6f4537b6",
-  "treeAtRecording": "d59d76c36987f1f36580d741962266aa6f4537b6"
+  "mergedMainCommit": "4b31531c0f7c687bac01d15d0d54eb8bfda80f00",
+  "codeCommit": "caef076acf9ea3b3d0130d81e7fb78e608617b6b",
+  "treeAtRecording": "caef076acf9ea3b3d0130d81e7fb78e608617b6b"
  },
  "appsAndPackagesDiffSinceCodeCommit": "",
  "toolDigests": {
@@ -48,6 +48,68 @@
   "claim": "a clean three-surface-poc project run with a fresh TMPDIR leaves 0 syzygy-poc-surface-fixture-* directories",
   "command": "npx vitest run --project @syzygy/three-surface-poc-app",
   "run": {
+   "where": "the app project inside the full-suite run of gates.fullVitest at the merged head",
+   "filesPassed": 89,
+   "filesSkipped": 1,
+   "filesFailed": 0,
+   "fixtureDirectoriesLeft": 0
+  },
+  "cleanRunToolAtTheMergedHead": [
+   {
+    "record": "clean-run-head-attempt-1-2026-10-22.json",
+    "exit": 1,
+    "numPassedTests": 1103,
+    "numFailedTests": 3,
+    "failing": [
+     [
+      "three-surface-poc/src/surface-routes.test.ts",
+      "Error: private browser profile still held by 1 process(es)"
+     ],
+     [
+      "three-surface-poc/src/surface-routes.test.ts",
+      "Error: private browser profile still held by 1 process(es)"
+     ],
+     [
+      "three-surface-poc/src/tuple-encoding.test.ts",
+      "Error: private browser profile still held by 1 process(es)"
+     ]
+    ],
+    "fixtureDirectoriesLeft": 0
+   },
+   {
+    "record": "clean-run-head-attempt-2-2026-10-22.json",
+    "exit": 1,
+    "numPassedTests": 1105,
+    "numFailedTests": 1,
+    "failing": [
+     [
+      "three-surface-poc/src/build-output.test.ts",
+      "Error: STACK_TRACE_ERROR"
+     ]
+    ],
+    "fixtureDirectoriesLeft": 0
+   },
+   {
+    "record": "clean-run-head-attempt-3-2026-10-22.json",
+    "exit": 1,
+    "numPassedTests": 1104,
+    "numFailedTests": 2,
+    "failing": [
+     [
+      "three-surface-poc/src/build-output.test.ts",
+      "Error: STACK_TRACE_ERROR"
+     ],
+     [
+      "three-surface-poc/src/polaris-generation/pipeline-demo.test.ts",
+      "Error: Command failed: npm ci"
+     ]
+    ],
+    "fixtureDirectoriesLeft": 0
+   }
+  ],
+  "cleanRunBeforeTheMerge": {
+   "record": "clean-run-d59d76c3-2026-10-22.json",
+   "treeCommit": "d59d76c36987f1f36580d741962266aa6f4537b6",
    "exit": 0,
    "seconds": 220.5,
    "numTotalTests": 1106,
@@ -57,36 +119,33 @@
    "testFiles": 90,
    "testFilesFailed": 0,
    "failing": [],
-   "left": {
-    "fixtureDirectories": 0,
-    "ofDeadProcesses": {
-     "count": 0,
-     "copies": 0,
-     "templates": 0,
-     "ownerPids": []
-    },
-    "ofLiveProcesses": {
-     "count": 0,
-     "copies": 0,
-     "templates": 0
-    },
-    "withoutAnOwnerPid": {
-     "count": 0
-    },
-    "otherEntries": 4
-   }
+   "fixtureDirectoriesLeft": 0
   },
   "perFile": {
-   "treeCommit": "d59d76c36987f1f36580d741962266aa6f4537b6",
+   "treeCommit": "caef076acf9ea3b3d0130d81e7fb78e608617b6b",
    "testFilesInDirectory": 90,
    "fixtureUsingTestFiles": 43,
    "filesWithCopiesLeft": 0,
    "filesWithTemplatesLeft": 0,
    "copiesLeftTotal": 0,
    "templatesLeftTotal": 0,
-   "nonzeroExits": []
+   "nonzeroExits": [
+    "apps/three-surface-poc/src/polaris-authority-sweep.test.ts",
+    "apps/three-surface-poc/src/test-model-fixture.test.ts",
+    "apps/three-surface-poc/src/trajectory-narrowing.browser.test.ts"
+   ]
   },
-  "note": "base leaves 0 too in a clean run (diagnosis), so this criterion shows the change leaves nothing new; AC3 is what the change is for. An earlier revision of this branch (baf06475) failed sync-child-process-guard.test.ts in this run because its test used spawnSync, which that guard forbids; the tests now await an async spawn. That attempt's report was not retained and no figure from it is used."
+  "perFileNonzeroExitsRerunAlone": {
+   "files": {
+    "polaris-authority-sweep.test.ts": "passed",
+    "test-model-fixture.test.ts": "passed",
+    "trajectory-narrowing.browser.test.ts": "passed"
+   },
+   "passed": 12,
+   "failed": 0,
+   "note": "the per-file tool keeps no failure text; the three files that exited non-zero in it passed when run again straight after, at the same commit [Inferred: load timeouts]"
+  },
+  "note": "base leaves 0 too in a clean run (diagnosis), so this criterion shows the change leaves nothing new; AC3 is what the change is for. The three dedicated clean-run attempts at the merged head each left 0 fixture directories but exited 1 on load-bound tests (build-output, pipeline-demo: npm ci past its 120 s install timeout, surface-routes and tuple-encoding: the browser profile drain) [Inferred from the error lines and the host load]; the full run with three workers is the run of the app project that passed. An earlier revision of this branch (baf06475) failed sync-child-process-guard.test.ts in this run because its test used spawnSync, which that guard forbids; the tests now await an async spawn. That attempt's report was not retained and no figure from it is used."
  },
  "ac3": {
   "claim": "a run killed with SIGKILL, followed by one fresh run, leaves 0 directories of dead processes; with the sweep disabled they stay",
@@ -96,7 +155,7 @@
     "sentToTheProcessGroupOfTheRunItStarted": true,
     "runFinishedBeforeTheSignal": false,
     "atKill": {
-     "secondsIntoTheRun": 25.1,
+     "secondsIntoTheRun": 31.6,
      "fixtureDirectories": 5,
      "ofDeadProcesses": {
       "count": 0,
@@ -112,7 +171,7 @@
      "withoutAnOwnerPid": {
       "count": 0
      },
-     "otherEntries": 13
+     "otherEntries": 14
     },
     "fiveSecondsAfterKill": {
      "fixtureDirectories": 5,
@@ -121,8 +180,8 @@
       "copies": 3,
       "templates": 2,
       "ownerPids": [
-       3555936,
-       3555976
+       340684,
+       340746
       ]
      },
      "ofLiveProcesses": {
@@ -133,19 +192,30 @@
      "withoutAnOwnerPid": {
       "count": 0
      },
-     "otherEntries": 13
+     "otherEntries": 14
     }
    },
    "freshRun": {
-    "exit": 0,
-    "seconds": 229.7,
-    "numTotalTests": 1106,
+    "exit": 1,
+    "seconds": 293.6,
+    "numTotalTests": 1108,
     "numPassedTests": 1104,
-    "numFailedTests": 0,
+    "numFailedTests": 2,
     "numPendingTests": 2,
     "testFiles": 90,
-    "testFilesFailed": 0,
-    "failing": [],
+    "testFilesFailed": 2,
+    "failing": [
+     {
+      "file": "three-surface-poc/src/build-output.test.ts",
+      "test": "POC build output integrity re-emits ignored JavaScript before the launcher executes it",
+      "firstErrorLine": "Error: STACK_TRACE_ERROR"
+     },
+     {
+      "file": "three-surface-poc/src/polaris-generation/pipeline-demo.test.ts",
+      "test": "concrete source-to-draft pipeline exercise runs the README command after a clean install and requires exactly seven synthetic output files",
+      "firstErrorLine": "Error: Command failed: npm ci"
+     }
+    ],
     "left": {
      "fixtureDirectories": 0,
      "ofDeadProcesses": {
@@ -162,9 +232,10 @@
      "withoutAnOwnerPid": {
       "count": 0
      },
-     "otherEntries": 14
+     "otherEntries": 19
     }
-   }
+   },
+   "note": "the criterion is the count of directories of dead processes after the fresh run, read from freshRun.left. The fresh run exits non-zero only on the tests listed in freshRun.failing, which are the load-bound ones also seen failing in the clean runs of ac2 [Inferred: same files, same error lines, host load average 30 to 55]; neither is a test of the fixture directories or of the sweep."
   },
   "sweepDisabled": {
    "mutant": {
@@ -178,7 +249,7 @@
     "sentToTheProcessGroupOfTheRunItStarted": true,
     "runFinishedBeforeTheSignal": false,
     "atKill": {
-     "secondsIntoTheRun": 32.7,
+     "secondsIntoTheRun": 16.8,
      "fixtureDirectories": 5,
      "ofDeadProcesses": {
       "count": 0,
@@ -203,8 +274,8 @@
       "copies": 3,
       "templates": 2,
       "ownerPids": [
-       3658466,
-       3658481
+       458382,
+       458394
       ]
      },
      "ofLiveProcesses": {
@@ -220,23 +291,18 @@
    },
    "freshRun": {
     "exit": 1,
-    "seconds": 319.3,
-    "numTotalTests": 1106,
-    "numPassedTests": 1102,
-    "numFailedTests": 2,
+    "seconds": 214.8,
+    "numTotalTests": 1108,
+    "numPassedTests": 1105,
+    "numFailedTests": 1,
     "numPendingTests": 2,
     "testFiles": 90,
-    "testFilesFailed": 2,
+    "testFilesFailed": 1,
     "failing": [
      {
       "file": "three-surface-poc/src/fixture-directories.test.ts",
       "test": "fixture directories a killed run left behind (syzygy-bpyt.4.10) is registered as a global setup of the app project and of no other project, so it runs once per run",
       "firstErrorLine": "AssertionError: expected [] to deeply equal [ '@syzygy/three-surface-poc-app' ]"
-     },
-     {
-      "file": "three-surface-poc/src/polaris-generation/public-source-screening.test.ts",
-      "test": "the policy act gate fails closed the default port reads this checkout's chain: the latest recorded version loads the policy it names",
-      "firstErrorLine": "Error: STACK_TRACE_ERROR"
      }
     ],
     "left": {
@@ -246,8 +312,8 @@
       "copies": 3,
       "templates": 2,
       "ownerPids": [
-       3658466,
-       3658481
+       458382,
+       458394
       ]
      },
      "ofLiveProcesses": {
@@ -258,13 +324,19 @@
      "withoutAnOwnerPid": {
       "count": 0
      },
-     "otherEntries": 15
+     "otherEntries": 18
     }
    },
-   "note": "the 5 directories of the killed run stay. The fresh run exits 1 with two failing tests: the unit test that pins the global setup's registration (as intended), and a second, public-source-screening.test.ts, whose error line is vitest's timeout placeholder at machine load of about 55 [Inferred: a load timeout, unrelated to the change; it passed in the other three runs of this commit]"
+   "failingTestsListed": [
+    [
+     "three-surface-poc/src/fixture-directories.test.ts",
+     "ered as a global setup of the app project and of no other project, so it runs once per run"
+    ]
+   ],
+   "note": "the directories of the killed run stay; the fresh run exits non-zero because the unit test that pins the global setup's registration fails on the mutated tree, as intended"
   },
   "unitMutants": {
-   "treeCommit": "d59d76c36987f1f36580d741962266aa6f4537b6",
+   "treeCommit": "caef076acf9ea3b3d0130d81e7fb78e608617b6b",
    "command": "npx vitest run apps/three-surface-poc/src/fixture-directories.test.ts apps/three-surface-poc/src/test-model-fixture.test.ts --project @syzygy/three-surface-poc-app",
    "mutants": 15,
    "killed": 15,
@@ -372,10 +444,10 @@
   "noSymlinkFollowed": "one test: a symlink to a directory outside the swept one, and a file, both with dead-pid names, are kept; the outside directory is untouched"
  },
  "ac6": {
-  "baseTree": "d59d76c36987f1f36580d741962266aa6f4537b6 with test-model-fixture.test.ts as at c55acb73753dc8d29d53b34b38b5d2af0cee6080 and fixture-directories.test.ts absent",
-  "headTree": "d59d76c36987f1f36580d741962266aa6f4537b6",
-  "baseLines": 5019,
-  "headLines": 5030,
+  "baseTree": "caef076acf9ea3b3d0130d81e7fb78e608617b6b with test-model-fixture.test.ts as at 4b31531c0f7c687bac01d15d0d54eb8bfda80f00 and fixture-directories.test.ts absent",
+  "headTree": "caef076acf9ea3b3d0130d81e7fb78e608617b6b",
+  "baseLines": 5096,
+  "headLines": 5107,
   "added": 11,
   "removed": 0,
   "addedByFile": {
@@ -386,58 +458,133 @@
  },
  "gates": {
   "fullVitest": {
+   "command": "npx vitest run --maxWorkers=3 (TMPDIR=<emptied private directory>)",
+   "log": "vitest-full-head.log",
    "summary": [
-    "Test Files  230 passed | 3 skipped (233)",
-    "Tests  5023 passed | 5 skipped (5028)",
-    "Duration  311.79s (transform 28.65s, setup 7.50s, collect 151.46s, tests 1476.35s, environment 142ms, prepare 64.51s)"
+    "Test Files  3 failed | 229 passed | 3 skipped (235)",
+    "Tests  3 failed | 5097 passed | 5 skipped (5105)",
+    "Duration  695.77s (transform 41.17s, setup 8.89s, collect 186.45s, tests 1562.23s, environment 163ms, prepare 89.58s)"
+   ],
+   "failed": [
+    "|@syzygy/polaris-generation-consent| packages/polaris-generation-consent/src/digest-bound-act.test.ts > digest-bound act cross-check (RFC3-16(a)) > is absent on this checkout: no registry-entry act is recorded",
+    "|@syzygy/polaris-generation-consent| packages/polaris-generation-consent/src/package-reader.test.ts > the policy port and the strict policy chain agree > on every world in the fixture set, at every instant",
+    "|@syzygy/polaris-dossier| packages/polaris-dossier/src/start-gates.test.ts > init: the clone holds the consented commit alone (syzygy-qkea.24) > refuses config naming a remote, a promisor, an include or a command the agent's git would run (R-POLARIS-DOSSIER-CLONE-SHAPE-2 finding 1)"
+   ],
+   "errorLines": [
+    "Error: Test timed out in 5000ms."
    ],
    "left": {
-    "entries": 5,
+    "entries": 3,
     "fixtureDirectories": 0,
     "byKind": {
-     ".com.google.Chrome.5QkqHW": 1,
-     ".com.google.Chrome.FXUdE3": 1,
-     ".com.google.Chrome.ZVuCTr": 1,
+     ".com.google.Chrome.HZviiw": 1,
      "dossier-signoff-XXXXXX-outside-RAW.md": 1,
      "node-compile-cache": 1
     }
    },
-   "attemptBefore": {
-    "summary": [
-     "Test Files  1 failed | 229 passed | 3 skipped (233)",
-     "Tests  1 failed | 5022 passed | 5 skipped (5028)",
-     "Duration  263.70s (transform 29.66s, setup 7.32s, collect 154.11s, tests 1180.56s, environment 115ms, prepare 62.15s)"
-    ],
-    "failed": [
-     "FAIL  |@syzygy/polaris-generation-consent| packages/polaris-generation-consent/src/package-reader.test.ts > the policy port and the strict policy chain agree > on every world in the fixture set, at every instant"
-    ],
-    "firstErrorLine": "Error: Test timed out in 5000ms.",
-    "note": "one test of packages/polaris-generation-consent timed out at the 5 s default under machine load averaging about 30 to 55; that package does not touch the fixture helper. The run was repeated, not scored; the repeat is the figure above."
-   }
+   "appProject": {
+    "filesPassed": 89,
+    "filesSkipped": 1,
+    "filesFailed": 0
+   },
+   "otherAttempts": [
+    {
+     "commit": "caef076a (the merged head), default worker count",
+     "log": "vitest-full-caef076a-attempt-1.log",
+     "summary": [
+      "Test Files  5 failed | 227 passed | 3 skipped (235)",
+      "Tests  13 failed | 5087 passed | 5 skipped (5105)",
+      "Duration  333.77s (transform 31.09s, setup 7.44s, collect 172.17s, tests 1560.04s, environment 146ms, prepare 70.24s)"
+     ],
+     "failed": [
+      "|@syzygy/polaris-generation-consent| packages/polaris-generation-consent/src/package-reader.test.ts > egress version 2 record > is read from the recorder's act: version 2 supersedes version 1 once in force",
+      "|@syzygy/polaris-generation-consent| packages/polaris-generation-consent/src/package-reader.test.ts > egress version 2 record > leaves version 1 standing before the version 2 act takes effect, and with no version 1 act at all",
+      "|@syzygy/polaris-generation-consent| packages/polaris-generation-consent/src/package-reader.test.ts > egress version 2 record > refuses when version 2 did not take effect strictly after version 1: the same instant, or earlier",
+      "|@syzygy/polaris-generation-consent| packages/polaris-generation-consent/src/package-reader.test.ts > egress version 2 record > the RFC5-14 class amendment version 2 depends on > is required: no record, an edited module, a wrong form, or an amendment later than version 2 all refuse",
+      "|@syzygy/polaris-generation-consent| packages/polaris-generation-consent/src/package-reader.test.ts > the policy port and the strict policy chain agree > on every world in the fixture set, at every instant",
+      "|@syzygy/polaris-dossier| packages/polaris-dossier/src/gate-acts.test.ts > the sitting's acts fail closed > withdraw what a decisions file names by the drawer record's basename",
+      "|@syzygy/polaris-dossier| packages/polaris-dossier/src/gate-acts.test.ts > the sitting's acts fail closed > withdraw what a decisions file names by the drawer's Subject on a field line",
+      "|@syzygy/polaris-dossier| packages/polaris-dossier/src/gate-acts.test.ts > the sitting's acts fail closed > withdraw what a decisions file names by the installed entry's basename",
+      "|@syzygy/polaris-dossier| packages/polaris-dossier/src/gate-acts.test.ts > the sitting's acts fail closed > carry no act for a statement whose record names another agent tool, even under an act",
+      "|@syzygy/polaris-dossier| packages/polaris-dossier/src/render.test.ts > rendered-design review (S9b) > records and refuses a design verdict with the authoring session's identifier, which never counts",
+      "|@syzygy/polaris-dossier| packages/polaris-dossier/src/review.test.ts > session-prompt --tool and the session pair's statement > refuses a fidelity, a design and an inventory session when the codex statement takes effect after now, and writes nothing",
+      "|@syzygy/polaris-dossier| packages/polaris-dossier/src/review.test.ts > session-prompt --tool and the session pair's statement > refuses a fidelity, a design and an inventory session when the codex statement lists only code-content, and writes nothing",
+      "|@syzygy/three-surface-poc-core| packages/three-surface-poc-core/src/test-artifact-verification-live-source.test.ts > the live verification test, and every module it imports, runs no observed code > the tree check refuses execFileSync('git', ['probe'], { env: { GIT_CONFIG_GLOBAL: '/tmp/cfg' }, encoding: 'utf8' });"
+     ],
+     "errorLines": [
+      "Error: Test timed out in 5000ms."
+     ]
+    },
+    {
+     "commit": "d59d76c3 (before the merge of 4b31531c), default worker count",
+     "log": "vitest-full-d59d76c3-timeout.log",
+     "summary": [
+      "Test Files  1 failed | 229 passed | 3 skipped (233)",
+      "Tests  1 failed | 5022 passed | 5 skipped (5028)",
+      "Duration  263.70s (transform 29.66s, setup 7.32s, collect 154.11s, tests 1180.56s, environment 115ms, prepare 62.15s)"
+     ],
+     "failed": [
+      "|@syzygy/polaris-generation-consent| packages/polaris-generation-consent/src/package-reader.test.ts > the policy port and the strict policy chain agree > on every world in the fixture set, at every instant"
+     ],
+     "errorLines": [
+      "Error: Test timed out in 5000ms."
+     ]
+    },
+    {
+     "commit": "d59d76c3 (before that merge), default worker count",
+     "log": "vitest-full-d59d76c3-green.log",
+     "summary": [
+      "Test Files  230 passed | 3 skipped (233)",
+      "Tests  5023 passed | 5 skipped (5028)",
+      "Duration  311.79s (transform 28.65s, setup 7.50s, collect 151.46s, tests 1476.35s, environment 142ms, prepare 64.51s)"
+     ],
+     "failed": [],
+     "errorLines": []
+    }
+   ],
+   "rerunAlone": {
+    "theFiveFilesOfTheFirstMergedHeadAttempt": {
+     "command": "npx vitest run <the five files> (default timeouts)",
+     "passed": 593,
+     "failed": 1,
+     "files": {
+      "package-reader.test.ts": "failed",
+      "gate-acts.test.ts": "passed",
+      "render.test.ts": "passed",
+      "review.test.ts": "passed",
+      "test-artifact-verification-live-source.test.ts": "passed"
+     }
+    },
+    "theFileThatStillFailed": {
+     "command": "npx vitest run packages/polaris-generation-consent/src/package-reader.test.ts --testTimeout=120000",
+     "passed": 299,
+     "failed": 0,
+     "durationMsOfTheTimedOutTest": 5314.106928000008
+    }
+   },
+   "note": "every failure in these runs is vitest's 5 s default test timeout [Observed: the error lines] under machine load averaging about 30 to 55 on a shared host [Observed: uptime between runs], in packages that do not use the fixture helper. The merged head's app project has no failing file in this run. The commit before the merge was green on its full run (otherAttempts, third entry)."
   },
   "typecheck": {
    "command": "npm run typecheck",
-   "last line of the log": "exit=0"
+   "last line of the log": "exit 0"
   },
   "checkGovernance": {
    "command": "python3 scripts/check_governance.py",
    "summary": [
     "32 OK, 21 WARN, 0 FAIL (53 checks) \u2014 counts derived, not asserted"
    ],
-   "exit": "exit=0"
+   "exit": "exit 0"
   },
   "checkQuotations": {
    "command": "python3 scripts/check_quotations.py",
-   "exit": "exit=0"
+   "exit": "exit 0"
   }
  },
  "otherLeakSeen": {
   "where": "packages/polaris-dossier/src/waiting-sessions.test.ts:276",
   "what": "writes <tmpdir>/dossier-signoff-XXXXXX-outside-RAW.md beside its temporary directory and never removes it; found in the full-run TMPDIR listing",
   "left": {
-   ".com.google.Chrome.5QkqHW": 1,
-   ".com.google.Chrome.FXUdE3": 1,
-   ".com.google.Chrome.ZVuCTr": 1,
+   ".com.google.Chrome.HZviiw": 1,
    "dossier-signoff-XXXXXX-outside-RAW.md": 1,
    "node-compile-cache": 1
   }

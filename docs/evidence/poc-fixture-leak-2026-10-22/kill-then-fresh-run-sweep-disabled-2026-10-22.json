@@ -1,10 +1,10 @@
 {
  "tool": "kill_then_fresh_run.py",
- "treeCommit": "d59d76c36987f1f36580d741962266aa6f4537b6",
+ "treeCommit": "caef076acf9ea3b3d0130d81e7fb78e608617b6b",
  "mode": "mutant",
  "command": "npx vitest run --project @syzygy/three-surface-poc-app (TMPDIR=<emptied private directory>)",
  "sha256AtCommit": {
-  "vitest.config.ts": "19ce11f72818ed2c256812af7054540b64154b1a9a5c63d5a66adb5f797d5a42"
+  "vitest.config.ts": "8e8d698a90f37b1a340e4b9c6500981dda87bb56bd348980a648d1f3d89b625d"
  },
  "minCopiesBeforeKill": 3,
  "killedRun": {
@@ -12,7 +12,7 @@
   "sentToTheProcessGroupOfTheRunItStarted": true,
   "runFinishedBeforeTheSignal": false,
   "atKill": {
-   "secondsIntoTheRun": 32.7,
+   "secondsIntoTheRun": 16.8,
    "fixtureDirectories": 5,
    "ofDeadProcesses": {
     "count": 0,
@@ -37,8 +37,8 @@
     "copies": 3,
     "templates": 2,
     "ownerPids": [
-     3658466,
-     3658481
+     458382,
+     458394
     ]
    },
    "ofLiveProcesses": {
@@ -60,25 +60,20 @@
  },
  "freshRun": {
   "exit": 1,
-  "seconds": 319.3,
+  "seconds": 214.8,
   "numTotalTestSuites": 263,
-  "numPassedTests": 1102,
-  "numFailedTests": 2,
+  "numPassedTests": 1105,
+  "numFailedTests": 1,
   "numPendingTests": 2,
-  "numTotalTests": 1106,
+  "numTotalTests": 1108,
   "success": false,
   "testFiles": 90,
-  "testFilesFailed": 2,
+  "testFilesFailed": 1,
   "failing": [
    {
     "file": "three-surface-poc/src/fixture-directories.test.ts",
     "test": "fixture directories a killed run left behind (syzygy-bpyt.4.10) is registered as a global setup of the app project and of no other project, so it runs once per run",
     "firstErrorLine": "AssertionError: expected [] to deeply equal [ '@syzygy/three-surface-poc-app' ]"
-   },
-   {
-    "file": "three-surface-poc/src/polaris-generation/public-source-screening.test.ts",
-    "test": "the policy act gate fails closed the default port reads this checkout's chain: the latest recorded version loads the policy it names",
-    "firstErrorLine": "Error: STACK_TRACE_ERROR"
    }
   ],
   "left": {
@@ -88,8 +83,8 @@
     "copies": 3,
     "templates": 2,
     "ownerPids": [
-     3658466,
-     3658481
+     458382,
+     458394
     ]
    },
    "ofLiveProcesses": {
@@ -100,15 +95,17 @@
    "withoutAnOwnerPid": {
     "count": 0
    },
-   "otherEntries": 15
+   "otherEntries": 18
   }
  },
  "processesStillNamingThisTmpdir": [
+  459830,
+  459835,
+  459837,
+  459866,
+  459909,
+  459911,
   3659543,
-  3659557,
-  3659560,
-  3659583,
-  3659611,
-  3659614
+  3659583
  ]
 }

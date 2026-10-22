@@ -91,7 +91,7 @@
   },
   "conclusion": "no caller was found that drains nothing: 0 of 42, by the static scan plus the by-hand reading above, and 0 of 42 test files by the per-file run (perFileAtBase)",
   "atTheFinalCodeCommit": {
-   "treeCommit": "d59d76c36987f1f36580d741962266aa6f4537b6",
+   "treeCommit": "caef076acf9ea3b3d0130d81e7fb78e608617b6b",
    "filesNamingTheHelper": 45,
    "callers": 43,
    "scanFlaggedNoDrain": [
@@ -110,16 +110,20 @@
     }
    },
    "perFileRun": {
-    "treeCommit": "d59d76c36987f1f36580d741962266aa6f4537b6",
+    "treeCommit": "caef076acf9ea3b3d0130d81e7fb78e608617b6b",
     "testFilesInDirectory": 90,
     "fixtureUsingTestFiles": 43,
     "filesWithCopiesLeft": 0,
     "filesWithTemplatesLeft": 0,
     "copiesLeftTotal": 0,
     "templatesLeftTotal": 0,
-    "nonzeroExits": []
+    "nonzeroExits": [
+     "apps/three-surface-poc/src/polaris-authority-sweep.test.ts",
+     "apps/three-surface-poc/src/test-model-fixture.test.ts",
+     "apps/three-surface-poc/src/trajectory-narrowing.browser.test.ts"
+    ]
    },
-   "note": "main moved from 0d4d5098 to c55acb73753dc8d29d53b34b38b5d2af0cee6080 with PR 507, whose main.test.ts now calls buildFixtureModel and drains in afterAll. The six files the scan flagged are the six read by hand above; the scan flags the same six."
+   "note": "main moved from 0d4d5098 to 4b31531c0f7c687bac01d15d0d54eb8bfda80f00 with PR 507, whose main.test.ts now calls buildFixtureModel and drains in afterAll. The six files the scan flagged are the six read by hand above; the scan flags the same six."
   }
  },
  "interruptedRuns": {
