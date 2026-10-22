@@ -1,0 +1,49 @@
+{
+ "tool": "mutate_dist_compare.py",
+ "treeCommit": "e8cb47d5daef652f98c2b0d8aac9e981ba73cd21",
+ "control": {
+  "exit": 0,
+  "firstOutputLine": "{\"shippedFilesCompared\": 360, \"shippedFilesInOnlyOneTree\": [], \"shippedFilesDiffering\": 2, \"unexpectedDifferences\": [], \"differencesWithAnotherChangedLineCount\": [], \"expectedButIdentical\": [], \"testFilesCompared\": 306}",
+  "holds": true
+ },
+ "perturbations": 6,
+ "killed": 6,
+ "results": [
+  {
+   "perturbation": "an unrelated shipped file gains a line",
+   "exit": 1,
+   "outcome": "killed",
+   "firstOutputLine": "{\"shippedFilesCompared\": 360, \"shippedFilesInOnlyOneTree\": [], \"shippedFilesDiffering\": 3, \"unexpectedDifferences\": [\"apps/three-surface-poc/dist/routes.js\"], \"differencesWithAnotherChangedLineCount\": [], \"expectedButIdentical\": [], \"testFilesCompared\": 306}"
+  },
+  {
+   "perturbation": "a shipped file is missing from the head",
+   "exit": 1,
+   "outcome": "killed",
+   "firstOutputLine": "{\"shippedFilesCompared\": 359, \"shippedFilesInOnlyOneTree\": [\"apps/three-surface-poc/dist/launcher.js\"], \"shippedFilesDiffering\": 2, \"unexpectedDifferences\": [], \"differencesWithAnotherChangedLineCount\": [], \"expectedButIdentical\": [], \"testFilesCompared\": 306}"
+  },
+  {
+   "perturbation": "the expected file changes one line more than expected",
+   "exit": 1,
+   "outcome": "killed",
+   "firstOutputLine": "{\"shippedFilesCompared\": 360, \"shippedFilesInOnlyOneTree\": [], \"shippedFilesDiffering\": 2, \"unexpectedDifferences\": [], \"differencesWithAnotherChangedLineCount\": [\"apps/three-surface-poc/dist/poc-main.js\"], \"expectedButIdentical\": [], \"testFilesCompared\": 306}"
+  },
+  {
+   "perturbation": "the expected file is identical (the change is absent)",
+   "exit": 1,
+   "outcome": "killed",
+   "firstOutputLine": "{\"shippedFilesCompared\": 360, \"shippedFilesInOnlyOneTree\": [], \"shippedFilesDiffering\": 1, \"unexpectedDifferences\": [], \"differencesWithAnotherChangedLineCount\": [], \"expectedButIdentical\": [\"apps/three-surface-poc/dist/poc-main.js\"], \"testFilesCompared\": 306}"
+  },
+  {
+   "perturbation": "a core project file changes",
+   "exit": 1,
+   "outcome": "killed",
+   "firstOutputLine": "{\"shippedFilesCompared\": 360, \"shippedFilesInOnlyOneTree\": [], \"shippedFilesDiffering\": 3, \"unexpectedDifferences\": [\"packages/three-surface-poc-core/dist/index.js\"], \"differencesWithAnotherChangedLineCount\": [], \"expectedButIdentical\": [], \"testFilesCompared\": 306}"
+  },
+  {
+   "perturbation": "a declaration file changes",
+   "exit": 1,
+   "outcome": "killed",
+   "firstOutputLine": "{\"shippedFilesCompared\": 360, \"shippedFilesInOnlyOneTree\": [], \"shippedFilesDiffering\": 3, \"unexpectedDifferences\": [\"apps/three-surface-poc/dist/cli.d.ts\"], \"differencesWithAnotherChangedLineCount\": [], \"expectedButIdentical\": [], \"testFilesCompared\": 306}"
+  }
+ ]
+}

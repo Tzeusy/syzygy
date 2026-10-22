@@ -1,0 +1,17 @@
+{
+ "tool": "compare_test_lists.py",
+ "baseTree": "5837512f5be2cba4fa5caa7fd493b457ded744c8",
+ "headTree": "e8cb47d5daef652f98c2b0d8aac9e981ba73cd21",
+ "command": "npx vitest list",
+ "baseLines": 5013,
+ "headLines": 5019,
+ "baseDistinctNames": 5004,
+ "headDistinctNames": 5010,
+ "added": 6,
+ "removed": 0,
+ "addedByFile": {
+  "[@syzygy/three-surface-poc-app] apps/three-surface-poc/src/main.test.ts": 6
+ },
+ "removedByFile": {},
+ "testsLine": "Tests: +6 ~0 -0"
+}

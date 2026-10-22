@@ -708,6 +708,8 @@ export function buildProjectShape(input: ProjectShapeBuildInput): ProjectShape {
 
 // Owner-act provenance for a disclosed authority triple — the plan's
 // `owner-act` provenance kind, one entry per authority in `AUTHORITY_KINDS` order.
+// Test seam: no production code calls it; project-shape-model.test.ts pins the
+// provenance entries through it.
 export function ownerActProvenance(authority: AuthorityDisclosure): readonly { readonly kind: 'owner-act'; readonly source: string; readonly revision: string; readonly digest?: string }[] {
   return AUTHORITY_KINDS.map((kind) => {
     const state = authority.authorities.find((entry) => entry.authority === kind);

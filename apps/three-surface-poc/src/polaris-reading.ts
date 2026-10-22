@@ -2,7 +2,7 @@ import { createHash } from 'node:crypto';
 
 import { ARCHITECTURE_READING_PLAN, V1_READING_PLAN } from './polaris-reading-plan.js';
 
-export interface ReadingChapter {
+interface ReadingChapter {
   readonly id: string;
   readonly title: string;
   readonly body: string;
@@ -24,13 +24,14 @@ export interface ProjectReading {
   readonly figures?: readonly ReadingFigure[];
 }
 
-export interface SourceSpan { readonly start: number; readonly end: number }
-export interface ReadingPassage extends SourceSpan {
+interface SourceSpan { readonly start: number; readonly end: number }
+interface ReadingPassage extends SourceSpan {
   readonly heading?: boolean;
   readonly format?: 'flow';
   readonly relationships?: readonly { readonly from: SourceSpan; readonly to: SourceSpan; readonly body: SourceSpan }[];
 }
 
+// Test seam: exported type the tests name; production code uses it only inside this file.
 export interface ReadingPlan {
   readonly statementSha256: string;
   readonly figures?: readonly { readonly id: string; readonly title: string; readonly nodes: readonly SourceSpan[]; readonly evidence: readonly SourceSpan[] }[];
@@ -38,6 +39,7 @@ export interface ReadingPlan {
   readonly passages: readonly ReadingPassage[];
 }
 
+// Test seam: exported for the tests; production code reaches it only inside this file.
 /** A reviewed selection is valid only for the exact declaration it was read against.
  * No lexical heuristic decides whether a later paragraph is safe to omit. */
 export function applyReadingPlan(text: string, plan: ReadingPlan): ProjectReading {

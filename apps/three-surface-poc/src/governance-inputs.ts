@@ -32,8 +32,10 @@ import {
   type RecordingTagResolution,
 } from '@syzygy/three-surface-poc-core';
 
+// Test seam: exported for the tests; production code reaches it only inside this file.
 export const PWB_GOVERNANCE_ROOT = '.syzygy/governance';
 
+// Test seam: exported for the tests; production code reaches it only inside this file.
 // Paths relative to the repository root.
 export const PWB_AUTHORITY_ARTIFACTS: Readonly<Record<AuthorityKind, string>> = {
   consent: '.syzygy/governance/decisions/BUTLERS-PROJECT-SHAPE-OBSERVATION-CONSENT.md',
@@ -41,6 +43,7 @@ export const PWB_AUTHORITY_ARTIFACTS: Readonly<Record<AuthorityKind, string>> = 
   registry: '.syzygy/governance/declarations/adapter-registry/POLARIS-BUTLERS-PROJECT-SHAPE-OBSERVER-CANDIDATE.json',
 };
 
+// Parse anchor: scripts/{build_pwb_registry_machine_ceiling_amendment,record_pwb_registry_machine_ceiling_act,install_redis_sitting}.py find PWB_ACT_RECORDS by its `export const` text; keep the keyword.
 // The current act for each authority. Consent is the 2026-09-02 act; the
 // policy and registry acts are the 2026-10-02 behaviour-contract re-pin
 // acts, each superseding its own predecessor (the 2026-09-05 policy
@@ -63,11 +66,13 @@ export const PWB_ACT_RECORDS: Readonly<Record<AuthorityKind, string>> = {
   registry: '.syzygy/governance/decisions/PWB-OBSERVER-REGISTRY-MACHINE-CEILING-ACT.md',
 };
 
+// Parse anchor: scripts/{build_pwb_registry_machine_ceiling_amendment,record_pwb_registry_machine_ceiling_act}.py find PWB_SUPERSEDED_ACT_RECORDS by its `export const` text; keep the keyword.
 export const PWB_SUPERSEDED_ACT_RECORDS: Readonly<Record<Exclude<AuthorityKind, 'consent'>, string>> = {
   policy: '.syzygy/governance/decisions/PWB-SECRET-CLASSIFICATION-POLICY-PUBLIC-SOURCE-SCOPE-V3-ACT.md',
   registry: '.syzygy/governance/decisions/PWB-OBSERVER-REGISTRY-BEHAVIOR-CONTRACT-REPIN-ACT.md',
 };
 
+// Test seam: exported for the tests; production code reaches it only inside this file.
 // The one project this daemon is authorized to observe on behalf of.
 export const PWB_OBSERVING_PROJECT = 'project:syzygy' as const;
 
@@ -138,6 +143,7 @@ const PWB_AUTHORITY_EXPECTATIONS_BY_PROJECT: ReadonlyMap<string, (evaluationInst
   [PWB_OBSERVING_PROJECT, pwbSyzygyButlersExpectations],
 ]);
 
+// Test seam: exported for the tests; production code reaches it only inside this file.
 // Resolves the controlled evaluation input for `observingProject`. An
 // unknown project id fails closed: no expectations object is synthesized
 // or borrowed from another project (in particular, never a fallback to the
@@ -152,6 +158,7 @@ export function pwbAuthorityExpectationsForProject(observingProject: string, eva
   return build(evaluationInstant);
 }
 
+// Test seam: exported for the tests; no production code uses it.
 // Back-compat convenience for the one registered project (Syzygy). Existing
 // callers that never named an observing project keep resolving to exactly
 // the same object as before this seam existed.
@@ -431,4 +438,4 @@ export function loadBodyReadAuthorityInputs(options: LoadGovernanceInputsOptions
 // Shared with the walkthrough-judgment loader (task 4.6): the same
 // artifact/act-record/tag/lifecycle classification, so a judgment act is
 // read under exactly the rules the three body-read authorities are.
-export { batchReaderFor, classifyMissingRecord, lifecycleFor, actIdentityOf, defaultReadGitBlob, defaultRunGit, gitTreeReaders, readArtifact, readOptionalText, readText, resolveRecordingTag };
+export { batchReaderFor, classifyMissingRecord, lifecycleFor, actIdentityOf, defaultReadGitBlob, defaultRunGit, gitTreeReaders, readArtifact, readOptionalText, resolveRecordingTag };

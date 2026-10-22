@@ -1,0 +1,233 @@
+{
+ "tool": "mutate_wiring.py",
+ "testFile": "apps/three-surface-poc/src/main.test.ts",
+ "command": "npx vitest run apps/three-surface-poc/src/main.test.ts",
+ "treeCommit": "e8cb47d5daef652f98c2b0d8aac9e981ba73cd21",
+ "sha256AtCommit": {
+  "apps/three-surface-poc/src/poc-main.ts": "e09e8f203a186b41b2b5ba554fa2fc7f7018a02d7ca85085bff273ba7617bdc0",
+  "apps/three-surface-poc/src/main.test.ts": "1c9a992991cd200e18659fc0da170aae35b05e3de9eda29e34619e7d2fb382ab"
+ },
+ "control": {
+  "exit": 0,
+  "testsRun": 24,
+  "failing": [],
+  "holds": true
+ },
+ "requiredMutants": 9,
+ "requiredKilled": 9,
+ "mutants": 13,
+ "killed": 13,
+ "results": [
+  {
+   "id": "bound-locator-ignored",
+   "file": "apps/three-surface-poc/src/poc-main.ts",
+   "old": "(boundRepoRoot) => serveBoundRepository(boundRepoRoot, parsed.config, io, deps),",
+   "new": "(boundRepoRoot) => serveBoundRepository(repoRoot, parsed.config, io, deps),",
+   "exit": 1,
+   "outcome": "killed",
+   "testsRun": 24,
+   "failing": [
+    {
+     "test": "main(argv, io): the bound locator reaches every repository-rooted argument observes, builds, names, materializes and re-evaluates against the bound locator",
+     "firstErrorLine": "AssertionError: expected 'Syzygy Three-Surface POC: http://127.\u2026' to contain 'Observed repository: /bound/butlers-c\u2026'"
+    },
+    {
+     "test": "main(argv, io): the bound locator reaches every repository-rooted argument reads the exact requirement text from the bound repository",
+     "firstErrorLine": "AssertionError: expected [ '/tmp/poc-main-test-8ymz3z' ] to deeply equal [ '/bound/butlers-checkout' ]"
+    }
+   ]
+  },
+  {
+   "id": "reobserve-horizon-root",
+   "file": "apps/three-surface-poc/src/poc-main.ts",
+   "old": "observeHorizon: (pinned) => deps.observeGitHorizon(repoRoot, pinned),",
+   "new": "observeHorizon: (pinned) => deps.observeGitHorizon(io.cwd(), pinned),",
+   "exit": 1,
+   "outcome": "killed",
+   "testsRun": 24,
+   "failing": [
+    {
+     "test": "main(argv, io): the bound locator reaches every repository-rooted argument observes, builds, names, materializes and re-evaluates against the bound locator",
+     "firstErrorLine": "AssertionError: expected [ \u2026(4) ] to deeply equal [ \u2026(4) ]"
+    }
+   ]
+  },
+  {
+   "id": "session-clock",
+   "file": "apps/three-surface-poc/src/poc-main.ts",
+   "old": "      now: io.now,\n",
+   "new": "      now: () => new Date().toISOString(),\n",
+   "exit": 1,
+   "outcome": "killed",
+   "testsRun": 24,
+   "failing": [
+    {
+     "test": "main(argv, io): the bound locator reaches every repository-rooted argument observes, builds, names, materializes and re-evaluates against the bound locator",
+     "firstErrorLine": "AssertionError: expected [ \u2026(4) ] to deeply equal [ \u2026(4) ]"
+    }
+   ]
+  },
+  {
+   "id": "verbatim-reader-root",
+   "file": "apps/three-surface-poc/src/poc-main.ts",
+   "old": "gitBlobReaderFor(repoRoot)",
+   "new": "gitBlobReaderFor(io.cwd())",
+   "exit": 1,
+   "outcome": "killed",
+   "testsRun": 24,
+   "failing": [
+    {
+     "test": "main(argv, io): the bound locator reaches every repository-rooted argument reads the exact requirement text from the bound repository",
+     "firstErrorLine": "AssertionError: expected [ '/observer/syzygy' ] to deeply equal [ '/bound/butlers-checkout' ]"
+    }
+   ]
+  },
+  {
+   "id": "materialize-target-root",
+   "file": "apps/three-surface-poc/src/poc-main.ts",
+   "old": "targetRepoRoot: repoRoot,",
+   "new": "targetRepoRoot: io.cwd(),",
+   "exit": 1,
+   "outcome": "killed",
+   "testsRun": 24,
+   "failing": [
+    {
+     "test": "main(argv, io): the bound locator reaches every repository-rooted argument observes, builds, names, materializes and re-evaluates against the bound locator",
+     "firstErrorLine": "AssertionError: expected '/observer/syzygy' to be '/bound/butlers-checkout' // Object.is equality"
+    }
+   ]
+  },
+  {
+   "id": "revision-change-root",
+   "file": "apps/three-surface-poc/src/poc-main.ts",
+   "old": "deps.observeRevisionChange(repoRoot, from, to)",
+   "new": "deps.observeRevisionChange(io.cwd(), from, to)",
+   "exit": 1,
+   "outcome": "killed",
+   "testsRun": 24,
+   "failing": [
+    {
+     "test": "main(argv, io): the bound locator reaches every repository-rooted argument observes, builds, names, materializes and re-evaluates against the bound locator",
+     "firstErrorLine": "AssertionError: expected [ \u2026(4) ] to deeply equal [ \u2026(4) ]"
+    }
+   ]
+  },
+  {
+   "id": "state-dir-unresolved",
+   "file": "apps/three-surface-poc/src/poc-main.ts",
+   "old": "const stateDir = resolve(config.stateDir ?? join(",
+   "new": "const stateDir = (config.stateDir ?? join(",
+   "exit": 1,
+   "outcome": "killed",
+   "testsRun": 24,
+   "failing": [
+    {
+     "test": "main(argv, io): the bound locator reaches every repository-rooted argument resolves a relative --state-dir for the daemon and for the materialize action alike",
+     "firstErrorLine": "AssertionError: expected false to be true // Object.is equality"
+    }
+   ]
+  },
+  {
+   "id": "credential-provision-dropped",
+   "file": "apps/three-surface-poc/src/poc-main.ts",
+   "old": "servedResponses, () => credentialProvision, session.latest)",
+   "new": "servedResponses, () => undefined, session.latest)",
+   "exit": 1,
+   "outcome": "killed",
+   "testsRun": 24,
+   "failing": [
+    {
+     "test": "main(argv, io): the human pages carry what the daemon and the session know names the credential provision and the latest named re-evaluation, before and after a materialize",
+     "firstErrorLine": "AssertionError: expected '<!doctype html>\\n<html lang=\"en\">\\n<h\u2026' to contain 'credential minted;'"
+    }
+   ]
+  },
+  {
+   "id": "reevaluation-dropped",
+   "file": "apps/three-surface-poc/src/poc-main.ts",
+   "old": "servedResponses, () => credentialProvision, session.latest)",
+   "new": "servedResponses, () => credentialProvision)",
+   "exit": 1,
+   "outcome": "killed",
+   "testsRun": 24,
+   "failing": [
+    {
+     "test": "main(argv, io): the human pages carry what the daemon and the session know names the credential provision and the latest named re-evaluation, before and after a materialize",
+     "firstErrorLine": "AssertionError: expected '<!doctype html>\\n<html lang=\"en\">\\n<h\u2026' to contain 'Observed-project limb: no prior evalu\u2026'"
+    }
+   ]
+  },
+  {
+   "id": "materialize-seam-bypassed",
+   "file": "apps/three-surface-poc/src/poc-main.ts",
+   "old": "...deps.materializeRoutes({",
+   "new": "...materializeRoutes({",
+   "exit": 1,
+   "outcome": "killed",
+   "testsRun": 24,
+   "failing": [
+    {
+     "test": "main(argv, io): the bound locator reaches every repository-rooted argument observes, builds, names, materializes and re-evaluates against the bound locator",
+     "firstErrorLine": "AssertionError: expected undefined to be '/bound/butlers-checkout' // Object.is equality"
+    },
+    {
+     "test": "main(argv, io): the bound locator reaches every repository-rooted argument resolves a relative --state-dir for the daemon and for the materialize action alike",
+     "firstErrorLine": "AssertionError: expected undefined to be '/home/tze/GitHub/syzygy/.worktrees/pa\u2026' // Object.is equality"
+    },
+    {
+     "test": "main(argv, io): the human pages carry what the daemon and the session know names the credential provision and the latest named re-evaluation, before and after a materialize",
+     "firstErrorLine": "AssertionError: expected '<!doctype html>\\n<html lang=\"en\">\\n<h\u2026' to contain 'Observed-project limb: 1 changed, 0 a\u2026'"
+    }
+   ]
+  },
+  {
+   "id": "state-dir-digest-input",
+   "file": "apps/three-surface-poc/src/poc-main.ts",
+   "old": "createHash('sha256').update(repoRoot).digest('hex')",
+   "new": "createHash('sha256').update(io.cwd()).digest('hex')",
+   "exit": 1,
+   "outcome": "killed",
+   "testsRun": 24,
+   "failing": [
+    {
+     "test": "main(argv, io): serving defaults the state directory to a per-repository directory under the OS temp directory",
+     "firstErrorLine": "AssertionError: expected '/tmp/syzygy-three-surface-poc/2aa9133\u2026' to be '/tmp/syzygy-three-surface-poc/b33ccd7\u2026' // Object.is equality"
+    },
+    {
+     "test": "main(argv, io): the bound locator reaches every repository-rooted argument observes, builds, names, materializes and re-evaluates against the bound locator",
+     "firstErrorLine": "AssertionError: expected '/tmp/syzygy-three-surface-poc/2aa9133\u2026' to be '/tmp/syzygy-three-surface-poc/d70d61a\u2026' // Object.is equality"
+    }
+   ]
+  },
+  {
+   "id": "started-ignores-finish",
+   "file": "apps/three-surface-poc/src/main.test.ts",
+   "old": " && exitCode === undefined && Date.now() < deadline",
+   "new": " && Date.now() < deadline",
+   "exit": 1,
+   "outcome": "killed",
+   "testsRun": 24,
+   "failing": [
+    {
+     "test": "started(): the wait for main to serve reports a run that finished first, at once and by name",
+     "firstErrorLine": "AssertionError: expected 10002 to be less than 5000"
+    }
+   ]
+  },
+  {
+   "id": "started-ignores-bound",
+   "file": "apps/three-surface-poc/src/main.test.ts",
+   "old": " && exitCode === undefined && Date.now() < deadline",
+   "new": " && exitCode === undefined",
+   "exit": 1,
+   "outcome": "killed",
+   "testsRun": 24,
+   "failing": [
+    {
+     "test": "started(): the wait for main to serve gives up after its bound on a run that neither serves nor finishes",
+     "firstErrorLine": "Error: STACK_TRACE_ERROR"
+    }
+   ]
+  }
+ ]
+}

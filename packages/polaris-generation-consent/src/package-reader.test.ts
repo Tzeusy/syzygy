@@ -5,7 +5,7 @@ import { fileURLToPath } from 'node:url';
 import { afterEach, beforeAll, describe, expect, it, vi } from 'vitest';
 import { AdmissionRecordError } from './admission-record.js';
 import { inForceRecords } from './consent-ports.js';
-import { renderClassAct, renderPolicyAct, renderRecorderAct } from './recorder-fixtures.testkit.js';
+import { HEAD_FIELD_ALTERATION, PROSE_ALTERATIONS, renderClassAct, renderPolicyAct, renderRecorderAct } from './recorder-fixtures.testkit.js';
 import { DECISIONS_DIR, EGRESS_V2_INSTANCE, INSTANCES_DIR, POLICY_ACT_FILE, POLICY_PATH, createAdmissionRecordsPort, createPackageAdmissionReader, createPackageAdmissionRecordsPort, createPackagePolicyReader, readClassActState, readInForceEgress, readPolicyActChain, type PackageReaderFs } from './package-reader.js';
 
 // The citation allowlist, replaced by a map the allowlist cases fill and clear: every other case reads with no file allowlisted.
@@ -988,6 +988,51 @@ describe('every stem counts wherever it sits, save exact tooling citations in an
     const rel = 'PUBLIC-EGRESS-V2-NOTES.md';
     allow(rel, CITING);
     expect(await allReads(full({ [`${D}/${rel}`]: CITING }))).toEqual(AE);
+  });
+});
+
+// syzygy-bpyt.8.10, characterization: the field-parsed readers read a record's title and head field lines and nothing else, so a record
+// the recorder rendered still counts with its Effect widened, its limits section removed, the owner's selection replaced or a section
+// withdrawing the act appended to it. Only a recorder's `--check` line regenerates the whole record, and not every record has one in CI
+// (docs/evidence/consent-gate-recognition-models-2026-10-21.md). These literals pin today's verdicts: changing one changes what counts
+// as an act, which returns to the owner (GP-Q0).
+describe('altered prose in a field-parsed act record (characterization, syzygy-bpyt.8.10)', () => {
+  const MODULE = '.syzygy/governance/contracts/rfcs/RFC-0005/consent-egress-secrets.md';
+  const POLICY = JSON.stringify({ policyVersion: '1.2.0-public-source-candidate.1', publicSourceScope: { rules: [] } }, null, 1) + '\n';
+  const OBSERVATION = `${DECISIONS_DIR}/PUBLIC-REPO-ADMISSION-REDIS-OBSERVATION-ACT.md`;
+  const CLASS = `${DECISIONS_DIR}/RFC5-PROJECT-DOCUMENTATION-CLASS-AMENDMENT-ACT.md`;
+  const texts = { observation: '', policy: '', classAct: '', module: '' };
+  beforeAll(() => {
+    texts.observation = actText('consent-observation', REDIS_PATH, obsText());
+    texts.policy = renderPolicyAct(sha(POLICY), '2026-10-03', '2026-10-03T09:30:00Z', 1);
+    texts.module = readFileSync(fileURLToPath(new URL(`../../../${MODULE}`, import.meta.url)), 'utf8');
+    texts.classAct = renderClassAct(sha(texts.module), '2026-10-03', '2026-10-03T09:30:00Z');
+  });
+  const FAMILIES: ReadonlyArray<readonly [string, () => string, (act: string) => Promise<string>, string]> = [
+    ['the admission reader (parseAct)', () => texts.observation, async act => {
+      try {
+        return (await reader(world({ [OBSERVATION]: act })).read()).map(r => `${r.recordId}@${r.version} from ${new Date(r.inForceAt!).toISOString()}`).join('; ');
+      } catch (error) { if (error instanceof AdmissionRecordError) return 'refused'; throw error; }
+    }, 'PUBLIC-EGRESS-anthropic@0.1.0-candidate.7 from 2026-10-04T09:30:00.000Z; PUBLIC-OBS-REDIS-2026-10-03@0.1.0-candidate.7 from 2026-10-04T09:30:00.000Z'],
+    ['the policy chain (parsePolicyAct)', () => texts.policy, async act => {
+      const state = await readPolicyActChain({ root: '/r', fs: memoryFs({ ...world(), [POLICY_PATH]: POLICY, [`${DECISIONS_DIR}/${POLICY_ACT_FILE}`]: act }), now: AT });
+      return state.state === 'ok' ? `ok ${state.final.identity}` : state.state;
+    }, 'ok PWB-SECRET-CLASSIFICATION-POLICY-PUBLIC-SOURCE-SCOPE-APPROVAL-2026-10-03'],
+    ['the class act (readClassAct)', () => texts.classAct, async act => {
+      const state = await readClassActState({ root: '/r', fs: memoryFs({ [MODULE]: texts.module, [`${DECISIONS_DIR}/README.md`]: '# decisions\n', [CLASS]: act }), now: AT });
+      return state.state === 'ok' ? `ok ${state.act.identity}` : state.state;
+    }, 'ok RFC5-PROJECT-DOCUMENTATION-AMEND-2026-10-03'],
+  ];
+  it.each(FAMILIES)('%s counts the recorder\'s record, and still counts it with each prose alteration', async (_name, text, read, counts) => {
+    expect(await read(text())).toBe(counts);
+    for (const [name, alter] of PROSE_ALTERATIONS) {
+      expect(alter(text()), `${name} applies`).not.toBe(text());
+      expect(await read(alter(text())), name).toBe(counts);
+    }
+  });
+  it.each(FAMILIES)('%s refuses the record with a head field altered (the control)', async (_name, text, read) => {
+    expect(HEAD_FIELD_ALTERATION(text())).not.toBe(text());
+    expect(await read(HEAD_FIELD_ALTERATION(text()))).toBe('refused');
   });
 });
 

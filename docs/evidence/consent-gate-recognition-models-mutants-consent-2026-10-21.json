@@ -1,0 +1,374 @@
+{
+  "subject": {
+    "commit": "78cd0511d89c60b55e9d7285b904af4ca481eb7a",
+    "branch": "agent/syzygy-bpyt.8.10",
+    "fileSha256": {
+      "packages/polaris-dossier/src/gate-acts.test.ts": "ade93ec661de771cdaa432f66fe30eab0ed9eec194dff4067462c32d2c39a91e",
+      "packages/polaris-generation-consent/src/digest-bound-act.test.ts": "846f1195c1bec90197ba0a3dd58fa9a99edbcb94c7a4b82ccffb19189c2d925b",
+      "packages/polaris-generation-consent/src/package-reader.test.ts": "ea6aa505e8bd77004c4a5910dbe27a58588c668d370f7978660ba1d738b8b3c8",
+      "packages/polaris-generation-consent/src/package-reader.ts": "ebf5cbf468fd442289e11e390c9a7e3b20c39bdcd02e1a6214d096a52d0e3dc3",
+      "packages/polaris-generation-consent/src/recorder-fixtures.testkit.ts": "3576a99df9c6da7cec515632b362f237d59028069d5f239e983bc337b31e6fc3"
+    },
+    "testFileSha256": {
+      "packages/polaris-generation-consent/src/digest-bound-act.test.ts": "846f1195c1bec90197ba0a3dd58fa9a99edbcb94c7a4b82ccffb19189c2d925b",
+      "packages/polaris-generation-consent/src/package-reader.test.ts": "ea6aa505e8bd77004c4a5910dbe27a58588c668d370f7978660ba1d738b8b3c8"
+    }
+  },
+  "runnerPath": "scripts/rule6_mutation_runner.py",
+  "runnerSha256": "82576bda6eaf9382be62308458ad895c8f4118704eecd968d834ef75c0799f06",
+  "runner": "single-occurrence textual replacement of `old` by `new` in `file`, then `npx vitest run --project <project> <testFiles>`; killed = at least one failed test; file restored from git after each run",
+  "project": "@syzygy/polaris-generation-consent",
+  "ranAt": "2026-10-21T17:31:22+00:00",
+  "mutants": [
+    {
+      "id": "field-admission-reads-effect",
+      "file": "packages/polaris-generation-consent/src/package-reader.ts",
+      "old": "  one(text, /^Project identity: `(project:syzygy)`$/gm);\n  return { type: type === 'consent-observation'",
+      "new": "  one(text, /^Project identity: `(project:syzygy)`$/gm);\n  if (!text.includes(\"\\n## Effect\\n\\nThe record is the owner's effective \")) refuse();\n  return { type: type === 'consent-observation'",
+      "tests": [
+        "packages/polaris-generation-consent/src/package-reader.test.ts",
+        "packages/polaris-generation-consent/src/digest-bound-act.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 344,
+      "note": "the admission reader (parseAct) made to read its effect prose; the effect-widened case in package-reader.test.ts should fail"
+    },
+    {
+      "id": "field-admission-reads-limits",
+      "file": "packages/polaris-generation-consent/src/package-reader.ts",
+      "old": "  one(text, /^Project identity: `(project:syzygy)`$/gm);\n  return { type: type === 'consent-observation'",
+      "new": "  one(text, /^Project identity: `(project:syzygy)`$/gm);\n  if (!text.includes('\\n## What this act does not authorize\\n')) refuse();\n  return { type: type === 'consent-observation'",
+      "tests": [
+        "packages/polaris-generation-consent/src/package-reader.test.ts",
+        "packages/polaris-generation-consent/src/digest-bound-act.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 344,
+      "note": "the admission reader (parseAct) made to read its limits prose; the limits-removed case in package-reader.test.ts should fail"
+    },
+    {
+      "id": "field-admission-reads-selection",
+      "file": "packages/polaris-generation-consent/src/package-reader.ts",
+      "old": "  one(text, /^Project identity: `(project:syzygy)`$/gm);\n  return { type: type === 'consent-observation'",
+      "new": "  one(text, /^Project identity: `(project:syzygy)`$/gm);\n  if (/^\\| \"(?:Decline|Reject)\\b/m.test(text)) refuse();\n  return { type: type === 'consent-observation'",
+      "tests": [
+        "packages/polaris-generation-consent/src/package-reader.test.ts",
+        "packages/polaris-generation-consent/src/digest-bound-act.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 344,
+      "note": "the admission reader (parseAct) made to read its selection prose; the selection-replaced case in package-reader.test.ts should fail"
+    },
+    {
+      "id": "field-admission-reads-withdrawal",
+      "file": "packages/polaris-generation-consent/src/package-reader.ts",
+      "old": "  one(text, /^Project identity: `(project:syzygy)`$/gm);\n  return { type: type === 'consent-observation'",
+      "new": "  one(text, /^Project identity: `(project:syzygy)`$/gm);\n  if (text.includes('\\n## Withdrawal\\n')) refuse();\n  return { type: type === 'consent-observation'",
+      "tests": [
+        "packages/polaris-generation-consent/src/package-reader.test.ts",
+        "packages/polaris-generation-consent/src/digest-bound-act.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 344,
+      "note": "the admission reader (parseAct) made to read its withdrawal prose; the withdrawal-appended case in package-reader.test.ts should fail"
+    },
+    {
+      "id": "field-policy-reads-effect",
+      "file": "packages/polaris-generation-consent/src/package-reader.ts",
+      "old": "  return { file: form.file, identity: act.identity, type: act.type, artifact: POLICY_PATH,",
+      "new": "  if (!text.includes(\"\\n## Effect\\n\\nThe policy `\")) refuse();\n  return { file: form.file, identity: act.identity, type: act.type, artifact: POLICY_PATH,",
+      "tests": [
+        "packages/polaris-generation-consent/src/package-reader.test.ts",
+        "packages/polaris-generation-consent/src/digest-bound-act.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 344,
+      "note": "the policy chain (parsePolicyAct) made to read its effect prose; the effect-widened case in package-reader.test.ts should fail"
+    },
+    {
+      "id": "field-policy-reads-limits",
+      "file": "packages/polaris-generation-consent/src/package-reader.ts",
+      "old": "  return { file: form.file, identity: act.identity, type: act.type, artifact: POLICY_PATH,",
+      "new": "  if (!text.includes('\\n## What this act does not authorize\\n')) refuse();\n  return { file: form.file, identity: act.identity, type: act.type, artifact: POLICY_PATH,",
+      "tests": [
+        "packages/polaris-generation-consent/src/package-reader.test.ts",
+        "packages/polaris-generation-consent/src/digest-bound-act.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 344,
+      "note": "the policy chain (parsePolicyAct) made to read its limits prose; the limits-removed case in package-reader.test.ts should fail"
+    },
+    {
+      "id": "field-policy-reads-selection",
+      "file": "packages/polaris-generation-consent/src/package-reader.ts",
+      "old": "  return { file: form.file, identity: act.identity, type: act.type, artifact: POLICY_PATH,",
+      "new": "  if (/^\\| \"(?:Decline|Reject)\\b/m.test(text)) refuse();\n  return { file: form.file, identity: act.identity, type: act.type, artifact: POLICY_PATH,",
+      "tests": [
+        "packages/polaris-generation-consent/src/package-reader.test.ts",
+        "packages/polaris-generation-consent/src/digest-bound-act.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 344,
+      "note": "the policy chain (parsePolicyAct) made to read its selection prose; the selection-replaced case in package-reader.test.ts should fail"
+    },
+    {
+      "id": "field-policy-reads-withdrawal",
+      "file": "packages/polaris-generation-consent/src/package-reader.ts",
+      "old": "  return { file: form.file, identity: act.identity, type: act.type, artifact: POLICY_PATH,",
+      "new": "  if (text.includes('\\n## Withdrawal\\n')) refuse();\n  return { file: form.file, identity: act.identity, type: act.type, artifact: POLICY_PATH,",
+      "tests": [
+        "packages/polaris-generation-consent/src/package-reader.test.ts",
+        "packages/polaris-generation-consent/src/digest-bound-act.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 344,
+      "note": "the policy chain (parsePolicyAct) made to read its withdrawal prose; the withdrawal-appended case in package-reader.test.ts should fail"
+    },
+    {
+      "id": "field-class-reads-effect",
+      "file": "packages/polaris-generation-consent/src/package-reader.ts",
+      "old": "  if (identity !== `RFC5-PROJECT-DOCUMENTATION-AMEND-${date}` || type !== 'contract-amendment'",
+      "new": "  if (!text.includes(\"\\n## Effect\\n\\nRFC5-14's closed content-class vocabulary\")) refuse();\n  if (identity !== `RFC5-PROJECT-DOCUMENTATION-AMEND-${date}` || type !== 'contract-amendment'",
+      "tests": [
+        "packages/polaris-generation-consent/src/package-reader.test.ts",
+        "packages/polaris-generation-consent/src/digest-bound-act.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 344,
+      "note": "the class act (readClassAct) made to read its effect prose; the effect-widened case in package-reader.test.ts should fail"
+    },
+    {
+      "id": "field-class-reads-limits",
+      "file": "packages/polaris-generation-consent/src/package-reader.ts",
+      "old": "  if (identity !== `RFC5-PROJECT-DOCUMENTATION-AMEND-${date}` || type !== 'contract-amendment'",
+      "new": "  if (!text.includes('\\n## What this act does not authorize\\n')) refuse();\n  if (identity !== `RFC5-PROJECT-DOCUMENTATION-AMEND-${date}` || type !== 'contract-amendment'",
+      "tests": [
+        "packages/polaris-generation-consent/src/package-reader.test.ts",
+        "packages/polaris-generation-consent/src/digest-bound-act.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 344,
+      "note": "the class act (readClassAct) made to read its limits prose; the limits-removed case in package-reader.test.ts should fail"
+    },
+    {
+      "id": "field-class-reads-selection",
+      "file": "packages/polaris-generation-consent/src/package-reader.ts",
+      "old": "  if (identity !== `RFC5-PROJECT-DOCUMENTATION-AMEND-${date}` || type !== 'contract-amendment'",
+      "new": "  if (/^\\| \"(?:Decline|Reject)\\b/m.test(text)) refuse();\n  if (identity !== `RFC5-PROJECT-DOCUMENTATION-AMEND-${date}` || type !== 'contract-amendment'",
+      "tests": [
+        "packages/polaris-generation-consent/src/package-reader.test.ts",
+        "packages/polaris-generation-consent/src/digest-bound-act.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 344,
+      "note": "the class act (readClassAct) made to read its selection prose; the selection-replaced case in package-reader.test.ts should fail"
+    },
+    {
+      "id": "field-class-reads-withdrawal",
+      "file": "packages/polaris-generation-consent/src/package-reader.ts",
+      "old": "  if (identity !== `RFC5-PROJECT-DOCUMENTATION-AMEND-${date}` || type !== 'contract-amendment'",
+      "new": "  if (text.includes('\\n## Withdrawal\\n')) refuse();\n  if (identity !== `RFC5-PROJECT-DOCUMENTATION-AMEND-${date}` || type !== 'contract-amendment'",
+      "tests": [
+        "packages/polaris-generation-consent/src/package-reader.test.ts",
+        "packages/polaris-generation-consent/src/digest-bound-act.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 344,
+      "note": "the class act (readClassAct) made to read its withdrawal prose; the withdrawal-appended case in package-reader.test.ts should fail"
+    },
+    {
+      "id": "field-registry-reads-effect",
+      "file": "packages/polaris-generation-consent/src/package-reader.ts",
+      "old": "    if (form.template === undefined) recorderLines(text);",
+      "new": "    if (form.template === undefined) { recorderLines(text); if (!text.includes(\"\\n## Effect\\n\\nThe entry is registered as \")) refuse(); }",
+      "tests": [
+        "packages/polaris-generation-consent/src/package-reader.test.ts",
+        "packages/polaris-generation-consent/src/digest-bound-act.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 344,
+      "note": "the registry git-source form (no template) made to read its effect prose; the effect-widened case in digest-bound-act.test.ts should fail"
+    },
+    {
+      "id": "field-registry-reads-limits",
+      "file": "packages/polaris-generation-consent/src/package-reader.ts",
+      "old": "    if (form.template === undefined) recorderLines(text);",
+      "new": "    if (form.template === undefined) { recorderLines(text); if (!text.includes('\\n## What this act does not authorize\\n')) refuse(); }",
+      "tests": [
+        "packages/polaris-generation-consent/src/package-reader.test.ts",
+        "packages/polaris-generation-consent/src/digest-bound-act.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 344,
+      "note": "the registry git-source form (no template) made to read its limits prose; the limits-removed case in digest-bound-act.test.ts should fail"
+    },
+    {
+      "id": "field-registry-reads-selection",
+      "file": "packages/polaris-generation-consent/src/package-reader.ts",
+      "old": "    if (form.template === undefined) recorderLines(text);",
+      "new": "    if (form.template === undefined) { recorderLines(text); if (/^\\| \"(?:Decline|Reject)\\b/m.test(text)) refuse(); }",
+      "tests": [
+        "packages/polaris-generation-consent/src/package-reader.test.ts",
+        "packages/polaris-generation-consent/src/digest-bound-act.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 344,
+      "note": "the registry git-source form (no template) made to read its selection prose; the selection-replaced case in digest-bound-act.test.ts should fail"
+    },
+    {
+      "id": "field-registry-reads-withdrawal",
+      "file": "packages/polaris-generation-consent/src/package-reader.ts",
+      "old": "    if (form.template === undefined) recorderLines(text);",
+      "new": "    if (form.template === undefined) { recorderLines(text); if (text.includes('\\n## Withdrawal\\n')) refuse(); }",
+      "tests": [
+        "packages/polaris-generation-consent/src/package-reader.test.ts",
+        "packages/polaris-generation-consent/src/digest-bound-act.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 344,
+      "note": "the registry git-source form (no template) made to read its withdrawal prose; the withdrawal-appended case in digest-bound-act.test.ts should fail"
+    },
+    {
+      "id": "field-admission-date-unanchored",
+      "file": "packages/polaris-generation-consent/src/package-reader.ts",
+      "old": "  const date = one(text, /^Date: (\\d{4}-\\d{2}-\\d{2})$/gm);\n  const at = Date.parse(`${date}T00:00:00Z`);\n  if (!Number.isSafeInteger(at) || new Date(at).toISOString().slice(0, 10) !== date) refuse();\n  if (type !== form.type",
+      "new": "  const date = one(text, /^Date: (\\d{4}-\\d{2}-\\d{2})/gm);\n  const at = Date.parse(`${date}T00:00:00Z`);\n  if (!Number.isSafeInteger(at) || new Date(at).toISOString().slice(0, 10) !== date) refuse();\n  if (type !== form.type",
+      "tests": [
+        "packages/polaris-generation-consent/src/package-reader.test.ts",
+        "packages/polaris-generation-consent/src/digest-bound-act.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 344,
+      "note": "the admission reader (parseAct): the Date field's end anchor dropped, so a trailing alteration is read as the date; the head-field control should fail"
+    },
+    {
+      "id": "field-policy-date-unanchored",
+      "file": "packages/polaris-generation-consent/src/package-reader.ts",
+      "old": "date: one(text, /^Date: (\\d{4}-\\d{2}-\\d{2})$/gm) };",
+      "new": "date: one(text, /^Date: (\\d{4}-\\d{2}-\\d{2})/gm) };",
+      "tests": [
+        "packages/polaris-generation-consent/src/package-reader.test.ts",
+        "packages/polaris-generation-consent/src/digest-bound-act.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 344,
+      "note": "the policy chain (parsePolicyAct): the Date field's end anchor dropped, so a trailing alteration is read as the date; the head-field control should fail"
+    },
+    {
+      "id": "field-class-date-unanchored",
+      "file": "packages/polaris-generation-consent/src/package-reader.ts",
+      "old": "  if (!text.startsWith(CLASS_TITLE + '\\n')) refuse();\n  const date = one(text, /^Date: (\\d{4}-\\d{2}-\\d{2})$/gm)",
+      "new": "  if (!text.startsWith(CLASS_TITLE + '\\n')) refuse();\n  const date = one(text, /^Date: (\\d{4}-\\d{2}-\\d{2})/gm)",
+      "tests": [
+        "packages/polaris-generation-consent/src/package-reader.test.ts",
+        "packages/polaris-generation-consent/src/digest-bound-act.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 344,
+      "note": "the class act (readClassAct): the Date field's end anchor dropped, so a trailing alteration is read as the date; the head-field control should fail"
+    },
+    {
+      "id": "field-registry-date-unanchored",
+      "file": "packages/polaris-generation-consent/src/package-reader.ts",
+      "old": "    else fromTemplate(form.template, text);\n    const date = one(text, /^Date: (\\d{4}-\\d{2}-\\d{2})$/gm)",
+      "new": "    else fromTemplate(form.template, text);\n    const date = one(text, /^Date: (\\d{4}-\\d{2}-\\d{2})/gm)",
+      "tests": [
+        "packages/polaris-generation-consent/src/package-reader.test.ts",
+        "packages/polaris-generation-consent/src/digest-bound-act.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 344,
+      "note": "the registry git-source form (no template): the Date field's end anchor dropped, so a trailing alteration is read as the date; the head-field control should fail"
+    },
+    {
+      "id": "input-effect-widened-matches-nothing-consent",
+      "file": "packages/polaris-generation-consent/src/recorder-fixtures.testkit.ts",
+      "old": "(\\n## (?:Effect|What this records)\\n\\n)",
+      "new": "(\\n## (?:Effects|What this records)\\n\\n)",
+      "tests": [
+        "packages/polaris-generation-consent/src/package-reader.test.ts",
+        "packages/polaris-generation-consent/src/digest-bound-act.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 4,
+      "totalTests": 344,
+      "note": "the effect-widened alteration made a no-op; its applies guard (or the control verdict) should fail in package-reader.test.ts, digest-bound-act.test.ts"
+    },
+    {
+      "id": "input-limits-removed-matches-nothing-consent",
+      "file": "packages/polaris-generation-consent/src/recorder-fixtures.testkit.ts",
+      "old": "\\n## What this (?:act does not authorize|does not do)\\n",
+      "new": "\\n## What this (?:act does not authorise|does not do)\\n",
+      "tests": [
+        "packages/polaris-generation-consent/src/package-reader.test.ts",
+        "packages/polaris-generation-consent/src/digest-bound-act.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 4,
+      "totalTests": 344,
+      "note": "the limits-removed alteration made a no-op; its applies guard (or the control verdict) should fail in package-reader.test.ts, digest-bound-act.test.ts"
+    },
+    {
+      "id": "input-selection-replaced-matches-nothing-consent",
+      "file": "packages/polaris-generation-consent/src/recorder-fixtures.testkit.ts",
+      "old": "[/^\\| \"[^\"\\n]*\" \\| \"/m, ",
+      "new": "[/^\\| \"[^\"\\n]*\" \\|\\| \"/m, ",
+      "tests": [
+        "packages/polaris-generation-consent/src/package-reader.test.ts",
+        "packages/polaris-generation-consent/src/digest-bound-act.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 4,
+      "totalTests": 344,
+      "note": "the selection-replaced alteration made a no-op; its applies guard (or the control verdict) should fail in package-reader.test.ts, digest-bound-act.test.ts"
+    },
+    {
+      "id": "input-withdrawal-appended-matches-nothing-consent",
+      "file": "packages/polaris-generation-consent/src/recorder-fixtures.testkit.ts",
+      "old": "(text: string) => `${text}\\n## Withdrawal\\n\\nThe owner withdraws this act; it no longer counts.\\n`]",
+      "new": "(text: string) => text]",
+      "tests": [
+        "packages/polaris-generation-consent/src/package-reader.test.ts",
+        "packages/polaris-generation-consent/src/digest-bound-act.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 4,
+      "totalTests": 344,
+      "note": "the withdrawal-appended alteration made a no-op; its applies guard (or the control verdict) should fail in package-reader.test.ts, digest-bound-act.test.ts"
+    },
+    {
+      "id": "input-date-field-altered-matches-nothing-consent",
+      "file": "packages/polaris-generation-consent/src/recorder-fixtures.testkit.ts",
+      "old": "'$1 [altered]'",
+      "new": "'$1'",
+      "tests": [
+        "packages/polaris-generation-consent/src/package-reader.test.ts",
+        "packages/polaris-generation-consent/src/digest-bound-act.test.ts"
+      ],
+      "outcome": "killed",
+      "failedTests": 4,
+      "totalTests": 344,
+      "note": "the date-field-altered alteration made a no-op; its applies guard (or the control verdict) should fail in package-reader.test.ts, digest-bound-act.test.ts"
+    }
+  ]
+}

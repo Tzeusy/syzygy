@@ -70,7 +70,7 @@ export async function writeDossierRun(destination: string, files: ReadonlyMap<st
 }
 
 /** Reads a pipeline run record (`{ result, sources }`, as the synthetic demo writes it) and an optional topic map. */
-export async function renderDossierRun(runFile: string, out: string, topicsFile?: string): Promise<string> {
+async function renderDossierRun(runFile: string, out: string, topicsFile?: string): Promise<string> {
   const run = parseBoundedJson(await readFile(resolve(runFile), 'utf8'), RUN_LIMITS) as { result?: PipelineResult; sources?: GenerationSource[] };
   if (run === null || typeof run !== 'object' || run.result === undefined || !Array.isArray(run.sources)) throw new Error('invalid-run-record');
   const topics = topicsFile === undefined ? undefined

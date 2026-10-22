@@ -21,6 +21,7 @@ export function parseGithubUrl(input: string): GithubTarget {
   return { owner, repo, ...(ref === undefined ? {} : { ref }), url: `https://github.com/${owner}/${repo}`, repositoryId: `github:${owner}:${repo.replace(/[_.]/gu, ch => (ch === '_' ? '__' : '_d'))}` };
 }
 
+// Test seam: exported for the tests; production code reaches it only inside this file.
 /** Picks the commit for a ref (or HEAD) from `git ls-remote` output. An annotated tag resolves to the commit it peels to. */
 export function pinRevision(lsRemoteOutput: string, ref?: string): { readonly revision: string; readonly resolvedRef: string } {
   const rows = lsRemoteOutput.split('\n').filter(Boolean).map(line => {
@@ -35,6 +36,7 @@ export function pinRevision(lsRemoteOutput: string, ref?: string): { readonly re
   throw new Error('revision-not-found');
 }
 
+// Test seam: exported for the tests; production code reaches it only inside this file.
 /** Metadata only: ref names and commit ids, never a repository body. Runs with a minimal environment. */
 export function gitLsRemote(url: string, allowProtocol = 'https'): string {
   const home = mkdtempSync(join(tmpdir(), 'syzygy-lsremote-'));
@@ -46,15 +48,17 @@ export function gitLsRemote(url: string, allowProtocol = 'https'): string {
 
 const fileOverride = (allowProtocol: string): readonly string[] => (allowProtocol === 'file' ? ['-c', 'protocol.file.allow=always'] : []);
 
-export type AdmissionKind = 'observation-consent' | 'public-source-policy' | 'egress-consent';
-export interface AdmissionRequirement { readonly kind: AdmissionKind; readonly repositoryId: string; readonly revision: string; readonly url: string; readonly needs: string }
-export type AdmissionAnswer = { readonly satisfied: true; readonly record: string } | { readonly satisfied: false; readonly why: string };
+type AdmissionKind = 'observation-consent' | 'public-source-policy' | 'egress-consent';
+interface AdmissionRequirement { readonly kind: AdmissionKind; readonly repositoryId: string; readonly revision: string; readonly url: string; readonly needs: string }
+type AdmissionAnswer = { readonly satisfied: true; readonly record: string } | { readonly satisfied: false; readonly why: string };
+// Test seam: exported type the tests name; production code uses it only inside this file.
 export interface AdmissionRecordsPort {
   readonly source: string;
   /** The repository ids of every observation record whose `Upstream:` is exactly this canonical URL. The trigger never derives the id it admits under: it uses the one record's id, and refuses on zero or several. */
   readonly repositoryIdsFor: (url: string) => Promise<readonly string[]>;
   readonly check: (requirement: AdmissionRequirement) => Promise<AdmissionAnswer>;
 }
+// Test seam: exported for the tests; production code reaches it only inside this file.
 /** With no store wired, no record exists, and the report says so. */
 export const noAdmissionRecords: AdmissionRecordsPort = {
   source: 'no record store is wired into this command',
@@ -62,6 +66,7 @@ export const noAdmissionRecords: AdmissionRecordsPort = {
   check: async () => ({ satisfied: false, why: 'no record found: no admission record store is wired' }),
 };
 
+// Test seam: exported for the tests; production code reaches it only inside this file.
 export function admissionRequirements(target: GithubTarget, revision: string): readonly AdmissionRequirement[] {
   const base = { repositoryId: target.repositoryId, revision, url: target.url };
   return [
@@ -72,7 +77,7 @@ export function admissionRequirements(target: GithubTarget, revision: string): r
 }
 
 /** A satisfied answer is exactly `satisfied: true` with a non-empty record string; any other shape from a record store is an unmet gate, never a pass. */
-export function soundAnswer(answer: unknown): AdmissionAnswer {
+function soundAnswer(answer: unknown): AdmissionAnswer {
   const a = answer as { satisfied?: unknown; record?: unknown; why?: unknown } | null;
   if (a === null || typeof a !== 'object') return { satisfied: false, why: 'malformed admission answer: not an object' };
   if (a.satisfied === true) {
@@ -99,7 +104,7 @@ export interface TriggerPorts {
   readonly include?: readonly string[];
   readonly exclude?: readonly string[];
 }
-export type TriggerOutcome =
+type TriggerOutcome =
   | { readonly state: 'invalid-input'; readonly reason: string }
   | { readonly state: 'unresolved-revision'; readonly reason: string }
   | { readonly state: 'admission-missing'; readonly target: GithubTarget; readonly revision: string; readonly resolvedRef: string; readonly source: string;

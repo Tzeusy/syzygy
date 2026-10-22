@@ -3,18 +3,20 @@ import { execFileSync } from 'node:child_process';
 import { realpathSync } from 'node:fs';
 import { join, resolve } from 'node:path';
 
+// Test seam: exported for the tests; production code reaches it only inside this file.
 export const PWB_APPROVED_REPOSITORY_LOCATOR = '/home/tze/GitHub/butlers';
 
 export type PwbRepositoryBinding =
   | { readonly kind: 'bound'; readonly locator: string; readonly gitCommonDirectory: string }
   | { readonly kind: 'rejected'; readonly reason: 'locator-mismatched' | 'git-common-directory-mismatched' | 'binding-unreadable' };
 
-export interface ResolvePwbRepositoryBindingOptions {
+interface ResolvePwbRepositoryBindingOptions {
   readonly approvedLocator?: string;
   readonly realpath?: (path: string) => string;
   readonly runGit?: (root: string, args: readonly string[]) => string;
 }
 
+// Test seam: exported type the tests name; production code uses it only inside this file.
 export interface GitObservation {
   readonly revision: string;
   readonly committerInstant: string;
@@ -92,7 +94,7 @@ export interface GitHorizonObservation {
   readonly addedSources: number;
 }
 
-export interface ObserveGitHorizonOptions {
+interface ObserveGitHorizonOptions {
   readonly runGit?: (root: string, args: readonly string[]) => string;
 }
 

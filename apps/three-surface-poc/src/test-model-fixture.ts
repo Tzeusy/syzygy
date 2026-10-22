@@ -1,3 +1,5 @@
+// Test support: exports with no non-test importer are consumed by tests only, by design.
+
 import { execFileSync } from 'node:child_process';
 import { cpSync, mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
@@ -21,7 +23,7 @@ function git(root: string, args: readonly string[]): string {
   }).trim();
 }
 
-export interface FixtureRepo {
+interface FixtureRepo {
   readonly repoRoot: string;
   readonly revision: string;
 }
@@ -128,7 +130,7 @@ function workItemRow(
 /** Builds one shared model with real, observed code-structure and
  * work-item regions, using an injected work-item query so the fixture
  * needs no live Dolt server. */
-export interface FixtureModelOptions {
+interface FixtureModelOptions {
   /** Supplied → the model's `projectShape` is built through the P1 gate and
    * the injected runner; absent → `not-evaluated`, as the pre-PWB fixture. */
   readonly projectShape?: ProjectShapeModelInput;

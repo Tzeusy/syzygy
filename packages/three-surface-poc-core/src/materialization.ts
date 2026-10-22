@@ -459,6 +459,8 @@ function defaultRunClose(
   );
 }
 
+// Test seam: no route or command calls it yet; materialization.test.ts pins its
+// verdicts (closed and cleared, no materialization, close failure keeps the record).
 export function rollbackMaterializedWorkItem(input: RollbackMaterializedWorkItemInput): RollbackResult {
   let existing: MaterializationRecord | null;
   try {
