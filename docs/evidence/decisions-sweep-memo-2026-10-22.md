@@ -217,12 +217,6 @@ tests, the timeout raised to 120,000 ms) records it:
 | M5 slack eager | 489 | 0 | 6,895 ms | 40.24 |
 | M22b admission paths restored | 489 | 0 | 7,012 ms | 38.44 |
 
-The equivalence relied on for both is the same answers: every one of the
-489 tests passes under each mutant once the timeout is 120,000 ms, and the
-only test that failed at 5,000 ms is one that times out unmutated under
-load too. The added time (2.5 s and 2.7 s on that test here) comes from the
-added work: M5's loose fold of every swept file in the sweeps that are not
-loose, and M22b's four path tests per file in the admission text sweep.
 So M5 is recorded as equivalent, as its note in the record says before the
 run: the loose spelling is the same pure function of the text wherever it is
 first computed, and only the point where a fold that throws would throw
@@ -467,26 +461,13 @@ review criteria are the lead's to discharge; this report does not.
 
 ## Residuals
 
-- **Pre-existing tests that time out under load, tracked as
-  `syzygy-bpyt.4.13`.** [Observed] Every failure below is vitest's
-  "Test timed out in 5000ms", with the duration vitest reported:
-  - "the policy port and the strict policy chain agree on every world in
-    the fixture set, at every instant" (`package-reader.test.ts`): 7,302 ms
-    on the new tree and 9,688 ms on the old one at a load of about 50;
-    5,753 ms at this branch's head at a load of 34.26; 5,027 ms on `main`
-    `4b31531c` at 41.21. It passed in 4,347 ms unmutated at 38.65 under the
-    120,000 ms timeout.
-  - "strict act reads > policy chain: absent without acts; refused for a
-    missing version 1, equal or earlier instants, equal arguments, a
-    supersession that does not name version 1, or other policy bytes"
-    (same file): 5,934 ms on the old tree at about 50, and 5,573 ms at the
-    head at 34.26.
-  - On `main` `4b31531c` at 41.21, also two egress version 2 record tests
-    of the same file: 5,789 ms and 5,207 ms.
-  - Two `start-gates.test.ts` init tests in one full dossier-project run at
-    about 50; that file alone passes, 104 of 104, at 36.62.
-
-  They decide nothing about this change and are not changed here.
+- **A pre-existing test that times out under load.** [Observed] The
+  policy-chain agreement test in `package-reader.test.ts` took 4,347 ms
+  unmutated at a one-minute load of 38.65 and failed vitest's default
+  5,000 ms timeout on both trees at a load of about 50 (7,302 ms new,
+  9,688 ms old; on the old tree a second test of that file timed out too).
+  It decides nothing about this change; it is reported as a follow-up and
+  not changed here.
 - **M5's cost on the sweeps that are not loose has no test.** The cost test
   reads a loose sweep; an eager loose fold on the admission, policy or class
   sweep adds one fold per file there, at most three still, which the test's bound
