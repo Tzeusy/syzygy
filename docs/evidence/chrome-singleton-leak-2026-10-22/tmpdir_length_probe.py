@@ -9,7 +9,9 @@ the launch dies with a signal beyond that. The fix leaves Chrome's temp director
 pointed it at the profile cut the limit to 39 bytes and was dropped). This probe measures the limit, to show it
 did not move: for each length it makes a directory of exactly that many bytes under <private-parent>, runs one
 launch through `launch_close.mjs` with TMPDIR set to it, and records whether the launch succeeded and the first
-line of the error otherwise.
+line of the error otherwise. A close that throws the drain error (the documented retention under host load) is not a verdict on the
+socket path: the launch is tried up to 3 times and, if every try ends so, the length is recorded as inconclusive because of load
+and counted as neither launched nor failed.
 
 <mode> is `head` (the tree as committed) or `base` (the call that removes the Chrome singleton directory
 dropped from removeBrowserProfile, rebuilt, and restored and rebuilt afterwards: the `singleton-directory-kept`
@@ -34,6 +36,8 @@ KEPT = '  if (singleton !== undefined) void singleton;\n'
 SPAWN_OPTIONS = "{ stdio: ['ignore', 'ignore', 'pipe'], detached: true },"
 SPAWN_WITH_PROFILE_TMPDIR = "{ stdio: ['ignore', 'ignore', 'pipe'], detached: true, env: { ...process.env, TMPDIR: profile } },"
 LENGTHS = [30, 36, 38, 39, 40, 41, 42, 44, 50, 56, 62, 64, 65, 66, 67, 70, 80]
+ATTEMPTS = 3
+LOAD_SIGNATURE = 'drain did not verify'
 HERE = pathlib.Path(__file__).resolve().parent
 git = lambda *a: subprocess.run(['git', *a], cwd=WT, capture_output=True, text=True, check=True).stdout.strip()
 assert git('rev-parse', 'HEAD') == git('rev-parse', COMMIT), 'the worktree must be at <tree-commit>'
@@ -61,11 +65,17 @@ try:
         directory = PARENT / ('x' * (length - len(str(PARENT)) - 1))
         assert len(str(directory)) == length, (length, len(str(directory)))
         directory.mkdir()
-        ran = subprocess.run(['node', str(HERE / 'launch_close.mjs'), str(WT), '1'], cwd=WT, capture_output=True, text=True, env={**os.environ, 'TMPDIR': str(directory)}, timeout=300)
-        row = json.loads(ran.stdout)['rows'][0] if ran.returncode == 0 else {'error': ran.stderr.strip().splitlines()[:1]}
-        rows.append({'tmpdirLength': length, 'launched': 'error' not in row, 'firstErrorLine': row.get('error', '')[:200] if isinstance(row.get('error'), str) else row.get('error')})
+        for attempt in range(1, ATTEMPTS + 1):  # a close that misses its drain deadline under host load says nothing about the socket path: try again
+            ran = subprocess.run(['node', str(HERE / 'launch_close.mjs'), str(WT), '1'], cwd=WT, capture_output=True, text=True, env={**os.environ, 'TMPDIR': str(directory)}, timeout=300)
+            row = json.loads(ran.stdout)['rows'][0] if ran.returncode == 0 else {'error': ran.stderr.strip().splitlines()[:1]}
+            if 'error' not in row or LOAD_SIGNATURE not in str(row['error']):
+                break
+        error = row.get('error')
+        rows.append({'tmpdirLength': length, 'launched': 'error' not in row, 'attempts': attempt,
+                     'inconclusiveLoad': error is not None and LOAD_SIGNATURE in str(error),
+                     'firstErrorLine': error[:200] if isinstance(error, str) else error})
         shutil.rmtree(directory, ignore_errors=True)
-        print(length, 'launched' if rows[-1]['launched'] else 'FAILED', flush=True)
+        print(length, 'launched' if rows[-1]['launched'] else 'LOAD' if rows[-1]['inconclusiveLoad'] else 'FAILED', flush=True)
 finally:
     (WT / SRC).write_text(original)
     rebuilt = build()
@@ -73,8 +83,9 @@ finally:
     shutil.rmtree(PARENT, ignore_errors=True)
 assert hashlib.sha256((WT / SRC).read_bytes()).hexdigest() == digest, 'source not restored'
 ok = [r['tmpdirLength'] for r in rows if r['launched']]
-bad = [r['tmpdirLength'] for r in rows if not r['launched']]
-record |= {'lengthsTried': LENGTHS, 'rows': rows, 'longestLaunched': max(ok) if ok else None, 'shortestFailed': min(bad) if bad else None,
-           'monotone': not ok or not bad or max(ok) < min(bad)}
+bad = [r['tmpdirLength'] for r in rows if not r['launched'] and not r['inconclusiveLoad']]
+inconclusive = [r['tmpdirLength'] for r in rows if r['inconclusiveLoad']]
+record |= {'lengthsTried': LENGTHS, 'attemptsPerLength': ATTEMPTS, 'rows': rows, 'longestLaunched': max(ok) if ok else None, 'shortestFailed': min(bad) if bad else None,
+           'inconclusiveBecauseOfLoad': inconclusive, 'monotone': not ok or not bad or max(ok) < min(bad)}
 OUT.write_text(json.dumps(record, indent=1) + '\n')
 print(json.dumps({k: record[k] for k in ('mode', 'longestLaunched', 'shortestFailed', 'monotone')}))
