@@ -39,6 +39,12 @@ describe('a recorder template', () => {
 const AMBIGUOUS_LINE = '[^\\r\\n]*\\S[^\\r\\n]*';
 /** `run()`, stopped by a throw once it has run `ms` milliseconds: V8 interrupts a regular expression that is still backtracking. */
 const within = <T>(ms: number, run: () => T): T => vm.runInNewContext('run()', { run }, { timeout: ms }) as T;
+/** Every sequence of exactly `n` of `alphabet`'s members. */
+function exactly(alphabet: readonly string[], n: number): string[] {
+  let layer = [''];
+  for (let i = 0; i < n; i += 1) layer = layer.flatMap(prefix => alphabet.map(c => prefix + c));
+  return layer;
+}
 /** Every sequence of `alphabet`'s members up to `max` long. */
 function sequences(alphabet: readonly string[], max: number): string[] {
   const all = [''];
@@ -175,63 +181,62 @@ describe('a line of two line slots, read once (syzygy-bpyt.8.21)', () => {
     expect(row('a" | "b')).toEqual({ a: 'a', b: 'b' });
     expect(row('a" | "b" | "c')).toEqual({ a: 'a" | "b', b: 'c' });   // the longest label the line allows
     expect(row('a" | "b" | "  ')).toEqual({ a: 'a', b: 'b" | "  ' });   // a blank description moves the split left
-    expect(row(' a" | "　b')).toEqual({ a: ' a', b: '　b' });
+    expect(row(' a" | "\u3000b')).toEqual({ a: ' a', b: '\u3000b' });
     for (const inner of ['a" | "', 'a" | "  ', '" | "b', '  " | "b', 'a" | "b\r', 'a" | "\rb']) expect(row(inner), JSON.stringify(inner)).toBeNull();
     expect(templateFields(t, '| "a" | "b" |x\nEND\n')).toBeNull();
-    expect(differences(ROW, LINES, ['a" | "b', 'a" | "b" | "c', 'a" | "b" | "  ', ' a" | "　b', 'a" | "', '" | "b'].map(inner => `| "${inner}" |\nEND\n`))).toEqual([]);
+    expect(differences(ROW, LINES, ['a" | "b', 'a" | "b" | "c', 'a" | "b" | "  ', ' a" | "\u3000b', 'a" | "', '" | "b'].map(inner => `| "${inner}" |\nEND\n`))).toEqual([]);
   });
-  // Every row of up to seven characters drawn from a non-space, a space, the separator's two marks and both breaks: 335,923 rows,
-  // in eight parts so that none runs long under load.
-  const CHARS = ['x', ' ', '"', '|', '\r', '\n'];
+  // Every row of up to seven characters drawn from a non-space, a space, the separator's two marks and both breaks (335,923 rows),
+  // and of up to six tokens drawn from a non-space, a space, both breaks, the separator and the closing mark (55,987), each on a line
+  // followed by more and as the last line. In parts of at most 55,987 rows, so that none runs long under load.
+  const CHARS = ['x', ' ', '"', '|', '\r', '\n'], TOKENS = ['x', ' ', '\r', '\n', '" | "', '" |'];
+  /** The rows of up to `max` members of `alphabet` in parts: the shorter rows, then the longest by their first member. */
+  const rowParts = (what: string, alphabet: readonly string[], max: number) => [
+    [`${what}: up to ${max - 1}`, () => sequences(alphabet, max - 1)] as const,
+    ...alphabet.map(first => [`${what}: ${max}, starting ${JSON.stringify(first)}`, () => exactly(alphabet, max - 1).map(s => first + s)] as const),
+  ];
+  const PARTS = [...rowParts('characters', CHARS, 7), ...rowParts('tokens', TOKENS, 6)];
+  it('splits every row into parts: 335,923 of characters and 55,987 of tokens', () => {
+    const sizes = PARTS.map(([part, rows]) => [part.split(':')[0], rows().length] as const);
+    expect(sizes.filter(([what]) => what === 'characters').reduce((n, [, size]) => n + size, 0)).toBe(335_923);
+    expect(sizes.filter(([what]) => what === 'tokens').reduce((n, [, size]) => n + size, 0)).toBe(55_987);
+  }, 30_000);
+  it.each(PARTS)('reads every row of %s as the plain read does', (_part, rows) => {
+    const inners = rows();
+    expect(differences(ROW, LINES, inners.map(inner => `| "${inner}" |\nEND\n`))).toEqual([]);
+    expect(differences('| "{a}" | "{b}" |', LINES, inners.map(inner => `| "${inner}" |`))).toEqual([]);
+  }, 30_000);
+  // Read once: the row then a repeated earlier slot, the row as the last line, a slot before the pair, a slot after it that pairs with
+  // the second. Not read once: a repeated label or description, a pair that is not two line slots, slots split by a break.
   it.each([
-    ['up to six', ''], ...CHARS.map(first => [`seven, starting ${JSON.stringify(first)}`, first] as const),
-  ] as const)('reads every row of %s characters as the plain read does, on a line followed by more and as the last line', (_name, first) => {
-    const inners = first === '' ? sequences(CHARS, 6) : sequences(CHARS, 6).filter(s => s.length === 6).map(s => first + s);
-    expect(inners).toHaveLength(first === '' ? 55_987 : 46_656);
-    expect(differences(ROW, LINES, inners.map(inner => `| "${inner}" |\nEND\n`))).toEqual([]);
-    expect(differences('| "{a}" | "{b}" |', LINES, inners.map(inner => `| "${inner}" |`))).toEqual([]);
-  }, 30_000);
-  it('reads every row of up to six separators, partial closings, non-spaces, spaces and breaks as the plain read does', () => {
-    const inners = sequences(['x', ' ', '\r', '\n', '" | "', '" |'], 6);
-    expect(inners).toHaveLength(55_987);
-    expect(differences(ROW, LINES, inners.map(inner => `| "${inner}" |\nEND\n`))).toEqual([]);
-    expect(differences('| "{a}" | "{b}" |', LINES, inners.map(inner => `| "${inner}" |`))).toEqual([]);
-  }, 30_000);
-  it('reads the same slots as the plain read from templates whose pair is read once, and from those whose pair is not', () => {
-    // Read once: the row then a repeated earlier slot, the row as the last line, a slot before the pair, a slot after it that pairs
-    // with the second. Not: a repeated label or description, a pair that is not two line slots, slots split by a break.
-    const templates: readonly (readonly [string, Readonly<Record<string, string>>])[] = [
-      ['On {d} it opened "{o}" by\n| "{a}" | "{b}" |\nAgain {d}.\n', { d: SLOT.date, o: SLOT.line, ...LINES }],
-      ['| "{a}" | "{b}" |', LINES],
-      ['{o} | "{a}" | "{b}" |\n', { o: SLOT.line, ...LINES }],
-      ['| "{a}" | "{b}" | {c}\n', { c: SLOT.line, ...LINES }],
-      ['| "{a}" | "{b}" |\nAgain: {a}\n', LINES],
-      ['| "{a}" | "{b}" |\nAgain: {b}\n', LINES],
-      ['{d} | "{a}"\n', { d: SLOT.date, a: SLOT.line }],
-      ['{a} | {m}\n', { a: SLOT.line, m: '[\\s\\S]+' }],
-      ['{a};\n{b}.\n', LINES],
-      ['{a}\r{b}\n', LINES],
-    ];
-    const rnd = seeded(8021), pieces = ['x', 'y', ' ', '　', '\t', '"', '|', '" | "', '" |', ' | ', ';', '.', '2026-10-22'];
+    ['the row, then a repeated earlier slot', 'On {d} it opened "{o}" by\n| "{a}" | "{b}" |\nAgain {d}.\n', { d: SLOT.date, o: SLOT.line, ...LINES }],
+    ['the row as the last line', '| "{a}" | "{b}" |', LINES],
+    ['a slot before the pair', '{o} | "{a}" | "{b}" |\n', { o: SLOT.line, ...LINES }],
+    ['a slot after the pair', '| "{a}" | "{b}" | {c}\n', { c: SLOT.line, ...LINES }],
+    ['a repeated label', '| "{a}" | "{b}" |\nAgain: {a}\n', LINES],
+    ['a repeated description', '| "{a}" | "{b}" |\nAgain: {b}\n', LINES],
+    ['a date before a line slot', '{d} | "{a}"\n', { d: SLOT.date, a: SLOT.line }],
+    ['a slot that may hold breaks', '{a} | {m}\n', { a: SLOT.line, m: '[\\s\\S]+' }],
+    ['slots split by an LF', '{a};\n{b}.\n', LINES],
+    ['slots split by a CR', '{a}\r{b}\n', LINES],
+  ] as const)('reads the same slots as the plain read from 3,000 records of a template with %s', (_name, template, slots) => {
+    const rnd = seeded(8021 + template.length), pieces = ['x', 'y', ' ', '\u3000', '\t', '"', '|', '" | "', '" |', ' | ', ';', '.', '2026-10-22'];
     const edits = ['x', ' ', '"', '|', '\r', '\n', ''];
     const value = () => Array.from({ length: Math.floor(rnd() * 6) }, () => pick(rnd, pieces)).join('');
-    let matched = 0, refused = 0;
-    for (const [template, slots] of templates) {
-      const t = recorderTemplate(template, slots);
-      const texts = Array.from({ length: 3000 }, () => {
-        let text = t.render(Object.fromEntries(Object.keys(slots).map(slot => [slot, rnd() < 0.2 ? '2026-10-22' : value()])));
-        // The repeated slot is rendered the same twice; half the texts are then edited once or twice.
-        for (let n = rnd() < 0.5 ? 0 : 1 + Math.floor(rnd() * 2); n > 0; n -= 1) {
-          const at = Math.floor(rnd() * (text.length + 1));
-          text = text.slice(0, at) + pick(rnd, edits) + text.slice(at + (rnd() < 0.5 ? 0 : 1));
-        }
-        return text;
-      });
-      expect(differences(template, slots, texts)).toEqual([]);
-      for (const text of texts) if (templateFields(t, text) === null) refused += 1; else matched += 1;
-    }
-    expect(matched).toBeGreaterThan(3000);
-    expect(refused).toBeGreaterThan(3000);
+    const t = recorderTemplate(template, slots);
+    const texts = Array.from({ length: 3000 }, () => {
+      let text = t.render(Object.fromEntries(Object.keys(slots).map(slot => [slot, rnd() < 0.2 ? '2026-10-22' : value()])));
+      // A repeated slot is rendered the same twice; half the texts are then edited once or twice.
+      for (let n = rnd() < 0.5 ? 0 : 1 + Math.floor(rnd() * 2); n > 0; n -= 1) {
+        const at = Math.floor(rnd() * (text.length + 1));
+        text = text.slice(0, at) + pick(rnd, edits) + text.slice(at + (rnd() < 0.5 ? 0 : 1));
+      }
+      return text;
+    });
+    expect(differences(template, slots, texts)).toEqual([]);
+    const read = texts.filter(text => templateFields(t, text) !== null).length;
+    expect(read).toBeGreaterThan(100);
+    expect(texts.length - read).toBeGreaterThan(100);
   }, 30_000);
   it('refuses within a second a record whose 120 KB label holds the separator, wherever it fails', () => {
     // The plain read retried the description once per separator in the label: about 16 s on a record of this size
