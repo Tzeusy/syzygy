@@ -1,0 +1,97 @@
+{
+  "old": "c55acb73753dc8d29d53b34b38b5d2af0cee6080",
+  "new": "ee89766ad99b248338e72d1ff5538f60d6c60e17",
+  "changedTestFiles": 11,
+  "summary": "Tests: +7 ~9 -0",
+  "rows": [
+    {
+      "file": "apps/three-surface-poc/src/polaris-generation/dossier-render.test.ts",
+      "added": [
+        "'multi-page dossier render' > 'refuses an input carrying both a pipeline result and an operator-agent run, or neither'"
+      ],
+      "removed": [],
+      "modified": []
+    },
+    {
+      "file": "apps/three-surface-poc/src/polaris-generation/page-sink.test.ts",
+      "added": [
+        "'page sinks under the version-3 renderCondition' > 'the operator-agent entry the CLI injects writes every canary string entity-encoded, never raw, on every page under the policy CSP'"
+      ],
+      "removed": [],
+      "modified": [
+        "'page sinks under the version-3 renderCondition' > 'the dossier renderer writes the canary body entity-encoded, never raw, on every page under the policy CSP'"
+      ]
+    },
+    {
+      "file": "packages/cap1-system/src/daemon-entry-unchanged.system.test.ts",
+      "added": [],
+      "removed": [],
+      "modified": [
+        "'daemon entry: the one changed input, `dossier` as the first argument' > 'the daemon path never loads the POC app: each import is dynamic and inside the `dossier` or `polaris` branch'"
+      ]
+    },
+    {
+      "file": "packages/polaris-dossier/src/brief.test.ts",
+      "added": [
+        "'brief: issued' > 'carries its own writing guidance, byte-identical to the author-prompt cut it replaced'"
+      ],
+      "removed": [],
+      "modified": []
+    },
+    {
+      "file": "packages/polaris-dossier/src/close.test.ts",
+      "added": [],
+      "removed": [],
+      "modified": []
+    },
+    {
+      "file": "packages/polaris-dossier/src/execution-flags.test.ts",
+      "added": [],
+      "removed": [],
+      "modified": []
+    },
+    {
+      "file": "packages/polaris-dossier/src/no-egress.test.ts",
+      "added": [],
+      "removed": [],
+      "modified": []
+    },
+    {
+      "file": "packages/polaris-dossier/src/render.test.ts",
+      "added": [],
+      "removed": [],
+      "modified": [
+        "'render' > 'renders an exempt body only through a renderer that declares the page-sink contract and pages that carry the CSP'",
+        "'render' > 'refuses when the stored passed draft revision is altered, after the deadline, and when the output lacks the disclosure'",
+        "'render' > 'lists the pinned tree with the object reader the CLI is given'",
+        "'render' > 'is the `render` command of the CLI, which refuses when the composition root injects no renderer'",
+        "'rendered-design review (S9b)' > 'retires a counted design review when a render changes anything outside the region'",
+        "'rendered-design review (S9b)' > 'refuses a render whose statement of the design review leaks outside the region, and writes no site'",
+        "'rendered-design review (S9b)' > 'drives the design review through the CLI'"
+      ]
+    },
+    {
+      "file": "packages/polaris-dossier/src/run-evidence.test.ts",
+      "added": [],
+      "removed": [],
+      "modified": []
+    },
+    {
+      "file": "packages/polaris-dossier/src/waiting-sessions.test.ts",
+      "added": [],
+      "removed": [],
+      "modified": []
+    },
+    {
+      "file": "packages/polaris-generation-core/src/island-boundary.test.ts",
+      "added": [
+        "'the syzygy CLI and the parked provider island' > 'lists twenty island modules, each a file in the tree'",
+        "'the syzygy CLI and the parked provider island' > 'resolves every workspace import the CLI reaches, dynamic ones included'",
+        "'the syzygy CLI and the parked provider island' > 'reaches no island module from the CLI entry'",
+        "'the syzygy CLI and the parked provider island' > 'follows every edge but one, and that one still reaches the island'"
+      ],
+      "removed": [],
+      "modified": []
+    }
+  ]
+}

@@ -1,6 +1,6 @@
 import { createHash, createHmac, randomBytes } from 'node:crypto';
 
-import { SOURCE_ID_MAX_LENGTH, SOURCE_ID_PATTERN, SOURCE_TEXT_MAX_LENGTH } from './provider-draft.js';
+import { SOURCE_ID_MAX_LENGTH, SOURCE_ID_PATTERN, SOURCE_TEXT_MAX_LENGTH } from './source-model.js';
 import { bodyLines, redactionMarker } from './secret-redaction.js';
 
 /** In-process capabilities only: JSON cannot mint either trust marker. No key, persistence or caller-provided boolean is involved. */

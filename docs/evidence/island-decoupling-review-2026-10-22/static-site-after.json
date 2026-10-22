@@ -1,0 +1,2433 @@
+{
+  "summary": {
+    "root": "/tmp/claude-1000/-home-tze-GitHub-syzygy/9297eba3-858b-4aca-a313-05ea0802ad02/scratchpad/rev-510/new",
+    "unfollowed": [],
+    "reached": 83,
+    "edges": 274,
+    "islandReached": [],
+    "intoIsland": [],
+    "rootImporters": [],
+    "problems": [],
+    "notes": [
+      {
+        "file": "apps/three-surface-poc/src/polaris-generation/svg-inert.ts",
+        "kind": "process-spawn",
+        "line": 57,
+        "text": "TOKEN.exec(svg)"
+      },
+      {
+        "file": "packages/polaris-generation-core/src/parse-json.ts",
+        "kind": "process-spawn",
+        "line": 89,
+        "text": "number.exec(text)"
+      },
+      {
+        "file": "packages/polaris-generation-core/src/generation-source.ts",
+        "kind": "process-spawn",
+        "line": 339,
+        "text": "/(?:\\r\\n|\\r|\\n)$/u.exec(line)"
+      },
+      {
+        "file": "packages/polaris-generation-core/src/dossier-evaluation.ts",
+        "kind": "process-spawn",
+        "line": 180,
+        "text": "token.exec(html)"
+      },
+      {
+        "file": "packages/polaris-generation-core/src/dossier-evaluation.ts",
+        "kind": "process-spawn",
+        "line": 213,
+        "text": "/^Read source (.+)$/u.exec(attrs.get('aria-label') ?? '')"
+      },
+      {
+        "file": "packages/polaris-generation-core/src/dossier-evaluation.ts",
+        "kind": "process-spawn",
+        "line": 234,
+        "text": "close.exec(html)"
+      },
+      {
+        "file": "packages/polaris-generation-core/src/quote-fidelity.ts",
+        "kind": "process-spawn",
+        "line": 96,
+        "text": "pattern.exec(text)"
+      },
+      {
+        "file": "packages/polaris-generation-core/src/quote-fidelity.ts",
+        "kind": "process-spawn",
+        "line": 96,
+        "text": "pattern.exec(text)"
+      },
+      {
+        "file": "packages/polaris-generation-core/src/quote-fidelity.ts",
+        "kind": "process-spawn",
+        "line": 180,
+        "text": "/^\\s*\"/u.exec(text.slice(i + leadIn.length))"
+      },
+      {
+        "file": "packages/polaris-generation-core/src/quote-locate.ts",
+        "kind": "process-spawn",
+        "line": 137,
+        "text": "/^\\s*\"/u.exec(text.slice(at + leadIn.length))"
+      },
+      {
+        "file": "packages/polaris-generation-core/src/public-source-classification.ts",
+        "kind": "process-spawn",
+        "line": 263,
+        "text": "/^<!doctype html>\\s*<html(?:\\s[^>]*)?>\\s*<head>\\s*/iu.exec(before)"
+      },
+      {
+        "file": "packages/polaris-generation-core/src/public-source-classification.ts",
+        "kind": "process-spawn",
+        "line": 266,
+        "text": "/\\scontent\\s*=\\s*\"([^\"]*)\"/iu.exec(meta[0])"
+      },
+      {
+        "file": "packages/polaris-generation-core/src/public-source-classification.ts",
+        "kind": "process-spawn",
+        "line": 266,
+        "text": "/\\scontent\\s*=\\s*'([^']*)'/iu.exec(meta[0])"
+      },
+      {
+        "file": "packages/polaris-generation-core/src/secret-redaction.ts",
+        "kind": "process-spawn",
+        "line": 119,
+        "text": "prefix.exec(text)"
+      },
+      {
+        "file": "packages/polaris-generation-core/src/secret-redaction.ts",
+        "kind": "process-spawn",
+        "line": 119,
+        "text": "prefix.exec(text)"
+      },
+      {
+        "file": "packages/polaris-generation-core/src/secret-redaction.ts",
+        "kind": "process-spawn",
+        "line": 162,
+        "text": "search.exec(text)"
+      },
+      {
+        "file": "packages/polaris-generation-core/src/secret-redaction.ts",
+        "kind": "process-spawn",
+        "line": 168,
+        "text": "sticky.exec(text)"
+      },
+      {
+        "file": "packages/three-surface-poc-core/src/code-structure.ts",
+        "kind": "process-spawn",
+        "line": 116,
+        "text": "execFileSync('git', ['--no-optional-locks', '-C', repoRoot, ...args], {\n    maxBuffer: 256 * 1024 * 1024,\n    stdio: ['ignore', 'pipe', 'ignore'],\n  })"
+      },
+      {
+        "file": "packages/three-surface-poc-core/src/work-items.ts",
+        "kind": "process-spawn",
+        "line": 141,
+        "text": "execFileSync(\n    'bd',\n    ['--readonly', '--json', '-C', repoRoot, 'sql', sql],\n    { encoding: 'utf8', maxBuffer: 256 * 1024 * 1024, stdio: ['ignore', 'pipe', 'pipe'] },\n  )"
+      },
+      {
+        "file": "packages/three-surface-poc-core/src/worker-change-observation.ts",
+        "kind": "process-spawn",
+        "line": 66,
+        "text": "execFileSync('git', ['--no-optional-locks', '-C', repoRoot, ...args], {\n    encoding: 'utf8',\n    maxBuffer: 64 * 1024 * 1024,\n    stdio: ['ignore', 'pipe', 'pipe'],\n  })"
+      },
+      {
+        "file": "packages/three-surface-poc-core/src/trajectory-projection.ts",
+        "kind": "process-spawn",
+        "line": 56,
+        "text": "/^(\\d{4})-(\\d{2})-(\\d{2})T([01]\\d|2[0-3]):([0-5]\\d):([0-5]\\d)(?:\\.(\\d{1,9}))?(Z|[+-](?:[01]\\d|2[0-3]):[0-5]\\d)$/.exec(value ?? '')"
+      },
+      {
+        "file": "packages/three-surface-poc-core/src/materialization.ts",
+        "kind": "process-spawn",
+        "line": 217,
+        "text": "execFileSync('bd', ['--readonly', '--json', '-C', repoRoot, 'sql', sql], {\n    encoding: 'utf8',\n    maxBuffer: 64 * 1024 * 1024,\n    stdio: ['ignore', 'pipe', 'pipe'],\n  })"
+      },
+      {
+        "file": "packages/three-surface-poc-core/src/materialization.ts",
+        "kind": "process-spawn",
+        "line": 229,
+        "text": "execFileSync(\n    'bd',\n    [\n      '-C',\n      repoRoot,\n      'create',\n      packet.title,\n      '--description',\n      packet.description,\n      '--labels',\n      packet.labels.join(','),\n      '-"
+      },
+      {
+        "file": "packages/three-surface-poc-core/src/materialization.ts",
+        "kind": "process-spawn",
+        "line": 455,
+        "text": "execFileSync(\n    'bd',\n    ['-C', repoRoot, 'close', beadId, '--reason', reason, '--actor', attribution, '--json'],\n    { encoding: 'utf8', maxBuffer: 16 * 1024 * 1024, stdio: ['ignore', 'pipe', 'pip"
+      },
+      {
+        "file": "packages/three-surface-poc-core/src/owner-act-record.ts",
+        "kind": "process-spawn",
+        "line": 117,
+        "text": "BACKTICKED.exec(value)"
+      },
+      {
+        "file": "packages/three-surface-poc-core/src/owner-act-record.ts",
+        "kind": "process-spawn",
+        "line": 133,
+        "text": "BACKTICKED.exec(value)"
+      },
+      {
+        "file": "packages/three-surface-poc-core/src/owner-act-record.ts",
+        "kind": "process-spawn",
+        "line": 152,
+        "text": "/^(supersedes|revokes) `([^`]+)`/.exec(value)"
+      },
+      {
+        "file": "packages/three-surface-poc-core/src/owner-act-record.ts",
+        "kind": "process-spawn",
+        "line": 161,
+        "text": "/^this act (supersedes|revokes), for the `([^`]+)` role only, the \\d{4}-\\d{2}-\\d{2} act recorded at `([^`]+)`\\./.exec(value)"
+      },
+      {
+        "file": "packages/three-surface-poc-core/src/owner-act-record.ts",
+        "kind": "process-spawn",
+        "line": 173,
+        "text": "BACKTICKED.exec(value)"
+      },
+      {
+        "file": "packages/three-surface-poc-core/src/owner-act-record.ts",
+        "kind": "process-spawn",
+        "line": 196,
+        "text": "/```text\\r?\\n([\\s\\S]*?)```/.exec(ceremony)"
+      },
+      {
+        "file": "packages/three-surface-poc-core/src/owner-act-record.ts",
+        "kind": "process-spawn",
+        "line": 212,
+        "text": "/^`([^`]+)`/.exec(value)"
+      },
+      {
+        "file": "packages/three-surface-poc-core/src/authority-artifact-fields.ts",
+        "kind": "process-spawn",
+        "line": 71,
+        "text": "/^`\\(([^`]*)\\)`$/.exec(raw)"
+      },
+      {
+        "file": "packages/three-surface-poc-core/src/authority-artifact-fields.ts",
+        "kind": "process-spawn",
+        "line": 84,
+        "text": "/^`([^`]*)`$/.exec(raw)"
+      },
+      {
+        "file": "packages/three-surface-poc-core/src/body-read-authority.ts",
+        "kind": "process-spawn",
+        "line": 549,
+        "text": "PHRASE.exec(phrase.value)"
+      },
+      {
+        "file": "packages/three-surface-poc-core/src/git-tree.ts",
+        "kind": "process-spawn",
+        "line": 32,
+        "text": "LS_TREE_RECORD.exec(record)"
+      },
+      {
+        "file": "packages/three-surface-poc-core/src/project-shape-manifest.ts",
+        "kind": "process-spawn",
+        "line": 179,
+        "text": "/^\\s{0,3}(`{3,}|~{3,})/.exec(line)"
+      },
+      {
+        "file": "packages/three-surface-poc-core/src/project-shape-manifest.ts",
+        "kind": "process-spawn",
+        "line": 201,
+        "text": "REFERENCE_DEFINITION.exec(line)"
+      },
+      {
+        "file": "packages/three-surface-poc-core/src/project-shape-manifest.ts",
+        "kind": "process-spawn",
+        "line": 302,
+        "text": "/^`([^`]+\\/)`$/.exec(cells[directoryColumn] ?? '')"
+      },
+      {
+        "file": "packages/three-surface-poc-core/src/project-shape-manifest.ts",
+        "kind": "process-spawn",
+        "line": 498,
+        "text": "ROSTER_BUTLER.exec(entry.path)"
+      },
+      {
+        "file": "packages/three-surface-poc-core/src/project-shape-observation.ts",
+        "kind": "process-spawn",
+        "line": 105,
+        "text": "execFileSync('git', ['--no-optional-locks', '-C', repoRoot, ...args], {\n        maxBuffer: 256 * 1024 * 1024,\n        stdio: ['ignore', 'pipe', 'ignore'],\n      })"
+      },
+      {
+        "file": "packages/three-surface-poc-core/src/markdown-code-context.ts",
+        "kind": "process-spawn",
+        "line": 63,
+        "text": "/^ {0,3}(`{3,}|~{3,}) *$/.exec(line)"
+      },
+      {
+        "file": "packages/three-surface-poc-core/src/markdown-code-context.ts",
+        "kind": "process-spawn",
+        "line": 102,
+        "text": "FENCE_OPENER.exec(line)"
+      },
+      {
+        "file": "packages/three-surface-poc-core/src/project-shape-extraction.ts",
+        "kind": "process-spawn",
+        "line": 165,
+        "text": "FENCE.exec(line)"
+      },
+      {
+        "file": "packages/three-surface-poc-core/src/project-shape-extraction.ts",
+        "kind": "process-spawn",
+        "line": 177,
+        "text": "ATX.exec(line)"
+      },
+      {
+        "file": "packages/three-surface-poc-core/src/project-shape-extraction.ts",
+        "kind": "process-spawn",
+        "line": 226,
+        "text": "ORDERED_ITEM.exec(line)"
+      },
+      {
+        "file": "packages/three-surface-poc-core/src/project-shape-extraction.ts",
+        "kind": "process-spawn",
+        "line": 244,
+        "text": "UNORDERED_ITEM.exec(line)"
+      },
+      {
+        "file": "packages/three-surface-poc-core/src/project-shape-extraction.ts",
+        "kind": "process-spawn",
+        "line": 415,
+        "text": "LEADING_BOLD.exec(item.text)"
+      },
+      {
+        "file": "packages/three-surface-poc-core/src/project-shape-extraction.ts",
+        "kind": "process-spawn",
+        "line": 449,
+        "text": "LEADING_BOLD.exec(item.text)"
+      },
+      {
+        "file": "packages/three-surface-poc-core/src/project-shape-extraction.ts",
+        "kind": "process-spawn",
+        "line": 450,
+        "text": "LEADING_CODE.exec(item.text)"
+      },
+      {
+        "file": "packages/three-surface-poc-core/src/project-shape-extraction.ts",
+        "kind": "process-spawn",
+        "line": 483,
+        "text": "LINK.exec(row.cells[0] ?? '')"
+      },
+      {
+        "file": "packages/three-surface-poc-core/src/project-shape-extraction.ts",
+        "kind": "process-spawn",
+        "line": 495,
+        "text": "BASELINE_SPEC.exec(path)"
+      },
+      {
+        "file": "packages/three-surface-poc-core/src/project-shape-extraction.ts",
+        "kind": "process-spawn",
+        "line": 509,
+        "text": "ORDINAL_H2.exec(h.text)"
+      },
+      {
+        "file": "packages/three-surface-poc-core/src/project-shape-extraction.ts",
+        "kind": "process-spawn",
+        "line": 514,
+        "text": "LEADING_BOLD.exec(cell)"
+      },
+      {
+        "file": "packages/three-surface-poc-core/src/project-shape-extraction.ts",
+        "kind": "process-spawn",
+        "line": 535,
+        "text": "LINK.exec(row.cells[column] ?? '')"
+      },
+      {
+        "file": "packages/three-surface-poc-core/src/project-shape-extraction.ts",
+        "kind": "process-spawn",
+        "line": 550,
+        "text": "ROSTER_TOML.exec(path)"
+      },
+      {
+        "file": "packages/three-surface-poc-core/src/project-shape-extraction.ts",
+        "kind": "process-spawn",
+        "line": 559,
+        "text": "TOML_TABLE.exec(line)"
+      },
+      {
+        "file": "packages/three-surface-poc-core/src/project-shape-extraction.ts",
+        "kind": "process-spawn",
+        "line": 566,
+        "text": "TOML_NAME.exec(line)"
+      },
+      {
+        "file": "packages/three-surface-poc-core/src/project-shape-extraction.ts",
+        "kind": "process-spawn",
+        "line": 745,
+        "text": "LEADING_BOLD.exec(item.text)"
+      },
+      {
+        "file": "packages/three-surface-poc-core/src/project-shape-extraction.ts",
+        "kind": "process-spawn",
+        "line": 803,
+        "text": "ONE_BOLD_SPAN.exec(layerCell.replace(/^[ \\t]+|[ \\t]+$/g, ''))"
+      },
+      {
+        "file": "packages/three-surface-poc-core/src/proposed-work.ts",
+        "kind": "process-spawn",
+        "line": 85,
+        "text": "CHANGE_DELTA.exec(path)"
+      },
+      {
+        "file": "packages/three-surface-poc-core/src/walkthrough-judgment.ts",
+        "kind": "process-spawn",
+        "line": 331,
+        "text": "BACKTICKED.exec(value)"
+      },
+      {
+        "file": "packages/three-surface-poc-core/src/walkthrough-judgment.ts",
+        "kind": "process-spawn",
+        "line": 365,
+        "text": "/^- `([^`]+)`$/.exec(item)"
+      },
+      {
+        "file": "packages/three-surface-poc-core/src/walkthrough-judgment.ts",
+        "kind": "process-spawn",
+        "line": 556,
+        "text": "VERDICT.exec(parsed.verdict.value)"
+      },
+      {
+        "file": "packages/three-surface-poc-core/src/walkthrough-judgment.ts",
+        "kind": "process-spawn",
+        "line": 580,
+        "text": "RUN_RECORD_REFERENCE.exec(parsed.runRecordReference.value)"
+      },
+      {
+        "file": "packages/three-surface-poc-core/src/walkthrough-judgment.ts",
+        "kind": "process-spawn",
+        "line": 734,
+        "text": "PHRASE.exec(phrase.value)"
+      },
+      {
+        "file": "packages/three-surface-poc-core/src/walkthrough-readiness.ts",
+        "kind": "process-spawn",
+        "line": 246,
+        "text": "/^### (.*)$/.exec(rawLine)"
+      },
+      {
+        "file": "packages/three-surface-poc-core/src/walkthrough-readiness.ts",
+        "kind": "process-spawn",
+        "line": 255,
+        "text": "ANCHOR.exec(raw)"
+      },
+      {
+        "file": "packages/three-surface-poc-core/src/walkthrough-readiness.ts",
+        "kind": "process-spawn",
+        "line": 262,
+        "text": "AUTHORITY.exec(raw)"
+      },
+      {
+        "file": "apps/three-surface-poc/src/capability-detail.ts",
+        "kind": "process-spawn",
+        "line": 197,
+        "text": "/^### Requirement:\\s*(.*)$/.exec(line)"
+      }
+    ]
+  },
+  "reachedModules": [
+    "apps/three-surface-poc/src/capability-detail.ts",
+    "apps/three-surface-poc/src/design-tokens.ts",
+    "apps/three-surface-poc/src/polaris-copy.ts",
+    "apps/three-surface-poc/src/polaris-generation/diagram-layout.ts",
+    "apps/three-surface-poc/src/polaris-generation/dossier-render-local.ts",
+    "apps/three-surface-poc/src/polaris-generation/dossier-site.ts",
+    "apps/three-surface-poc/src/polaris-generation/draft-preview.ts",
+    "apps/three-surface-poc/src/polaris-generation/svg-inert.ts",
+    "apps/three-surface-poc/src/polaris-narrative.ts",
+    "packages/cap1-core/src/admission.ts",
+    "packages/cap1-core/src/authority.ts",
+    "packages/cap1-core/src/consent.ts",
+    "packages/cap1-core/src/coverage.ts",
+    "packages/cap1-core/src/declaration.ts",
+    "packages/cap1-core/src/discoverability.ts",
+    "packages/cap1-core/src/distinction.ts",
+    "packages/cap1-core/src/drawer.ts",
+    "packages/cap1-core/src/entry.ts",
+    "packages/cap1-core/src/epistemic.ts",
+    "packages/cap1-core/src/evaluation.ts",
+    "packages/cap1-core/src/facets.ts",
+    "packages/cap1-core/src/identity.ts",
+    "packages/cap1-core/src/index.ts",
+    "packages/cap1-core/src/parity.ts",
+    "packages/cap1-core/src/proposal.ts",
+    "packages/cap1-core/src/stable-identity.ts",
+    "packages/cap1-core/src/staleness.ts",
+    "packages/cap1-core/src/vocabulary.ts",
+    "packages/cap1-core/src/yaml-dialect.ts",
+    "packages/polaris-generation-core/src/canonical-json.ts",
+    "packages/polaris-generation-core/src/closed-schema.ts",
+    "packages/polaris-generation-core/src/dossier-evaluation.ts",
+    "packages/polaris-generation-core/src/dossier-profile.ts",
+    "packages/polaris-generation-core/src/draft-model.ts",
+    "packages/polaris-generation-core/src/generation-source.ts",
+    "packages/polaris-generation-core/src/live.ts",
+    "packages/polaris-generation-core/src/local-render.ts",
+    "packages/polaris-generation-core/src/parse-json.ts",
+    "packages/polaris-generation-core/src/prompts.ts",
+    "packages/polaris-generation-core/src/public-source-classification.ts",
+    "packages/polaris-generation-core/src/quote-fidelity.ts",
+    "packages/polaris-generation-core/src/quote-locate.ts",
+    "packages/polaris-generation-core/src/reader-questions.ts",
+    "packages/polaris-generation-core/src/secret-redaction.ts",
+    "packages/polaris-generation-core/src/source-model.ts",
+    "packages/polaris-generation-core/src/topics.ts",
+    "packages/three-surface-poc-core/src/act-fields.ts",
+    "packages/three-surface-poc-core/src/authority-artifact-fields.ts",
+    "packages/three-surface-poc-core/src/authority-disclosure.ts",
+    "packages/three-surface-poc-core/src/body-read-authority.ts",
+    "packages/three-surface-poc-core/src/code-structure.ts",
+    "packages/three-surface-poc-core/src/content-classification.ts",
+    "packages/three-surface-poc-core/src/effect-authority.ts",
+    "packages/three-surface-poc-core/src/evidence-population.ts",
+    "packages/three-surface-poc-core/src/fixtures/synthetic-corpora.ts",
+    "packages/three-surface-poc-core/src/git-object-reader.ts",
+    "packages/three-surface-poc-core/src/git-tree.ts",
+    "packages/three-surface-poc-core/src/index.ts",
+    "packages/three-surface-poc-core/src/markdown-code-context.ts",
+    "packages/three-surface-poc-core/src/materialization.ts",
+    "packages/three-surface-poc-core/src/model.ts",
+    "packages/three-surface-poc-core/src/orrery-projection.ts",
+    "packages/three-surface-poc-core/src/owner-act-drafter.ts",
+    "packages/three-surface-poc-core/src/owner-act-record.ts",
+    "packages/three-surface-poc-core/src/poc-seeds.ts",
+    "packages/three-surface-poc-core/src/project-shape-coverage.ts",
+    "packages/three-surface-poc-core/src/project-shape-extraction.ts",
+    "packages/three-surface-poc-core/src/project-shape-manifest.ts",
+    "packages/three-surface-poc-core/src/project-shape-model.ts",
+    "packages/three-surface-poc-core/src/project-shape-observation.ts",
+    "packages/three-surface-poc-core/src/project-shape-observer.ts",
+    "packages/three-surface-poc-core/src/proposed-work.ts",
+    "packages/three-surface-poc-core/src/reevaluation.ts",
+    "packages/three-surface-poc-core/src/resource-headroom.ts",
+    "packages/three-surface-poc-core/src/resource-ledger.ts",
+    "packages/three-surface-poc-core/src/response-identity.ts",
+    "packages/three-surface-poc-core/src/synthetic-corpus-coverage.ts",
+    "packages/three-surface-poc-core/src/test-artifact-verification.ts",
+    "packages/three-surface-poc-core/src/trajectory-projection.ts",
+    "packages/three-surface-poc-core/src/walkthrough-judgment.ts",
+    "packages/three-surface-poc-core/src/walkthrough-readiness.ts",
+    "packages/three-surface-poc-core/src/work-items.ts",
+    "packages/three-surface-poc-core/src/worker-change-observation.ts"
+  ],
+  "edges": [
+    {
+      "from": "apps/three-surface-poc/src/polaris-generation/dossier-site.ts",
+      "kind": "import",
+      "specifier": "node:crypto",
+      "line": 1,
+      "builtin": "node:crypto"
+    },
+    {
+      "from": "apps/three-surface-poc/src/polaris-generation/dossier-site.ts",
+      "kind": "import",
+      "specifier": "../design-tokens.js",
+      "line": 3,
+      "module": "apps/three-surface-poc/src/design-tokens.ts"
+    },
+    {
+      "from": "apps/three-surface-poc/src/polaris-generation/dossier-site.ts",
+      "kind": "import",
+      "specifier": "@syzygy/polaris-generation-core/live",
+      "line": 5,
+      "module": "packages/polaris-generation-core/src/live.ts"
+    },
+    {
+      "from": "apps/three-surface-poc/src/polaris-generation/dossier-site.ts",
+      "kind": "import",
+      "specifier": "./diagram-layout.js",
+      "line": 11,
+      "module": "apps/three-surface-poc/src/polaris-generation/diagram-layout.ts"
+    },
+    {
+      "from": "apps/three-surface-poc/src/polaris-generation/dossier-site.ts",
+      "kind": "import",
+      "specifier": "./dossier-render-local.js",
+      "line": 12,
+      "module": "apps/three-surface-poc/src/polaris-generation/dossier-render-local.ts"
+    },
+    {
+      "from": "apps/three-surface-poc/src/polaris-generation/dossier-site.ts",
+      "kind": "import",
+      "specifier": "./draft-preview.js",
+      "line": 13,
+      "module": "apps/three-surface-poc/src/polaris-generation/draft-preview.ts"
+    },
+    {
+      "from": "apps/three-surface-poc/src/polaris-generation/dossier-site.ts",
+      "kind": "import",
+      "specifier": "./svg-inert.js",
+      "line": 14,
+      "module": "apps/three-surface-poc/src/polaris-generation/svg-inert.ts"
+    },
+    {
+      "from": "apps/three-surface-poc/src/design-tokens.ts",
+      "kind": "import-type",
+      "specifier": "@syzygy/three-surface-poc-core",
+      "line": 1,
+      "module": "packages/three-surface-poc-core/src/index.ts"
+    },
+    {
+      "from": "apps/three-surface-poc/src/design-tokens.ts",
+      "kind": "import-type",
+      "specifier": "./polaris-copy.js",
+      "line": 3,
+      "module": "apps/three-surface-poc/src/polaris-copy.ts"
+    },
+    {
+      "from": "packages/polaris-generation-core/src/live.ts",
+      "kind": "re-export",
+      "specifier": "./canonical-json.js",
+      "line": 7,
+      "module": "packages/polaris-generation-core/src/canonical-json.ts"
+    },
+    {
+      "from": "packages/polaris-generation-core/src/live.ts",
+      "kind": "re-export",
+      "specifier": "./parse-json.js",
+      "line": 16,
+      "module": "packages/polaris-generation-core/src/parse-json.ts"
+    },
+    {
+      "from": "packages/polaris-generation-core/src/live.ts",
+      "kind": "re-export",
+      "specifier": "./generation-source.js",
+      "line": 17,
+      "module": "packages/polaris-generation-core/src/generation-source.ts"
+    },
+    {
+      "from": "packages/polaris-generation-core/src/live.ts",
+      "kind": "re-export",
+      "specifier": "./prompts.js",
+      "line": 18,
+      "module": "packages/polaris-generation-core/src/prompts.ts"
+    },
+    {
+      "from": "packages/polaris-generation-core/src/live.ts",
+      "kind": "re-export",
+      "specifier": "./source-model.js",
+      "line": 22,
+      "module": "packages/polaris-generation-core/src/source-model.ts"
+    },
+    {
+      "from": "packages/polaris-generation-core/src/live.ts",
+      "kind": "re-export",
+      "specifier": "./draft-model.js",
+      "line": 23,
+      "module": "packages/polaris-generation-core/src/draft-model.ts"
+    },
+    {
+      "from": "packages/polaris-generation-core/src/live.ts",
+      "kind": "re-export-type",
+      "specifier": "./draft-model.js",
+      "line": 24,
+      "module": "packages/polaris-generation-core/src/draft-model.ts"
+    },
+    {
+      "from": "packages/polaris-generation-core/src/live.ts",
+      "kind": "re-export",
+      "specifier": "./dossier-evaluation.js",
+      "line": 25,
+      "module": "packages/polaris-generation-core/src/dossier-evaluation.ts"
+    },
+    {
+      "from": "packages/polaris-generation-core/src/live.ts",
+      "kind": "re-export",
+      "specifier": "./dossier-profile.js",
+      "line": 32,
+      "module": "packages/polaris-generation-core/src/dossier-profile.ts"
+    },
+    {
+      "from": "packages/polaris-generation-core/src/live.ts",
+      "kind": "re-export-type",
+      "specifier": "./dossier-profile.js",
+      "line": 33,
+      "module": "packages/polaris-generation-core/src/dossier-profile.ts"
+    },
+    {
+      "from": "packages/polaris-generation-core/src/live.ts",
+      "kind": "re-export",
+      "specifier": "./reader-questions.js",
+      "line": 34,
+      "module": "packages/polaris-generation-core/src/reader-questions.ts"
+    },
+    {
+      "from": "packages/polaris-generation-core/src/live.ts",
+      "kind": "re-export",
+      "specifier": "./quote-fidelity.js",
+      "line": 35,
+      "module": "packages/polaris-generation-core/src/quote-fidelity.ts"
+    },
+    {
+      "from": "packages/polaris-generation-core/src/live.ts",
+      "kind": "re-export",
+      "specifier": "./quote-locate.js",
+      "line": 36,
+      "module": "packages/polaris-generation-core/src/quote-locate.ts"
+    },
+    {
+      "from": "packages/polaris-generation-core/src/live.ts",
+      "kind": "re-export-type",
+      "specifier": "./local-render.js",
+      "line": 37,
+      "module": "packages/polaris-generation-core/src/local-render.ts"
+    },
+    {
+      "from": "packages/polaris-generation-core/src/live.ts",
+      "kind": "re-export",
+      "specifier": "./local-render.js",
+      "line": 38,
+      "module": "packages/polaris-generation-core/src/local-render.ts"
+    },
+    {
+      "from": "packages/polaris-generation-core/src/live.ts",
+      "kind": "re-export",
+      "specifier": "./public-source-classification.js",
+      "line": 39,
+      "module": "packages/polaris-generation-core/src/public-source-classification.ts"
+    },
+    {
+      "from": "packages/polaris-generation-core/src/live.ts",
+      "kind": "re-export",
+      "specifier": "./secret-redaction.js",
+      "line": 40,
+      "module": "packages/polaris-generation-core/src/secret-redaction.ts"
+    },
+    {
+      "from": "apps/three-surface-poc/src/polaris-generation/diagram-layout.ts",
+      "kind": "import-type",
+      "specifier": "@syzygy/polaris-generation-core/live",
+      "line": 1,
+      "module": "packages/polaris-generation-core/src/live.ts"
+    },
+    {
+      "from": "apps/three-surface-poc/src/polaris-generation/dossier-render-local.ts",
+      "kind": "import",
+      "specifier": "@syzygy/polaris-generation-core/live",
+      "line": 1,
+      "module": "packages/polaris-generation-core/src/live.ts"
+    },
+    {
+      "from": "apps/three-surface-poc/src/polaris-generation/draft-preview.ts",
+      "kind": "import",
+      "specifier": "node:crypto",
+      "line": 1,
+      "builtin": "node:crypto"
+    },
+    {
+      "from": "apps/three-surface-poc/src/polaris-generation/draft-preview.ts",
+      "kind": "import",
+      "specifier": "../design-tokens.js",
+      "line": 3,
+      "module": "apps/three-surface-poc/src/design-tokens.ts"
+    },
+    {
+      "from": "apps/three-surface-poc/src/polaris-generation/draft-preview.ts",
+      "kind": "import",
+      "specifier": "@syzygy/polaris-generation-core/live",
+      "line": 5,
+      "module": "packages/polaris-generation-core/src/live.ts"
+    },
+    {
+      "from": "apps/three-surface-poc/src/polaris-generation/draft-preview.ts",
+      "kind": "import",
+      "specifier": "./diagram-layout.js",
+      "line": 9,
+      "module": "apps/three-surface-poc/src/polaris-generation/diagram-layout.ts"
+    },
+    {
+      "from": "apps/three-surface-poc/src/polaris-generation/draft-preview.ts",
+      "kind": "import",
+      "specifier": "./svg-inert.js",
+      "line": 10,
+      "module": "apps/three-surface-poc/src/polaris-generation/svg-inert.ts"
+    },
+    {
+      "from": "packages/three-surface-poc-core/src/index.ts",
+      "kind": "export-star",
+      "specifier": "./model.js",
+      "line": 1,
+      "module": "packages/three-surface-poc-core/src/model.ts"
+    },
+    {
+      "from": "packages/three-surface-poc-core/src/index.ts",
+      "kind": "export-star",
+      "specifier": "./poc-seeds.js",
+      "line": 2,
+      "module": "packages/three-surface-poc-core/src/poc-seeds.ts"
+    },
+    {
+      "from": "packages/three-surface-poc-core/src/index.ts",
+      "kind": "export-star",
+      "specifier": "./code-structure.js",
+      "line": 3,
+      "module": "packages/three-surface-poc-core/src/code-structure.ts"
+    },
+    {
+      "from": "packages/three-surface-poc-core/src/index.ts",
+      "kind": "export-star",
+      "specifier": "./work-items.js",
+      "line": 4,
+      "module": "packages/three-surface-poc-core/src/work-items.ts"
+    },
+    {
+      "from": "packages/three-surface-poc-core/src/index.ts",
+      "kind": "export-star",
+      "specifier": "./worker-change-observation.js",
+      "line": 5,
+      "module": "packages/three-surface-poc-core/src/worker-change-observation.ts"
+    },
+    {
+      "from": "packages/three-surface-poc-core/src/index.ts",
+      "kind": "export-star",
+      "specifier": "./orrery-projection.js",
+      "line": 6,
+      "module": "packages/three-surface-poc-core/src/orrery-projection.ts"
+    },
+    {
+      "from": "packages/three-surface-poc-core/src/index.ts",
+      "kind": "export-star",
+      "specifier": "./trajectory-projection.js",
+      "line": 7,
+      "module": "packages/three-surface-poc-core/src/trajectory-projection.ts"
+    },
+    {
+      "from": "packages/three-surface-poc-core/src/index.ts",
+      "kind": "export-star",
+      "specifier": "./effect-authority.js",
+      "line": 8,
+      "module": "packages/three-surface-poc-core/src/effect-authority.ts"
+    },
+    {
+      "from": "packages/three-surface-poc-core/src/index.ts",
+      "kind": "export-star",
+      "specifier": "./materialization.js",
+      "line": 9,
+      "module": "packages/three-surface-poc-core/src/materialization.ts"
+    },
+    {
+      "from": "packages/three-surface-poc-core/src/index.ts",
+      "kind": "export-star",
+      "specifier": "./test-artifact-verification.js",
+      "line": 10,
+      "module": "packages/three-surface-poc-core/src/test-artifact-verification.ts"
+    },
+    {
+      "from": "packages/three-surface-poc-core/src/index.ts",
+      "kind": "export-star",
+      "specifier": "./owner-act-record.js",
+      "line": 11,
+      "module": "packages/three-surface-poc-core/src/owner-act-record.ts"
+    },
+    {
+      "from": "packages/three-surface-poc-core/src/index.ts",
+      "kind": "export-star",
+      "specifier": "./owner-act-drafter.js",
+      "line": 19,
+      "module": "packages/three-surface-poc-core/src/owner-act-drafter.ts"
+    },
+    {
+      "from": "packages/three-surface-poc-core/src/index.ts",
+      "kind": "export-star",
+      "specifier": "./authority-artifact-fields.js",
+      "line": 20,
+      "module": "packages/three-surface-poc-core/src/authority-artifact-fields.ts"
+    },
+    {
+      "from": "packages/three-surface-poc-core/src/index.ts",
+      "kind": "export-star",
+      "specifier": "./body-read-authority.js",
+      "line": 21,
+      "module": "packages/three-surface-poc-core/src/body-read-authority.ts"
+    },
+    {
+      "from": "packages/three-surface-poc-core/src/index.ts",
+      "kind": "export-star",
+      "specifier": "./authority-disclosure.js",
+      "line": 22,
+      "module": "packages/three-surface-poc-core/src/authority-disclosure.ts"
+    },
+    {
+      "from": "packages/three-surface-poc-core/src/index.ts",
+      "kind": "export-star",
+      "specifier": "./project-shape-observer.js",
+      "line": 23,
+      "module": "packages/three-surface-poc-core/src/project-shape-observer.ts"
+    },
+    {
+      "from": "packages/three-surface-poc-core/src/index.ts",
+      "kind": "export-star",
+      "specifier": "./git-tree.js",
+      "line": 24,
+      "module": "packages/three-surface-poc-core/src/git-tree.ts"
+    },
+    {
+      "from": "packages/three-surface-poc-core/src/index.ts",
+      "kind": "export-star",
+      "specifier": "./project-shape-manifest.js",
+      "line": 25,
+      "module": "packages/three-surface-poc-core/src/project-shape-manifest.ts"
+    },
+    {
+      "from": "packages/three-surface-poc-core/src/index.ts",
+      "kind": "export-star",
+      "specifier": "./project-shape-observation.js",
+      "line": 26,
+      "module": "packages/three-surface-poc-core/src/project-shape-observation.ts"
+    },
+    {
+      "from": "packages/three-surface-poc-core/src/index.ts",
+      "kind": "export-star",
+      "specifier": "./git-object-reader.js",
+      "line": 27,
+      "module": "packages/three-surface-poc-core/src/git-object-reader.ts"
+    },
+    {
+      "from": "packages/three-surface-poc-core/src/index.ts",
+      "kind": "export-star",
+      "specifier": "./markdown-code-context.js",
+      "line": 28,
+      "module": "packages/three-surface-poc-core/src/markdown-code-context.ts"
+    },
+    {
+      "from": "packages/three-surface-poc-core/src/index.ts",
+      "kind": "export-star",
+      "specifier": "./content-classification.js",
+      "line": 29,
+      "module": "packages/three-surface-poc-core/src/content-classification.ts"
+    },
+    {
+      "from": "packages/three-surface-poc-core/src/index.ts",
+      "kind": "export-star",
+      "specifier": "./project-shape-extraction.js",
+      "line": 30,
+      "module": "packages/three-surface-poc-core/src/project-shape-extraction.ts"
+    },
+    {
+      "from": "packages/three-surface-poc-core/src/index.ts",
+      "kind": "export-star",
+      "specifier": "./project-shape-coverage.js",
+      "line": 31,
+      "module": "packages/three-surface-poc-core/src/project-shape-coverage.ts"
+    },
+    {
+      "from": "packages/three-surface-poc-core/src/index.ts",
+      "kind": "export-star",
+      "specifier": "./project-shape-model.js",
+      "line": 32,
+      "module": "packages/three-surface-poc-core/src/project-shape-model.ts"
+    },
+    {
+      "from": "packages/three-surface-poc-core/src/index.ts",
+      "kind": "export-star",
+      "specifier": "./proposed-work.js",
+      "line": 33,
+      "module": "packages/three-surface-poc-core/src/proposed-work.ts"
+    },
+    {
+      "from": "packages/three-surface-poc-core/src/index.ts",
+      "kind": "export-star",
+      "specifier": "./reevaluation.js",
+      "line": 34,
+      "module": "packages/three-surface-poc-core/src/reevaluation.ts"
+    },
+    {
+      "from": "packages/three-surface-poc-core/src/index.ts",
+      "kind": "export-star",
+      "specifier": "./walkthrough-judgment.js",
+      "line": 35,
+      "module": "packages/three-surface-poc-core/src/walkthrough-judgment.ts"
+    },
+    {
+      "from": "packages/three-surface-poc-core/src/index.ts",
+      "kind": "export-star",
+      "specifier": "./resource-ledger.js",
+      "line": 36,
+      "module": "packages/three-surface-poc-core/src/resource-ledger.ts"
+    },
+    {
+      "from": "packages/three-surface-poc-core/src/index.ts",
+      "kind": "export-star",
+      "specifier": "./resource-headroom.js",
+      "line": 37,
+      "module": "packages/three-surface-poc-core/src/resource-headroom.ts"
+    },
+    {
+      "from": "packages/three-surface-poc-core/src/index.ts",
+      "kind": "export-star",
+      "specifier": "./walkthrough-readiness.js",
+      "line": 38,
+      "module": "packages/three-surface-poc-core/src/walkthrough-readiness.ts"
+    },
+    {
+      "from": "packages/three-surface-poc-core/src/index.ts",
+      "kind": "export-star",
+      "specifier": "./response-identity.js",
+      "line": 39,
+      "module": "packages/three-surface-poc-core/src/response-identity.ts"
+    },
+    {
+      "from": "packages/three-surface-poc-core/src/index.ts",
+      "kind": "export-star",
+      "specifier": "./fixtures/synthetic-corpora.js",
+      "line": 40,
+      "module": "packages/three-surface-poc-core/src/fixtures/synthetic-corpora.ts"
+    },
+    {
+      "from": "packages/three-surface-poc-core/src/index.ts",
+      "kind": "export-star",
+      "specifier": "./synthetic-corpus-coverage.js",
+      "line": 41,
+      "module": "packages/three-surface-poc-core/src/synthetic-corpus-coverage.ts"
+    },
+    {
+      "from": "packages/three-surface-poc-core/src/index.ts",
+      "kind": "export-star",
+      "specifier": "./evidence-population.js",
+      "line": 42,
+      "module": "packages/three-surface-poc-core/src/evidence-population.ts"
+    },
+    {
+      "from": "apps/three-surface-poc/src/polaris-copy.ts",
+      "kind": "import",
+      "specifier": "./polaris-narrative.js",
+      "line": 10,
+      "module": "apps/three-surface-poc/src/polaris-narrative.ts"
+    },
+    {
+      "from": "packages/polaris-generation-core/src/canonical-json.ts",
+      "kind": "import",
+      "specifier": "node:crypto",
+      "line": 1,
+      "builtin": "node:crypto"
+    },
+    {
+      "from": "packages/polaris-generation-core/src/canonical-json.ts",
+      "kind": "import",
+      "specifier": "node:util",
+      "line": 2,
+      "builtin": "node:util"
+    },
+    {
+      "from": "packages/polaris-generation-core/src/parse-json.ts",
+      "kind": "import-type",
+      "specifier": "./canonical-json.js",
+      "line": 1,
+      "module": "packages/polaris-generation-core/src/canonical-json.ts"
+    },
+    {
+      "from": "packages/polaris-generation-core/src/generation-source.ts",
+      "kind": "import",
+      "specifier": "node:crypto",
+      "line": 1,
+      "builtin": "node:crypto"
+    },
+    {
+      "from": "packages/polaris-generation-core/src/generation-source.ts",
+      "kind": "import",
+      "specifier": "./source-model.js",
+      "line": 3,
+      "module": "packages/polaris-generation-core/src/source-model.ts"
+    },
+    {
+      "from": "packages/polaris-generation-core/src/generation-source.ts",
+      "kind": "import",
+      "specifier": "./secret-redaction.js",
+      "line": 4,
+      "module": "packages/polaris-generation-core/src/secret-redaction.ts"
+    },
+    {
+      "from": "packages/polaris-generation-core/src/draft-model.ts",
+      "kind": "import",
+      "specifier": "./closed-schema.js",
+      "line": 1,
+      "module": "packages/polaris-generation-core/src/closed-schema.ts"
+    },
+    {
+      "from": "packages/polaris-generation-core/src/dossier-evaluation.ts",
+      "kind": "import",
+      "specifier": "node:crypto",
+      "line": 1,
+      "builtin": "node:crypto"
+    },
+    {
+      "from": "packages/polaris-generation-core/src/dossier-evaluation.ts",
+      "kind": "import",
+      "specifier": "./canonical-json.js",
+      "line": 3,
+      "module": "packages/polaris-generation-core/src/canonical-json.ts"
+    },
+    {
+      "from": "packages/polaris-generation-core/src/dossier-evaluation.ts",
+      "kind": "import",
+      "specifier": "./parse-json.js",
+      "line": 4,
+      "module": "packages/polaris-generation-core/src/parse-json.ts"
+    },
+    {
+      "from": "packages/polaris-generation-core/src/dossier-evaluation.ts",
+      "kind": "import",
+      "specifier": "./generation-source.js",
+      "line": 5,
+      "module": "packages/polaris-generation-core/src/generation-source.ts"
+    },
+    {
+      "from": "packages/polaris-generation-core/src/dossier-evaluation.ts",
+      "kind": "import",
+      "specifier": "./quote-fidelity.js",
+      "line": 6,
+      "module": "packages/polaris-generation-core/src/quote-fidelity.ts"
+    },
+    {
+      "from": "packages/polaris-generation-core/src/dossier-evaluation.ts",
+      "kind": "import",
+      "specifier": "./topics.js",
+      "line": 7,
+      "module": "packages/polaris-generation-core/src/topics.ts"
+    },
+    {
+      "from": "packages/polaris-generation-core/src/dossier-evaluation.ts",
+      "kind": "re-export",
+      "specifier": "./topics.js",
+      "line": 30,
+      "module": "packages/polaris-generation-core/src/topics.ts"
+    },
+    {
+      "from": "packages/polaris-generation-core/src/dossier-profile.ts",
+      "kind": "import",
+      "specifier": "node:crypto",
+      "line": 8,
+      "builtin": "node:crypto"
+    },
+    {
+      "from": "packages/polaris-generation-core/src/dossier-profile.ts",
+      "kind": "import-type",
+      "specifier": "./draft-model.js",
+      "line": 10,
+      "module": "packages/polaris-generation-core/src/draft-model.ts"
+    },
+    {
+      "from": "packages/polaris-generation-core/src/dossier-profile.ts",
+      "kind": "import-type",
+      "specifier": "./generation-source.js",
+      "line": 11,
+      "module": "packages/polaris-generation-core/src/generation-source.ts"
+    },
+    {
+      "from": "packages/polaris-generation-core/src/dossier-profile.ts",
+      "kind": "import",
+      "specifier": "./topics.js",
+      "line": 12,
+      "module": "packages/polaris-generation-core/src/topics.ts"
+    },
+    {
+      "from": "packages/polaris-generation-core/src/reader-questions.ts",
+      "kind": "import",
+      "specifier": "./topics.js",
+      "line": 10,
+      "module": "packages/polaris-generation-core/src/topics.ts"
+    },
+    {
+      "from": "packages/polaris-generation-core/src/quote-fidelity.ts",
+      "kind": "import",
+      "specifier": "./generation-source.js",
+      "line": 35,
+      "module": "packages/polaris-generation-core/src/generation-source.ts"
+    },
+    {
+      "from": "packages/polaris-generation-core/src/quote-locate.ts",
+      "kind": "import",
+      "specifier": "./quote-fidelity.js",
+      "line": 1,
+      "module": "packages/polaris-generation-core/src/quote-fidelity.ts"
+    },
+    {
+      "from": "packages/polaris-generation-core/src/local-render.ts",
+      "kind": "import-type",
+      "specifier": "./draft-model.js",
+      "line": 1,
+      "module": "packages/polaris-generation-core/src/draft-model.ts"
+    },
+    {
+      "from": "packages/polaris-generation-core/src/public-source-classification.ts",
+      "kind": "import",
+      "specifier": "node:crypto",
+      "line": 1,
+      "builtin": "node:crypto"
+    },
+    {
+      "from": "packages/polaris-generation-core/src/secret-redaction.ts",
+      "kind": "import",
+      "specifier": "node:crypto",
+      "line": 1,
+      "builtin": "node:crypto"
+    },
+    {
+      "from": "packages/polaris-generation-core/src/secret-redaction.ts",
+      "kind": "import-type",
+      "specifier": "./public-source-classification.js",
+      "line": 3,
+      "module": "packages/polaris-generation-core/src/public-source-classification.ts"
+    },
+    {
+      "from": "packages/three-surface-poc-core/src/model.ts",
+      "kind": "import",
+      "specifier": "node:crypto",
+      "line": 1,
+      "builtin": "node:crypto"
+    },
+    {
+      "from": "packages/three-surface-poc-core/src/model.ts",
+      "kind": "import",
+      "specifier": "node:fs",
+      "line": 2,
+      "builtin": "node:fs"
+    },
+    {
+      "from": "packages/three-surface-poc-core/src/model.ts",
+      "kind": "import",
+      "specifier": "node:path",
+      "line": 3,
+      "builtin": "node:path"
+    },
+    {
+      "from": "packages/three-surface-poc-core/src/model.ts",
+      "kind": "import",
+      "specifier": "./code-structure.js",
+      "line": 5,
+      "module": "packages/three-surface-poc-core/src/code-structure.ts"
+    },
+    {
+      "from": "packages/three-surface-poc-core/src/model.ts",
+      "kind": "import",
+      "specifier": "./work-items.js",
+      "line": 6,
+      "module": "packages/three-surface-poc-core/src/work-items.ts"
+    },
+    {
+      "from": "packages/three-surface-poc-core/src/model.ts",
+      "kind": "import",
+      "specifier": "./worker-change-observation.js",
+      "line": 7,
+      "module": "packages/three-surface-poc-core/src/worker-change-observation.ts"
+    },
+    {
+      "from": "packages/three-surface-poc-core/src/model.ts",
+      "kind": "import",
+      "specifier": "./orrery-projection.js",
+      "line": 8,
+      "module": "packages/three-surface-poc-core/src/orrery-projection.ts"
+    },
+    {
+      "from": "packages/three-surface-poc-core/src/model.ts",
+      "kind": "import",
+      "specifier": "./trajectory-projection.js",
+      "line": 9,
+      "module": "packages/three-surface-poc-core/src/trajectory-projection.ts"
+    },
+    {
+      "from": "packages/three-surface-poc-core/src/model.ts",
+      "kind": "import",
+      "specifier": "./materialization.js",
+      "line": 10,
+      "module": "packages/three-surface-poc-core/src/materialization.ts"
+    },
+    {
+      "from": "packages/three-surface-poc-core/src/model.ts",
+      "kind": "import-type",
+      "specifier": "./body-read-authority.js",
+      "line": 11,
+      "module": "packages/three-surface-poc-core/src/body-read-authority.ts"
+    },
+    {
+      "from": "packages/three-surface-poc-core/src/model.ts",
+      "kind": "import",
+      "specifier": "./project-shape-observation.js",
+      "line": 12,
+      "module": "packages/three-surface-poc-core/src/project-shape-observation.ts"
+    },
+    {
+      "from": "packages/three-surface-poc-core/src/model.ts",
+      "kind": "import-type",
+      "specifier": "@syzygy/cap1-core",
+      "line": 13,
+      "module": "packages/cap1-core/src/index.ts"
+    },
+    {
+      "from": "packages/three-surface-poc-core/src/model.ts",
+      "kind": "import",
+      "specifier": "./project-shape-model.js",
+      "line": 15,
+      "module": "packages/three-surface-poc-core/src/project-shape-model.ts"
+    },
+    {
+      "from": "packages/three-surface-poc-core/src/model.ts",
+      "kind": "import",
+      "specifier": "./proposed-work.js",
+      "line": 22,
+      "module": "packages/three-surface-poc-core/src/proposed-work.ts"
+    },
+    {
+      "from": "packages/three-surface-poc-core/src/model.ts",
+      "kind": "import",
+      "specifier": "./walkthrough-judgment.js",
+      "line": 23,
+      "module": "packages/three-surface-poc-core/src/walkthrough-judgment.ts"
+    },
+    {
+      "from": "packages/three-surface-poc-core/src/model.ts",
+      "kind": "import",
+      "specifier": "./walkthrough-readiness.js",
+      "line": 28,
+      "module": "packages/three-surface-poc-core/src/walkthrough-readiness.ts"
+    },
+    {
+      "from": "packages/three-surface-poc-core/src/model.ts",
+      "kind": "import",
+      "specifier": "./test-artifact-verification.js",
+      "line": 35,
+      "module": "packages/three-surface-poc-core/src/test-artifact-verification.ts"
+    },
+    {
+      "from": "packages/three-surface-poc-core/src/model.ts",
+      "kind": "import",
+      "specifier": "./resource-headroom.js",
+      "line": 40,
+      "module": "packages/three-surface-poc-core/src/resource-headroom.ts"
+    },
+    {
+      "from": "packages/three-surface-poc-core/src/model.ts",
+      "kind": "import-type",
+      "specifier": "./poc-seeds.js",
+      "line": 41,
+      "module": "packages/three-surface-poc-core/src/poc-seeds.ts"
+    },
+    {
+      "from": "packages/three-surface-poc-core/src/model.ts",
+      "kind": "import",
+      "specifier": "./response-identity.js",
+      "line": 42,
+      "module": "packages/three-surface-poc-core/src/response-identity.ts"
+    },
+    {
+      "from": "packages/three-surface-poc-core/src/poc-seeds.ts",
+      "kind": "import-type",
+      "specifier": "./orrery-projection.js",
+      "line": 1,
+      "module": "packages/three-surface-poc-core/src/orrery-projection.ts"
+    },
+    {
+      "from": "packages/three-surface-poc-core/src/poc-seeds.ts",
+      "kind": "import-type",
+      "specifier": "./model.js",
+      "line": 2,
+      "module": "packages/three-surface-poc-core/src/model.ts"
+    },
+    {
+      "from": "packages/three-surface-poc-core/src/poc-seeds.ts",
+      "kind": "import-type",
+      "specifier": "./worker-change-observation.js",
+      "line": 3,
+      "module": "packages/three-surface-poc-core/src/worker-change-observation.ts"
+    },
+    {
+      "from": "packages/three-surface-poc-core/src/code-structure.ts",
+      "kind": "import",
+      "specifier": "node:child_process",
+      "line": 1,
+      "builtin": "node:child_process"
+    },
+    {
+      "from": "packages/three-surface-poc-core/src/code-structure.ts",
+      "kind": "import",
+      "specifier": "./git-tree.js",
+      "line": 3,
+      "module": "packages/three-surface-poc-core/src/git-tree.ts"
+    },
+    {
+      "from": "packages/three-surface-poc-core/src/code-structure.ts",
+      "kind": "import-type",
+      "specifier": "./model.js",
+      "line": 4,
+      "module": "packages/three-surface-poc-core/src/model.ts"
+    },
+    {
+      "from": "packages/three-surface-poc-core/src/work-items.ts",
+      "kind": "import",
+      "specifier": "node:child_process",
+      "line": 1,
+      "builtin": "node:child_process"
+    },
+    {
+      "from": "packages/three-surface-poc-core/src/work-items.ts",
+      "kind": "import-type",
+      "specifier": "@syzygy/cap1-core",
+      "line": 3,
+      "module": "packages/cap1-core/src/index.ts"
+    },
+    {
+      "from": "packages/three-surface-poc-core/src/work-items.ts",
+      "kind": "import-type",
+      "specifier": "./model.js",
+      "line": 5,
+      "module": "packages/three-surface-poc-core/src/model.ts"
+    },
+    {
+      "from": "packages/three-surface-poc-core/src/work-items.ts",
+      "kind": "import",
+      "specifier": "./project-shape-model.js",
+      "line": 6,
+      "module": "packages/three-surface-poc-core/src/project-shape-model.ts"
+    },
+    {
+      "from": "packages/three-surface-poc-core/src/worker-change-observation.ts",
+      "kind": "import",
+      "specifier": "node:child_process",
+      "line": 1,
+      "builtin": "node:child_process"
+    },
+    {
+      "from": "packages/three-surface-poc-core/src/orrery-projection.ts",
+      "kind": "import-type",
+      "specifier": "./code-structure.js",
+      "line": 1,
+      "module": "packages/three-surface-poc-core/src/code-structure.ts"
+    },
+    {
+      "from": "packages/three-surface-poc-core/src/trajectory-projection.ts",
+      "kind": "import-type",
+      "specifier": "./work-items.js",
+      "line": 1,
+      "module": "packages/three-surface-poc-core/src/work-items.ts"
+    },
+    {
+      "from": "packages/three-surface-poc-core/src/materialization.ts",
+      "kind": "import",
+      "specifier": "node:child_process",
+      "line": 1,
+      "builtin": "node:child_process"
+    },
+    {
+      "from": "packages/three-surface-poc-core/src/materialization.ts",
+      "kind": "import",
+      "specifier": "node:fs",
+      "line": 2,
+      "builtin": "node:fs"
+    },
+    {
+      "from": "packages/three-surface-poc-core/src/materialization.ts",
+      "kind": "import",
+      "specifier": "node:path",
+      "line": 3,
+      "builtin": "node:path"
+    },
+    {
+      "from": "packages/three-surface-poc-core/src/test-artifact-verification.ts",
+      "kind": "import",
+      "specifier": "node:crypto",
+      "line": 1,
+      "builtin": "node:crypto"
+    },
+    {
+      "from": "packages/three-surface-poc-core/src/test-artifact-verification.ts",
+      "kind": "import",
+      "specifier": "node:fs",
+      "line": 2,
+      "builtin": "node:fs"
+    },
+    {
+      "from": "packages/three-surface-poc-core/src/test-artifact-verification.ts",
+      "kind": "import",
+      "specifier": "node:path",
+      "line": 15,
+      "builtin": "node:path"
+    },
+    {
+      "from": "packages/three-surface-poc-core/src/owner-act-drafter.ts",
+      "kind": "import",
+      "specifier": "node:crypto",
+      "line": 17,
+      "builtin": "node:crypto"
+    },
+    {
+      "from": "packages/three-surface-poc-core/src/owner-act-drafter.ts",
+      "kind": "import-type",
+      "specifier": "@syzygy/cap1-core",
+      "line": 19,
+      "module": "packages/cap1-core/src/index.ts"
+    },
+    {
+      "from": "packages/three-surface-poc-core/src/body-read-authority.ts",
+      "kind": "import",
+      "specifier": "./act-fields.js",
+      "line": 37,
+      "module": "packages/three-surface-poc-core/src/act-fields.ts"
+    },
+    {
+      "from": "packages/three-surface-poc-core/src/body-read-authority.ts",
+      "kind": "import",
+      "specifier": "./authority-artifact-fields.js",
+      "line": 54,
+      "module": "packages/three-surface-poc-core/src/authority-artifact-fields.ts"
+    },
+    {
+      "from": "packages/three-surface-poc-core/src/body-read-authority.ts",
+      "kind": "import",
+      "specifier": "./owner-act-record.js",
+      "line": 60,
+      "module": "packages/three-surface-poc-core/src/owner-act-record.ts"
+    },
+    {
+      "from": "packages/three-surface-poc-core/src/body-read-authority.ts",
+      "kind": "re-export",
+      "specifier": "./act-fields.js",
+      "line": 67,
+      "module": "packages/three-surface-poc-core/src/act-fields.ts"
+    },
+    {
+      "from": "packages/three-surface-poc-core/src/authority-disclosure.ts",
+      "kind": "import",
+      "specifier": "./body-read-authority.js",
+      "line": 11,
+      "module": "packages/three-surface-poc-core/src/body-read-authority.ts"
+    },
+    {
+      "from": "packages/three-surface-poc-core/src/project-shape-observer.ts",
+      "kind": "import",
+      "specifier": "./body-read-authority.js",
+      "line": 15,
+      "module": "packages/three-surface-poc-core/src/body-read-authority.ts"
+    },
+    {
+      "from": "packages/three-surface-poc-core/src/project-shape-manifest.ts",
+      "kind": "import",
+      "specifier": "node:crypto",
+      "line": 27,
+      "builtin": "node:crypto"
+    },
+    {
+      "from": "packages/three-surface-poc-core/src/project-shape-manifest.ts",
+      "kind": "import",
+      "specifier": "./git-tree.js",
+      "line": 29,
+      "module": "packages/three-surface-poc-core/src/git-tree.ts"
+    },
+    {
+      "from": "packages/three-surface-poc-core/src/project-shape-observation.ts",
+      "kind": "import",
+      "specifier": "node:child_process",
+      "line": 25,
+      "builtin": "node:child_process"
+    },
+    {
+      "from": "packages/three-surface-poc-core/src/project-shape-observation.ts",
+      "kind": "import",
+      "specifier": "node:crypto",
+      "line": 26,
+      "builtin": "node:crypto"
+    },
+    {
+      "from": "packages/three-surface-poc-core/src/project-shape-observation.ts",
+      "kind": "import-type",
+      "specifier": "./body-read-authority.js",
+      "line": 28,
+      "module": "packages/three-surface-poc-core/src/body-read-authority.ts"
+    },
+    {
+      "from": "packages/three-surface-poc-core/src/project-shape-observation.ts",
+      "kind": "import-type",
+      "specifier": "./content-classification.js",
+      "line": 29,
+      "module": "packages/three-surface-poc-core/src/content-classification.ts"
+    },
+    {
+      "from": "packages/three-surface-poc-core/src/project-shape-observation.ts",
+      "kind": "import",
+      "specifier": "./resource-ledger.js",
+      "line": 30,
+      "module": "packages/three-surface-poc-core/src/resource-ledger.ts"
+    },
+    {
+      "from": "packages/three-surface-poc-core/src/project-shape-observation.ts",
+      "kind": "import",
+      "specifier": "./git-tree.js",
+      "line": 31,
+      "module": "packages/three-surface-poc-core/src/git-tree.ts"
+    },
+    {
+      "from": "packages/three-surface-poc-core/src/project-shape-observation.ts",
+      "kind": "import",
+      "specifier": "./project-shape-manifest.js",
+      "line": 32,
+      "module": "packages/three-surface-poc-core/src/project-shape-manifest.ts"
+    },
+    {
+      "from": "packages/three-surface-poc-core/src/git-object-reader.ts",
+      "kind": "import",
+      "specifier": "node:crypto",
+      "line": 29,
+      "builtin": "node:crypto"
+    },
+    {
+      "from": "packages/three-surface-poc-core/src/git-object-reader.ts",
+      "kind": "import",
+      "specifier": "./git-tree.js",
+      "line": 31,
+      "module": "packages/three-surface-poc-core/src/git-tree.ts"
+    },
+    {
+      "from": "packages/three-surface-poc-core/src/git-object-reader.ts",
+      "kind": "import",
+      "specifier": "./markdown-code-context.js",
+      "line": 32,
+      "module": "packages/three-surface-poc-core/src/markdown-code-context.ts"
+    },
+    {
+      "from": "packages/three-surface-poc-core/src/git-object-reader.ts",
+      "kind": "import-type",
+      "specifier": "./project-shape-manifest.js",
+      "line": 33,
+      "module": "packages/three-surface-poc-core/src/project-shape-manifest.ts"
+    },
+    {
+      "from": "packages/three-surface-poc-core/src/git-object-reader.ts",
+      "kind": "import",
+      "specifier": "./project-shape-observation.js",
+      "line": 34,
+      "module": "packages/three-surface-poc-core/src/project-shape-observation.ts"
+    },
+    {
+      "from": "packages/three-surface-poc-core/src/git-object-reader.ts",
+      "kind": "import",
+      "specifier": "./resource-ledger.js",
+      "line": 35,
+      "module": "packages/three-surface-poc-core/src/resource-ledger.ts"
+    },
+    {
+      "from": "packages/three-surface-poc-core/src/content-classification.ts",
+      "kind": "import",
+      "specifier": "./git-object-reader.js",
+      "line": 34,
+      "module": "packages/three-surface-poc-core/src/git-object-reader.ts"
+    },
+    {
+      "from": "packages/three-surface-poc-core/src/content-classification.ts",
+      "kind": "import",
+      "specifier": "./project-shape-manifest.js",
+      "line": 35,
+      "module": "packages/three-surface-poc-core/src/project-shape-manifest.ts"
+    },
+    {
+      "from": "packages/three-surface-poc-core/src/content-classification.ts",
+      "kind": "import",
+      "specifier": "./project-shape-observation.js",
+      "line": 36,
+      "module": "packages/three-surface-poc-core/src/project-shape-observation.ts"
+    },
+    {
+      "from": "packages/three-surface-poc-core/src/content-classification.ts",
+      "kind": "import",
+      "specifier": "./resource-ledger.js",
+      "line": 37,
+      "module": "packages/three-surface-poc-core/src/resource-ledger.ts"
+    },
+    {
+      "from": "packages/three-surface-poc-core/src/project-shape-extraction.ts",
+      "kind": "import",
+      "specifier": "./git-tree.js",
+      "line": 25,
+      "module": "packages/three-surface-poc-core/src/git-tree.ts"
+    },
+    {
+      "from": "packages/three-surface-poc-core/src/project-shape-extraction.ts",
+      "kind": "import",
+      "specifier": "./project-shape-manifest.js",
+      "line": 26,
+      "module": "packages/three-surface-poc-core/src/project-shape-manifest.ts"
+    },
+    {
+      "from": "packages/three-surface-poc-core/src/project-shape-extraction.ts",
+      "kind": "import-type",
+      "specifier": "./project-shape-observation.js",
+      "line": 27,
+      "module": "packages/three-surface-poc-core/src/project-shape-observation.ts"
+    },
+    {
+      "from": "packages/three-surface-poc-core/src/project-shape-extraction.ts",
+      "kind": "import",
+      "specifier": "./resource-ledger.js",
+      "line": 28,
+      "module": "packages/three-surface-poc-core/src/resource-ledger.ts"
+    },
+    {
+      "from": "packages/three-surface-poc-core/src/project-shape-coverage.ts",
+      "kind": "import",
+      "specifier": "./content-classification.js",
+      "line": 23,
+      "module": "packages/three-surface-poc-core/src/content-classification.ts"
+    },
+    {
+      "from": "packages/three-surface-poc-core/src/project-shape-coverage.ts",
+      "kind": "import",
+      "specifier": "./project-shape-manifest.js",
+      "line": 32,
+      "module": "packages/three-surface-poc-core/src/project-shape-manifest.ts"
+    },
+    {
+      "from": "packages/three-surface-poc-core/src/project-shape-coverage.ts",
+      "kind": "import",
+      "specifier": "./project-shape-extraction.js",
+      "line": 33,
+      "module": "packages/three-surface-poc-core/src/project-shape-extraction.ts"
+    },
+    {
+      "from": "packages/three-surface-poc-core/src/project-shape-model.ts",
+      "kind": "import",
+      "specifier": "@syzygy/cap1-core",
+      "line": 19,
+      "module": "packages/cap1-core/src/index.ts"
+    },
+    {
+      "from": "packages/three-surface-poc-core/src/project-shape-model.ts",
+      "kind": "import",
+      "specifier": "./authority-disclosure.js",
+      "line": 29,
+      "module": "packages/three-surface-poc-core/src/authority-disclosure.ts"
+    },
+    {
+      "from": "packages/three-surface-poc-core/src/project-shape-model.ts",
+      "kind": "import",
+      "specifier": "./body-read-authority.js",
+      "line": 30,
+      "module": "packages/three-surface-poc-core/src/body-read-authority.ts"
+    },
+    {
+      "from": "packages/three-surface-poc-core/src/project-shape-model.ts",
+      "kind": "import",
+      "specifier": "./content-classification.js",
+      "line": 35,
+      "module": "packages/three-surface-poc-core/src/content-classification.ts"
+    },
+    {
+      "from": "packages/three-surface-poc-core/src/project-shape-model.ts",
+      "kind": "import",
+      "specifier": "./git-object-reader.js",
+      "line": 47,
+      "module": "packages/three-surface-poc-core/src/git-object-reader.ts"
+    },
+    {
+      "from": "packages/three-surface-poc-core/src/project-shape-model.ts",
+      "kind": "import",
+      "specifier": "./git-tree.js",
+      "line": 48,
+      "module": "packages/three-surface-poc-core/src/git-tree.ts"
+    },
+    {
+      "from": "packages/three-surface-poc-core/src/project-shape-model.ts",
+      "kind": "import",
+      "specifier": "./project-shape-coverage.js",
+      "line": 49,
+      "module": "packages/three-surface-poc-core/src/project-shape-coverage.ts"
+    },
+    {
+      "from": "packages/three-surface-poc-core/src/project-shape-model.ts",
+      "kind": "import",
+      "specifier": "./project-shape-extraction.js",
+      "line": 59,
+      "module": "packages/three-surface-poc-core/src/project-shape-extraction.ts"
+    },
+    {
+      "from": "packages/three-surface-poc-core/src/project-shape-model.ts",
+      "kind": "import-type",
+      "specifier": "./project-shape-manifest.js",
+      "line": 60,
+      "module": "packages/three-surface-poc-core/src/project-shape-manifest.ts"
+    },
+    {
+      "from": "packages/three-surface-poc-core/src/project-shape-model.ts",
+      "kind": "import",
+      "specifier": "./project-shape-observation.js",
+      "line": 61,
+      "module": "packages/three-surface-poc-core/src/project-shape-observation.ts"
+    },
+    {
+      "from": "packages/three-surface-poc-core/src/project-shape-model.ts",
+      "kind": "import",
+      "specifier": "./project-shape-observer.js",
+      "line": 74,
+      "module": "packages/three-surface-poc-core/src/project-shape-observer.ts"
+    },
+    {
+      "from": "packages/three-surface-poc-core/src/project-shape-model.ts",
+      "kind": "import",
+      "specifier": "./resource-ledger.js",
+      "line": 75,
+      "module": "packages/three-surface-poc-core/src/resource-ledger.ts"
+    },
+    {
+      "from": "packages/three-surface-poc-core/src/proposed-work.ts",
+      "kind": "import-type",
+      "specifier": "@syzygy/cap1-core",
+      "line": 1,
+      "module": "packages/cap1-core/src/index.ts"
+    },
+    {
+      "from": "packages/three-surface-poc-core/src/proposed-work.ts",
+      "kind": "import-type",
+      "specifier": "./code-structure.js",
+      "line": 3,
+      "module": "packages/three-surface-poc-core/src/code-structure.ts"
+    },
+    {
+      "from": "packages/three-surface-poc-core/src/proposed-work.ts",
+      "kind": "import",
+      "specifier": "./project-shape-model.js",
+      "line": 4,
+      "module": "packages/three-surface-poc-core/src/project-shape-model.ts"
+    },
+    {
+      "from": "packages/three-surface-poc-core/src/reevaluation.ts",
+      "kind": "import-type",
+      "specifier": "./model.js",
+      "line": 1,
+      "module": "packages/three-surface-poc-core/src/model.ts"
+    },
+    {
+      "from": "packages/three-surface-poc-core/src/walkthrough-judgment.ts",
+      "kind": "import",
+      "specifier": "./act-fields.js",
+      "line": 35,
+      "module": "packages/three-surface-poc-core/src/act-fields.ts"
+    },
+    {
+      "from": "packages/three-surface-poc-core/src/walkthrough-judgment.ts",
+      "kind": "import-type",
+      "specifier": "./body-read-authority.js",
+      "line": 54,
+      "module": "packages/three-surface-poc-core/src/body-read-authority.ts"
+    },
+    {
+      "from": "packages/three-surface-poc-core/src/walkthrough-judgment.ts",
+      "kind": "import",
+      "specifier": "./authority-disclosure.js",
+      "line": 63,
+      "module": "packages/three-surface-poc-core/src/authority-disclosure.ts"
+    },
+    {
+      "from": "packages/three-surface-poc-core/src/walkthrough-judgment.ts",
+      "kind": "import",
+      "specifier": "./owner-act-record.js",
+      "line": 64,
+      "module": "packages/three-surface-poc-core/src/owner-act-record.ts"
+    },
+    {
+      "from": "packages/three-surface-poc-core/src/resource-ledger.ts",
+      "kind": "import",
+      "specifier": "./project-shape-manifest.js",
+      "line": 32,
+      "module": "packages/three-surface-poc-core/src/project-shape-manifest.ts"
+    },
+    {
+      "from": "packages/three-surface-poc-core/src/resource-ledger.ts",
+      "kind": "import-type",
+      "specifier": "./project-shape-observation.js",
+      "line": 33,
+      "module": "packages/three-surface-poc-core/src/project-shape-observation.ts"
+    },
+    {
+      "from": "packages/three-surface-poc-core/src/resource-headroom.ts",
+      "kind": "import-type",
+      "specifier": "./project-shape-model.js",
+      "line": 1,
+      "module": "packages/three-surface-poc-core/src/project-shape-model.ts"
+    },
+    {
+      "from": "packages/three-surface-poc-core/src/resource-headroom.ts",
+      "kind": "import",
+      "specifier": "./project-shape-observation.js",
+      "line": 2,
+      "module": "packages/three-surface-poc-core/src/project-shape-observation.ts"
+    },
+    {
+      "from": "packages/three-surface-poc-core/src/resource-headroom.ts",
+      "kind": "import",
+      "specifier": "./resource-ledger.js",
+      "line": 3,
+      "module": "packages/three-surface-poc-core/src/resource-ledger.ts"
+    },
+    {
+      "from": "packages/three-surface-poc-core/src/walkthrough-readiness.ts",
+      "kind": "import",
+      "specifier": "node:crypto",
+      "line": 20,
+      "builtin": "node:crypto"
+    },
+    {
+      "from": "packages/three-surface-poc-core/src/walkthrough-readiness.ts",
+      "kind": "import",
+      "specifier": "./project-shape-manifest.js",
+      "line": 22,
+      "module": "packages/three-surface-poc-core/src/project-shape-manifest.ts"
+    },
+    {
+      "from": "packages/three-surface-poc-core/src/walkthrough-readiness.ts",
+      "kind": "import-type",
+      "specifier": "./project-shape-model.js",
+      "line": 23,
+      "module": "packages/three-surface-poc-core/src/project-shape-model.ts"
+    },
+    {
+      "from": "packages/three-surface-poc-core/src/walkthrough-readiness.ts",
+      "kind": "import-type",
+      "specifier": "./walkthrough-judgment.js",
+      "line": 24,
+      "module": "packages/three-surface-poc-core/src/walkthrough-judgment.ts"
+    },
+    {
+      "from": "packages/three-surface-poc-core/src/walkthrough-readiness.ts",
+      "kind": "import",
+      "specifier": "./walkthrough-judgment.js",
+      "line": 25,
+      "module": "packages/three-surface-poc-core/src/walkthrough-judgment.ts"
+    },
+    {
+      "from": "packages/three-surface-poc-core/src/response-identity.ts",
+      "kind": "import",
+      "specifier": "node:crypto",
+      "line": 1,
+      "builtin": "node:crypto"
+    },
+    {
+      "from": "packages/three-surface-poc-core/src/response-identity.ts",
+      "kind": "import",
+      "specifier": "./project-shape-manifest.js",
+      "line": 3,
+      "module": "packages/three-surface-poc-core/src/project-shape-manifest.ts"
+    },
+    {
+      "from": "packages/three-surface-poc-core/src/fixtures/synthetic-corpora.ts",
+      "kind": "import-type",
+      "specifier": "../project-shape-manifest.js",
+      "line": 19,
+      "module": "packages/three-surface-poc-core/src/project-shape-manifest.ts"
+    },
+    {
+      "from": "packages/three-surface-poc-core/src/synthetic-corpus-coverage.ts",
+      "kind": "import",
+      "specifier": "./project-shape-manifest.js",
+      "line": 55,
+      "module": "packages/three-surface-poc-core/src/project-shape-manifest.ts"
+    },
+    {
+      "from": "packages/three-surface-poc-core/src/synthetic-corpus-coverage.ts",
+      "kind": "import",
+      "specifier": "./project-shape-extraction.js",
+      "line": 56,
+      "module": "packages/three-surface-poc-core/src/project-shape-extraction.ts"
+    },
+    {
+      "from": "packages/three-surface-poc-core/src/synthetic-corpus-coverage.ts",
+      "kind": "import",
+      "specifier": "./fixtures/synthetic-corpora.js",
+      "line": 57,
+      "module": "packages/three-surface-poc-core/src/fixtures/synthetic-corpora.ts"
+    },
+    {
+      "from": "apps/three-surface-poc/src/polaris-narrative.ts",
+      "kind": "import-type",
+      "specifier": "@syzygy/three-surface-poc-core",
+      "line": 12,
+      "module": "packages/three-surface-poc-core/src/index.ts"
+    },
+    {
+      "from": "apps/three-surface-poc/src/polaris-narrative.ts",
+      "kind": "import-type",
+      "specifier": "./capability-detail.js",
+      "line": 19,
+      "module": "apps/three-surface-poc/src/capability-detail.ts"
+    },
+    {
+      "from": "packages/polaris-generation-core/src/closed-schema.ts",
+      "kind": "import",
+      "specifier": "node:util",
+      "line": 1,
+      "builtin": "node:util"
+    },
+    {
+      "from": "packages/polaris-generation-core/src/closed-schema.ts",
+      "kind": "import",
+      "specifier": "./source-model.js",
+      "line": 2,
+      "module": "packages/polaris-generation-core/src/source-model.ts"
+    },
+    {
+      "from": "packages/cap1-core/src/index.ts",
+      "kind": "export-star",
+      "specifier": "./vocabulary.js",
+      "line": 1,
+      "module": "packages/cap1-core/src/vocabulary.ts"
+    },
+    {
+      "from": "packages/cap1-core/src/index.ts",
+      "kind": "export-star",
+      "specifier": "./identity.js",
+      "line": 2,
+      "module": "packages/cap1-core/src/identity.ts"
+    },
+    {
+      "from": "packages/cap1-core/src/index.ts",
+      "kind": "export-star",
+      "specifier": "./yaml-dialect.js",
+      "line": 3,
+      "module": "packages/cap1-core/src/yaml-dialect.ts"
+    },
+    {
+      "from": "packages/cap1-core/src/index.ts",
+      "kind": "export-star",
+      "specifier": "./declaration.js",
+      "line": 4,
+      "module": "packages/cap1-core/src/declaration.ts"
+    },
+    {
+      "from": "packages/cap1-core/src/index.ts",
+      "kind": "export-star",
+      "specifier": "./consent.js",
+      "line": 5,
+      "module": "packages/cap1-core/src/consent.ts"
+    },
+    {
+      "from": "packages/cap1-core/src/index.ts",
+      "kind": "export-star",
+      "specifier": "./coverage.js",
+      "line": 6,
+      "module": "packages/cap1-core/src/coverage.ts"
+    },
+    {
+      "from": "packages/cap1-core/src/index.ts",
+      "kind": "export-star",
+      "specifier": "./admission.js",
+      "line": 7,
+      "module": "packages/cap1-core/src/admission.ts"
+    },
+    {
+      "from": "packages/cap1-core/src/index.ts",
+      "kind": "export-star",
+      "specifier": "./evaluation.js",
+      "line": 8,
+      "module": "packages/cap1-core/src/evaluation.ts"
+    },
+    {
+      "from": "packages/cap1-core/src/index.ts",
+      "kind": "export-star",
+      "specifier": "./staleness.js",
+      "line": 9,
+      "module": "packages/cap1-core/src/staleness.ts"
+    },
+    {
+      "from": "packages/cap1-core/src/index.ts",
+      "kind": "export-star",
+      "specifier": "./proposal.js",
+      "line": 10,
+      "module": "packages/cap1-core/src/proposal.ts"
+    },
+    {
+      "from": "packages/cap1-core/src/index.ts",
+      "kind": "export-star",
+      "specifier": "./facets.js",
+      "line": 11,
+      "module": "packages/cap1-core/src/facets.ts"
+    },
+    {
+      "from": "packages/cap1-core/src/index.ts",
+      "kind": "export-star",
+      "specifier": "./stable-identity.js",
+      "line": 12,
+      "module": "packages/cap1-core/src/stable-identity.ts"
+    },
+    {
+      "from": "packages/cap1-core/src/index.ts",
+      "kind": "export-star",
+      "specifier": "./epistemic.js",
+      "line": 13,
+      "module": "packages/cap1-core/src/epistemic.ts"
+    },
+    {
+      "from": "packages/cap1-core/src/index.ts",
+      "kind": "export-star",
+      "specifier": "./authority.js",
+      "line": 14,
+      "module": "packages/cap1-core/src/authority.ts"
+    },
+    {
+      "from": "packages/cap1-core/src/index.ts",
+      "kind": "export-star",
+      "specifier": "./drawer.js",
+      "line": 15,
+      "module": "packages/cap1-core/src/drawer.ts"
+    },
+    {
+      "from": "packages/cap1-core/src/index.ts",
+      "kind": "export-star",
+      "specifier": "./parity.js",
+      "line": 16,
+      "module": "packages/cap1-core/src/parity.ts"
+    },
+    {
+      "from": "packages/cap1-core/src/index.ts",
+      "kind": "export-star",
+      "specifier": "./entry.js",
+      "line": 17,
+      "module": "packages/cap1-core/src/entry.ts"
+    },
+    {
+      "from": "packages/cap1-core/src/index.ts",
+      "kind": "export-star",
+      "specifier": "./discoverability.js",
+      "line": 18,
+      "module": "packages/cap1-core/src/discoverability.ts"
+    },
+    {
+      "from": "packages/cap1-core/src/index.ts",
+      "kind": "export-star",
+      "specifier": "./distinction.js",
+      "line": 19,
+      "module": "packages/cap1-core/src/distinction.ts"
+    },
+    {
+      "from": "packages/three-surface-poc-core/src/act-fields.ts",
+      "kind": "import",
+      "specifier": "node:crypto",
+      "line": 15,
+      "builtin": "node:crypto"
+    },
+    {
+      "from": "apps/three-surface-poc/src/capability-detail.ts",
+      "kind": "import",
+      "specifier": "node:crypto",
+      "line": 22,
+      "builtin": "node:crypto"
+    },
+    {
+      "from": "apps/three-surface-poc/src/capability-detail.ts",
+      "kind": "import",
+      "specifier": "@syzygy/three-surface-poc-core",
+      "line": 24,
+      "module": "packages/three-surface-poc-core/src/index.ts"
+    },
+    {
+      "from": "packages/cap1-core/src/yaml-dialect.ts",
+      "kind": "import",
+      "specifier": "yaml",
+      "line": 1,
+      "external": "node_modules/yaml/dist/index.d.ts"
+    },
+    {
+      "from": "packages/cap1-core/src/declaration.ts",
+      "kind": "import-type",
+      "specifier": "./identity.js",
+      "line": 1,
+      "module": "packages/cap1-core/src/identity.ts"
+    },
+    {
+      "from": "packages/cap1-core/src/declaration.ts",
+      "kind": "import",
+      "specifier": "./vocabulary.js",
+      "line": 2,
+      "module": "packages/cap1-core/src/vocabulary.ts"
+    },
+    {
+      "from": "packages/cap1-core/src/declaration.ts",
+      "kind": "import",
+      "specifier": "./yaml-dialect.js",
+      "line": 3,
+      "module": "packages/cap1-core/src/yaml-dialect.ts"
+    },
+    {
+      "from": "packages/cap1-core/src/consent.ts",
+      "kind": "import-type",
+      "specifier": "./identity.js",
+      "line": 1,
+      "module": "packages/cap1-core/src/identity.ts"
+    },
+    {
+      "from": "packages/cap1-core/src/coverage.ts",
+      "kind": "import-type",
+      "specifier": "./declaration.js",
+      "line": 1,
+      "module": "packages/cap1-core/src/declaration.ts"
+    },
+    {
+      "from": "packages/cap1-core/src/coverage.ts",
+      "kind": "import-type",
+      "specifier": "./identity.js",
+      "line": 2,
+      "module": "packages/cap1-core/src/identity.ts"
+    },
+    {
+      "from": "packages/cap1-core/src/coverage.ts",
+      "kind": "import",
+      "specifier": "./consent.js",
+      "line": 3,
+      "module": "packages/cap1-core/src/consent.ts"
+    },
+    {
+      "from": "packages/cap1-core/src/coverage.ts",
+      "kind": "import",
+      "specifier": "./vocabulary.js",
+      "line": 4,
+      "module": "packages/cap1-core/src/vocabulary.ts"
+    },
+    {
+      "from": "packages/cap1-core/src/admission.ts",
+      "kind": "import-type",
+      "specifier": "./identity.js",
+      "line": 1,
+      "module": "packages/cap1-core/src/identity.ts"
+    },
+    {
+      "from": "packages/cap1-core/src/admission.ts",
+      "kind": "import-type",
+      "specifier": "./consent.js",
+      "line": 2,
+      "module": "packages/cap1-core/src/consent.ts"
+    },
+    {
+      "from": "packages/cap1-core/src/evaluation.ts",
+      "kind": "import-type",
+      "specifier": "./identity.js",
+      "line": 1,
+      "module": "packages/cap1-core/src/identity.ts"
+    },
+    {
+      "from": "packages/cap1-core/src/staleness.ts",
+      "kind": "import",
+      "specifier": "./vocabulary.js",
+      "line": 1,
+      "module": "packages/cap1-core/src/vocabulary.ts"
+    },
+    {
+      "from": "packages/cap1-core/src/facets.ts",
+      "kind": "import-type",
+      "specifier": "./identity.js",
+      "line": 1,
+      "module": "packages/cap1-core/src/identity.ts"
+    },
+    {
+      "from": "packages/cap1-core/src/facets.ts",
+      "kind": "import-type",
+      "specifier": "./declaration.js",
+      "line": 2,
+      "module": "packages/cap1-core/src/declaration.ts"
+    },
+    {
+      "from": "packages/cap1-core/src/facets.ts",
+      "kind": "import-type",
+      "specifier": "./coverage.js",
+      "line": 3,
+      "module": "packages/cap1-core/src/coverage.ts"
+    },
+    {
+      "from": "packages/cap1-core/src/facets.ts",
+      "kind": "import",
+      "specifier": "./vocabulary.js",
+      "line": 4,
+      "module": "packages/cap1-core/src/vocabulary.ts"
+    },
+    {
+      "from": "packages/cap1-core/src/stable-identity.ts",
+      "kind": "import-type",
+      "specifier": "./identity.js",
+      "line": 1,
+      "module": "packages/cap1-core/src/identity.ts"
+    },
+    {
+      "from": "packages/cap1-core/src/stable-identity.ts",
+      "kind": "import-type",
+      "specifier": "./declaration.js",
+      "line": 2,
+      "module": "packages/cap1-core/src/declaration.ts"
+    },
+    {
+      "from": "packages/cap1-core/src/stable-identity.ts",
+      "kind": "import-type",
+      "specifier": "./coverage.js",
+      "line": 3,
+      "module": "packages/cap1-core/src/coverage.ts"
+    },
+    {
+      "from": "packages/cap1-core/src/epistemic.ts",
+      "kind": "import",
+      "specifier": "./vocabulary.js",
+      "line": 1,
+      "module": "packages/cap1-core/src/vocabulary.ts"
+    },
+    {
+      "from": "packages/cap1-core/src/epistemic.ts",
+      "kind": "import-type",
+      "specifier": "./facets.js",
+      "line": 5,
+      "module": "packages/cap1-core/src/facets.ts"
+    },
+    {
+      "from": "packages/cap1-core/src/epistemic.ts",
+      "kind": "import-type",
+      "specifier": "./staleness.js",
+      "line": 6,
+      "module": "packages/cap1-core/src/staleness.ts"
+    },
+    {
+      "from": "packages/cap1-core/src/drawer.ts",
+      "kind": "import-type",
+      "specifier": "./identity.js",
+      "line": 1,
+      "module": "packages/cap1-core/src/identity.ts"
+    },
+    {
+      "from": "packages/cap1-core/src/drawer.ts",
+      "kind": "import",
+      "specifier": "./vocabulary.js",
+      "line": 2,
+      "module": "packages/cap1-core/src/vocabulary.ts"
+    },
+    {
+      "from": "packages/cap1-core/src/drawer.ts",
+      "kind": "import",
+      "specifier": "./facets.js",
+      "line": 8,
+      "module": "packages/cap1-core/src/facets.ts"
+    },
+    {
+      "from": "packages/cap1-core/src/drawer.ts",
+      "kind": "import-type",
+      "specifier": "./coverage.js",
+      "line": 9,
+      "module": "packages/cap1-core/src/coverage.ts"
+    },
+    {
+      "from": "packages/cap1-core/src/drawer.ts",
+      "kind": "import-type",
+      "specifier": "./staleness.js",
+      "line": 10,
+      "module": "packages/cap1-core/src/staleness.ts"
+    },
+    {
+      "from": "packages/cap1-core/src/drawer.ts",
+      "kind": "import-type",
+      "specifier": "./epistemic.js",
+      "line": 11,
+      "module": "packages/cap1-core/src/epistemic.ts"
+    },
+    {
+      "from": "packages/cap1-core/src/drawer.ts",
+      "kind": "import-type",
+      "specifier": "./authority.js",
+      "line": 12,
+      "module": "packages/cap1-core/src/authority.ts"
+    },
+    {
+      "from": "packages/cap1-core/src/parity.ts",
+      "kind": "import-type",
+      "specifier": "./identity.js",
+      "line": 1,
+      "module": "packages/cap1-core/src/identity.ts"
+    },
+    {
+      "from": "packages/cap1-core/src/parity.ts",
+      "kind": "import-type",
+      "specifier": "./epistemic.js",
+      "line": 2,
+      "module": "packages/cap1-core/src/epistemic.ts"
+    },
+    {
+      "from": "packages/cap1-core/src/parity.ts",
+      "kind": "import",
+      "specifier": "./drawer.js",
+      "line": 3,
+      "module": "packages/cap1-core/src/drawer.ts"
+    },
+    {
+      "from": "packages/cap1-core/src/entry.ts",
+      "kind": "import-type",
+      "specifier": "./identity.js",
+      "line": 1,
+      "module": "packages/cap1-core/src/identity.ts"
+    },
+    {
+      "from": "packages/cap1-core/src/discoverability.ts",
+      "kind": "import-type",
+      "specifier": "./identity.js",
+      "line": 1,
+      "module": "packages/cap1-core/src/identity.ts"
+    },
+    {
+      "from": "packages/cap1-core/src/discoverability.ts",
+      "kind": "import-type",
+      "specifier": "./declaration.js",
+      "line": 2,
+      "module": "packages/cap1-core/src/declaration.ts"
+    },
+    {
+      "from": "packages/cap1-core/src/discoverability.ts",
+      "kind": "import-type",
+      "specifier": "./epistemic.js",
+      "line": 3,
+      "module": "packages/cap1-core/src/epistemic.ts"
+    },
+    {
+      "from": "packages/cap1-core/src/discoverability.ts",
+      "kind": "import-type",
+      "specifier": "./proposal.js",
+      "line": 4,
+      "module": "packages/cap1-core/src/proposal.ts"
+    },
+    {
+      "from": "packages/cap1-core/src/discoverability.ts",
+      "kind": "import",
+      "specifier": "./proposal.js",
+      "line": 5,
+      "module": "packages/cap1-core/src/proposal.ts"
+    },
+    {
+      "from": "packages/cap1-core/src/discoverability.ts",
+      "kind": "import",
+      "specifier": "./vocabulary.js",
+      "line": 6,
+      "module": "packages/cap1-core/src/vocabulary.ts"
+    },
+    {
+      "from": "packages/cap1-core/src/discoverability.ts",
+      "kind": "import",
+      "specifier": "./entry.js",
+      "line": 7,
+      "module": "packages/cap1-core/src/entry.ts"
+    },
+    {
+      "from": "packages/cap1-core/src/distinction.ts",
+      "kind": "import-type",
+      "specifier": "./epistemic.js",
+      "line": 1,
+      "module": "packages/cap1-core/src/epistemic.ts"
+    },
+    {
+      "from": "packages/cap1-core/src/distinction.ts",
+      "kind": "import-type",
+      "specifier": "./proposal.js",
+      "line": 2,
+      "module": "packages/cap1-core/src/proposal.ts"
+    },
+    {
+      "from": "packages/cap1-core/src/distinction.ts",
+      "kind": "import-type",
+      "specifier": "./authority.js",
+      "line": 3,
+      "module": "packages/cap1-core/src/authority.ts"
+    },
+    {
+      "from": "packages/cap1-core/src/distinction.ts",
+      "kind": "import-type",
+      "specifier": "./discoverability.js",
+      "line": 4,
+      "module": "packages/cap1-core/src/discoverability.ts"
+    }
+  ]
+}

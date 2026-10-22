@@ -202,7 +202,7 @@ describe('daemon entry: the one changed input, `dossier` as the first argument',
   // The `polaris` branch (prototype, POLARIS-DOSSIER-ONE-COMMAND-RUN-2026-10-14) injects the same renderer the same way.
   it('the daemon path never loads the POC app: each import is dynamic and inside the `dossier` or `polaris` branch', () => {
     const main = readFileSync(path.join(REPO_ROOT, 'apps/syzygy/src/main.ts'), 'utf8');
-    const line = "    const { renderDossier } = await import('@syzygy/three-surface-poc-app/dossier-render');";
+    const line = "    const { renderLocalDossier } = await import('@syzygy/three-surface-poc-app/dossier-site');";
     const mentions = main.split('\n').filter((text) => text.includes('three-surface-poc-app'));
     expect(mentions).toEqual([line, line]);
     const daemon = main.indexOf('let parsed = parseCli(');

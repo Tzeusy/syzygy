@@ -1,0 +1,53 @@
+{
+  "tree": "/home/tze/GitHub/syzygy/.worktrees/parallel-agents/syzygy-bpyt.8.1",
+  "commit": "ee89766ad99b248338e72d1ff5538f60d6c60e17",
+  "generators": [
+    {
+      "script": "gen/split_provider_draft.py",
+      "scriptSha256": "bd675bd169b5bb48d4459d4372deeda1446a090a59b030ec2a063950f8e65798",
+      "input": "3000698f3706a7e583a21be37dfdc30e3ffef551:packages/polaris-generation-core/src/provider-draft.ts",
+      "inputSha256": "910b01c8919610026a0568a7f936a3194bbcc0721bec6cdfc22eb2142bd0ba6b",
+      "files": [
+        {
+          "file": "packages/polaris-generation-core/src/closed-schema.ts",
+          "identical": true,
+          "generatedSha256": "8592fb3e41e312da0da6bb48ac4bfdacb28b4ecbcf2ab929634b3a0cb44fe6fe",
+          "treeSha256": "8592fb3e41e312da0da6bb48ac4bfdacb28b4ecbcf2ab929634b3a0cb44fe6fe"
+        },
+        {
+          "file": "packages/polaris-generation-core/src/draft-model.ts",
+          "identical": true,
+          "generatedSha256": "0c64dd7330a52676f2ae46e520cc97ee021cfdb1ab50ccf91e39902596c5b42a",
+          "treeSha256": "0c64dd7330a52676f2ae46e520cc97ee021cfdb1ab50ccf91e39902596c5b42a"
+        },
+        {
+          "file": "packages/polaris-generation-core/src/provider-draft.ts",
+          "identical": true,
+          "generatedSha256": "9294fd906187fd2abe8012e363beecbb3d9d420f4d272bd8accc2fb6a9d01734",
+          "treeSha256": "9294fd906187fd2abe8012e363beecbb3d9d420f4d272bd8accc2fb6a9d01734"
+        }
+      ]
+    },
+    {
+      "script": "gen/split_dossier_render.py",
+      "scriptSha256": "1f053d2b37f6fd30d178a400532505aac8429e5db86b01e8a04d52ecc3866ad4",
+      "input": "0d4d5098:apps/three-surface-poc/src/polaris-generation/dossier-render.ts",
+      "inputSha256": "c5074742af6fece7d5b27fe092507d84e8bcfd5f830ec8c93d92f5cbb3ed00dc",
+      "files": [
+        {
+          "file": "apps/three-surface-poc/src/polaris-generation/dossier-site.ts",
+          "identical": true,
+          "generatedSha256": "c1f82e84a0ad7d398fcc617c19b0de9b4deff3affd2d2e3f757e0a73560bb8f9",
+          "treeSha256": "c1f82e84a0ad7d398fcc617c19b0de9b4deff3affd2d2e3f757e0a73560bb8f9"
+        },
+        {
+          "file": "apps/three-surface-poc/src/polaris-generation/dossier-render.ts",
+          "identical": true,
+          "generatedSha256": "0232633dad42621d74b8d916abce4cbcbcd565b7d18af10569ed2fe784f5f0d1",
+          "treeSha256": "0232633dad42621d74b8d916abce4cbcbcd565b7d18af10569ed2fe784f5f0d1"
+        }
+      ]
+    }
+  ],
+  "allIdentical": true
+}

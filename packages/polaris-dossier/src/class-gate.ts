@@ -1,4 +1,4 @@
-import type { PublicSourceContentClass } from '@syzygy/polaris-generation-core';
+import type { PublicSourceContentClass } from '@syzygy/polaris-generation-core/live';
 
 /** The content-class gate on every artifact Syzygy hands an agent session (R-PR403-SCREEN-DOCS-1 finding 1).
  *

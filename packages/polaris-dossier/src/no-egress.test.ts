@@ -33,6 +33,7 @@ beforeAll(async () => {
     bundle: true, platform: 'node', format: 'esm', target: 'node22', outfile: bundle, logLevel: 'silent',
     banner: { js: 'import { createRequire as __createRequire } from \'node:module\'; const require = __createRequire(import.meta.url);' },
     alias: {
+      '@syzygy/polaris-generation-core/live': src('packages/polaris-generation-core/src/live.ts'),
       '@syzygy/polaris-generation-core': src('packages/polaris-generation-core/src/index.ts'),
       '@syzygy/polaris-generation-consent': src('packages/polaris-generation-consent/src/index.ts'),
       '@syzygy/polaris-dossier': src('packages/polaris-dossier/src/index.ts'),

@@ -1,4 +1,4 @@
-import { BoundedJsonError, parseBoundedJson } from '@syzygy/polaris-generation-core';
+import { BoundedJsonError, parseBoundedJson } from '@syzygy/polaris-generation-core/live';
 
 /** The run configuration of an operator-agent dossier run (REQ-polaris-generation-033).
  *
