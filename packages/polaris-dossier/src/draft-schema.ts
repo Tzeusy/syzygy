@@ -1,6 +1,6 @@
 import { types } from 'node:util';
 import { UNKNOWN_REASONS } from '@syzygy/cap1-core';
-import { DIAGRAM_KINDS, QUOTE_LEAD_IN, SOURCE_ID_MAX_LENGTH, SOURCE_ID_MIN_LENGTH, SOURCE_ID_PATTERN } from '@syzygy/polaris-generation-core';
+import { DIAGRAM_KINDS, QUOTE_LEAD_IN, SOURCE_ID_MAX_LENGTH, SOURCE_ID_MIN_LENGTH, SOURCE_ID_PATTERN } from '@syzygy/polaris-generation-core/live';
 import { EXECUTION_SCOPES } from './execution-flags.js';
 
 /** The local-agent draft schema (REQ-polaris-generation-034; design "The local-agent draft schema").

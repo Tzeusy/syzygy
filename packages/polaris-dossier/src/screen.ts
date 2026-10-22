@@ -2,7 +2,7 @@ import { createHash } from 'node:crypto';
 import * as fs from 'node:fs';
 import * as path from 'node:path';
 import { POLICY_PATH, readClassActState, readPolicyActChain } from '@syzygy/polaris-generation-consent';
-import { codeContentExempt, compileEveryOffsetMatcher, publicSourceContentClass, readCodeContentExemption, readProjectDocumentationRule, readSecretRedaction, redactBody, type PublicSourceContentClass, type RedactionDetector } from '@syzygy/polaris-generation-core';
+import { codeContentExempt, compileEveryOffsetMatcher, publicSourceContentClass, readCodeContentExemption, readProjectDocumentationRule, readSecretRedaction, redactBody, type PublicSourceContentClass, type RedactionDetector } from '@syzygy/polaris-generation-core/live';
 import { compileDetectors, deniedPathReason, detectSecrets, scanActiveContent, type DeniedPathRules, type SecretDetector } from '@syzygy/three-surface-poc-core';
 
 /** Classification and screening of every blob Syzygy reads for a check (REQ-polaris-generation-033: "every object SHALL be classified

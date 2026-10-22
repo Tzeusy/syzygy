@@ -6,9 +6,10 @@ import { afterEach, beforeAll, describe, expect, it } from 'vitest';
 
 import {
   evaluateDossier, generationAnchorId, generationSourcesForBody, gitBlobObjectId, parseDossierManifest, scanDossierPage,
-  type GenerationSource, type PipelineResult,
+  type GenerationSource, type LocalRenderInput, type PipelineResult,
 } from '@syzygy/polaris-generation-core';
-import { renderDossier, sourceRoute } from './dossier-render.js';
+import { renderDossier } from './dossier-render.js';
+import { sourceRoute } from './dossier-site.js';
 import { writeDossierRun } from './dossier-render-main.js';
 import { runSyntheticProject, syntheticProjects } from './pipeline-demo.js';
 import { syntheticGenerationSource } from './synthetic-source.js';
@@ -118,6 +119,13 @@ describe('multi-page dossier render', () => {
     const { body: _body, ...rest } = run.sources[0]!;
     const pathOnly: GenerationSource = { ...rest, classificationBasis: 'path-only', spans: [] };
     expect(() => renderDossier({ result: run.result, sources: [pathOnly, ...run.sources.slice(1)] })).toThrow('unquotable-source');
+  });
+
+  // syzygy-bpyt.8.1: this entry takes exactly one of a pipeline result and an operator-agent run (the CLI's own entry is
+  // renderLocalDossier, in dossier-site.ts). The refusal comes before either is read, so an empty run stands in for one.
+  it('refuses an input carrying both a pipeline result and an operator-agent run, or neither', () => {
+    expect(() => renderDossier({ result: run.result, local: {} as LocalRenderInput, sources: run.sources })).toThrow('Dossier render refused: not-renderable');
+    expect(() => renderDossier({ sources: run.sources })).toThrow('Dossier render refused: not-renderable');
   });
 
   it('escapes markup-bearing and multibyte source text and still resolves every quote exactly', async () => {

@@ -2,7 +2,7 @@ import { createHash } from 'node:crypto';
 import * as fs from 'node:fs';
 import * as path from 'node:path';
 import { UNKNOWN_REASONS } from '@syzygy/cap1-core';
-import { parseBoundedJson } from '@syzygy/polaris-generation-core';
+import { parseBoundedJson } from '@syzygy/polaris-generation-core/live';
 import { QUOTATION_RULE } from './brief.js';
 import {
   briefIssuedAt, checkSubject, declaredSessionId, type CheckDeps, type CheckFinding, type CheckRecord, type CheckRefusal, type CheckedRevision,

@@ -1,5 +1,8 @@
-import { types } from 'node:util';
 import type { DiscoveryStage, GenerationStage, PromptStage } from './prompts.js';
+import { check, handle, list, object, refs, text, type Schema } from './closed-schema.js';
+import { disposition, draft, draftHandles, fidelity, treeBlocks, unique, validateRequestedAssets, type AssetDisposition, type DossierDraft, type DraftBlock, type DraftDiagram,
+  type DraftDiagramEdge, type DraftDiagramNode, type DraftParagraph, type FidelityBlockSupport, type FidelityInventoryCoverage, type FidelityReview, type RequestedAsset } from './draft-model.js';
+import { SOURCE_TEXT_MAX_LENGTH } from './source-model.js';
 
 // Provider-local intermediate records only. These neither mint identities nor
 // implement the authored asset bundle, source admission or semantic review.
@@ -7,61 +10,23 @@ import type { DiscoveryStage, GenerationStage, PromptStage } from './prompts.js'
 // prove entailment or inventory completeness beyond the source denominator.
 // Plain strings remain inert, including markup-looking text; renderers must
 // escape them. This schema provides no executable markup or external link role.
-type Schema = { type: 'object'; properties: Record<string, Schema>; required: string[]; additionalProperties: false }
-  | { type: 'array'; items: Schema; minItems: number; maxItems: number; uniqueItems?: boolean }
-  | { type: 'string'; minLength: number; maxLength: number; pattern?: string; enum?: string[] }
-  | { type: 'boolean' }
-  | { type: 'number'; minimum: number; maximum: number }
-  | { oneOf: readonly Schema[] };
+// The draft and review records, and the closed-schema checker every stage shares, live in draft-model.ts and
+// closed-schema.ts (the live dossier path imports them there); this module re-exports them under the names the
+// provider pipeline uses.
+export { SOURCE_ID_MAX_LENGTH, SOURCE_ID_MIN_LENGTH, SOURCE_ID_PATTERN, SOURCE_TEXT_MAX_LENGTH } from './source-model.js';
+export { DIAGRAM_KINDS, diagramToMermaid, reviewVerdict, validateDraftRecord, validateRequestedAssets, type AssetDisposition, type DiagramKind, type EpistemicMarking, type RequestedAsset } from './draft-model.js';
+export type ProviderParagraph = DraftParagraph;
+export type ProviderBlock = DraftBlock;
+export type ProviderDiagramNode = DraftDiagramNode;
+export type ProviderDiagramEdge = DraftDiagramEdge;
+export type ProviderDraft = DossierDraft;
+export type ProviderDiagram = DraftDiagram;
+export type ProviderInventoryCoverage = FidelityInventoryCoverage;
+export type ProviderBlockSupport = FidelityBlockSupport;
+export type ProviderReview = FidelityReview;
 
-/** The handle shape every id in this module's schemas (and, per admitted-input.ts's
- * front door, every admitted source's `sourceId`) must satisfy. Exported so
- * admitSourcePopulation can fail closed on the exact same pattern and length bound
- * this module enforces at `validateStage`, instead of duplicating the literals. */
-export const SOURCE_ID_PATTERN = '^[A-Za-z0-9][A-Za-z0-9_.:-]*$';
-export const SOURCE_ID_MIN_LENGTH = 1;
-export const SOURCE_ID_MAX_LENGTH = 100;
-/** The upper bound `sourceSchema` (below) places on an admitted source's `text`,
- * exported for the same reason: one definition, shared with admitted-input.ts. */
-export const SOURCE_TEXT_MAX_LENGTH = 100_000;
-
-const text: Schema = { type: 'string', minLength: 1, maxLength: 8000 };
-const handle: Schema = { type: 'string', minLength: SOURCE_ID_MIN_LENGTH, maxLength: SOURCE_ID_MAX_LENGTH, pattern: SOURCE_ID_PATTERN };
-const list = (items: Schema, minItems = 0, maxItems = 200): Extract<Schema, { type: 'array' }> => ({ type: 'array', items, minItems, maxItems });
-const object = (properties: Record<string, Schema>): Schema => ({ type: 'object', properties, required: Object.keys(properties), additionalProperties: false });
-const refs: Schema = { ...list(handle, 1), uniqueItems: true };
-const requestedAssetsSchema = list(object({ id: handle, kind: { ...text, enum: ['section', 'diagram', 'deep-dive'] }, required: { type: 'boolean' } }), 0, 100);
-const paragraph = object({ id: handle, text, sourceIds: refs });
-// A tree block: the parent summarizes its leaf children, so truncating at either
-// depth leaves a coarser account. Nesting is exactly one level; the Schema type
-// has no recursion. The first block of a section is its answer (prompt-stated).
-const block = object({ id: handle, text, sourceIds: refs, children: list(paragraph, 0, 12) });
-const epistemic: Schema = { ...text, enum: ['observed', 'inferred', 'unknown'] };
-export const DIAGRAM_KINDS = ['flow', 'lifecycle', 'state-machine', 'boundary', 'dependency', 'placement'] as const;
-const disposition: Schema = { oneOf: [
-  object({ kind: { ...text, enum: ['produced'] }, assetIds: refs }),
-  object({ kind: { ...text, enum: ['omitted'] }, reason: text, references: refs }),
-  object({ kind: { ...text, enum: ['unresolved'] }, reason: text, references: refs }),
-] };
 const inventory = object({ entries: list(object({ id: handle, sourceIds: refs, statement: text, kind: { ...text, enum: ['purpose', 'beneficiary', 'thesis', 'capability', 'choice', 'term', 'qualification', 'conflict', 'other'] }, disposition }), 1) });
 const plan = object({ sections: list(object({ id: handle, title: text, reason: text, sourceIds: refs, disposition }), 1, 30) });
-const draft = object({
-  title: text, introduction: paragraph,
-  sections: list(object({ id: handle, title: text, paragraphs: list(block, 1, 30), disposition }), 1, 30),
-  diagrams: list(object({ id: handle, title: text, sectionId: handle,
-    kind: { ...text, enum: [...DIAGRAM_KINDS] }, relationship: text,
-    nodes: list(object({ id: handle, label: text, sourceIds: refs, epistemic }), 1, 40),
-    edges: list(object({ id: handle, from: handle, to: handle, label: text, sourceIds: refs, epistemic }), 1, 80),
-    disposition,
-  }), 0, 20),
-  deepDives: list(object({ id: handle, title: text, sectionId: handle, paragraphs: list(block, 1, 30), disposition }), 0, 30),
-  unresolved: list(object({ question: text, reason: text, references: refs }), 0, 100),
-});
-const inventoryCoverage = list(object({ entryId: handle, disposition: { ...text, enum: ['represented', 'justified-omission', 'unsupported', 'unresolved'] }, blockIds: list(handle, 0, 5000), reason: text }), 1, 5000);
-const blockSupport = list(object({ blockId: handle, verdict: { ...text, enum: ['supported', 'anchor-does-not-support', 'unresolved'] }, sourceIds: list(handle, 0, 200), reason: text }), 1, 5000);
-const fidelity = object({ inventoryCoverage, blockSupport,
-  findings: list(object({ severity: { ...text, enum: ['blocking', 'advisory'] }, message: text, target: handle }), 0, 1000),
-});
 /** Bounds a discovery claim; discovery.ts truncates at `maxClaimChars` (default 400). */
 export const DISCOVERY_CLAIM_MAX_LENGTH = 400;
 export const DISCOVERY_RELEVANCE_MAX = 10;
@@ -81,83 +46,9 @@ export function stageSchema(stage: PromptStage): { version: string; schema: Sche
   return { version: `polaris-provider-${stage}-${schemaVersions[stage]}`, schema: structuredClone(schemas[stage]) };
 }
 
-function check(schema: Schema, value: unknown): void {
-  if ('oneOf' in schema) {
-    for (const candidate of schema.oneOf) {
-      try { check(candidate, value); return; } catch { /* try next closed arm */ }
-    }
-    throw new Error('invalid-disposition');
-  }
-  if (schema.type === 'string') {
-    if (typeof value !== 'string' || [...value].length < schema.minLength || [...value].length > schema.maxLength
-      || (schema.pattern && !new RegExp(schema.pattern, 'u').test(value))
-      || (schema.enum && !schema.enum.includes(value))) throw new Error('invalid-string');
-    return;
-  }
-  if (schema.type === 'boolean') {
-    if (typeof value !== 'boolean') throw new Error('invalid-boolean');
-    return;
-  }
-  if (schema.type === 'number') {
-    // Written as an inclusion so NaN, which fails every comparison, is refused with the infinities.
-    if (typeof value !== 'number' || !(value >= schema.minimum && value <= schema.maximum)) throw new Error('invalid-number');
-    return;
-  }
-  if (typeof value !== 'object' || value === null || types.isProxy(value)) throw new Error('invalid-structure');
-  const descriptors = Object.getOwnPropertyDescriptors(value);
-  if (Reflect.ownKeys(descriptors).some(key => typeof key !== 'string' || !('value' in descriptors[key]!))) throw new Error('invalid-property');
-  if (schema.type === 'array') {
-    if (!Array.isArray(value) || value.length < schema.minItems || value.length > schema.maxItems
-      || Object.keys(descriptors).length !== value.length + 1) throw new Error('invalid-array');
-    for (let i = 0; i < value.length; i++) {
-      if (!Object.hasOwn(descriptors, String(i))) throw new Error('invalid-array');
-      check(schema.items, descriptors[String(i)]!.value);
-    }
-    if (schema.uniqueItems && new Set(value).size !== value.length) throw new Error('duplicate-reference');
-    return;
-  }
-  if (Object.getPrototypeOf(value) !== Object.prototype && Object.getPrototypeOf(value) !== null) throw new Error('invalid-object');
-  const keys = Object.keys(descriptors);
-  if (keys.length !== schema.required.length || schema.required.some(key => !Object.hasOwn(descriptors, key))
-    || keys.some(key => !Object.hasOwn(schema.properties, key) || !descriptors[key]!.enumerable)) throw new Error('invalid-fields');
-  for (const key of keys) check(schema.properties[key]!, descriptors[key]!.value);
-}
-
-export interface ProviderParagraph { id: string; text: string; sourceIds: string[] }
-/** A section or deep-dive block: a parent paragraph and its 0–12 leaf children. */
-export interface ProviderBlock extends ProviderParagraph { children: ProviderParagraph[] }
-export type DiagramKind = typeof DIAGRAM_KINDS[number];
-export type EpistemicMarking = 'observed' | 'inferred' | 'unknown';
-export interface ProviderDiagramNode { id: string; label: string; sourceIds: string[]; epistemic: EpistemicMarking }
-export interface ProviderDiagramEdge { id: string; from: string; to: string; label: string; sourceIds: string[]; epistemic: EpistemicMarking }
-export interface RequestedAsset { readonly id: string; readonly kind: 'section' | 'diagram' | 'deep-dive'; readonly required: boolean }
-export type AssetDisposition =
-  | { kind: 'produced'; assetIds: string[] }
-  | { kind: 'omitted'; reason: string; references: string[] }
-  | { kind: 'unresolved'; reason: string; references: string[] };
 export interface ProviderInventory { entries: { id: string; sourceIds: string[]; statement: string; kind: 'purpose' | 'beneficiary' | 'thesis' | 'capability' | 'choice' | 'term' | 'qualification' | 'conflict' | 'other'; disposition: AssetDisposition }[] }
 export interface ProviderPlan { sections: { id: string; title: string; reason: string; sourceIds: string[]; disposition: AssetDisposition }[] }
-export interface ProviderDraft {
-  title: string;
-  introduction: ProviderParagraph;
-  sections: { id: string; title: string; paragraphs: ProviderBlock[]; disposition: AssetDisposition }[];
-  diagrams: ProviderDiagram[];
-  deepDives: { id: string; title: string; sectionId: string; paragraphs: ProviderBlock[]; disposition: AssetDisposition }[];
-  unresolved: { question: string; reason: string; references: string[] }[];
-}
-export interface ProviderDiagram {
-  id: string; title: string; sectionId: string; kind: DiagramKind; relationship: string;
-  nodes: ProviderDiagramNode[]; edges: ProviderDiagramEdge[]; disposition: AssetDisposition;
-}
-export interface ProviderInventoryCoverage { entryId: string; disposition: 'represented' | 'justified-omission' | 'unsupported' | 'unresolved'; blockIds: string[]; reason: string }
-export interface ProviderBlockSupport { blockId: string; verdict: 'supported' | 'anchor-does-not-support' | 'unresolved'; sourceIds: string[]; reason: string }
-export interface ProviderReview { inventoryCoverage: ProviderInventoryCoverage[]; blockSupport: ProviderBlockSupport[]; findings: { severity: 'blocking' | 'advisory'; message: string; target: string }[] }
 
-function unique(values: string[]): Set<string> {
-  const set = new Set(values);
-  if (set.size !== values.length) throw new Error('duplicate-handle');
-  return set;
-}
 function same(actual: string[], expected: Set<string>): void {
   const set = unique(actual);
   if (set.size !== expected.size || [...set].some(id => !expected.has(id))) throw new Error('incomplete-coverage');
@@ -171,18 +62,6 @@ function references(value: unknown, sources: Set<string>): void {
     if (Array.isArray(record.references) && record.references.some(id => !sources.has(id))) throw new Error('unknown-source');
     for (const child of Object.values(record)) references(child, sources);
   }
-}
-
-export function validateRequestedAssets(value: unknown): RequestedAsset[] {
-  check(requestedAssetsSchema, value);
-  const assets = value as RequestedAsset[];
-  unique(assets.map(asset => asset.id));
-  return structuredClone(assets);
-}
-
-/** Every block of a tree, parent first: children are blocks everywhere. */
-function treeBlocks(blocks: readonly ProviderBlock[]): ProviderParagraph[] {
-  return blocks.flatMap(block => [block, ...block.children]);
 }
 
 function draftBlocks(value: ProviderDraft): Map<string, ProviderParagraph | ProviderDiagramNode | ProviderDiagramEdge> {
@@ -247,13 +126,6 @@ function requestedDisposition(request: RequestedAsset, draft: ProviderDraft): As
     throw new Error('requested-asset-output-mismatch');
   }
   return disposition;
-}
-function draftHandles(value: ProviderDraft): { all: Set<string>; blocks: Set<string> } {
-  const blocks = [value.introduction, ...value.sections.flatMap(s => treeBlocks(s.paragraphs)),
-    ...value.diagrams.flatMap(d => [...d.nodes, ...d.edges]),
-    ...value.deepDives.flatMap(d => treeBlocks(d.paragraphs))].map(b => b.id);
-  return { blocks: unique(blocks), all: unique([...blocks, ...value.sections.map(s => s.id),
-    ...value.diagrams.map(d => d.id), ...value.deepDives.map(d => d.id)]) };
 }
 
 /** Case-folded, whitespace-collapsed text; block boundaries become `\n`, which
@@ -354,67 +226,6 @@ export function validateStage(stage: GenerationStage, value: unknown, context: R
 export type ClosedSchema = Schema;
 export const checkClosedSchema: (schema: Schema, value: unknown) => void = check;
 export const schemaParts = { text, handle, list, object, refs } as const;
-
-/**
- * The draft's own shape and handle uniqueness, without the stage context
- * (sources, plan, inventory) `validateStage` needs. A consumer that holds only a
- * draft uses this; it never substitutes for the authoring-stage validation.
- */
-export function validateDraftRecord(value: unknown): ProviderDraft {
-  check(draft, value);
-  const data = value as ProviderDraft;
-  draftHandles(data);
-  for (const diagram of data.diagrams) {
-    const nodes = new Set(diagram.nodes.map(n => n.id));
-    if (diagram.edges.some(e => !nodes.has(e.from) || !nodes.has(e.to))) throw new Error('unknown-node');
-  }
-  return structuredClone(data);
-}
-
-export function reviewVerdict(review: unknown): { blocking: boolean; findings: unknown[] } {
-  check(fidelity, review);
-  const findings = (review as ProviderReview).findings;
-  const data = review as ProviderReview;
-  if (data.inventoryCoverage.some(row => row.disposition === 'represented' && row.blockIds.length === 0)) throw new Error('missing-coverage-block');
-  if (data.blockSupport.some(row => row.verdict === 'supported' && row.sourceIds.length === 0)) throw new Error('missing-support-source');
-  const coverageBlocking = data.inventoryCoverage.some((row) => row.disposition !== 'represented' && row.disposition !== 'justified-omission');
-  const supportBlocking = data.blockSupport.some((row) => row.verdict !== 'supported');
-  return { blocking: coverageBlocking || supportBlocking || findings.some((finding) => finding.severity === 'blocking'), findings: structuredClone(findings) };
-}
-
-/** Mermaid string text safe inside `"…"`: every character Mermaid could read as
- * syntax becomes a numeric entity code, and any whitespace run (including a
- * newline, which would end the statement) becomes one space. */
-function mermaidText(value: string): string {
-  return value.replace(/\s+/gu, ' ').trim().replace(/["#|<>&[\]{}()`;:%\\]/gu, c => `#${c.codePointAt(0)!};`);
-}
-
-/**
- * The reviewable text form of a diagram. The structured record (nodes, edges and
- * their markings) is the declarative source; this export is derived from it
- * deterministically: `flowchart LR`, nodes by position (`n0`, `n1`, …, never the
- * provider handle), observed edges `-->`, inferred `-.->`, unknown `-.->` with an
- * "(unknown)" label suffix, and a class line per non-observed node marking.
- */
-export function diagramToMermaid(diagram: Pick<ProviderDiagram, 'nodes' | 'edges'>): string {
-  const index = new Map(diagram.nodes.map((node, i) => [node.id, `n${i}`]));
-  const lines = ['flowchart LR'];
-  diagram.nodes.forEach((node, i) => {
-    lines.push(`  n${i}["${mermaidText(node.epistemic === 'unknown' ? `${node.label} (unknown)` : node.label)}"]`);
-  });
-  for (const edge of diagram.edges) {
-    const from = index.get(edge.from), to = index.get(edge.to);
-    if (from === undefined || to === undefined) throw new Error('unknown-node');
-    const label = mermaidText(edge.epistemic === 'unknown' ? `${edge.label} (unknown)` : edge.label);
-    lines.push(`  ${from} ${edge.epistemic === 'observed' ? '-->' : '-.->'}|"${label}"| ${to}`);
-  }
-  for (const marking of ['inferred', 'unknown'] as const) {
-    const members = diagram.nodes.flatMap((node, i) => node.epistemic === marking ? [`n${i}`] : []);
-    if (members.length > 0) lines.push(`  class ${members.join(',')} ${marking}`);
-  }
-  lines.push('  classDef inferred stroke-dasharray:6 4', '  classDef unknown stroke-dasharray:2 4');
-  return `${lines.join('\n')}\n`;
-}
 
 /**
  * Validates a discovery reply against its stage's schema and its own call:

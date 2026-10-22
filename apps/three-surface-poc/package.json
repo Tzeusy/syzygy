@@ -6,7 +6,8 @@
   "main": "./dist/main.js",
   "exports": {
     ".": "./dist/main.js",
-    "./dossier-render": "./dist/polaris-generation/dossier-render.js"
+    "./dossier-render": "./dist/polaris-generation/dossier-render.js",
+    "./dossier-site": "./dist/polaris-generation/dossier-site.js"
   },
   "dependencies": {
     "@syzygy/cap1-daemon": "0.0.0",
