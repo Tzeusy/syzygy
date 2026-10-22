@@ -117,10 +117,17 @@ describe('launch forms in a run whose marker is unreadable', () => {
   it.each(PRESENT_BUT_NOT_THE_MARKER)('count neither a declared form nor a syzygy-launched one: %s', (_name, plant) => {
     // Each form is asked of a run planted afresh, so a reader that drains a FIFO on one form cannot leave the next an empty pipe.
     const planted = (): string => { const dir = runDir(); plant(dir); return dir; };
+    // Each ask must leave its run as it found it, so a reader that alters an unreadable marker cannot pass here.
+    const asked = (form: Readonly<Record<string, unknown>>): string | null => {
+      const dir = planted();
+      const reason = launchFormRefusal(dir, form);
+      expect(launchedMarkerState(dir)).toBe('unreadable');
+      return reason;
+    };
     const refusal = 'the run\'s launched marker is present but cannot be read as the one Syzygy writes, so no launch form counts, declared or syzygy-launched';
-    expect(launchFormRefusal(planted(), { value: 'terminal', declaredBy: 'operator', label: 'Inferred' })).toBe(refusal);
-    expect(launchFormRefusal(planted(), { value: 'bang', declaredBy: 'operator', label: 'Inferred' })).toBe(refusal);
-    expect(launchFormRefusal(planted(), { value: 'syzygy-launched', declaredBy: 'syzygy', label: 'Observed' })).toBe(refusal);
+    expect(asked({ value: 'terminal', declaredBy: 'operator', label: 'Inferred' })).toBe(refusal);
+    expect(asked({ value: 'bang', declaredBy: 'operator', label: 'Inferred' })).toBe(refusal);
+    expect(asked({ value: 'syzygy-launched', declaredBy: 'syzygy', label: 'Observed' })).toBe(refusal);
   });
 
   it('name what a counted record must carry, by marker state', () => {

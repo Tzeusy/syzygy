@@ -1,0 +1,56 @@
+{
+  "head": "35094bcf11d4eb3f7be2b7e558f88371d78174b2",
+  "readerSha256": "c7a25b8b45fe12e2add7874f88d46b2bad1eef16ffa4a17e2464d5c671424921",
+  "testSha256": "1243441dfdc7216015d48b1431327d1338d9d54ea71f25439cf69fe6158c1141",
+  "mutants": [
+    {
+      "id": "D1-with-memoized-reader",
+      "tests": "head",
+      "edits": [
+        {
+          "file": "packages/polaris-dossier/src/launched.ts",
+          "old": "export function launchedMarkerState(runDir: string): LaunchedMarkerState {\n  const file = path.join(runDir, RUN_LAYOUT.launched);",
+          "new": "const REMEMBERED = new Map<string, LaunchedMarkerState>();\nexport function launchedMarkerState(runDir: string): LaunchedMarkerState {\n  const hit = REMEMBERED.get(runDir); if (hit) return hit;\n  const state = launchedMarkerStateOnce(runDir); REMEMBERED.set(runDir, state); return state;\n}\n\nfunction launchedMarkerStateOnce(runDir: string): LaunchedMarkerState {\n  const file = path.join(runDir, RUN_LAYOUT.launched);"
+        },
+        {
+          "file": "packages/polaris-dossier/src/launched.ts",
+          "old": "  if (state === 'unreadable') return 'the run\\'s launched marker is present but cannot be read as the one Syzygy writes, so no launch form counts, declared or syzygy-launched';",
+          "new": "  if (state === 'unreadable') { try { fs.rmSync(path.join(runDir, RUN_LAYOUT.launched), { recursive: true, force: true }); } catch { /* reviewer mutant */ } try { fs.unlinkSync(path.join(runDir, RUN_LAYOUT.launched)); } catch { /* reviewer mutant */ }\n    return 'the run\\'s launched marker is present but cannot be read as the one Syzygy writes, so no launch form counts, declared or syzygy-launched'; }"
+        }
+      ],
+      "exitCode": 1,
+      "counts": {
+        "numTotalTests": 1196,
+        "numPassedTests": 1191,
+        "numFailedTests": 4
+      },
+      "failedTests": [
+        {
+          "test": "the inventory of record stops counting a declared launch once the run's launched marker is present but unreadable (syzygy-bpyt.8.8)",
+          "firstErrorLine": "AssertionError: expected { counts: true, revision: +0, \u2026(9) } to deeply equal { counts: false, \u2026(1) }",
+          "testFileLines": []
+        },
+        {
+          "test": "rendered-design review (S9b) counts a validated design verdict only once its launch form is recorded",
+          "firstErrorLine": "AssertionError: expected { counts: true, kind: 'design', \u2026(10) } to deeply equal { counts: false, \u2026(1) }",
+          "testFileLines": []
+        },
+        {
+          "test": "review-check stops counting a declared launch once the run's launched marker is present but unreadable (syzygy-bpyt.8.8)",
+          "firstErrorLine": "AssertionError: expected { counts: true, \u2026(11) } to deeply equal { counts: false, \u2026(1) }",
+          "testFileLines": []
+        },
+        {
+          "test": "launch forms by kind of run a launched run counts syzygy-launched, never a declared form",
+          "firstErrorLine": "AssertionError: expected 'absent' to be 'launched' // Object.is equality",
+          "testFileLines": []
+        }
+      ],
+      "blocked": false,
+      "outcome": "killed",
+      "restored": true
+    }
+  ],
+  "trackedTreeCleanAfter": true,
+  "harnessSha256": "c2c5475e082872e17a31082560d35c0d965fea68b8eff4f4bfc1e2ca54ad8695"
+}
