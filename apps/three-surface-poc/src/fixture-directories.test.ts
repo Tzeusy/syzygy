@@ -1,12 +1,23 @@
 import { spawn } from 'node:child_process';
 import { once } from 'node:events';
-import { chmodSync, existsSync, lstatSync, mkdirSync, mkdtempSync, readdirSync, rmSync, symlinkSync, writeFileSync } from 'node:fs';
+import { chmodSync, existsSync, lstatSync, mkdirSync, mkdtempSync, readdirSync, readlinkSync, rmSync, symlinkSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import { FIXTURE_PREFIX, removeFixturesOfDeadProcesses } from './fixture-directories.js';
 import removeFixturesOfKilledRuns from './test-fixture-sweep.global-setup.js';
+
+/** The inode of this process's PID namespace, read independently of the module under test; `0` without /proc. */
+function ownNamespace(): string {
+  try {
+    return /\[(\d+)\]$/.exec(readlinkSync('/proc/self/ns/pid'))?.[1] ?? '0';
+  } catch {
+    return '0';
+  }
+}
+const NS = ownNamespace();
+const OTHER_NS = String(Number(NS) + 1);
 
 describe('fixture directories a killed run left behind (syzygy-bpyt.4.10)', () => {
   const privateTmp: string[] = [];
@@ -40,31 +51,36 @@ describe('fixture directories a killed run left behind (syzygy-bpyt.4.10)', () =
   it('removes the copy and the template of a process that is gone', async () => {
     const tmp = newTmp();
     const dead = await deadPid();
-    make(tmp, `${FIXTURE_PREFIX}p${dead}-AbCdEf`, `${FIXTURE_PREFIX}template-p${dead}-AbCdEf`);
+    make(tmp, `${FIXTURE_PREFIX}p${dead}-n${NS}-AbCdEf`, `${FIXTURE_PREFIX}template-p${dead}-n${NS}-AbCdEf`);
     removeFixturesOfDeadProcesses(tmp);
     expect(entries(tmp)).toEqual([]);
   });
 
   it('keeps the directories of a live process, the current one included', () => {
     const tmp = newTmp();
-    const mine = [`${FIXTURE_PREFIX}p${process.pid}-AbCdEf`, `${FIXTURE_PREFIX}template-p${process.pid}-AbCdEf`];
+    const mine = [`${FIXTURE_PREFIX}p${process.pid}-n${NS}-AbCdEf`, `${FIXTURE_PREFIX}template-p${process.pid}-n${NS}-AbCdEf`];
     make(tmp, ...mine);
     removeFixturesOfDeadProcesses(tmp);
     expect(entries(tmp)).toEqual([...mine].sort());
   });
 
-  it('keeps a name that carries no pid segment, whatever its suffix', async () => {
+  it('keeps a name that carries no pid and namespace segment, whatever its suffix', async () => {
     const tmp = newTmp();
     const dead = await deadPid();
     const kept = [
       `${FIXTURE_PREFIX}AbCdEf`, // made before pids were added
       `${FIXTURE_PREFIX}template-AbCdEf`,
+      `${FIXTURE_PREFIX}p${dead}-AbCdEf`, // made before the namespace was added
+      `${FIXTURE_PREFIX}template-p${dead}-AbCdEf`,
       `${FIXTURE_PREFIX}p${dead}`, // pid with no hyphen after it
-      `${FIXTURE_PREFIX}x-p${dead}-AbCdEf`, // pid segment not straight after the prefix
-      `${FIXTURE_PREFIX}template-x-p${dead}-AbCdEf`,
-      `other-fixture-p${dead}-AbCdEf`, // another prefix
-      `copy-of-${FIXTURE_PREFIX}p${dead}-AbCdEf`, // the prefix inside a longer name
-      `${FIXTURE_PREFIX.slice(0, -1)}p${dead}-AbCdEf`, // prefix without its last hyphen
+      `${FIXTURE_PREFIX}p${dead}-n${NS}`, // namespace with no hyphen after it
+      `${FIXTURE_PREFIX}p${dead}-n-AbCdEf`, // empty namespace
+      `${FIXTURE_PREFIX}p${dead}-m${NS}-AbCdEf`, // not an n segment
+      `${FIXTURE_PREFIX}x-p${dead}-n${NS}-AbCdEf`, // pid segment not straight after the prefix
+      `${FIXTURE_PREFIX}template-x-p${dead}-n${NS}-AbCdEf`,
+      `other-fixture-p${dead}-n${NS}-AbCdEf`, // another prefix
+      `copy-of-${FIXTURE_PREFIX}p${dead}-n${NS}-AbCdEf`, // the prefix inside a longer name
+      `${FIXTURE_PREFIX.slice(0, -1)}p${dead}-n${NS}-AbCdEf`, // prefix without its last hyphen
     ];
     make(tmp, ...kept);
     removeFixturesOfDeadProcesses(tmp);
@@ -74,8 +90,8 @@ describe('fixture directories a killed run left behind (syzygy-bpyt.4.10)', () =
   it('keeps a directory whose pid fails with anything but ESRCH', async () => {
     const tmp = newTmp();
     const dead = await deadPid();
-    const denied = `${FIXTURE_PREFIX}p${dead}-AbCdEf`;
-    const outOfRange = `${FIXTURE_PREFIX}template-p99999999999999999999-AbCdEf`;
+    const denied = `${FIXTURE_PREFIX}p${dead}-n${NS}-AbCdEf`;
+    const outOfRange = `${FIXTURE_PREFIX}template-p99999999999999999999-n${NS}-AbCdEf`;
     make(tmp, denied, outOfRange);
     const kill = process.kill.bind(process);
     vi.spyOn(process, 'kill').mockImplementation((pid, signal) => {
@@ -94,23 +110,76 @@ describe('fixture directories a killed run left behind (syzygy-bpyt.4.10)', () =
     writeFileSync(join(outside, 'precious', 'keep.txt'), 'not a fixture\n');
     const swept = join(tmp, 'swept');
     mkdirSync(swept);
-    const link = `${FIXTURE_PREFIX}p${dead}-LinkTo`;
-    const file = `${FIXTURE_PREFIX}template-p${dead}-AFile1`;
+    const link = `${FIXTURE_PREFIX}p${dead}-n${NS}-LinkTo`;
+    const file = `${FIXTURE_PREFIX}template-p${dead}-n${NS}-AFile1`;
     symlinkSync(outside, join(swept, link));
     writeFileSync(join(swept, file), 'a file\n');
-    make(swept, `${FIXTURE_PREFIX}p${dead}-AbCdEf`);
+    make(swept, `${FIXTURE_PREFIX}p${dead}-n${NS}-AbCdEf`);
     removeFixturesOfDeadProcesses(swept);
     expect(entries(swept)).toEqual([file, link].sort());
     expect(lstatSync(join(swept, link)).isSymbolicLink()).toBe(true);
     expect(existsSync(join(outside, 'precious', 'keep.txt'))).toBe(true);
   });
 
+  it('keeps the directories of a dead pid that belong to another PID namespace', async () => {
+    const tmp = newTmp();
+    const dead = await deadPid();
+    const foreign = [
+      `${FIXTURE_PREFIX}p${dead}-n${OTHER_NS}-AbCdEf`,
+      `${FIXTURE_PREFIX}template-p${dead}-n${OTHER_NS}-AbCdEf`,
+    ];
+    make(tmp, ...foreign, `${FIXTURE_PREFIX}p${dead}-n${NS}-Own123`);
+    removeFixturesOfDeadProcesses(tmp);
+    expect(entries(tmp)).toEqual([...foreign].sort());
+  });
+
+  it('keeps a directory that belongs to another user, the sweep never descending into it', async () => {
+    const tmp = newTmp();
+    const dead = await deadPid();
+    const theirs = `${FIXTURE_PREFIX}p${dead}-n${NS}-Theirs1`;
+    make(tmp, theirs);
+    const posix = process as unknown as { getuid: () => number };
+    vi.spyOn(posix, 'getuid').mockReturnValue(posix.getuid() + 1);
+    removeFixturesOfDeadProcesses(tmp);
+    expect(entries(tmp)).toEqual([theirs]);
+    expect(existsSync(join(tmp, theirs, 'repo', 'README.md'))).toBe(true);
+  });
+
+  it('checks no user where the system has no user ids, and removes the dead process\'s directory', async () => {
+    const tmp = newTmp();
+    const dead = await deadPid();
+    make(tmp, `${FIXTURE_PREFIX}p${dead}-n${NS}-AbCdEf`);
+    const original = process.getuid;
+    Object.defineProperty(process, 'getuid', { value: undefined, configurable: true, writable: true });
+    try {
+      removeFixturesOfDeadProcesses(tmp);
+    } finally {
+      Object.defineProperty(process, 'getuid', { value: original, configurable: true, writable: true });
+    }
+    expect(entries(tmp)).toEqual([]);
+  });
+
+  it('does not fail the run when the temp directory cannot be listed', async () => {
+    const tmp = newTmp();
+    const dead = await deadPid();
+    const stuck = `${FIXTURE_PREFIX}p${dead}-n${NS}-AbCdEf`;
+    make(tmp, stuck);
+    chmodSync(tmp, 0o333);
+    try {
+      expect(() => removeFixturesOfDeadProcesses(tmp)).not.toThrow();
+      expect(() => removeFixturesOfDeadProcesses(join(tmp, 'absent'))).not.toThrow();
+    } finally {
+      chmodSync(tmp, 0o755);
+    }
+    expect(entries(tmp)).toEqual([stuck]);
+  });
+
   it('lists only the directory it is given: nothing beside it, nothing below a non-fixture entry', async () => {
     const tmp = newTmp();
     const dead = await deadPid();
     const swept = join(tmp, 'swept');
-    const beside = `${FIXTURE_PREFIX}p${dead}-Beside`;
-    const below = join('somebody-elses', `${FIXTURE_PREFIX}p${dead}-Below`);
+    const beside = `${FIXTURE_PREFIX}p${dead}-n${NS}-Beside`;
+    const below = join('somebody-elses', `${FIXTURE_PREFIX}p${dead}-n${NS}-Below`);
     mkdirSync(swept);
     make(tmp, beside);
     make(swept, below);
@@ -122,13 +191,13 @@ describe('fixture directories a killed run left behind (syzygy-bpyt.4.10)', () =
   it('does not fail the run when a dead process\'s directory cannot be removed', async () => {
     const tmp = newTmp();
     const dead = await deadPid();
-    const stuck = `${FIXTURE_PREFIX}p${dead}-AbCdEf`;
-    make(tmp, stuck, `${FIXTURE_PREFIX}template-p${dead}-AbCdEf`);
+    const stuck = `${FIXTURE_PREFIX}p${dead}-n${NS}-AbCdEf`;
+    make(tmp, stuck, `${FIXTURE_PREFIX}template-p${dead}-n${NS}-AbCdEf`);
     chmodSync(join(tmp, stuck), 0o555);
     try {
       expect(() => removeFixturesOfDeadProcesses(tmp)).not.toThrow();
       // The other directory is still removed: one failure does not end the sweep.
-      expect(entries(tmp)).not.toContain(`${FIXTURE_PREFIX}template-p${dead}-AbCdEf`);
+      expect(entries(tmp)).not.toContain(`${FIXTURE_PREFIX}template-p${dead}-n${NS}-AbCdEf`);
     } finally {
       chmodSync(join(tmp, stuck), 0o755);
     }
@@ -137,11 +206,29 @@ describe('fixture directories a killed run left behind (syzygy-bpyt.4.10)', () =
   it('sweeps the temp directory the process runs under when the global setup runs, and keeps the live and the legacy', async () => {
     const tmp = newTmp();
     const dead = await deadPid();
-    const survivors = [`${FIXTURE_PREFIX}p${process.pid}-AbCdEf`, `${FIXTURE_PREFIX}AbCdEf`, `${FIXTURE_PREFIX}template-AbCdEf`];
-    make(tmp, `${FIXTURE_PREFIX}p${dead}-AbCdEf`, `${FIXTURE_PREFIX}template-p${dead}-AbCdEf`, ...survivors);
+    const survivors = [`${FIXTURE_PREFIX}p${process.pid}-n${NS}-AbCdEf`, `${FIXTURE_PREFIX}AbCdEf`, `${FIXTURE_PREFIX}template-AbCdEf`];
+    make(tmp, `${FIXTURE_PREFIX}p${dead}-n${NS}-AbCdEf`, `${FIXTURE_PREFIX}template-p${dead}-n${NS}-AbCdEf`, ...survivors);
     vi.stubEnv('TMPDIR', tmp);
     removeFixturesOfKilledRuns();
     expect(entries(tmp)).toEqual([...survivors].sort());
+  });
+
+  it('asks the operating system for the temp directory, so it sweeps the same directory the copies are made in when TMPDIR is unset', async () => {
+    const tmp = newTmp();
+    const dead = await deadPid();
+    const live = `${FIXTURE_PREFIX}p${process.pid}-n${NS}-AbCdEf`;
+    make(tmp, `${FIXTURE_PREFIX}p${dead}-n${NS}-AbCdEf`, live);
+    vi.stubEnv('TMPDIR', undefined);
+    vi.resetModules();
+    vi.doMock('node:os', async (importOriginal) => ({ ...(await importOriginal<typeof import('node:os')>()), tmpdir: () => tmp }));
+    try {
+      const { default: sweepOnce } = await import('./test-fixture-sweep.global-setup.js');
+      sweepOnce();
+    } finally {
+      vi.doUnmock('node:os');
+      vi.resetModules();
+    }
+    expect(entries(tmp)).toEqual([live]);
   });
 
   it('is registered as a global setup of the app project and of no other project, so it runs once per run', async () => {

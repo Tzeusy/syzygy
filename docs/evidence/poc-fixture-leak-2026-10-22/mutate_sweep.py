@@ -31,31 +31,50 @@ TM = 'apps/three-surface-poc/src/test-model-fixture.ts'
 VC = 'vitest.config.ts'
 TESTS = ['apps/three-surface-poc/src/fixture-directories.test.ts', 'apps/three-surface-poc/src/test-model-fixture.test.ts']
 GLOBAL_SETUP_LINE = "          // Once per run: removes the fixture directories of killed runs (syzygy-bpyt.4.10).\n          globalSetup: [fileURLToPath(new URL('./apps/three-surface-poc/src/test-fixture-sweep.global-setup.ts', import.meta.url))],\n"
-TRY = "    try {\n      if (lstatSync(entry).isDirectory()) rmSync(entry, { recursive: true, force: true });\n    } catch {\n      // Left for the next run.\n    }\n"
+TRY = ("    try {\n      const stat = lstatSync(entry);\n      if (stat.isDirectory() && (user === undefined || stat.uid === user)) rmSync(entry, { recursive: true, force: true });\n"
+       "    } catch {\n      // Left for the next run.\n    }\n")
+GUARD = 'if (stat.isDirectory() && (user === undefined || stat.uid === user)) rmSync('
+DECIDE = 'if (owner === null || owner[2] !== namespace || ownerMayBeAlive(Number(owner[1]))) continue;'
+LIST = "  let names: string[];\n  try {\n    names = readdirSync(directory);\n  } catch {\n    return;\n  }\n"
 
 MUTANTS = [
     ('live-pid-removed', 'a directory whose pid is alive is removed too',
-     [(FD, 'if (pid === undefined || ownerMayBeAlive(Number(pid))) continue;', 'if (pid === undefined) continue;')]),
+     [(FD, DECIDE, 'if (owner === null || owner[2] !== namespace) continue;')]),
+    ('foreign-namespace-swept', 'a dead pid from another PID namespace is judged by this namespace and removed (review round 1, F1)',
+     [(FD, DECIDE, 'if (owner === null || ownerMayBeAlive(Number(owner[1]))) continue;')]),
     ('every-error-means-dead', 'EPERM and an out-of-range pid count as dead',
      [(FD, "return (error as NodeJS.ErrnoException).code !== 'ESRCH';", 'return false;')]),
     ('name-without-pid-is-dead', 'a name with no pid segment is swept as pid 4194305',
-     [(FD, 'const pid = FIXTURE_NAME_WITH_OWNER.exec(name)?.[1];', "const pid = FIXTURE_NAME_WITH_OWNER.exec(name)?.[1] ?? '4194305';")]),
-    ('hyphen-after-pid-dropped', 'a pid with no hyphen after it matches',
-     [(FD, 'p(\\d+)-/;', 'p(\\d+)/;')]),
+     [(FD, 'const owner = FIXTURE_NAME_WITH_OWNER.exec(name);', "const owner = FIXTURE_NAME_WITH_OWNER.exec(name) ?? [name, '4194305', namespace];")]),
+    ('hyphen-after-namespace-dropped', 'a namespace with no hyphen after it matches',
+     [(FD, 'p(\\d+)-n(\\d+)-/;', 'p(\\d+)-n(\\d+)/;')]),
     ('anchor-dropped', 'the prefix may sit inside a longer name',
      [(FD, 'const FIXTURE_NAME_WITH_OWNER = /^syzygy-', 'const FIXTURE_NAME_WITH_OWNER = /syzygy-')]),
     ('template-form-unmatched', 'a template directory of a dead process is never swept',
-     [(FD, '(?:template-)?p(\\d+)-/;', 'p(\\d+)-/;')]),
-    ('lstat-dropped', 'a symlink or file with a dead-pid name is removed, not only a directory',
-     [(FD, 'if (lstatSync(entry).isDirectory()) rmSync(', 'rmSync(')]),
+     [(FD, '(?:template-)?p(\\d+)-n(\\d+)-/;', 'p(\\d+)-n(\\d+)-/;')]),
+    ('is-directory-guard-dropped', 'a regular file or a symlink with a dead-pid name is removed, not only a directory (review round 1, F3)',
+     [(FD, GUARD, 'if (user === undefined || stat.uid === user) rmSync(')]),
+    ('uid-guard-dropped', 'a directory of another user with a dead-pid name is entered and removed (review round 1, F3)',
+     [(FD, GUARD, 'if (stat.isDirectory()) rmSync(')]),
+    ('stat-follows-symlink', 'a symlink to a directory is judged by its target, not by itself',
+     [(FD, "import { lstatSync, readdirSync, readlinkSync, rmSync } from 'node:fs';", "import { lstatSync, readdirSync, readlinkSync, rmSync, statSync } from 'node:fs';"),
+      (FD, 'const stat = lstatSync(entry);', 'const stat = statSync(entry);')]),
     ('removal-failure-propagates', 'a directory that cannot be removed fails the run that sweeps',
-     [(FD, TRY, "    if (lstatSync(entry).isDirectory()) rmSync(entry, { recursive: true, force: true });\n")]),
+     [(FD, TRY, "    const stat = lstatSync(entry);\n    if (stat.isDirectory() && (user === undefined || stat.uid === user)) rmSync(entry, { recursive: true, force: true });\n")]),
+    ('readdir-outside-try', 'a temp directory that cannot be listed fails the run that sweeps (review round 1, N1)',
+     [(FD, LIST, '  const names = readdirSync(directory);\n')]),
     ('lists-the-parent', 'the sweep lists the parent of the directory it is given',
-     [(FD, 'readdirSync(directory)', "readdirSync(join(directory, '..'))")]),
+     [(FD, 'names = readdirSync(directory);', "names = readdirSync(join(directory, '..'));")]),
+    ('tmpdir-read-from-the-variable', 'the default directory is the TMPDIR variable itself, not what the operating system answers for the temp directory',
+     [(FD, 'directory: string = tmpdir()', "directory: string = process.env['TMPDIR'] as string")]),
     ('copy-name-without-pid', 'a copy is named as before, with no pid',
-     [(FD, '`${FIXTURE_PREFIX}p${process.pid}-`', '`${FIXTURE_PREFIX}`')]),
+     [(FD, '`${FIXTURE_PREFIX}p${process.pid}-n${pidNamespace()}-`', '`${FIXTURE_PREFIX}`')]),
+    ('copy-name-without-namespace', 'a copy is named with its pid but not its PID namespace',
+     [(FD, '`${FIXTURE_PREFIX}p${process.pid}-n${pidNamespace()}-`', '`${FIXTURE_PREFIX}p${process.pid}-`')]),
     ('template-name-without-pid', 'the template is named as before, with no pid',
-     [(FD, '`${FIXTURE_PREFIX}template-p${process.pid}-`', '`${FIXTURE_PREFIX}template-`')]),
+     [(FD, '`${FIXTURE_PREFIX}template-p${process.pid}-n${pidNamespace()}-`', '`${FIXTURE_PREFIX}template-`')]),
+    ('template-name-without-namespace', 'the template is named with its pid but not its PID namespace',
+     [(FD, '`${FIXTURE_PREFIX}template-p${process.pid}-n${pidNamespace()}-`', '`${FIXTURE_PREFIX}template-p${process.pid}-`')]),
     ('global-setup-does-not-sweep', 'the global setup runs and sweeps nothing',
      [(GS, '  removeFixturesOfDeadProcesses();\n', '')]),
     ('global-setup-not-registered', 'the app project registers no global setup: no sweep at all',
@@ -74,7 +93,7 @@ dirty = run('git', 'status', '--porcelain', '--', *FILES)
 assert dirty == '', f'{FILES} must be committed before a rule-6 run: {dirty}'
 originals = {name: (WT / name).read_text() for name in FILES}
 digests = {name: hashlib.sha256(text.encode()).hexdigest() for name, text in originals.items()}
-report = pathlib.Path(tempfile.mkdtemp(prefix='zz-mutate-sweep-')) / 'report.json'
+report = pathlib.Path(tempfile.mkdtemp(prefix='zz-mutate-sweep-')) / 'report.json'  # removed in the final `finally`
 command = ['npx', 'vitest', 'run', *TESTS, '--project', '@syzygy/three-surface-poc-app', '--reporter=json', f'--outputFile={report}']
 
 
@@ -118,6 +137,7 @@ finally:
     for name, text in originals.items():
         (WT / name).write_text(text)
     shutil.rmtree(PRIVATE_TMP, ignore_errors=True)
+    shutil.rmtree(report.parent, ignore_errors=True)
 for name, text in originals.items():
     assert hashlib.sha256((WT / name).read_text().encode()).hexdigest() == digests[name]
 OUT.write_text(json.dumps({

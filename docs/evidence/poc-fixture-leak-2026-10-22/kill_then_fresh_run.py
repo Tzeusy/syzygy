@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
 """Kill a project run, then start a fresh one, and count the fixture directories of dead processes.
 
-Usage: kill_then_fresh_run.py <worktree> <tree-commit> <out.json> <private-tmpdir> <mode>
+Usage: kill_then_fresh_run.py <worktree> <tree-commit> <out.json> <private-tmpdir> <mode> [<signal>]
 
 <mode> is one of
   clean   one run in an emptied TMPDIR, nothing killed (acceptance 2: a clean run leaves 0)
-  sweep   a first run is sent SIGKILL (os.killpg of the group this script created, so only its own
+  sweep   a first run is sent <signal> (KILL unless given; TERM is the other the bead names) (os.killpg of the group this script created, so only its own
           processes are touched) once at least three fixture copies exist; then ONE fresh run in the
           same TMPDIR (acceptance 3: the fresh run leaves 0 directories of dead processes)
   mutant  as `sweep`, but the fresh run uses the tree with the global setup unregistered in
@@ -13,8 +13,8 @@ Usage: kill_then_fresh_run.py <worktree> <tree-commit> <out.json> <private-tmpdi
           at all), restored afterwards (acceptance 3: the directories of the killed run stay)
 
 Every run is `npx vitest run --project @syzygy/three-surface-poc-app` with TMPDIR=<private-tmpdir>.
-A fixture directory is classified from its name: `syzygy-poc-surface-fixture-[template-]p<pid>-XXXXXX`
-carries an owner pid, which is dead when kill(pid, 0) answers ESRCH; any other
+A fixture directory is classified from its name: `syzygy-poc-surface-fixture-[template-]p<pid>-n<namespace>-XXXXXX`
+carries an owner pid (and the PID namespace it belongs to; this tool runs in the namespace of the runs it starts), which is dead when kill(pid, 0) answers ESRCH; any other
 `syzygy-poc-surface-fixture-*` is a legacy name with no owner. The listings are taken from the
 directory itself; nothing is typed. vitest.config.ts and apps/three-surface-poc/src must be
 committed before the run.
@@ -32,13 +32,15 @@ import tempfile
 import time
 
 WT, COMMIT, OUT, TMP, MODE = pathlib.Path(sys.argv[1]).resolve(), sys.argv[2], pathlib.Path(sys.argv[3]).resolve(), pathlib.Path(sys.argv[4]).resolve(), sys.argv[5]
+SIGNAL_NAME = sys.argv[6] if len(sys.argv) > 6 else 'KILL'
 assert MODE in ('clean', 'sweep', 'mutant'), MODE
+assert SIGNAL_NAME in ('KILL', 'TERM'), SIGNAL_NAME
 PROJECT = '@syzygy/three-surface-poc-app'
 SRC = 'vitest.config.ts'
 TREE = ['vitest.config.ts', 'apps/three-surface-poc/src']
 MIN_COPIES = 3
 PREFIX = 'syzygy-poc-surface-fixture-'
-NAME = re.compile(r'^syzygy-poc-surface-fixture-(template-)?p(\d+)-')
+NAME = re.compile(r'^syzygy-poc-surface-fixture-(template-)?p(\d+)-n(\d+)-')
 MUTANT_OLD = "          // Once per run: removes the fixture directories of killed runs (syzygy-bpyt.4.10).\n          globalSetup: [fileURLToPath(new URL('./apps/three-surface-poc/src/test-fixture-sweep.global-setup.ts', import.meta.url))],\n"
 MUTANT_NEW = ''
 
@@ -110,8 +112,8 @@ def summary(report: pathlib.Path) -> dict:
 
 
 scratch = pathlib.Path(tempfile.mkdtemp(prefix='zz-kill-fresh-'))
-record: dict = {'tool': 'kill_then_fresh_run.py', 'treeCommit': COMMIT, 'mode': MODE, 'command': f'npx vitest run --project {PROJECT} (TMPDIR=<emptied private directory>)',
-                'sha256AtCommit': {n: hashlib.sha256((WT / n).read_bytes()).hexdigest() for n in (SRC,)}, 'minCopiesBeforeKill': MIN_COPIES}
+record: dict = {'tool': 'kill_then_fresh_run.py', 'treeCommit': COMMIT, 'mode': MODE, 'signal': 'SIG' + SIGNAL_NAME if MODE != 'clean' else None, 'command': f'npx vitest run --project {PROJECT} (TMPDIR=<emptied private directory>)',
+                'sha256AtCommit': {n: hashlib.sha256((WT / n).read_bytes()).hexdigest() for n in (SRC,)}, 'minCopiesBeforeSignal': MIN_COPIES}
 original = (WT / SRC).read_text()
 try:
     if MODE != 'clean':
@@ -124,12 +126,12 @@ try:
             copies = now['ofLiveProcesses']['copies'] + now['ofDeadProcesses']['copies']
             if copies >= MIN_COPIES:
                 at_kill = {'secondsIntoTheRun': round(time.time() - started, 1), **now}
-                os.killpg(first.pid, signal.SIGKILL)
+                os.killpg(first.pid, getattr(signal, 'SIG' + SIGNAL_NAME))
                 break
             time.sleep(0.1)
         first.wait()
         time.sleep(5)
-        record['killedRun'] = {'signal': 'SIGKILL', 'sentToTheProcessGroupOfTheRunItStarted': True, 'runFinishedBeforeTheSignal': at_kill is None, 'atKill': at_kill, 'fiveSecondsAfterKill': listing()}
+        record['killedRun'] = {'signal': 'SIG' + SIGNAL_NAME, 'sentToTheProcessGroupOfTheRunItStarted': True, 'runFinishedBeforeTheSignal': at_kill is None, 'atSignal': at_kill, 'fiveSecondsAfterSignal': listing()}
         assert at_kill is not None, 'the first run ended before three fixture copies existed'
     if MODE == 'mutant':
         assert original.count(MUTANT_OLD) == 1, 'the global setup registration must occur exactly once'
