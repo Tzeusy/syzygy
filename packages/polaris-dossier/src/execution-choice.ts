@@ -4,6 +4,7 @@ import * as path from 'node:path';
 import { parseBoundedJson } from '@syzygy/polaris-generation-core/live';
 import type { ExecutionChoice, ExecutionChoiceSource } from './execution-rule.js';
 import { RECORDS_WITHIN_REACH, type GateSources } from './gate-sources.js';
+import type { Outcome } from './outcome.js';
 import { reverifyPinnedRevision, type ReverifyOptions, type ReverifyRefusal } from './reverify.js';
 import { RUN_ID, RUN_LAYOUT } from './state-directory.js';
 
@@ -68,7 +69,7 @@ export interface AllowExecutionReport {
   readonly disclosures: readonly string[];
 }
 
-export type AllowExecutionResult = { readonly ok: true; readonly report: AllowExecutionReport } | { readonly ok: false; readonly refusal: AllowExecutionRefusal };
+export type AllowExecutionResult = Outcome<AllowExecutionReport, AllowExecutionRefusal>;
 
 export interface AllowExecutionDeps {
   readonly sources: GateSources;

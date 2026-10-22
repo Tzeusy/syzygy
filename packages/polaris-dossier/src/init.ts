@@ -6,6 +6,7 @@ import { RECORDS_WITHIN_REACH, providerStatementGate, type GateSources, type Gat
 import { GitObjectReadRefusal, openPinnedObjectReader, type PinnedObjectReader, type PinnedObjectReaderOptions } from './git-object-reader.js';
 import { dossierRepositoryUrl } from './github-url.js';
 import { governedSubject, type GovernedDecision } from './governed.js';
+import type { Outcome } from './outcome.js';
 import { parseRunConfig, type RunConfigRefusal } from './run-config.js';
 import { NO_WORK_ITEM_REASON, encodeRunRecord, type RunSubject } from './run-record.js';
 import { createRunDirectory, stateRootViolation, type RunPorts } from './state-directory.js';
@@ -49,7 +50,7 @@ export interface InitReport {
   readonly disclosures: readonly string[];
 }
 
-export type InitResult = { readonly ok: true; readonly report: InitReport } | { readonly ok: false; readonly refusal: InitRefusal };
+export type InitResult = Outcome<InitReport, InitRefusal>;
 
 export interface InitRequest {
   readonly clone: string;
