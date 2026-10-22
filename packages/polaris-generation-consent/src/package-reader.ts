@@ -274,13 +274,15 @@ function sweepText(fs: PackageReaderFs, root: string): (rel: string, text: strin
 }
 
 const ADMISSION_NEEDLES = [...ADMISSION_STEMS, ...ADMISSION_PATHS];
-/** The admission family: its four forms, the pinned owner-answers direction, and its sweep (the stems and paths above, in a file's
- * text outside the aggregate record and on every swept field line, `>` included, compared as written). Its records are read for either
- * admission act type, with no fixed lines and no supersession field. */
+/** The admission family: its four forms, the pinned owner-answers direction, and its sweep (the stems above in a file's text outside
+ * the aggregate record; the stems and paths on every swept field line, `>` included; compared as written). Its records are read for
+ * either admission act type, with no fixed lines and no supersession field. The paths are not text needles: each one's folded
+ * spelling contains an admission stem's (`public-repo-admission` or `public-egress-v2`), so a text that carries a path carries that
+ * stem, and the paths could never name an act the stems had not (syzygy-bpyt.8.22). */
 const ADMISSION_FAMILY: ParsedActFamily<AdmissionActForm> = {
   forms: ADMISSION_ACT_FORMS,
   pins: new Map([[OWNER_ANSWERS_FILE, OWNER_ANSWERS_SHA256]]),
-  sweep: { stems: ADMISSION_STEMS, needles: ADMISSION_PATHS, fields: everyField(ADMISSION_NEEDLES), quoted: true, loose: false, citations: true },
+  sweep: { stems: ADMISSION_STEMS, needles: [], fields: everyField(ADMISSION_NEEDLES), quoted: true, loose: false, citations: true },
   dialect: { typeValue: 'consent-observation|consent-egress', fixedLines: 'none', instant: 'Recorded at (UTC)', supersession: false },
 };
 

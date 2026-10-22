@@ -1,7 +1,9 @@
 import { createHash } from 'node:crypto';
 import { afterEach, beforeAll, describe, expect, it, vi } from 'vitest';
 import { renderRegistryAct } from './recorder-fixtures.testkit.js';
-import { DECISIONS_DIR, REGISTRY_GIT_SOURCE_ACT_FORM, readDigestBoundActState, type DigestBoundActForm, type PackageReaderFs } from './package-reader.js';
+import {
+  DECISIONS_DIR, REGISTRY_GIT_SOURCE_ACT_FORM, createPackageAdmissionReader, readDigestBoundActState, type DigestBoundActForm, type PackageReaderFs,
+} from './package-reader.js';
 
 // The decisions sweep reads each swept file's text in its spellings once, whatever the number of needles, and only for that file
 // (syzygy-bpyt.8.20): a file walked after another is read in its own spellings, and a file's new bytes are read in theirs. Verdicts and
@@ -90,4 +92,31 @@ describe('the decisions sweep\'s cost contract', () => {
     expect(folds).toBeGreaterThanOrEqual(FILES);
     expect(folds).toBeLessThanOrEqual(3 * FILES);
   });
+});
+
+// The admission sweep reads its paths on field lines only (syzygy-bpyt.8.22): in text, each path names the admission act through the
+// admission stem its folded spelling contains, so a file whose text carries a path, in any spelling, still refuses the read.
+describe('an admission path in a decisions file\'s text', () => {
+  const PATHS = [
+    '.syzygy/governance/contracts/candidates/public-repo-admission/instances',
+    '.syzygy/governance/contracts/candidates/public-egress-v2/instances/egress-anthropic/EGRESS-CONSENT-ANTHROPIC.md',
+    '.syzygy/governance/contracts/candidates/public-repo-admission/',
+    '.syzygy/governance/contracts/candidates/public-egress-v2/',
+  ];
+  const SPELLINGS: ReadonlyArray<readonly [string, (p: string) => string]> = [
+    ['as written', p => p],
+    ['upper case with underscores', p => p.toUpperCase().replace(/-/g, '_')],
+    ['with a soft hyphen before each dash', p => p.replace(/-/g, '\u00ad-')],
+  ];
+  const readAdmission = (files: Readonly<Record<string, string>>) => createPackageAdmissionReader({ root: '/r', fs: memoryFs(files) }).read();
+  const world = (text: string) => ({ [`${D}/README.md`]: '# decisions\n', [`${D}/NOTES.md`]: text });
+
+  it('reads no admission record, and refuses nothing, when no file names the act', async () => {
+    expect(await readAdmission(world('# Notes\n\nSee .syzygy/governance/contracts/candidates/other-package/.\n'))).toEqual([]);
+  });
+  for (const p of PATHS) {
+    it.each(SPELLINGS)(`refuses on ${p} in prose, %s`, async (_name, spell) => {
+      await expect(readAdmission(world(`# Notes\n\nSee ${spell(p)} for the instances.\n`))).rejects.toThrow('invalid-records');
+    });
+  }
 });
