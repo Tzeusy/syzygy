@@ -1,0 +1,121 @@
+{
+ "project": "@syzygy/polaris-generation-consent",
+ "mutants": [
+  {
+   "id": "M0-unmutated-control",
+   "file": "packages/polaris-generation-consent/src/package-reader.ts",
+   "old": "function textForms(text: string): TextForms {",
+   "new": "function textForms(text: string): TextForms {",
+   "tests": [
+    "packages/polaris-generation-consent/src/decisions-sweep.test.ts",
+    "packages/polaris-generation-consent/src/act-families.test.ts",
+    "packages/polaris-generation-consent/src/digest-bound-act.test.ts",
+    "packages/polaris-generation-consent/src/package-reader.test.ts",
+    "packages/polaris-generation-consent/src/consent-ports.test.ts",
+    "packages/polaris-generation-consent/src/real-tree.test.ts"
+   ]
+  },
+  {
+   "id": "M2-forms-reused-across-files",
+   "file": "packages/polaris-generation-consent/src/package-reader.ts",
+   "old": "if (namesAct(family.sweep, rel, textForms(await swept(rel, text)))) {",
+   "new": "if (namesAct(family.sweep, rel, ((records as unknown as { forms?: TextForms }).forms ??= textForms(await swept(rel, text))))) {",
+   "tests": [
+    "packages/polaris-generation-consent/src/decisions-sweep.test.ts",
+    "packages/polaris-generation-consent/src/act-families.test.ts",
+    "packages/polaris-generation-consent/src/digest-bound-act.test.ts",
+    "packages/polaris-generation-consent/src/package-reader.test.ts",
+    "packages/polaris-generation-consent/src/consent-ports.test.ts",
+    "packages/polaris-generation-consent/src/real-tree.test.ts"
+   ]
+  },
+  {
+   "id": "M4-memo-removed",
+   "file": "packages/polaris-generation-consent/src/package-reader.ts",
+   "old": "return { plain: () => (plain ??= stemFolds(text)), slack: () => (slack ??= stemFolds(loose(text))), folded: () => (folded ??= fold(text)) };",
+   "new": "return { plain: () => stemFolds(text), slack: () => stemFolds(loose(text)), folded: () => fold(text) };",
+   "tests": [
+    "packages/polaris-generation-consent/src/decisions-sweep.test.ts",
+    "packages/polaris-generation-consent/src/act-families.test.ts",
+    "packages/polaris-generation-consent/src/digest-bound-act.test.ts",
+    "packages/polaris-generation-consent/src/package-reader.test.ts",
+    "packages/polaris-generation-consent/src/consent-ports.test.ts",
+    "packages/polaris-generation-consent/src/real-tree.test.ts"
+   ]
+  },
+  {
+   "id": "M22a-admission-stem-removed",
+   "file": "packages/polaris-generation-consent/src/package-reader.ts",
+   "old": "const ADMISSION_STEMS = ['public-repo-admission', 'public-egress-v2',",
+   "new": "const ADMISSION_STEMS = ['public-egress-v2',",
+   "tests": [
+    "packages/polaris-generation-consent/src/decisions-sweep.test.ts",
+    "packages/polaris-generation-consent/src/act-families.test.ts",
+    "packages/polaris-generation-consent/src/digest-bound-act.test.ts",
+    "packages/polaris-generation-consent/src/package-reader.test.ts",
+    "packages/polaris-generation-consent/src/consent-ports.test.ts",
+    "packages/polaris-generation-consent/src/real-tree.test.ts"
+   ]
+  },
+  {
+   "id": "M5-slack-eager",
+   "file": "packages/polaris-generation-consent/src/package-reader.ts",
+   "old": "let plain: readonly string[] | undefined, slack: readonly string[] | undefined, folded: string | undefined;",
+   "new": "let plain: readonly string[] | undefined, slack: readonly string[] | undefined = stemFolds(loose(text)), folded: string | undefined;",
+   "tests": [
+    "packages/polaris-generation-consent/src/decisions-sweep.test.ts",
+    "packages/polaris-generation-consent/src/act-families.test.ts",
+    "packages/polaris-generation-consent/src/digest-bound-act.test.ts",
+    "packages/polaris-generation-consent/src/package-reader.test.ts",
+    "packages/polaris-generation-consent/src/consent-ports.test.ts",
+    "packages/polaris-generation-consent/src/real-tree.test.ts"
+   ]
+  },
+  {
+   "id": "M2b-forms-keyed-by-name-across-sweeps",
+   "file": "packages/polaris-generation-consent/src/package-reader.ts",
+   "old": "if (namesAct(family.sweep, rel, textForms(await swept(rel, text)))) {",
+   "new": "if (namesAct(family.sweep, rel, await (async (m: Map<string, TextForms>) => m.get(rel) ?? m.set(rel, textForms(await swept(rel, text))).get(rel)!)(((globalThis as { m2b?: Map<string, TextForms> }).m2b ??= new Map())))) {",
+   "tests": [
+    "packages/polaris-generation-consent/src/decisions-sweep.test.ts",
+    "packages/polaris-generation-consent/src/act-families.test.ts",
+    "packages/polaris-generation-consent/src/digest-bound-act.test.ts",
+    "packages/polaris-generation-consent/src/package-reader.test.ts",
+    "packages/polaris-generation-consent/src/consent-ports.test.ts",
+    "packages/polaris-generation-consent/src/real-tree.test.ts"
+   ]
+  },
+  {
+   "id": "R0-control-scratch-cost",
+   "file": "packages/polaris-generation-consent/src/package-reader.ts",
+   "old": "function textForms(text: string): TextForms {",
+   "new": "function textForms(text: string): TextForms {",
+   "tests": [
+    "packages/polaris-generation-consent/src/zz-review-cost.test.ts"
+   ]
+  },
+  {
+   "id": "R5-slack-eager-scratch-cost",
+   "file": "packages/polaris-generation-consent/src/package-reader.ts",
+   "old": "let plain: readonly string[] | undefined, slack: readonly string[] | undefined, folded: string | undefined;",
+   "new": "let plain: readonly string[] | undefined, slack: readonly string[] | undefined = stemFolds(loose(text)), folded: string | undefined;",
+   "tests": [
+    "packages/polaris-generation-consent/src/zz-review-cost.test.ts"
+   ]
+  },
+  {
+   "id": "R2-forms-from-unswept-text",
+   "file": "packages/polaris-generation-consent/src/package-reader.ts",
+   "old": "if (namesAct(family.sweep, rel, textForms(await swept(rel, text)))) {",
+   "new": "if (namesAct(family.sweep, rel, textForms(text))) {",
+   "tests": [
+    "packages/polaris-generation-consent/src/decisions-sweep.test.ts",
+    "packages/polaris-generation-consent/src/act-families.test.ts",
+    "packages/polaris-generation-consent/src/digest-bound-act.test.ts",
+    "packages/polaris-generation-consent/src/package-reader.test.ts",
+    "packages/polaris-generation-consent/src/consent-ports.test.ts",
+    "packages/polaris-generation-consent/src/real-tree.test.ts"
+   ]
+  }
+ ]
+}
