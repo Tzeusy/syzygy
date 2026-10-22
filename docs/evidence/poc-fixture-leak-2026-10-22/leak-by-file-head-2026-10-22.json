@@ -1,9 +1,9 @@
 {
  "tool": "leak_by_file.py",
- "treeCommit": "d8532f1a",
+ "treeCommit": "baf064755ebb4e5a9b5da7dbf259aa7c27ab6d5b",
  "project": "@syzygy/three-surface-poc-app",
  "testFilesInDirectory": 89,
- "fixtureUsingTestFiles": 42,
+ "fixtureUsingTestFiles": 43,
  "filesWithCopiesLeft": 0,
  "filesWithTemplatesLeft": 0,
  "copiesLeftTotal": 0,
@@ -60,6 +60,17 @@
    "summary": [
     "Test Files  1 passed (1)",
     "Tests  8 passed (8)"
+   ],
+   "templatesLeft": 0,
+   "copiesLeft": 0,
+   "otherEntriesLeft": 1
+  },
+  {
+   "file": "apps/three-surface-poc/src/main.test.ts",
+   "exit": 0,
+   "summary": [
+    "Test Files  1 passed (1)",
+    "Tests  24 passed (24)"
    ],
    "templatesLeft": 0,
    "copiesLeft": 0,
@@ -400,7 +411,7 @@
    "exit": 0,
    "summary": [
     "Test Files  1 passed (1)",
-    "Tests  5 passed (5)"
+    "Tests  10 passed (10)"
    ],
    "templatesLeft": 0,
    "copiesLeft": 0,

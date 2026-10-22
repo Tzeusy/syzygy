@@ -1,164 +1,377 @@
 {
  "subject": {
   "baseCommit": "0d4d50984f6aa501217fe7109b6aec1b9679e4c9",
-  "codeCommit": "d8532f1afdf965439c70ee6f6f3f1836b3c81bc9",
-  "recordedAtHead": "d8532f1afdf965439c70ee6f6f3f1836b3c81bc9"
+  "mergedMainCommit": "c55acb73753dc8d29d53b34b38b5d2af0cee6080",
+  "codeCommit": "baf064755ebb4e5a9b5da7dbf259aa7c27ab6d5b",
+  "treeAtRecording": "baf064755ebb4e5a9b5da7dbf259aa7c27ab6d5b"
  },
  "appsAndPackagesDiffSinceCodeCommit": "",
  "toolDigests": {
   "census_tmp.py": "436d1457ea9a455c51096e428b70e3693114bb1aab3c1a6ad007180ca1898e58",
   "drain_scan.py": "32e801a77568f62efe01c69d89e15ab36daa8cda14752c4fa6c3199e19573741",
   "interrupt_probe.py": "d8f191cf60519c8718a3407c451b8f3334faeb2c01a8a4de821a8fd0ffc7e688",
+  "kill_then_fresh_run.py": "fe37d2979118dd9732ed19907eb5b8e7bbe332058dc9a2a5b755d8187a7fcc7f",
   "leak_by_file.py": "fc7e19608090dcbbab3aea5ba604b449b71a6ecce5bcad4e42929ade8e893554",
-  "mutate_teardown.py": "58c34f56c8e0c4e07aff2b4d71345777f713b4ebffd3087ec237ba31c3b2cfda",
-  "nondraining_probe.py": "e90e5c68e7119159f2d904cb90ae0ba1761ed4b292cccb768ec4734c0d543c8e",
+  "mutate_sweep.py": "5fa3de112f253422ef38e33d3145d96e917a3125810bee313798fe70268b3313",
   "tmpdir_length_probe.py": "afdb831b9056487554aebcd90f20856d0257a2033f35552a02252fd276e34769"
  },
- "changedFilesBaseToCode": [
+ "changedFilesMainToCode": [
   "apps/three-surface-poc/src/test-model-fixture.test.ts",
-  "apps/three-surface-poc/src/test-model-fixture.ts"
+  "apps/three-surface-poc/src/test-model-fixture.ts",
+  "docs/evidence/poc-fixture-leak-2026-10-22/assemble_records.py",
+  "docs/evidence/poc-fixture-leak-2026-10-22/census-tmp-after-cleanup-2026-10-22.json",
+  "docs/evidence/poc-fixture-leak-2026-10-22/census_tmp.py",
+  "docs/evidence/poc-fixture-leak-2026-10-22/diagnosis-2026-10-22.json",
+  "docs/evidence/poc-fixture-leak-2026-10-22/drain-scan-2026-10-22.json",
+  "docs/evidence/poc-fixture-leak-2026-10-22/drain_scan.py",
+  "docs/evidence/poc-fixture-leak-2026-10-22/interrupt-kill-base-2026-10-22.json",
+  "docs/evidence/poc-fixture-leak-2026-10-22/interrupt-kill-head-2026-10-22.json",
+  "docs/evidence/poc-fixture-leak-2026-10-22/interrupt_probe.py",
+  "docs/evidence/poc-fixture-leak-2026-10-22/leak-by-file-base-2026-10-22.json",
+  "docs/evidence/poc-fixture-leak-2026-10-22/leak-by-file-head-2026-10-22.json",
+  "docs/evidence/poc-fixture-leak-2026-10-22/leak_by_file.py",
+  "docs/evidence/poc-fixture-leak-2026-10-22/mutants-teardown-2026-10-22.json",
+  "docs/evidence/poc-fixture-leak-2026-10-22/mutate_teardown.py",
+  "docs/evidence/poc-fixture-leak-2026-10-22/nondraining-probe-2026-10-22.json",
+  "docs/evidence/poc-fixture-leak-2026-10-22/nondraining_probe.py",
+  "docs/evidence/poc-fixture-leak-2026-10-22/test-lists-2026-10-22.json",
+  "docs/evidence/poc-fixture-leak-2026-10-22/tmpdir-length-probe-2026-10-22.json",
+  "docs/evidence/poc-fixture-leak-2026-10-22/tmpdir_length_probe.py",
+  "docs/evidence/poc-fixture-leak-2026-10-22/verification-2026-10-22.json"
  ],
  "ac2": {
-  "claim": "a full three-surface-poc project run with a fresh TMPDIR leaves 0 syzygy-poc-surface-fixture-* directories",
+  "claim": "a clean three-surface-poc project run with a fresh TMPDIR leaves 0 syzygy-poc-surface-fixture-* directories",
   "command": "npx vitest run --project @syzygy/three-surface-poc-app",
-  "head": {
-   "summary": [
-    "Test Files  88 passed | 1 skipped (89)",
-    "Tests  1089 passed | 2 skipped (1091)",
-    "Duration  79.61s (transform 3.51s, setup 788ms, collect 21.09s, tests 244.91s, environment 20ms, prepare 7.61s)"
-   ],
+  "run": {
+   "exit": 0,
+   "seconds": 142.1,
+   "numTotalTests": 1102,
+   "numPassedTests": 1100,
+   "numFailedTests": 0,
+   "numPendingTests": 2,
+   "testFiles": 89,
+   "testFilesFailed": 0,
+   "failing": [],
    "left": {
-    "entries": 2,
-    "fixtureCopies": 0,
-    "fixtureTemplates": 0,
-    "byKind": {
-     ".com.google.Chrome.zPeaba": 1,
-     "node-compile-cache": 1
-    }
+    "fixtureDirectories": 0,
+    "ofDeadProcesses": {
+     "count": 0,
+     "copies": 0,
+     "templates": 0,
+     "ownerPids": []
+    },
+    "ofLiveProcesses": {
+     "count": 0,
+     "copies": 0,
+     "templates": 0
+    },
+    "withoutAnOwnerPid": {
+     "count": 0
+    },
+    "otherEntries": 3
    }
   },
-  "perFileHead": {
-   "treeCommit": "d8532f1a",
+  "perFile": {
+   "treeCommit": "baf064755ebb4e5a9b5da7dbf259aa7c27ab6d5b",
    "testFilesInDirectory": 89,
-   "fixtureUsingTestFiles": 42,
+   "fixtureUsingTestFiles": 43,
    "filesWithCopiesLeft": 0,
    "filesWithTemplatesLeft": 0,
    "copiesLeftTotal": 0,
    "templatesLeftTotal": 0,
    "nonzeroExits": []
   },
-  "note": "base leaves 0 too in a complete run (diagnosis); this criterion alone cannot tell the change from no change, which is what AC3 and the probe are for"
+  "note": "base leaves 0 too in a clean run (diagnosis), so this criterion shows the change leaves nothing new; AC3 is what the change is for. A first attempt of this run at the same commit, under machine load 30, failed sync-child-process-guard.test.ts: the new test used spawnSync, which that guard forbids; the test now awaits an async spawn. Its report was not retained."
  },
  "ac3": {
-  "claim": "removing the new per-file registration leaks again",
+  "claim": "a run killed with SIGKILL, followed by one fresh run, leaves 0 directories of dead processes; with the sweep disabled they stay",
+  "withTheSweep": {
+   "killedRun": {
+    "signal": "SIGKILL",
+    "sentToTheProcessGroupOfTheRunItStarted": true,
+    "runFinishedBeforeTheSignal": false,
+    "atKill": {
+     "secondsIntoTheRun": 4.4,
+     "fixtureDirectories": 5,
+     "ofDeadProcesses": {
+      "count": 0,
+      "copies": 0,
+      "templates": 0,
+      "ownerPids": []
+     },
+     "ofLiveProcesses": {
+      "count": 5,
+      "copies": 3,
+      "templates": 2
+     },
+     "withoutAnOwnerPid": {
+      "count": 0
+     },
+     "otherEntries": 13
+    },
+    "fiveSecondsAfterKill": {
+     "fixtureDirectories": 5,
+     "ofDeadProcesses": {
+      "count": 5,
+      "copies": 3,
+      "templates": 2,
+      "ownerPids": [
+       2844525,
+       2844544
+      ]
+     },
+     "ofLiveProcesses": {
+      "count": 0,
+      "copies": 0,
+      "templates": 0
+     },
+     "withoutAnOwnerPid": {
+      "count": 0
+     },
+     "otherEntries": 13
+    }
+   },
+   "freshRun": {
+    "exit": 0,
+    "seconds": 60.2,
+    "numTotalTests": 1102,
+    "numPassedTests": 1100,
+    "numFailedTests": 0,
+    "numPendingTests": 2,
+    "testFiles": 89,
+    "testFilesFailed": 0,
+    "failing": [],
+    "left": {
+     "fixtureDirectories": 0,
+     "ofDeadProcesses": {
+      "count": 0,
+      "copies": 0,
+      "templates": 0,
+      "ownerPids": []
+     },
+     "ofLiveProcesses": {
+      "count": 0,
+      "copies": 0,
+      "templates": 0
+     },
+     "withoutAnOwnerPid": {
+      "count": 0
+     },
+     "otherEntries": 15
+    }
+   }
+  },
+  "sweepDisabled": {
+   "mutant": {
+    "id": "sweep-not-called",
+    "old": "  removeFixturesOfDeadProcesses();\n  const root = mkdtempSync(join(tmpdir(), `${FIXTURE_PREFIX}template-p",
+    "new": "  const root = mkdtempSync(join(tmpdir(), `${FIXTURE_PREFIX}template-p"
+   },
+   "killedRun": {
+    "signal": "SIGKILL",
+    "sentToTheProcessGroupOfTheRunItStarted": true,
+    "runFinishedBeforeTheSignal": false,
+    "atKill": {
+     "secondsIntoTheRun": 8.1,
+     "fixtureDirectories": 5,
+     "ofDeadProcesses": {
+      "count": 0,
+      "copies": 0,
+      "templates": 0,
+      "ownerPids": []
+     },
+     "ofLiveProcesses": {
+      "count": 5,
+      "copies": 3,
+      "templates": 2
+     },
+     "withoutAnOwnerPid": {
+      "count": 0
+     },
+     "otherEntries": 15
+    },
+    "fiveSecondsAfterKill": {
+     "fixtureDirectories": 5,
+     "ofDeadProcesses": {
+      "count": 5,
+      "copies": 3,
+      "templates": 2,
+      "ownerPids": [
+       2896846,
+       2896854
+      ]
+     },
+     "ofLiveProcesses": {
+      "count": 0,
+      "copies": 0,
+      "templates": 0
+     },
+     "withoutAnOwnerPid": {
+      "count": 0
+     },
+     "otherEntries": 15
+    }
+   },
+   "freshRun": {
+    "exit": 1,
+    "seconds": 65.5,
+    "numTotalTests": 1102,
+    "numPassedTests": 1099,
+    "numFailedTests": 1,
+    "numPendingTests": 2,
+    "testFiles": 89,
+    "testFilesFailed": 1,
+    "failing": [
+     {
+      "file": "three-surface-poc/src/test-model-fixture.test.ts",
+      "test": "fixture directories a killed run left behind (syzygy-bpyt.4.10) sweeps the dead before it makes the file's template, and keeps the live and the legacy",
+      "firstErrorLine": "AssertionError: expected [ \u2026(2) ] to deeply equal []"
+     }
+    ],
+    "left": {
+     "fixtureDirectories": 5,
+     "ofDeadProcesses": {
+      "count": 5,
+      "copies": 3,
+      "templates": 2,
+      "ownerPids": [
+       2896846,
+       2896854
+      ]
+     },
+     "ofLiveProcesses": {
+      "count": 0,
+      "copies": 0,
+      "templates": 0
+     },
+     "withoutAnOwnerPid": {
+      "count": 0
+     },
+     "otherEntries": 16
+    }
+   },
+   "note": "the fresh run exits 1 because the unit test that exercises the sweep fails on the mutated tree; the 5 directories of the killed run stay"
+  },
   "unitMutants": {
-   "treeCommit": "d8532f1afdf965439c70ee6f6f3f1836b3c81bc9",
+   "treeCommit": "baf064755ebb4e5a9b5da7dbf259aa7c27ab6d5b",
    "command": "npx vitest run apps/three-surface-poc/src/test-model-fixture.test.ts --project @syzygy/three-surface-poc-app",
-   "mutants": 8,
-   "killed": 8,
+   "mutants": 10,
+   "killed": 10,
    "control": {
     "exit": 0,
-    "testsRun": 5,
+    "testsRun": 10,
     "failing": [],
     "fixtureDirectoriesLeftInPrivateTmpdir": 0,
     "holds": true
    },
    "ids": [
     [
-     "copy-not-registered",
+     "sweep-not-called",
      "killed"
     ],
     [
-     "set-not-cleared",
+     "live-pid-removed",
      "killed"
     ],
     [
-     "template-not-reset",
+     "every-error-means-dead",
      "killed"
     ],
     [
-     "teardown-per-copy",
+     "name-without-pid-is-dead",
      "killed"
     ],
     [
-     "only-first-removed",
+     "hyphen-after-pid-dropped",
      "killed"
     ],
     [
-     "template-kept",
+     "anchor-dropped",
      "killed"
     ],
     [
-     "hook-bypassed",
+     "template-form-unmatched",
      "killed"
     ],
     [
-     "exit-branch-dropped",
+     "copy-name-without-pid",
+     "killed"
+    ],
+    [
+     "template-name-without-pid",
+     "killed"
+    ],
+    [
+     "removal-failure-propagates",
      "killed"
     ]
    ]
-  },
-  "nonDrainingCallerProbe": {
-   "base": {
-    "exit": 0,
-    "copiesLeft": 3,
-    "templatesLeft": 0
-   },
-   "head": {
-    "exit": 0,
-    "copiesLeft": 0,
-    "templatesLeft": 0
-   },
-   "mutant": {
-    "exit": 0,
-    "copiesLeft": 3,
-    "templatesLeft": 0
-   },
-   "head-2": {
-    "exit": 0,
-    "copiesLeft": 0,
-    "templatesLeft": 0
-   }
-  },
-  "probeCommit": "d8532f1afdf965439c70ee6f6f3f1836b3c81bc9"
+  }
  },
- "ac4": {
+ "ac4ac5": {
+  "claim": "a directory whose pid is alive survives the sweep (the current process's pid, in a unit test); a legacy name with no pid survives",
+  "unitTestsAddedToTestModelFixtureTestTs": [
+   "fixture directories a killed run left behind (syzygy-bpyt.4.10) > removes the copy and the template of a process that is gone",
+   "fixture directories a killed run left behind (syzygy-bpyt.4.10) > keeps the directories of a live process, the current one included",
+   "fixture directories a killed run left behind (syzygy-bpyt.4.10) > keeps a name that carries no pid segment, whatever its suffix",
+   "fixture directories a killed run left behind (syzygy-bpyt.4.10) > keeps a directory whose pid fails with anything but ESRCH",
+   "fixture directories a killed run left behind (syzygy-bpyt.4.10) > does not fail the run when a dead process's directory cannot be removed",
+   "fixture directories a killed run left behind (syzygy-bpyt.4.10) > names the template and each copy with the pid of the process that made them",
+   "fixture directories a killed run left behind (syzygy-bpyt.4.10) > sweeps the dead before it makes the file's template, and keeps the live and the legacy"
+  ],
+  "withNoPidSegmentKept": "seven name shapes in one test: legacy copy, legacy template, pid with no hyphen, pid not straight after the prefix (copy and template forms), another prefix, the prefix inside a longer name, the prefix without its last hyphen"
+ },
+ "ac6": {
+  "baseTree": "baf064755ebb4e5a9b5da7dbf259aa7c27ab6d5b with test-model-fixture.test.ts as at c55acb73753dc8d29d53b34b38b5d2af0cee6080",
+  "headTree": "baf064755ebb4e5a9b5da7dbf259aa7c27ab6d5b",
+  "baseLines": 5019,
+  "headLines": 5026,
+  "added": 7,
+  "removed": 0,
+  "addedByFile": {
+   "[@syzygy/three-surface-poc-app] apps/three-surface-poc/src/test-model-fixture.test.ts": 7
+  },
+  "testsLine": "Tests: +7 ~0 -0"
+ },
+ "gates": {
   "fullVitest": {
    "summary": [
     "Test Files  229 passed | 3 skipped (232)",
-    "Tests  5008 passed | 5 skipped (5013)",
-    "Duration  120.28s (transform 10.71s, setup 1.98s, collect 53.91s, tests 484.65s, environment 57ms, prepare 21.23s)"
+    "Tests  5019 passed | 5 skipped (5024)",
+    "Duration  166.41s (transform 17.96s, setup 3.36s, collect 80.37s, tests 788.60s, environment 68ms, prepare 30.31s)"
    ],
    "left": {
     "entries": 3,
-    "fixtureCopies": 0,
-    "fixtureTemplates": 0,
+    "fixtureDirectories": 0,
     "byKind": {
-     ".com.google.Chrome.BxLsDE": 1,
-     "dossier-signoff-9lqcrt-outside-RAW.md": 1,
+     ".com.google.Chrome.Gp6UOg": 1,
+     "dossier-signoff-XXXXXX-outside-RAW.md": 1,
      "node-compile-cache": 1
     }
    }
   },
-  "testNames": {
-   "baseTree": "0d4d5098",
-   "headTree": "d8532f1a",
-   "baseLines": 5013,
-   "headLines": 5015,
-   "added": 2,
-   "removed": 0,
-   "addedByFile": {
-    "[@syzygy/three-surface-poc-app] apps/three-surface-poc/src/test-model-fixture.test.ts": 2
-   },
-   "testsLine": "Tests: +2 ~0 -0"
+  "typecheck": {
+   "command": "npm run typecheck",
+   "last line of the log": "exit=0"
+  },
+  "checkGovernance": {
+   "command": "python3 scripts/check_governance.py",
+   "summary": [
+    "32 OK, 21 WARN, 0 FAIL (53 checks) \u2014 counts derived, not asserted"
+   ],
+   "exit": "exit=0"
+  },
+  "checkQuotations": {
+   "command": "python3 scripts/check_quotations.py",
+   "exit": "exit=0"
   }
  },
  "otherLeakSeen": {
   "where": "packages/polaris-dossier/src/waiting-sessions.test.ts:276",
   "what": "writes <tmpdir>/dossier-signoff-XXXXXX-outside-RAW.md beside its temporary directory and never removes it; found in the full-run TMPDIR listing",
   "left": {
-   ".com.google.Chrome.BxLsDE": 1,
-   "dossier-signoff-9lqcrt-outside-RAW.md": 1,
+   ".com.google.Chrome.Gp6UOg": 1,
+   "dossier-signoff-XXXXXX-outside-RAW.md": 1,
    "node-compile-cache": 1
   }
  },
@@ -228,6 +441,7 @@
    "syzygy-poc-surface-fixture-y5s8Ne",
    "syzygy-poc-surface-fixture-ziamzr"
   ],
-  "note": "the before and after counts were read from `find ... | wc -l` at the time; the removed list is the scripted `find` output saved before removal"
+  "note": "the before and after counts were read from `find ... | wc -l` at the time; the removed list is the scripted `find` output saved before removal",
+  "carriedFrom": "verification-2026-10-22.json at 0d963aaf30a8d425b83f0d369b137281d586ea93; the directories no longer exist, so the counts cannot be re-derived"
  }
 }

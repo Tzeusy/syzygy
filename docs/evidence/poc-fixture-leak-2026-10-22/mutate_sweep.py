@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
-"""Rule-6 run for the end-of-file teardown in apps/three-surface-poc/src/test-model-fixture.ts.
+"""Rule-6 run for the owner-pid naming and the dead-process sweep in
+apps/three-surface-poc/src/test-model-fixture.ts.
 
 Usage: mutate_teardown.py <worktree> <out.json> <private-tmpdir>
 
@@ -28,25 +29,28 @@ SRC = 'apps/three-surface-poc/src/test-model-fixture.ts'
 TEST = 'apps/three-surface-poc/src/test-model-fixture.test.ts'
 
 MUTANTS = [
-    ('copy-not-registered', 'the copy is never registered, only the template',
-     '  cleanups.push(root);\n  removeAtEndOfFile(root);\n', '  cleanups.push(root);\n'),
-    ('set-not-cleared', 'the set keeps its roots after the teardown, so the next file registers nothing',
-     '    removeWhenFileEnds.clear();\n', ''),
-    ('template-not-reset', 'the next copy comes from a template the teardown removed',
-     '    template = undefined;\n  };\n', '  };\n'),
-    ('teardown-per-copy', 'every copy registers its own teardown and exit listener',
-     '  if (!first) return;\n', ''),
-    ('only-first-removed', 'the teardown removes the first registered root only',
-     'for (const owned of removeWhenFileEnds) rmSync(', 'for (const owned of [...removeWhenFileEnds].slice(0, 1)) rmSync('),
-    ('template-kept', 'the teardown removes copies but not the template',
-     'for (const owned of removeWhenFileEnds) rmSync(owned, { recursive: true, force: true });',
-     "for (const owned of removeWhenFileEnds) if (!owned.includes('-template-')) rmSync(owned, { recursive: true, force: true });"),
-    ('hook-bypassed', 'the teardown always waits for process exit, never the per-file hook',
-     'if (afterTestFile === undefined) process.once(\'exit\', remove);\n  else afterTestFile(remove);',
-     "process.once('exit', remove);"),
-    ('exit-branch-dropped', 'outside Vitest nothing is registered at all',
-     "if (afterTestFile === undefined) process.once('exit', remove);\n  else afterTestFile(remove);",
-     'if (afterTestFile !== undefined) afterTestFile(remove);'),
+    ('sweep-not-called', 'the first template of a file no longer sweeps',
+     '  removeFixturesOfDeadProcesses();\n  const root = mkdtempSync(join(tmpdir(), `${FIXTURE_PREFIX}template-p',
+     '  const root = mkdtempSync(join(tmpdir(), `${FIXTURE_PREFIX}template-p'),
+    ('live-pid-removed', 'a directory whose pid is alive is removed too',
+     'if (pid === undefined || ownerMayBeAlive(Number(pid))) continue;', 'if (pid === undefined) continue;'),
+    ('every-error-means-dead', 'EPERM and an out-of-range pid count as dead',
+     "return (error as NodeJS.ErrnoException).code !== 'ESRCH';", 'return false;'),
+    ('name-without-pid-is-dead', 'a name with no pid segment is swept as pid 4194305',
+     'const pid = FIXTURE_NAME_WITH_OWNER.exec(name)?.[1];', "const pid = FIXTURE_NAME_WITH_OWNER.exec(name)?.[1] ?? '4194305';"),
+    ('hyphen-after-pid-dropped', 'a pid with no hyphen after it matches',
+     'p(\\d+)-/;', 'p(\\d+)/;'),
+    ('anchor-dropped', 'the prefix may sit inside a longer name',
+     'const FIXTURE_NAME_WITH_OWNER = /^syzygy-', 'const FIXTURE_NAME_WITH_OWNER = /syzygy-'),
+    ('template-form-unmatched', 'a template directory of a dead process is never swept',
+     '(?:template-)?p(\\d+)-/;', 'p(\\d+)-/;'),
+    ('copy-name-without-pid', 'a copy is named as before, with no pid',
+     '`${FIXTURE_PREFIX}p${process.pid}-`', '`${FIXTURE_PREFIX}`'),
+    ('template-name-without-pid', 'the template is named as before, with no pid',
+     '`${FIXTURE_PREFIX}template-p${process.pid}-`', '`${FIXTURE_PREFIX}template-`'),
+    ('removal-failure-propagates', 'a directory that cannot be removed fails the run that sweeps',
+     '    try {\n      rmSync(join(directory, name), { recursive: true, force: true });\n    } catch {\n      // Left for the next run.\n    }\n',
+     '    rmSync(join(directory, name), { recursive: true, force: true });\n'),
 ]
 
 run = lambda *a: subprocess.run(a, cwd=WT, capture_output=True, text=True, check=True).stdout.strip()
@@ -55,7 +59,7 @@ dirty = run('git', 'status', '--porcelain', '--', SRC, TEST)
 assert dirty == '', f'{SRC} and {TEST} must be committed before a rule-6 run: {dirty}'
 originals = {name: (WT / name).read_text() for name in (SRC, TEST)}
 digests = {name: hashlib.sha256(text.encode()).hexdigest() for name, text in originals.items()}
-report = pathlib.Path(tempfile.mkdtemp(prefix='zz-mutate-teardown-')) / 'report.json'
+report = pathlib.Path(tempfile.mkdtemp(prefix='zz-mutate-sweep-')) / 'report.json'
 command = ['npx', 'vitest', 'run', TEST, '--project', '@syzygy/three-surface-poc-app', '--reporter=json', f'--outputFile={report}']
 
 
@@ -100,7 +104,7 @@ finally:
 for name, text in originals.items():
     assert hashlib.sha256((WT / name).read_text().encode()).hexdigest() == digests[name]
 OUT.write_text(json.dumps({
-    'tool': 'mutate_teardown.py',
+    'tool': 'mutate_sweep.py',
     'testFile': TEST,
     'command': ' '.join(command[:6]),
     'treeCommit': commit,

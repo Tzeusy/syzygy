@@ -1,0 +1,111 @@
+{
+ "tool": "kill_then_fresh_run.py",
+ "treeCommit": "baf064755ebb4e5a9b5da7dbf259aa7c27ab6d5b",
+ "mode": "mutant",
+ "command": "npx vitest run --project @syzygy/three-surface-poc-app (TMPDIR=<emptied private directory>)",
+ "sha256AtCommit": {
+  "apps/three-surface-poc/src/test-model-fixture.ts": "8cc4f6bea2b7f8486b0609c7e7b58d73e9a7dba335b01f17d698de583ed64e87",
+  "apps/three-surface-poc/src/test-model-fixture.test.ts": "ca3c4b4506120eee6f53dfde10684dbdfea8effba52eb036457c6bdd2399f5b0"
+ },
+ "minCopiesBeforeKill": 3,
+ "killedRun": {
+  "signal": "SIGKILL",
+  "sentToTheProcessGroupOfTheRunItStarted": true,
+  "runFinishedBeforeTheSignal": false,
+  "atKill": {
+   "secondsIntoTheRun": 8.1,
+   "fixtureDirectories": 5,
+   "ofDeadProcesses": {
+    "count": 0,
+    "copies": 0,
+    "templates": 0,
+    "ownerPids": []
+   },
+   "ofLiveProcesses": {
+    "count": 5,
+    "copies": 3,
+    "templates": 2
+   },
+   "withoutAnOwnerPid": {
+    "count": 0
+   },
+   "otherEntries": 15
+  },
+  "fiveSecondsAfterKill": {
+   "fixtureDirectories": 5,
+   "ofDeadProcesses": {
+    "count": 5,
+    "copies": 3,
+    "templates": 2,
+    "ownerPids": [
+     2896846,
+     2896854
+    ]
+   },
+   "ofLiveProcesses": {
+    "count": 0,
+    "copies": 0,
+    "templates": 0
+   },
+   "withoutAnOwnerPid": {
+    "count": 0
+   },
+   "otherEntries": 15
+  }
+ },
+ "mutant": {
+  "id": "sweep-not-called",
+  "old": "  removeFixturesOfDeadProcesses();\n  const root = mkdtempSync(join(tmpdir(), `${FIXTURE_PREFIX}template-p",
+  "new": "  const root = mkdtempSync(join(tmpdir(), `${FIXTURE_PREFIX}template-p"
+ },
+ "freshRun": {
+  "exit": 1,
+  "seconds": 65.5,
+  "numTotalTestSuites": 261,
+  "numPassedTests": 1099,
+  "numFailedTests": 1,
+  "numPendingTests": 2,
+  "numTotalTests": 1102,
+  "success": false,
+  "testFiles": 89,
+  "testFilesFailed": 1,
+  "failing": [
+   {
+    "file": "three-surface-poc/src/test-model-fixture.test.ts",
+    "test": "fixture directories a killed run left behind (syzygy-bpyt.4.10) sweeps the dead before it makes the file's template, and keeps the live and the legacy",
+    "firstErrorLine": "AssertionError: expected [ \u2026(2) ] to deeply equal []"
+   }
+  ],
+  "left": {
+   "fixtureDirectories": 5,
+   "ofDeadProcesses": {
+    "count": 5,
+    "copies": 3,
+    "templates": 2,
+    "ownerPids": [
+     2896846,
+     2896854
+    ]
+   },
+   "ofLiveProcesses": {
+    "count": 0,
+    "copies": 0,
+    "templates": 0
+   },
+   "withoutAnOwnerPid": {
+    "count": 0
+   },
+   "otherEntries": 16
+  }
+ },
+ "processesStillNamingThisTmpdir": [
+  2897386,
+  2897387,
+  2897395,
+  2897397,
+  2897423,
+  2897424,
+  2897444,
+  2897451
+ ]
+}

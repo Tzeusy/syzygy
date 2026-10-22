@@ -1,18 +1,18 @@
 {
  "tool": "compare_test_lists.py",
- "baseTree": "0d4d5098",
- "headTree": "d8532f1a",
+ "baseTree": "baf064755ebb4e5a9b5da7dbf259aa7c27ab6d5b with test-model-fixture.test.ts as at c55acb73753dc8d29d53b34b38b5d2af0cee6080",
+ "headTree": "baf064755ebb4e5a9b5da7dbf259aa7c27ab6d5b",
  "command": "npx vitest list",
- "note": "the base list is the head tree with test-model-fixture.test.ts at the base commit: that is the only file under apps/ that differs",
- "baseLines": 5013,
- "headLines": 5015,
- "baseDistinctNames": 5004,
- "headDistinctNames": 5006,
- "added": 2,
+ "note": "the base list is the code commit with test-model-fixture.test.ts at origin/main: that is the only test file under apps/ and packages/ that differs",
+ "baseLines": 5019,
+ "headLines": 5026,
+ "baseDistinctNames": 5010,
+ "headDistinctNames": 5017,
+ "added": 7,
  "removed": 0,
  "addedByFile": {
-  "[@syzygy/three-surface-poc-app] apps/three-surface-poc/src/test-model-fixture.test.ts": 2
+  "[@syzygy/three-surface-poc-app] apps/three-surface-poc/src/test-model-fixture.test.ts": 7
  },
  "removedByFile": {},
- "testsLine": "Tests: +2 ~0 -0"
+ "testsLine": "Tests: +7 ~0 -0"
 }

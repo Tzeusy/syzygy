@@ -1,0 +1,43 @@
+{
+ "tool": "kill_then_fresh_run.py",
+ "treeCommit": "baf064755ebb4e5a9b5da7dbf259aa7c27ab6d5b",
+ "mode": "clean",
+ "command": "npx vitest run --project @syzygy/three-surface-poc-app (TMPDIR=<emptied private directory>)",
+ "sha256AtCommit": {
+  "apps/three-surface-poc/src/test-model-fixture.ts": "8cc4f6bea2b7f8486b0609c7e7b58d73e9a7dba335b01f17d698de583ed64e87",
+  "apps/three-surface-poc/src/test-model-fixture.test.ts": "ca3c4b4506120eee6f53dfde10684dbdfea8effba52eb036457c6bdd2399f5b0"
+ },
+ "minCopiesBeforeKill": 3,
+ "freshRun": {
+  "exit": 0,
+  "seconds": 142.1,
+  "numTotalTestSuites": 261,
+  "numPassedTests": 1100,
+  "numFailedTests": 0,
+  "numPendingTests": 2,
+  "numTotalTests": 1102,
+  "success": true,
+  "testFiles": 89,
+  "testFilesFailed": 0,
+  "failing": [],
+  "left": {
+   "fixtureDirectories": 0,
+   "ofDeadProcesses": {
+    "count": 0,
+    "copies": 0,
+    "templates": 0,
+    "ownerPids": []
+   },
+   "ofLiveProcesses": {
+    "count": 0,
+    "copies": 0,
+    "templates": 0
+   },
+   "withoutAnOwnerPid": {
+    "count": 0
+   },
+   "otherEntries": 3
+  }
+ },
+ "processesStillNamingThisTmpdir": []
+}

@@ -1,11 +1,11 @@
 {
  "tool": "drain_scan.py",
- "treeCommit": "d8532f1a",
- "filesNamingTheHelper": 44,
+ "treeCommit": "baf064755ebb4e5a9b5da7dbf259aa7c27ab6d5b",
+ "filesNamingTheHelper": 45,
  "helperFilesExcluded": [
   "apps/three-surface-poc/src/test-model-fixture.test.ts"
  ],
- "callers": 42,
+ "callers": 43,
  "filesNamingTheHelperButCreatingNothing": [
   "apps/three-surface-poc/src/sync-child-process-guard.test.ts"
  ],
@@ -116,6 +116,26 @@
    "delegatedArrays": [],
    "arrayDrains": {
     "cleanups": "afterAll"
+   },
+   "sharedFixtures": {},
+   "noDrainFound": false
+  },
+  {
+   "file": "apps/three-surface-poc/src/main.test.ts",
+   "isTest": true,
+   "createsRepositories": true,
+   "calls": {
+    "fixtureRepoWithGit": 0,
+    "buildFixtureModel": 2,
+    "variantModel": 0,
+    "renderVariant": 0
+   },
+   "cleanupArrays": [
+    "fixtureDirectories"
+   ],
+   "delegatedArrays": [],
+   "arrayDrains": {
+    "fixtureDirectories": "afterAll"
    },
    "sharedFixtures": {},
    "noDrainFound": false

@@ -1,7 +1,7 @@
 {
  "subject": {
   "baseCommit": "0d4d50984f6aa501217fe7109b6aec1b9679e4c9",
-  "note": "the diagnosis is of main after PR 503, before the change"
+  "note": "the diagnosis is of main after PR 503, before the change. Revised 2026-10-22 after the coordinator dropped the per-file removal hook this branch first carried: its records (unit mutants, non-draining probe, head interrupt probe) are removed from this directory and are in git history at 0d963aaf30a8d425b83f0d369b137281d586ea93"
  },
  "cleanRunsAtBase": {
   "command": "npx vitest run --project @syzygy/three-surface-poc-app",
@@ -89,7 +89,38 @@
    "apps/three-surface-poc/src/polaris-first-reading.test.ts": "cleanupList is the sharedFixtureModels callback parameter, drained by afterAll(shared.remove) line 53; cleanups drained by afterEach lines 27-28",
    "apps/three-surface-poc/src/polaris-narrative.test.ts": "cleanupList is the sharedFixtureModels callback parameter, drained by afterAll(shared.remove) line 60; cleanups drained by afterEach lines 18-19"
   },
-  "conclusion": "no caller was found that drains nothing: 0 of 42, by the static scan plus the by-hand reading above, and 0 of 42 test files by the per-file run (perFileAtBase)"
+  "conclusion": "no caller was found that drains nothing: 0 of 42, by the static scan plus the by-hand reading above, and 0 of 42 test files by the per-file run (perFileAtBase)",
+  "atTheFinalCodeCommit": {
+   "treeCommit": "baf064755ebb4e5a9b5da7dbf259aa7c27ab6d5b",
+   "filesNamingTheHelper": 45,
+   "callers": 43,
+   "scanFlaggedNoDrain": [
+    "apps/three-surface-poc/src/polaris-accessibility-main.ts",
+    "apps/three-surface-poc/src/polaris-opening-index.browser.test.ts"
+   ],
+   "scanDelegatedArrays": [
+    "apps/three-surface-poc/src/polaris-accessibility-variants.ts",
+    "apps/three-surface-poc/src/polaris-copy.test.ts",
+    "apps/three-surface-poc/src/polaris-first-reading.test.ts",
+    "apps/three-surface-poc/src/polaris-narrative.test.ts"
+   ],
+   "callersNotInTheScanAtTheFirstRevision": {
+    "apps/three-surface-poc/src/main.test.ts": {
+     "fixtureDirectories": "afterAll"
+    }
+   },
+   "perFileRun": {
+    "treeCommit": "baf064755ebb4e5a9b5da7dbf259aa7c27ab6d5b",
+    "testFilesInDirectory": 89,
+    "fixtureUsingTestFiles": 43,
+    "filesWithCopiesLeft": 0,
+    "filesWithTemplatesLeft": 0,
+    "copiesLeftTotal": 0,
+    "templatesLeftTotal": 0,
+    "nonzeroExits": []
+   },
+   "note": "main moved from 0d4d5098 to c55acb73753dc8d29d53b34b38b5d2af0cee6080 with PR 507, whose main.test.ts now calls buildFixtureModel and drains in afterAll. The six files the scan flagged are the six read by hand above; the scan flags the same six."
+  }
  },
  "interruptedRuns": {
   "method": "interrupt_probe.py: the project run as the leader of a new process group, SIGKILL sent to that group once three fixture copies exist, then the TMPDIR sampled for 80 seconds",
@@ -111,25 +142,7 @@
     "liveProcessesNamingThisTmpdir": 8
    }
   },
-  "head": {
-   "treeCommit": "d8532f1a",
-   "signal": "KILL",
-   "atSignal": {
-    "secondsIntoTheRun": 21.1,
-    "fixtureCopies": 3,
-    "fixtureTemplates": 3,
-    "otherSyzygyEntries": 9,
-    "liveProcessesNamingThisTmpdir": 26
-   },
-   "lastSample": {
-    "secondsAfterSignal": 80,
-    "fixtureCopies": 4,
-    "fixtureTemplates": 3,
-    "otherSyzygyEntries": 11,
-    "liveProcessesNamingThisTmpdir": 8
-   }
-  },
-  "note": "the copies and templates are still there 80 seconds after the signal, with and without the change: no hook runs in a killed worker. The orphaned processes in the samples are Chrome crashpad handlers and `cat` pipes of killed browser launches; each probe run's own were stopped afterwards by PID, each re-checked against the probe's unique TMPDIR in its environment. An earlier attempt with `timeout -s` (unrecorded) listed fixture directories at once that were gone minutes later; the probe samples over time instead."
+  "note": "the copies and templates are still there 80 seconds after the signal: no hook runs in a killed worker, so nothing a test file registers can remove them. The orphaned processes in the samples are Chrome crashpad handlers and `cat` pipes of killed browser launches; each probe run's own were stopped afterwards by PID, each re-checked against the probe's unique TMPDIR in its environment."
  },
  "tmpCensus": {
   "afterCleanup": {
@@ -215,5 +228,6 @@
    "note": "typed from the tool output, not re-derivable: those directories no longer exist"
   },
   "readingOfTheCensus": "[Inferred] the six bursts of 25 to 49 copies over 3 to 7 minutes are interrupted runs, not a non-draining caller, which would leave a count tied to its file on every complete run"
- }
+ },
+ "finding": "The leak in /tmp is not a caller that fails to drain: a clean project run leaves 0 fixture directories, all fixture-using test files leave 0 when run alone, and no caller was found that drains nothing. The directories come from runs that were killed or aborted (mtime bursts of 25 to 49 copies, and a SIGKILL probe that leaves them in place at base): no teardown hook runs there. [Inferred for the bursts, Observed for the probe]"
 }
