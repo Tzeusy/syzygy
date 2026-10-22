@@ -197,7 +197,9 @@ finally:
     shutil.rmtree(report.parent, ignore_errors=True)
 for name, text in originals.items():
     assert hashlib.sha256((WT / name).read_bytes()).hexdigest() == digests[name], f'{name} not restored'
-record = {'tool': 'mutate_cdp.py', 'treeCommit': commit, 'sha256AtCommit': digests, 'project': PROJECT, 'control': control, 'controlLaunchFailure': control_leak,
+browser = os.environ.get('SYZYGY_POC_BROWSER') or shutil.which('google-chrome') or 'google-chrome'  # what findBrowserExecutable finds
+browser_version = subprocess.run([browser, '--version'], capture_output=True, text=True).stdout.strip()
+record = {'tool': 'mutate_cdp.py', 'treeCommit': commit, 'sha256AtCommit': digests, 'browserExecutable': browser, 'browserVersion': browser_version, 'project': PROJECT, 'control': control, 'controlLaunchFailure': control_leak,
           'mutants': len(MUTANTS), 'killed': sum(1 for r in results if r['outcome'] == 'killed'), 'results': results}
 OUT.write_text(json.dumps(record, indent=1) + '\n')
 print('killed', record['killed'], 'of', record['mutants'])

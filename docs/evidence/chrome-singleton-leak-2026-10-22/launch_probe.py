@@ -91,7 +91,8 @@ if MODE == 'base':
                         and summary['closedLaunchesThatLeftAnything'] == summary['killedAndLeftAChromeDirectory'])
 else:
     summary['holds'] = len(killed) > 0 and summary['closedLaunchesThatLeftAnything'] == 0 and summary['entriesAtTheEndNotLeftByAThrownClose'] == []
-record |= {'executable': result['executable'], 'privateTmpdirLength': result['tmpdirLength'], 'rows': rows, 'summary': summary}
+version = subprocess.run([result['executable'], '--version'], capture_output=True, text=True).stdout.strip()
+record |= {'executable': result['executable'], 'browserVersion': version, 'privateTmpdirLength': result['tmpdirLength'], 'rows': rows, 'summary': summary}
 OUT.write_text(json.dumps(record, indent=1) + '\n')
 print(json.dumps(summary, indent=1))
 shutil.rmtree(TMP, ignore_errors=True)

@@ -92,7 +92,9 @@ summary = {
 }
 summary['everyFilePassedAloneAndLeftNone'] = (summary['filesWithAPassingAttempt'] == len(list_a) and summary['chromeSingletonDirectoriesLeftOnPassingAttempts'] == 0
                                              and summary['draftPreviewDirectoriesLeftOnPassingAttempts'] == 0)
-record = {'tool': 'browser_files_run.py', 'treeCommit': COMMIT, 'label': LABEL, 'project': PROJECT, 'attemptsPerFile': ATTEMPTS, 'listA': list_a, 'listB': list_b,
+executable = os.environ.get('SYZYGY_POC_BROWSER') or 'google-chrome'  # what findBrowserExecutable finds: the variable, else the first on PATH
+version = subprocess.run([executable, '--version'], capture_output=True, text=True).stdout.strip()
+record = {'tool': 'browser_files_run.py', 'treeCommit': COMMIT, 'label': LABEL, 'browserExecutable': executable, 'browserVersion': version, 'project': PROJECT, 'attemptsPerFile': ATTEMPTS, 'listA': list_a, 'listB': list_b,
           'perFile': per_file, 'combinedRun': combined, 'summary': summary}
 OUT.write_text(json.dumps(record, indent=1) + '\n')
 print(json.dumps(summary, indent=1))
