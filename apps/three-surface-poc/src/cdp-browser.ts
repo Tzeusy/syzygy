@@ -263,14 +263,17 @@ function waitForDevToolsUrl(child: ChildProcess): Promise<string> {
 }
 
 /** Chrome keeps its process singleton's socket outside the profile, in a directory of its
- * own directly under the temp directory (`.com.google.Chrome.<random>`; Chromium builds
- * name it `.org.chromium.Chromium.<random>`), and links `<profile>/SingletonSocket` to the
- * socket in it. A Chrome that exits cleanly removes the directory. One that is killed, as
+ * own directly under the temp directory, and links `<profile>/SingletonSocket` to the
+ * socket in it. The name is `<product>.<random>`, with a leading dot in Chrome 120
+ * (`.com.google.Chrome.<random>`) and none in Chrome 155 (`com.google.Chrome.<random>`)
+ * or the Chrome for Testing builds 147 to 154 (`org.chromium.Chromium.<random>`); where
+ * the dot went between 120 and 147 is not known.
+ * A Chrome that exits cleanly removes the directory. One that is killed, as
  * closeDisposableBrowser does when the leader misses its close grace, leaves it behind the
  * profile (syzygy-bpyt.4.11). Chrome unlinks the profile's link as it starts to shut down,
  * so the directory is read from the link while Chrome runs, and again at removal for a
  * Chrome that was killed before it announced itself. */
-const CHROME_SINGLETON_DIRECTORY = /^\.(?:com\.google\.Chrome|org\.chromium\.Chromium)\.[A-Za-z0-9]+$/;
+const CHROME_SINGLETON_DIRECTORY = /^\.?(?:com\.google\.Chrome|org\.chromium\.Chromium)\.[A-Za-z0-9]+$/;
 
 function isChromeSingletonDirectory(directory: string): boolean {
   return dirname(directory) === tmpdir() && CHROME_SINGLETON_DIRECTORY.test(basename(directory));

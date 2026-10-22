@@ -316,6 +316,19 @@ describe('Chrome singleton directory (syzygy-bpyt.4.11)', () => {
     expect(entries(root)).toEqual([]);
   }, 30_000);
 
+  it('removes the name without a leading dot too, which Chrome 147 to 155 make, whether given or read from the link', () => {
+    const { root, profile } = privateTemp();
+    const given = singletonDirectory(root, 'com.google.Chrome.CCtKIQ');
+    singletonDirectory(root, 'com.google.Chrome.Another');
+    removeBrowserProfile(profile, { singleton: given });
+    expect(entries(root)).toEqual(['com.google.Chrome.Another']);
+    mkdirSync(profile);
+    const read = singletonDirectory(root, 'org.chromium.Chromium.vK2oLL');
+    symlinkSync(join(read, 'SingletonSocket'), join(profile, 'SingletonSocket'));
+    removeBrowserProfile(profile);
+    expect(entries(root)).toEqual(['com.google.Chrome.Another']);
+  }, 30_000);
+
   it('removes the profile and nothing else when Chrome left no singleton directory (a clean exit)', () => {
     const { root, profile } = privateTemp();
     singletonDirectory(root, '.com.google.Chrome.Another');
@@ -337,7 +350,12 @@ describe('Chrome singleton directory (syzygy-bpyt.4.11)', () => {
 
   it('keeps a directory whose name is not exactly Chrome\'s: another prefix, no suffix, a longer name, a symbol in the suffix', () => {
     const { root, profile } = privateTemp();
-    const names = ['important', '.com.google.Chrome', '.com.google.Chrome.', '.com.google.Chrome.ab-cd', 'x.com.google.Chrome.AbCdEf', '.com.google.Chromium.AbCdEf', '.org.chromium.Chrome.AbCdEf'];
+    const names = [
+      'important', '.com.google.Chrome', '.com.google.Chrome.', '.com.google.Chrome.ab-cd', 'x.com.google.Chrome.AbCdEf', '.com.google.Chromium.AbCdEf', '.org.chromium.Chrome.AbCdEf',
+      // the dot is optional, not a wildcard: one dot at most, and the rest of the name is as strict without it
+      '..com.google.Chrome.AbCdEf', 'com.google.Chrome', 'com.google.Chrome.', 'com.google.Chrome.ab-cd', 'xcom.google.Chrome.AbCdEf', 'com.google.Chromium.AbCdEf', 'org.chromium.Chrome.AbCdEf',
+      'org.chromium.Chromium', 'org.chromium.Chromium.AbCd.Ef',
+    ];
     for (const name of names) {
       singletonDirectory(root, name);
       removeBrowserProfile(profile, { singleton: join(root, name) });
