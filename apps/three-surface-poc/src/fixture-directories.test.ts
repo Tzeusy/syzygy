@@ -141,7 +141,11 @@ describe('fixture directories a killed run left behind (syzygy-bpyt.4.10)', () =
     expect(entries(tmp)).toEqual([...foreign].sort());
   }, 30_000);
 
-  it('removes nothing, and lists nothing, where the PID namespace cannot be read, so a sandbox without /proc never sweeps another sandbox\'s live directories', async () => {
+  // A reading that is absent (no /proc, a tmpfs over it) and one that names no inode are the same to the sweep.
+  it.each([
+    ['cannot be read', (): string => { throw Object.assign(new Error('ENOENT: no such file or directory'), { code: 'ENOENT' }); }],
+    ['names no inode', (): string => 'pid:[]'],
+  ] as const)('removes nothing, and lists nothing, where the PID namespace %s, so a sandbox without /proc never sweeps another sandbox\'s live directories', async (_reading, readlink) => {
     const tmp = newTmp();
     const dead = await deadPid();
     // Names a sandbox without /proc makes (`n0`), and a dead pid of this namespace: with no reading of its own
@@ -158,10 +162,9 @@ describe('fixture directories a killed run left behind (syzygy-bpyt.4.10)', () =
       const actual = await importOriginal<typeof import('node:fs')>();
       return {
         ...actual,
-        readlinkSync: ((path: string, ...rest: never[]) => {
-          if (path === '/proc/self/ns/pid') throw Object.assign(new Error('ENOENT: no such file or directory'), { code: 'ENOENT' });
-          return (actual.readlinkSync as (...args: unknown[]) => unknown)(path, ...rest);
-        }) as typeof actual.readlinkSync,
+        readlinkSync: ((path: string, ...rest: never[]) => (
+          path === '/proc/self/ns/pid' ? readlink() : (actual.readlinkSync as (...args: unknown[]) => unknown)(path, ...rest)
+        )) as typeof actual.readlinkSync,
         readdirSync: ((path: string, ...rest: never[]) => {
           listings.push(String(path));
           return (actual.readdirSync as (...args: unknown[]) => unknown)(path, ...rest);
