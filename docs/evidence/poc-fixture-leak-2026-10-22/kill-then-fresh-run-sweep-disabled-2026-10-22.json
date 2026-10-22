@@ -1,10 +1,13 @@
 {
  "tool": "kill_then_fresh_run.py",
- "treeCommit": "3f08143c5e0c78ca42288d16589f36673c9ba854",
+ "treeCommit": "88dcdf76db2ad6a30df5856361dc3f9cef8757f5",
  "mode": "mutant",
  "signal": "SIGKILL",
  "command": "npx vitest run --project @syzygy/three-surface-poc-app (TMPDIR=<emptied private directory>)",
  "sha256AtCommit": {
+  "apps/three-surface-poc/src/fixture-directories.ts": "df5a319e02b9bbc3294bf0b0b90a987ecea86bfd219a41d0341855a3e9dc5ada",
+  "apps/three-surface-poc/src/test-fixture-sweep.global-setup.ts": "8f68850a773daf21fde1174532826c5ded2ae372dd89db9ab3b32487e9135317",
+  "apps/three-surface-poc/src/test-model-fixture.ts": "58497e91d23c7244a76ceff055d590dd264c9c09dddbdd647604689b820d413e",
   "vitest.config.ts": "8e8d698a90f37b1a340e4b9c6500981dda87bb56bd348980a648d1f3d89b625d"
  },
  "minCopiesBeforeSignal": 3,
@@ -13,7 +16,7 @@
   "sentToTheProcessGroupOfTheRunItStarted": true,
   "runFinishedBeforeTheSignal": false,
   "atSignal": {
-   "secondsIntoTheRun": 66.1,
+   "secondsIntoTheRun": 93.9,
    "fixtureDirectories": 5,
    "ofDeadProcesses": {
     "count": 0,
@@ -29,7 +32,7 @@
    "withoutAnOwnerPid": {
     "count": 0
    },
-   "otherEntries": 13
+   "otherEntries": 16
   },
   "fiveSecondsAfterSignal": {
    "fixtureDirectories": 5,
@@ -38,8 +41,8 @@
     "copies": 3,
     "templates": 2,
     "ownerPids": [
-     2250420,
-     2250562
+     1187769,
+     1191547
     ]
    },
    "ofLiveProcesses": {
@@ -50,7 +53,7 @@
    "withoutAnOwnerPid": {
     "count": 0
    },
-   "otherEntries": 13
+   "otherEntries": 18
   }
  },
  "mutant": {
@@ -61,15 +64,15 @@
  },
  "freshRun": {
   "exit": 1,
-  "seconds": 463.7,
+  "seconds": 689.0,
   "numTotalTestSuites": 263,
-  "numPassedTests": 1103,
-  "numFailedTests": 8,
+  "numPassedTests": 1106,
+  "numFailedTests": 7,
   "numPendingTests": 2,
-  "numTotalTests": 1113,
+  "numTotalTests": 1115,
   "success": false,
   "testFiles": 90,
-  "testFilesFailed": 5,
+  "testFilesFailed": 4,
   "failing": [
    {
     "file": "three-surface-poc/src/build-output.test.ts",
@@ -88,12 +91,12 @@
    },
    {
     "file": "three-surface-poc/src/polaris-accessibility.browser.test.ts",
-    "test": "Polaris keyboard, non-visual and contrast checks in a real browser keeps diagram labels legible and flow order unambiguous across widths",
+    "test": "Polaris keyboard, non-visual and contrast checks in a real browser opens a linked component guide and can reveal the complete declaration",
     "firstErrorLine": "Error: STACK_TRACE_ERROR"
    },
    {
     "file": "three-surface-poc/src/polaris-accessibility.browser.test.ts",
-    "test": "Polaris keyboard, non-visual and contrast checks in a real browser opens a linked component guide and can reveal the complete declaration",
+    "test": "Polaris keyboard, non-visual and contrast checks in a real browser keeps complete source columns visible while citation targets remain keyboard-reachable",
     "firstErrorLine": "Error: STACK_TRACE_ERROR"
    },
    {
@@ -102,13 +105,8 @@
     "firstErrorLine": "Error: STACK_TRACE_ERROR"
    },
    {
-    "file": "three-surface-poc/src/polaris-accessible-names.browser.test.ts",
-    "test": "PWB-REQ-016 names and headings in a real browser fails each falsifier limb in the browser",
-    "firstErrorLine": "Error: STACK_TRACE_ERROR"
-   },
-   {
-    "file": "three-surface-poc/src/polaris-generation/public-source-screening.test.ts",
-    "test": "the policy act gate fails closed the default port reads this checkout's chain: the latest recorded version loads the policy it names",
+    "file": "three-surface-poc/src/polaris-presentation-route.test.ts",
+    "test": "Polaris machine presentation envelope (PWB-REQ-014; RFC7-2, RFC7-3) refuses without the bearer and, with it, serves the narrative of the same render the human page comes from \u2014 every anchor cited on the page, no copy of the JSON on the page \u2014 marked non-citable",
     "firstErrorLine": "Error: STACK_TRACE_ERROR"
    }
   ],
@@ -119,8 +117,8 @@
     "copies": 3,
     "templates": 2,
     "ownerPids": [
-     2250420,
-     2250562
+     1187769,
+     1191547
     ]
    },
    "ofLiveProcesses": {
@@ -131,15 +129,11 @@
    "withoutAnOwnerPid": {
     "count": 0
    },
-   "otherEntries": 23
+   "otherEntries": 25
   }
  },
  "processesStillNamingThisTmpdir": [
-  2254680,
-  2254703,
-  2254732,
-  2254762,
-  2254837,
-  2254869
+  1190849,
+  1192743
  ]
 }

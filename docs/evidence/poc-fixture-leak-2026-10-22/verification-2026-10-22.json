@@ -1,19 +1,42 @@
 {
  "subject": {
   "baseCommit": "0d4d50984f6aa501217fe7109b6aec1b9679e4c9",
-  "mergedMainCommit": "a04069678c02881cd41a25b850e14f79d581c083",
-  "codeCommit": "3f08143c5e0c78ca42288d16589f36673c9ba854",
-  "treeAtRecording": "3f08143c5e0c78ca42288d16589f36673c9ba854"
+  "mergedMainCommit": "9a30237ed700e6579f3fcc1c6292e6c759861c3f",
+  "codeCommit": "001fbfc85d3972720d89bd612195df3d4a0f6780",
+  "previousCodeCommit": "3f08143c5e0c78ca42288d16589f36673c9ba854",
+  "roundTwoRunsMadeAt": "88dcdf76db2ad6a30df5856361dc3f9cef8757f5",
+  "treeAtRecording": "88dcdf76db2ad6a30df5856361dc3f9cef8757f5"
  },
  "appsAndPackagesDiffSinceCodeCommit": "",
+ "appsPackagesAndConfigChangedSincePreviousCodeCommit": [
+  "apps/three-surface-poc/src/fixture-directories.test.ts",
+  "apps/three-surface-poc/src/fixture-directories.ts",
+  "packages/polaris-dossier/src/waiting-sessions.test.ts",
+  "packages/polaris-generation-consent/src/decisions-sweep.test.ts",
+  "packages/polaris-generation-consent/src/package-reader.ts"
+ ],
+ "appsPackagesAndConfigChangedByRoundTwo": {
+  "from": "564ec47c79e855fed1a4807ebef6f9c82567dc6b",
+  "to": "001fbfc85d3972720d89bd612195df3d4a0f6780",
+  "files": [
+   "apps/three-surface-poc/src/fixture-directories.test.ts",
+   "apps/three-surface-poc/src/fixture-directories.ts"
+  ],
+  "note": "the first round-2 commit is 4463e454 and its parent is the merge of origin/main; the other files in the list above come from that merge (packages/ files of main, not of this change)"
+ },
  "toolDigests": {
   "census_tmp.py": "436d1457ea9a455c51096e428b70e3693114bb1aab3c1a6ad007180ca1898e58",
-  "cli_sweep_probe.py": "b6555fc6d6c5187e59a81e78b82634820f323d90c245e1a5d4bdc1bf046404ac",
+  "cli_sweep_probe.py": "8255871c1e8803115f70abf129239bdf75ef5670078c8ccf75b5344773a29747",
   "drain_scan.py": "32e801a77568f62efe01c69d89e15ab36daa8cda14752c4fa6c3199e19573741",
-  "interrupt_probe.py": "d8f191cf60519c8718a3407c451b8f3334faeb2c01a8a4de821a8fd0ffc7e688",
-  "kill_then_fresh_run.py": "dffa512a328d54753ab856c561de5d37b551399dc249ba803d1cbbb4d2003541",
+  "guard_probe.py": "7022f90385454d7afcc8eccbc9b47c6d9880fb5ea38ca1345bfa7e8c196428b8",
+  "interrupt_probe.py": "d4c5f77200818a3e0d4c936e108a76bd95491a90730ee9d2cd7618b5e137714d",
+  "kill_then_fresh_run.py": "0e7af7055406f923901e5c4c4c4e10bfbf532d4fedb39ad7333a9f67fbf181e1",
   "leak_by_file.py": "fc7e19608090dcbbab3aea5ba604b449b71a6ecce5bcad4e42929ade8e893554",
-  "mutate_sweep.py": "59ead39374674f09a0a8a0746d7b2a3768840cad82870ca138de249884325246",
+  "mutate_sweep.py": "175095e8e7468c50689e44321d7a5d459108ee38a5bb2c6f51d56ba032e67ced",
+  "ns_holder.mjs": "1b4c7fb953f1dc194b763a08b62dd8b94b25854adef777736dfdb051bff3f5ab",
+  "ns_sandbox_probe.py": "0f100cda0333b16bb5aca0f3496bbda5d5180a9c9162bcfe5e82256cd1a8e1f0",
+  "ns_sweeper.mjs": "c366b3e78a2e84aa24e9c560c7ecf602bfb68deefba704a7ba2f0f63080f83d7",
+  "orphan_census.py": "f14655ede74786cf45af31303dbee20497b0e0268c3b16890f53d83146cd8719",
   "tmpdir_length_probe.py": "afdb831b9056487554aebcd90f20856d0257a2033f35552a02252fd276e34769"
  },
  "changedFilesMainToCode": [
@@ -26,15 +49,16 @@
   "docs/evidence/poc-fixture-leak-2026-10-22/assemble_records.py",
   "docs/evidence/poc-fixture-leak-2026-10-22/census-tmp-after-cleanup-2026-10-22.json",
   "docs/evidence/poc-fixture-leak-2026-10-22/census_tmp.py",
-  "docs/evidence/poc-fixture-leak-2026-10-22/clean-run-d59d76c3-2026-10-22.json",
-  "docs/evidence/poc-fixture-leak-2026-10-22/clean-run-head-attempt-1-2026-10-22.json",
-  "docs/evidence/poc-fixture-leak-2026-10-22/clean-run-head-attempt-2-2026-10-22.json",
-  "docs/evidence/poc-fixture-leak-2026-10-22/clean-run-head-attempt-3-2026-10-22.json",
+  "docs/evidence/poc-fixture-leak-2026-10-22/clean-run-head-2026-10-22.json",
+  "docs/evidence/poc-fixture-leak-2026-10-22/cli-sweep-probe-head-2026-10-22.json",
+  "docs/evidence/poc-fixture-leak-2026-10-22/cli-sweep-probe-mutant-2026-10-22.json",
   "docs/evidence/poc-fixture-leak-2026-10-22/cli_sweep_probe.py",
   "docs/evidence/poc-fixture-leak-2026-10-22/diagnosis-2026-10-22.json",
   "docs/evidence/poc-fixture-leak-2026-10-22/drain-scan-2026-10-22.json",
   "docs/evidence/poc-fixture-leak-2026-10-22/drain_scan.py",
   "docs/evidence/poc-fixture-leak-2026-10-22/interrupt-kill-base-2026-10-22.json",
+  "docs/evidence/poc-fixture-leak-2026-10-22/interrupt-term-base-2026-10-22.json",
+  "docs/evidence/poc-fixture-leak-2026-10-22/interrupt-term-head-2026-10-22.json",
   "docs/evidence/poc-fixture-leak-2026-10-22/interrupt_probe.py",
   "docs/evidence/poc-fixture-leak-2026-10-22/kill-then-fresh-run-head-2026-10-22.json",
   "docs/evidence/poc-fixture-leak-2026-10-22/kill-then-fresh-run-sweep-disabled-2026-10-22.json",
@@ -44,6 +68,7 @@
   "docs/evidence/poc-fixture-leak-2026-10-22/leak_by_file.py",
   "docs/evidence/poc-fixture-leak-2026-10-22/mutants-sweep-2026-10-22.json",
   "docs/evidence/poc-fixture-leak-2026-10-22/mutate_sweep.py",
+  "docs/evidence/poc-fixture-leak-2026-10-22/term-then-fresh-run-head-2026-10-22.json",
   "docs/evidence/poc-fixture-leak-2026-10-22/test-lists-2026-10-22.json",
   "docs/evidence/poc-fixture-leak-2026-10-22/tmpdir-length-probe-2026-10-22.json",
   "docs/evidence/poc-fixture-leak-2026-10-22/tmpdir_length_probe.py",
@@ -72,23 +97,23 @@
   },
   "atHead": {
    "record": "interrupt-term-head-2026-10-22.json",
-   "treeCommit": "3f08143c5e0c78ca42288d16589f36673c9ba854",
+   "treeCommit": "88dcdf76db2ad6a30df5856361dc3f9cef8757f5",
    "atSignal": {
-    "secondsIntoTheRun": 37.6,
+    "secondsIntoTheRun": 67.9,
     "fixtureCopies": 3,
     "fixtureTemplates": 2,
-    "otherSyzygyEntries": 9,
+    "otherSyzygyEntries": 10,
     "liveProcessesNamingThisTmpdir": 27
    },
    "eightySecondsAfter": {
     "secondsAfterSignal": 80,
     "fixtureCopies": 3,
     "fixtureTemplates": 2,
-    "otherSyzygyEntries": 10,
+    "otherSyzygyEntries": 12,
     "liveProcessesNamingThisTmpdir": 8
    }
   },
-  "note": "the run is stopped at once and no hook runs, so the directories stay until the next run sweeps them (ac3, termedRun)"
+  "note": "the run is stopped at once and no hook runs, so the directories stay until the next run sweeps them (ac3, termedRun). atHead was re-run at the round-2 head so that interrupt_probe.py, which review round 2 changed (N9, N10), is shown to run; atBase is the round-1 record of main."
  },
  "ac2": {
   "claim": "a clean three-surface-poc project run with a fresh TMPDIR leaves 0 syzygy-poc-surface-fixture-* directories",
@@ -96,13 +121,13 @@
   "cleanRunTool": {
    "record": "clean-run-head-2026-10-22.json",
    "exit": 1,
-   "seconds": 551.1,
-   "numTotalTests": 1113,
-   "numPassedTests": 1108,
-   "numFailedTests": 3,
+   "seconds": 1169.8,
+   "numTotalTests": 1115,
+   "numPassedTests": 1103,
+   "numFailedTests": 10,
    "numPendingTests": 2,
    "testFiles": 90,
-   "testFilesFailed": 3,
+   "testFilesFailed": 8,
    "failing": [
     {
      "file": "three-surface-poc/src/build-output.test.ts",
@@ -110,13 +135,48 @@
      "firstErrorLine": "Error: STACK_TRACE_ERROR"
     },
     {
-     "file": "three-surface-poc/src/polaris-copy.test.ts",
-     "test": "Polaris copy roles (PWB-REQ-012) keeps the copy table closed and rendered: unique ids, roles and kinds from the closed sets, and every row present with its role in some rendered state",
+     "file": "three-surface-poc/src/cdp-browser.browser.test.ts",
+     "test": "disposable Chrome teardown in a real browser closes and drains even when a helper cannot exit on its own",
+     "firstErrorLine": "Error: promise rejected \"Error: private browser profile drain did \u2026\" instead of resolving"
+    },
+    {
+     "file": "three-surface-poc/src/git-observation.test.ts",
+     "test": "read-only Git observation retains a protected source path when it is renamed out",
      "firstErrorLine": "Error: STACK_TRACE_ERROR"
     },
     {
-     "file": "three-surface-poc/src/polaris-narrative.test.ts",
-     "test": "Polaris narrative claim blocks (PWB-REQ-014; RFC7-2, RFC7-3, RFC7-9) classifies every narrative unit with exactly one role and marks it a non-citable presentation artifact",
+     "file": "three-surface-poc/src/orrery.browser.test.ts",
+     "test": "Orrery rendered geometry preserves district size differences and readable labels (C3-3, POC-REQ-050)",
+     "firstErrorLine": "Error: STACK_TRACE_ERROR"
+    },
+    {
+     "file": "three-surface-poc/src/polaris-accessibility.browser.test.ts",
+     "test": "Polaris keyboard, non-visual and contrast checks in a real browser keeps diagram labels legible and flow order unambiguous across widths",
+     "firstErrorLine": "Error: STACK_TRACE_ERROR"
+    },
+    {
+     "file": "three-surface-poc/src/polaris-accessibility.browser.test.ts",
+     "test": "Polaris keyboard, non-visual and contrast checks in a real browser keeps complete source columns visible while citation targets remain keyboard-reachable",
+     "firstErrorLine": "Error: STACK_TRACE_ERROR"
+    },
+    {
+     "file": "three-surface-poc/src/polaris-accessibility.browser.test.ts",
+     "test": "Polaris keyboard, non-visual and contrast checks in a real browser gives seven early native shortcuts and a complete no-script outline with a truthful live hidden count",
+     "firstErrorLine": "Error: STACK_TRACE_ERROR"
+    },
+    {
+     "file": "three-surface-poc/src/polaris-authority-sweep.test.ts",
+     "test": "Zero downstream citations of Polaris as authority (PWB-REQ-014) no source/authority/provenance field in the governance, spec, code or docs trees names the Polaris surface",
+     "firstErrorLine": "Error: STACK_TRACE_ERROR"
+    },
+    {
+     "file": "three-surface-poc/src/polaris-generation/draft-preview.browser.test.ts",
+     "test": "renders the pipeline draft with working diagram, source and keyboard deep-dive paths at both widths",
+     "firstErrorLine": "Error: private browser profile drain did not verify two empty scans before deadline"
+    },
+    {
+     "file": "three-surface-poc/src/polaris-generation/public-source-screening.test.ts",
+     "test": "the policy act gate fails closed the default port reads this checkout's chain: the latest recorded version loads the policy it names",
      "firstErrorLine": "Error: STACK_TRACE_ERROR"
     }
    ],
@@ -137,17 +197,20 @@
     "withoutAnOwnerPid": {
      "count": 0
     },
-    "otherEntries": 6
+    "otherEntries": 14
    }
   },
   "inTheFullSuiteRun": {
-   "where": "the app project inside gates.fullVitest",
+   "where": "the app project inside gates.fullVitest, recorded at the previous code commit and not re-run (see round2.carried)",
+   "recordedAtCommit": "3f08143c5e0c78ca42288d16589f36673c9ba854",
    "filesPassed": 89,
    "filesSkipped": 1,
    "filesFailed": 0,
    "fixtureDirectoriesLeft": 0
   },
   "perFile": {
+   "recordedAtCommit": "3f08143c5e0c78ca42288d16589f36673c9ba854",
+   "record": "leak-by-file-head-2026-10-22.json",
    "treeCommit": "3f08143c5e0c78ca42288d16589f36673c9ba854",
    "testFilesInDirectory": 90,
    "fixtureUsingTestFiles": 44,
@@ -168,8 +231,8 @@
     "sentToTheProcessGroupOfTheRunItStarted": true,
     "runFinishedBeforeTheSignal": false,
     "atSignal": {
-     "secondsIntoTheRun": 25.6,
-     "fixtureDirectories": 5,
+     "secondsIntoTheRun": 37.4,
+     "fixtureDirectories": 6,
      "ofDeadProcesses": {
       "count": 0,
       "copies": 0,
@@ -177,24 +240,25 @@
       "ownerPids": []
      },
      "ofLiveProcesses": {
-      "count": 5,
+      "count": 6,
       "copies": 3,
-      "templates": 2
+      "templates": 3
      },
      "withoutAnOwnerPid": {
       "count": 0
      },
-     "otherEntries": 5
+     "otherEntries": 7
     },
     "fiveSecondsAfterSignal": {
-     "fixtureDirectories": 5,
+     "fixtureDirectories": 6,
      "ofDeadProcesses": {
-      "count": 5,
+      "count": 6,
       "copies": 3,
-      "templates": 2,
+      "templates": 3,
       "ownerPids": [
-       1854211,
-       1854215
+       1058138,
+       1058163,
+       1058178
       ]
      },
      "ofLiveProcesses": {
@@ -205,22 +269,57 @@
      "withoutAnOwnerPid": {
       "count": 0
      },
-     "otherEntries": 6
+     "otherEntries": 7
     }
    },
    "freshRun": {
     "exit": 1,
-    "seconds": 403.6,
-    "numTotalTests": 1113,
-    "numPassedTests": 1110,
-    "numFailedTests": 1,
+    "seconds": 946.9,
+    "numTotalTests": 1115,
+    "numPassedTests": 1105,
+    "numFailedTests": 8,
     "numPendingTests": 2,
     "testFiles": 90,
-    "testFilesFailed": 1,
+    "testFilesFailed": 5,
     "failing": [
+     {
+      "file": "three-surface-poc/src/build-output.test.ts",
+      "test": "POC build output integrity re-emits ignored JavaScript before the launcher executes it",
+      "firstErrorLine": "Error: STACK_TRACE_ERROR"
+     },
      {
       "file": "three-surface-poc/src/polaris-accessibility.browser.test.ts",
       "test": "Polaris keyboard, non-visual and contrast checks in a real browser keeps a separate desktop section rail and an in-flow mobile drawer",
+      "firstErrorLine": "Error: STACK_TRACE_ERROR"
+     },
+     {
+      "file": "three-surface-poc/src/polaris-accessibility.browser.test.ts",
+      "test": "Polaris keyboard, non-visual and contrast checks in a real browser keeps diagram labels legible and flow order unambiguous across widths",
+      "firstErrorLine": "Error: STACK_TRACE_ERROR"
+     },
+     {
+      "file": "three-surface-poc/src/polaris-accessibility.browser.test.ts",
+      "test": "Polaris keyboard, non-visual and contrast checks in a real browser keeps complete source columns visible while citation targets remain keyboard-reachable",
+      "firstErrorLine": "Error: STACK_TRACE_ERROR"
+     },
+     {
+      "file": "three-surface-poc/src/polaris-accessibility.browser.test.ts",
+      "test": "Polaris keyboard, non-visual and contrast checks in a real browser gives seven early native shortcuts and a complete no-script outline with a truthful live hidden count",
+      "firstErrorLine": "Error: STACK_TRACE_ERROR"
+     },
+     {
+      "file": "three-surface-poc/src/polaris-authority-sweep.test.ts",
+      "test": "Zero downstream citations of Polaris as authority (PWB-REQ-014) no source/authority/provenance field in the governance, spec, code or docs trees names the Polaris surface",
+      "firstErrorLine": "Error: STACK_TRACE_ERROR"
+     },
+     {
+      "file": "three-surface-poc/src/response-identity-independent.test.ts",
+      "test": "response identity independent census and mutation proofs removing each exercised exclusion makes the independent stability oracle fail and names that path",
+      "firstErrorLine": "Error: STACK_TRACE_ERROR"
+     },
+     {
+      "file": "three-surface-poc/src/trajectory-narrowing.browser.test.ts",
+      "test": "Trajectory narrowing to the governing-intent Unknown (POC-REQ-014) the narrowed board lists exactly the cards the board renders, and hides an unmarked one",
       "firstErrorLine": "Error: STACK_TRACE_ERROR"
      }
     ],
@@ -240,13 +339,48 @@
      "withoutAnOwnerPid": {
       "count": 0
      },
-     "otherEntries": 7
+     "otherEntries": 15
     }
    },
    "failingInTheFreshRun": [
     [
+     "three-surface-poc/src/build-output.test.ts",
+     "ild output integrity re-emits ignored JavaScript before the launcher executes it",
+     "Error: STACK_TRACE_ERROR"
+    ],
+    [
      "three-surface-poc/src/polaris-accessibility.browser.test.ts",
      " real browser keeps a separate desktop section rail and an in-flow mobile drawer",
+     "Error: STACK_TRACE_ERROR"
+    ],
+    [
+     "three-surface-poc/src/polaris-accessibility.browser.test.ts",
+     "al browser keeps diagram labels legible and flow order unambiguous across widths",
+     "Error: STACK_TRACE_ERROR"
+    ],
+    [
+     "three-surface-poc/src/polaris-accessibility.browser.test.ts",
+     "complete source columns visible while citation targets remain keyboard-reachable",
+     "Error: STACK_TRACE_ERROR"
+    ],
+    [
+     "three-surface-poc/src/polaris-accessibility.browser.test.ts",
+     "ive shortcuts and a complete no-script outline with a truthful live hidden count",
+     "Error: STACK_TRACE_ERROR"
+    ],
+    [
+     "three-surface-poc/src/polaris-authority-sweep.test.ts",
+     "ance field in the governance, spec, code or docs trees names the Polaris surface",
+     "Error: STACK_TRACE_ERROR"
+    ],
+    [
+     "three-surface-poc/src/response-identity-independent.test.ts",
+     "rcised exclusion makes the independent stability oracle fail and names that path",
+     "Error: STACK_TRACE_ERROR"
+    ],
+    [
+     "three-surface-poc/src/trajectory-narrowing.browser.test.ts",
+     "rowed board lists exactly the cards the board renders, and hides an unmarked one",
      "Error: STACK_TRACE_ERROR"
     ]
    ],
@@ -254,6 +388,8 @@
   },
   "termedRun": {
    "record": "term-then-fresh-run-head-2026-10-22.json",
+   "recordedAtCommit": "3f08143c5e0c78ca42288d16589f36673c9ba854",
+   "carried": "review round 2 asked for one kill-then-fresh-run at the new code commit; this is the TERM one, left as recorded (round2.carried says why the change does not reach the path it exercises)",
    "killedRun": {
     "signal": "SIGTERM",
     "sentToTheProcessGroupOfTheRunItStarted": true,
@@ -375,7 +511,7 @@
     "sentToTheProcessGroupOfTheRunItStarted": true,
     "runFinishedBeforeTheSignal": false,
     "atSignal": {
-     "secondsIntoTheRun": 66.1,
+     "secondsIntoTheRun": 93.9,
      "fixtureDirectories": 5,
      "ofDeadProcesses": {
       "count": 0,
@@ -391,7 +527,7 @@
      "withoutAnOwnerPid": {
       "count": 0
      },
-     "otherEntries": 13
+     "otherEntries": 16
     },
     "fiveSecondsAfterSignal": {
      "fixtureDirectories": 5,
@@ -400,8 +536,8 @@
       "copies": 3,
       "templates": 2,
       "ownerPids": [
-       2250420,
-       2250562
+       1187769,
+       1191547
       ]
      },
      "ofLiveProcesses": {
@@ -412,18 +548,18 @@
      "withoutAnOwnerPid": {
       "count": 0
      },
-     "otherEntries": 13
+     "otherEntries": 18
     }
    },
    "freshRun": {
     "exit": 1,
-    "seconds": 463.7,
-    "numTotalTests": 1113,
-    "numPassedTests": 1103,
-    "numFailedTests": 8,
+    "seconds": 689.0,
+    "numTotalTests": 1115,
+    "numPassedTests": 1106,
+    "numFailedTests": 7,
     "numPendingTests": 2,
     "testFiles": 90,
-    "testFilesFailed": 5,
+    "testFilesFailed": 4,
     "failing": [
      {
       "file": "three-surface-poc/src/build-output.test.ts",
@@ -442,12 +578,12 @@
      },
      {
       "file": "three-surface-poc/src/polaris-accessibility.browser.test.ts",
-      "test": "Polaris keyboard, non-visual and contrast checks in a real browser keeps diagram labels legible and flow order unambiguous across widths",
+      "test": "Polaris keyboard, non-visual and contrast checks in a real browser opens a linked component guide and can reveal the complete declaration",
       "firstErrorLine": "Error: STACK_TRACE_ERROR"
      },
      {
       "file": "three-surface-poc/src/polaris-accessibility.browser.test.ts",
-      "test": "Polaris keyboard, non-visual and contrast checks in a real browser opens a linked component guide and can reveal the complete declaration",
+      "test": "Polaris keyboard, non-visual and contrast checks in a real browser keeps complete source columns visible while citation targets remain keyboard-reachable",
       "firstErrorLine": "Error: STACK_TRACE_ERROR"
      },
      {
@@ -456,13 +592,8 @@
       "firstErrorLine": "Error: STACK_TRACE_ERROR"
      },
      {
-      "file": "three-surface-poc/src/polaris-accessible-names.browser.test.ts",
-      "test": "PWB-REQ-016 names and headings in a real browser fails each falsifier limb in the browser",
-      "firstErrorLine": "Error: STACK_TRACE_ERROR"
-     },
-     {
-      "file": "three-surface-poc/src/polaris-generation/public-source-screening.test.ts",
-      "test": "the policy act gate fails closed the default port reads this checkout's chain: the latest recorded version loads the policy it names",
+      "file": "three-surface-poc/src/polaris-presentation-route.test.ts",
+      "test": "Polaris machine presentation envelope (PWB-REQ-014; RFC7-2, RFC7-3) refuses without the bearer and, with it, serves the narrative of the same render the human page comes from \u2014 every anchor cited on the page, no copy of the JSON on the page \u2014 marked non-citable",
       "firstErrorLine": "Error: STACK_TRACE_ERROR"
      }
     ],
@@ -473,8 +604,8 @@
       "copies": 3,
       "templates": 2,
       "ownerPids": [
-       2250420,
-       2250562
+       1187769,
+       1191547
       ]
      },
      "ofLiveProcesses": {
@@ -485,7 +616,7 @@
      "withoutAnOwnerPid": {
       "count": 0
      },
-     "otherEntries": 23
+     "otherEntries": 25
     }
    },
    "failingInTheFreshRun": [
@@ -506,12 +637,12 @@
     ],
     [
      "three-surface-poc/src/polaris-accessibility.browser.test.ts",
-     "al browser keeps diagram labels legible and flow order unambiguous across widths",
+     "l browser opens a linked component guide and can reveal the complete declaration",
      "Error: STACK_TRACE_ERROR"
     ],
     [
      "three-surface-poc/src/polaris-accessibility.browser.test.ts",
-     "l browser opens a linked component guide and can reveal the complete declaration",
+     "complete source columns visible while citation targets remain keyboard-reachable",
      "Error: STACK_TRACE_ERROR"
     ],
     [
@@ -520,28 +651,33 @@
      "Error: STACK_TRACE_ERROR"
     ],
     [
-     "three-surface-poc/src/polaris-accessible-names.browser.test.ts",
-     "16 names and headings in a real browser fails each falsifier limb in the browser",
-     "Error: STACK_TRACE_ERROR"
-    ],
-    [
-     "three-surface-poc/src/polaris-generation/public-source-screening.test.ts",
-     "ads this checkout's chain: the latest recorded version loads the policy it names",
+     "three-surface-poc/src/polaris-presentation-route.test.ts",
+     "y anchor cited on the page, no copy of the JSON on the page \u2014 marked non-citable",
      "Error: STACK_TRACE_ERROR"
     ]
    ],
    "note": "the directories of the killed run stay; the fresh run exits non-zero because the unit test that pins the global setup's registration fails on the mutated tree, as intended"
   },
   "unitMutants": {
-   "treeCommit": "3f08143c5e0c78ca42288d16589f36673c9ba854",
+   "treeCommit": "88dcdf76db2ad6a30df5856361dc3f9cef8757f5",
    "command": "npx vitest run apps/three-surface-poc/src/fixture-directories.test.ts apps/three-surface-poc/src/test-model-fixture.test.ts --project @syzygy/three-surface-poc-app",
-   "mutants": 22,
-   "killed": 22,
+   "mutants": 27,
+   "killed": 27,
    "control": {
     "exit": 0,
-    "testsRun": 19,
+    "testsRun": 21,
     "failing": [],
     "fixtureDirectoriesLeftInPrivateTmpdir": 0,
+    "attempts": [
+     {
+      "attempt": 1,
+      "exit": 0,
+      "status": "passed",
+      "testsRun": 21,
+      "failing": [],
+      "fixtureDirectoriesLeftInPrivateTmpdir": 0
+     }
+    ],
     "holds": true
    },
    "ids": [
@@ -618,6 +754,26 @@
      "killed"
     ],
     [
+     "unreadable-namespace-reads-as-0",
+     "killed"
+    ],
+    [
+     "unparseable-namespace-reads-as-0",
+     "killed"
+    ],
+    [
+     "unreadable-namespace-still-lists",
+     "killed"
+    ],
+    [
+     "namespace-prefix-match",
+     "killed"
+    ],
+    [
+     "namespace-extension-match",
+     "killed"
+    ],
+    [
      "global-setup-does-not-sweep",
      "killed"
     ],
@@ -642,7 +798,7 @@
     "exit": 2,
     "deadProcessDirectoriesLeft": [],
     "liveAndLegacyKept": [
-     "syzygy-poc-surface-fixture-p1888204-n4026531836-CliLive1",
+     "syzygy-poc-surface-fixture-p1480286-n4026531836-CliLive1",
      "syzygy-poc-surface-fixture-CliLegacy"
     ],
     "holds": true
@@ -652,8 +808,8 @@
     "id": "accessibility-cli-does-not-sweep",
     "exit": 2,
     "deadProcessDirectoriesLeft": [
-     "syzygy-poc-surface-fixture-p1893784-n4026531836-CliProbe",
-     "syzygy-poc-surface-fixture-template-p1893784-n4026531836-CliProbe"
+     "syzygy-poc-surface-fixture-p1516669-n4026531836-CliProbe",
+     "syzygy-poc-surface-fixture-template-p1516669-n4026531836-CliProbe"
     ],
     "holds": true
    }
@@ -662,9 +818,9 @@
  "oncePerRun": {
   "claim": "the sweep runs once per run, from a global setup of the app project, and not once per test file",
   "unitTests": [
-   "apps/three-surface-poc/src/test-model-fixture.test.ts > fixture directory names (syzygy-bpyt.4.10) > does not sweep when a file makes its template: the sweep is the global setup's, once per run",
    "apps/three-surface-poc/src/fixture-directories.test.ts > fixture directories a killed run left behind (syzygy-bpyt.4.10) > sweeps the temp directory the process runs under when the global setup runs, and keeps the live and the legacy",
-   "apps/three-surface-poc/src/fixture-directories.test.ts > fixture directories a killed run left behind (syzygy-bpyt.4.10) > is registered as a global setup of the app project and of no other project, so it runs once per run"
+   "apps/three-surface-poc/src/fixture-directories.test.ts > fixture directories a killed run left behind (syzygy-bpyt.4.10) > is registered as a global setup of the app project and of no other project, so it runs once per run",
+   "apps/three-surface-poc/src/test-model-fixture.test.ts > fixture directory names (syzygy-bpyt.4.10) > does not sweep when a file makes its template: the sweep is the global setup's, once per run"
   ],
   "mutantsThatMustDie": {
    "global-setup-does-not-sweep": "killed",
@@ -676,14 +832,14 @@
  "ac4ac5": {
   "claim": "a directory whose pid is alive survives the sweep (the current process's pid, in a unit test); a legacy name with no pid survives; so does a dead pid of another PID namespace; a file and a symlink survive",
   "unitTestsAdded": [
-   "apps/three-surface-poc/src/test-model-fixture.test.ts > fixture directory names (syzygy-bpyt.4.10) > names the template and each copy with the pid and PID namespace of the process that made them",
-   "apps/three-surface-poc/src/test-model-fixture.test.ts > fixture directory names (syzygy-bpyt.4.10) > does not sweep when a file makes its template: the sweep is the global setup's, once per run",
    "apps/three-surface-poc/src/fixture-directories.test.ts > fixture directories a killed run left behind (syzygy-bpyt.4.10) > removes the copy and the template of a process that is gone",
    "apps/three-surface-poc/src/fixture-directories.test.ts > fixture directories a killed run left behind (syzygy-bpyt.4.10) > keeps the directories of a live process, the current one included",
    "apps/three-surface-poc/src/fixture-directories.test.ts > fixture directories a killed run left behind (syzygy-bpyt.4.10) > keeps a name that carries no pid and namespace segment, whatever its suffix",
    "apps/three-surface-poc/src/fixture-directories.test.ts > fixture directories a killed run left behind (syzygy-bpyt.4.10) > keeps a directory whose pid fails with anything but ESRCH",
    "apps/three-surface-poc/src/fixture-directories.test.ts > fixture directories a killed run left behind (syzygy-bpyt.4.10) > follows no symlink and removes no file: only a directory with a dead pid in its name goes",
-   "apps/three-surface-poc/src/fixture-directories.test.ts > fixture directories a killed run left behind (syzygy-bpyt.4.10) > keeps the directories of a dead pid that belong to another PID namespace",
+   "apps/three-surface-poc/src/fixture-directories.test.ts > fixture directories a killed run left behind (syzygy-bpyt.4.10) > keeps the directories of a dead pid that belong to another PID namespace, whatever the neighbouring value",
+   "apps/three-surface-poc/src/fixture-directories.test.ts > fixture directories a killed run left behind (syzygy-bpyt.4.10) > removes nothing, and lists nothing, where the PID namespace cannot be read, so a sandbox without /proc never sweeps another sandbox's live directories",
+   "apps/three-surface-poc/src/fixture-directories.test.ts > fixture directories a killed run left behind (syzygy-bpyt.4.10) > removes nothing, and lists nothing, where the PID namespace names no inode, so a sandbox without /proc never sweeps another sandbox's live directories",
    "apps/three-surface-poc/src/fixture-directories.test.ts > fixture directories a killed run left behind (syzygy-bpyt.4.10) > keeps a directory that belongs to another user, the sweep never descending into it",
    "apps/three-surface-poc/src/fixture-directories.test.ts > fixture directories a killed run left behind (syzygy-bpyt.4.10) > checks no user where the system has no user ids, and removes the dead process's directory",
    "apps/three-surface-poc/src/fixture-directories.test.ts > fixture directories a killed run left behind (syzygy-bpyt.4.10) > does not fail the run when the temp directory cannot be listed",
@@ -691,28 +847,33 @@
    "apps/three-surface-poc/src/fixture-directories.test.ts > fixture directories a killed run left behind (syzygy-bpyt.4.10) > does not fail the run when a dead process's directory cannot be removed",
    "apps/three-surface-poc/src/fixture-directories.test.ts > fixture directories a killed run left behind (syzygy-bpyt.4.10) > sweeps the temp directory the process runs under when the global setup runs, and keeps the live and the legacy",
    "apps/three-surface-poc/src/fixture-directories.test.ts > fixture directories a killed run left behind (syzygy-bpyt.4.10) > asks the operating system for the temp directory, so it sweeps the same directory the copies are made in when TMPDIR is unset",
-   "apps/three-surface-poc/src/fixture-directories.test.ts > fixture directories a killed run left behind (syzygy-bpyt.4.10) > is registered as a global setup of the app project and of no other project, so it runs once per run"
+   "apps/three-surface-poc/src/fixture-directories.test.ts > fixture directories a killed run left behind (syzygy-bpyt.4.10) > is registered as a global setup of the app project and of no other project, so it runs once per run",
+   "apps/three-surface-poc/src/test-model-fixture.test.ts > fixture directory names (syzygy-bpyt.4.10) > names the template and each copy with the pid and PID namespace of the process that made them",
+   "apps/three-surface-poc/src/test-model-fixture.test.ts > fixture directory names (syzygy-bpyt.4.10) > does not sweep when a file makes its template: the sweep is the global setup's, once per run"
   ],
   "withNoPidSegmentKept": "thirteen name shapes in one test: legacy copy and template, pid without the namespace segment (both forms), pid with no hyphen after it, namespace with no hyphen after it, empty namespace, an m segment, pid not straight after the prefix, another prefix, the prefix inside a longer name, the prefix without its last hyphen",
-  "foreignNamespace": "one test: a copy and a template with a dead pid and another namespace are kept, the own-namespace one beside them is removed",
+  "foreignNamespace": "one test: a copy and a template with a dead pid are kept under each of three foreign namespace values (another inode, the own inode with its last digit cut, the own inode with a digit added: review round 2, N8, so a prefix or an extension of the own namespace is not the own namespace), the own-namespace one beside them is removed",
+  "unreadableNamespace": "two tests from one parametrised case, with node:fs mocked: the namespace reading throws ENOENT, and the reading is `pid:[]` (text with no inode). In each, the names carry n0, a dead-pid n0 copy and template and a dead-pid own-namespace directory all survive the sweep, and readdirSync is never called (review round 2, F5)",
   "noSymlinkFollowed": "one test: a symlink to a directory outside the swept one, and a file, both with dead-pid names, are kept; the outside directory is untouched",
   "otherUser": "one test, with a spy on process.getuid returning another uid; no second uid was available to this lane, so a real foreign-owned directory was not made"
  },
  "ac6": {
-  "baseTree": "3f08143c5e0c78ca42288d16589f36673c9ba854 with test-model-fixture.test.ts as at a04069678c02881cd41a25b850e14f79d581c083 and fixture-directories.test.ts absent",
-  "headTree": "3f08143c5e0c78ca42288d16589f36673c9ba854",
-  "baseLines": 5096,
-  "headLines": 5112,
-  "added": 16,
+  "baseTree": "001fbfc85d3972720d89bd612195df3d4a0f6780 with test-model-fixture.test.ts as at 9a30237ed700e6579f3fcc1c6292e6c759861c3f and fixture-directories.test.ts absent",
+  "headTree": "001fbfc85d3972720d89bd612195df3d4a0f6780",
+  "baseLines": 5115,
+  "headLines": 5133,
+  "added": 18,
   "removed": 0,
   "addedByFile": {
-   "[@syzygy/three-surface-poc-app] apps/three-surface-poc/src/fixture-directories.test.ts": 14,
+   "[@syzygy/three-surface-poc-app] apps/three-surface-poc/src/fixture-directories.test.ts": 16,
    "[@syzygy/three-surface-poc-app] apps/three-surface-poc/src/test-model-fixture.test.ts": 2
   },
-  "testsLine": "Tests: +16 ~0 -0"
+  "testsLine": "Tests: +18 ~0 -0"
  },
  "gates": {
   "fullVitest": {
+   "recordedAtCommit": "3f08143c5e0c78ca42288d16589f36673c9ba854",
+   "notRerunAtTheRoundTwoHead": "about 45 minutes on this host and the hosted node-ci runs the whole suite on the pushed head; see round2.carried",
    "command": "npx vitest run (TMPDIR=<emptied private directory>)",
    "log": "vitest-full-3f08143c.log",
    "summary": [
@@ -844,6 +1005,20 @@
   "checkQuotations": {
    "command": "python3 scripts/check_quotations.py",
    "exit": "exit 0"
+  },
+  "authoritySweep": {
+   "command": "npx vitest run apps/three-surface-poc/src/polaris-authority-sweep.test.ts",
+   "result": [
+    "Test Files  1 passed (1)",
+    "Tests  5 passed (5)"
+   ]
+  },
+  "unitFiles": {
+   "command": "npx vitest run apps/three-surface-poc/src/fixture-directories.test.ts apps/three-surface-poc/src/test-model-fixture.test.ts --project @syzygy/three-surface-poc-app",
+   "result": [
+    "Test Files  2 passed (2)",
+    "Tests  21 passed (21)"
+   ]
   }
  },
  "otherLeakSeen": {
@@ -853,6 +1028,248 @@
    ".com.google.Chrome.sdJScC": 1,
    "dossier-signoff-XXXXXX-outside-RAW.md": 1,
    "node-compile-cache": 1
+  }
+ },
+ "round2": {
+  "subject": "review round 2 of the pull request: F5 (blocking), N7 to N11, and AC3 re-run at the new code commit",
+  "f5": {
+   "claim": "a process that cannot read its PID namespace neither lists nor removes, so a sweep in a PID namespace with a tmpfs over /proc removes no live run's directory; names still carry n0",
+   "unitTests": [
+    "apps/three-surface-poc/src/fixture-directories.test.ts > fixture directories a killed run left behind (syzygy-bpyt.4.10) > removes nothing, and lists nothing, where the PID namespace cannot be read, so a sandbox without /proc never sweeps another sandbox's live directories",
+    "apps/three-surface-poc/src/fixture-directories.test.ts > fixture directories a killed run left behind (syzygy-bpyt.4.10) > removes nothing, and lists nothing, where the PID namespace names no inode, so a sandbox without /proc never sweeps another sandbox's live directories"
+   ],
+   "sandboxProbeAtHead": {
+    "record": "ns-sandbox-probe-head-2026-10-22.json",
+    "treeCommit": "88dcdf76db2ad6a30df5856361dc3f9cef8757f5",
+    "holders": {
+     "host": {
+      "nsReading": "pid:[4026531836]",
+      "goneWhileAlive": false
+     },
+     "bwrap-proc": {
+      "nsReading": "pid:[4026541045]",
+      "goneWhileAlive": false
+     },
+     "bwrap-no-proc": {
+      "nsReading": "unreadable:ENOENT",
+      "goneWhileAlive": false
+     }
+    },
+    "sweepers": {
+     "bwrap-proc": {
+      "nsReading": "pid:[4026541048]",
+      "removed": [
+       "syzygy-poc-surface-fixture-p9-n4026541048-CTRL01"
+      ]
+     },
+     "host": {
+      "nsReading": "pid:[4026531836]",
+      "removed": [
+       "syzygy-poc-surface-fixture-p906414-n4026531836-CTRL01"
+      ]
+     },
+     "bwrap-no-proc": {
+      "nsReading": "unreadable:ENOENT",
+      "removed": []
+     }
+    },
+    "holds": true
+   },
+   "sandboxProbeWithTheOldFallback": {
+    "record": "ns-sandbox-probe-mutant-2026-10-22.json",
+    "mutant": "unreadable-namespace-reads-as-0",
+    "holders": {
+     "host": {
+      "nsReading": "pid:[4026531836]",
+      "goneWhileAlive": false,
+      "goneAfterMs": null
+     },
+     "bwrap-proc": {
+      "nsReading": "pid:[4026541045]",
+      "goneWhileAlive": false,
+      "goneAfterMs": null
+     },
+     "bwrap-no-proc": {
+      "nsReading": "unreadable:ENOENT",
+      "goneWhileAlive": true,
+      "goneAfterMs": 4839
+     }
+    },
+    "sweepers": {
+     "bwrap-proc": {
+      "nsReading": "pid:[4026541049]",
+      "removed": [
+       "syzygy-poc-surface-fixture-p9-n4026541049-CTRL01"
+      ]
+     },
+     "host": {
+      "nsReading": "pid:[4026531836]",
+      "removed": [
+       "syzygy-poc-surface-fixture-p910747-n4026531836-CTRL01"
+      ]
+     },
+     "bwrap-no-proc": {
+      "nsReading": "unreadable:ENOENT",
+      "removed": [
+       "syzygy-poc-surface-fixture-p63-n0-U8WaZV",
+       "syzygy-poc-surface-fixture-p9-n0-CTRL01"
+      ]
+     }
+    },
+    "holds": true
+   },
+   "mutants": {
+    "unreadable-namespace-reads-as-0": "killed",
+    "unparseable-namespace-reads-as-0": "killed",
+    "unreadable-namespace-still-lists": "killed"
+   }
+  },
+  "n7": "residual, not a defect of the change: a namespace inode identifies a namespace within one running kernel, so a TMPDIR shared between kernels (an NFS mount, a directory a virtual machine shares) is out of scope. The temp directory here is a local tmpfs.",
+  "n8": {
+   "claim": "a foreign namespace value that is a prefix or an extension of the own one is foreign",
+   "mutants": {
+    "namespace-prefix-match": "killed",
+    "namespace-extension-match": "killed"
+   }
+  },
+  "n9": {
+   "record": "abbreviated-commits-2026-10-22.json",
+   "entries": [
+    {
+     "record": "interrupt-kill-base-2026-10-22.json",
+     "recorded": "0d4d5098",
+     "full": "0d4d50984f6aa501217fe7109b6aec1b9679e4c9",
+     "resolvedBy": "git rev-parse 0d4d5098^{commit}"
+    },
+    {
+     "record": "leak-by-file-base-2026-10-22.json",
+     "recorded": "0d4d5098",
+     "full": "0d4d50984f6aa501217fe7109b6aec1b9679e4c9",
+     "resolvedBy": "git rev-parse 0d4d5098^{commit}"
+    },
+    {
+     "record": "tmpdir-length-probe-2026-10-22.json",
+     "recorded": "d8532f1a",
+     "full": "d8532f1afdf965439c70ee6f6f3f1836b3c81bc9",
+     "resolvedBy": "git rev-parse d8532f1a^{commit}"
+    }
+   ],
+   "newRecordsCarryTheFullCommit": true
+  },
+  "n10": {
+   "record": "guard-probe-2026-10-22.json",
+   "treeCommit": "88dcdf76db2ad6a30df5856361dc3f9cef8757f5",
+   "argumentsRefused": "24/24",
+   "predicateMutantsKilled": "12/12",
+   "wiringMutantsKilled": "4/4",
+   "holds": true
+  },
+  "n11": "out of scope, filed by the coordinator as syzygy-bpyt.4.18",
+  "orphanedBrowserProcesses": {
+   "claim": "the evidence tools' own check of leftover processes (`processesStillNamingThisTmpdir`, TMPDIR in a process's environment) is blind to a killed Chrome's zygote and its descendants, which have no readable environment; orphan_census.py matches the exact `--user-data-dir=<private directory>/` argument instead",
+   "afterTheKillRuns": {
+    "record": "orphan-census-kill-runs-2026-10-22.json",
+    "before": {
+     "/tmp/lc410v/sweep": {
+      "processes": 26,
+      "byKind": {
+       "gpu-process": 3,
+       "leader": 3,
+       "renderer": 8,
+       "utility": 6,
+       "zygote": 6
+      }
+     },
+     "/tmp/lc410v/sweepmut": {
+      "processes": 62,
+      "byKind": {
+       "gpu-process": 7,
+       "leader": 7,
+       "renderer": 19,
+       "utility": 15,
+       "zygote": 14
+      }
+     }
+    },
+    "afterSigterm": {
+     "/tmp/lc410v/sweep": 0,
+     "/tmp/lc410v/sweepmut": 1,
+     "/tmp/lc410v/clean": 0,
+     "/tmp/lc410v/clih": 0,
+     "/tmp/lc410v/clim": 0,
+     "/tmp/lc410v/intr": 0,
+     "/tmp/lc410v/sweepterm": 0
+    }
+   },
+   "afterTheInterruptProbe": {
+    "record": "orphan-census-interrupt-term-2026-10-22.json",
+    "before": {
+     "/tmp/lc410v/intr": {
+      "processes": 18,
+      "byKind": {
+       "gpu-process": 2,
+       "leader": 2,
+       "renderer": 6,
+       "utility": 4,
+       "zygote": 4
+      }
+     }
+    },
+    "afterSigterm": {
+     "/tmp/lc410v/intr": 0
+    }
+   },
+   "killRecordsField": {
+    "record": "kill-then-fresh-run-head-2026-10-22.json",
+    "processesStillNamingThisTmpdir": []
+   },
+   "foundEarlier": "before this census existed, 18 and 38 Chrome processes of the two TERM probes made in round 1 were found alive after about seven hours, still re-creating their profile directories (which is what stopped the first re-run of the interrupt probe at the round-2 head: its guard refused a directory that was not empty). They were listed and stopped by the exact `--user-data-dir=` argument and the directories removed. [Observed in this session; no record was kept of that first listing.]"
+  },
+  "carried": {
+   "recordedAtCommit": "3f08143c5e0c78ca42288d16589f36673c9ba854",
+   "records": [
+    "term-then-fresh-run-head",
+    "drain-scan",
+    "leak-by-file-head",
+    "interrupt-term-base",
+    "the full-suite run and its reruns in gates.fullVitest"
+   ],
+   "why": "The round-2 change adds one early return to removeFixturesOfDeadProcesses (no namespace reading, nothing listed) and makes pidNamespace() return undefined where it returned the string 0; on a host with a readable /proc/self/ns/pid, as this one, both give the earlier behavior, which the SIGKILL run, its sweep-disabled mutant, the clean run, the CLI probes and the TERM interrupt probe re-run at the round-2 head show end to end [Observed: those records]. That the TERM path is unchanged is [Inferred: from the diff; the files round 2 changed are listed in appsPackagesAndConfigChangedByRoundTwo]. The drain scan and the per-file run are about which test files drain, which round 2 did not touch."
+  },
+  "replacedRecords": {
+   "clean-run-head-2026-10-22.json": {
+    "treeCommit": "3f08143c5e0c78ca42288d16589f36673c9ba854",
+    "lastCommitHoldingIt": "e32364dd618d779744d4a30b40bb6998f0a15754"
+   },
+   "kill-then-fresh-run-head-2026-10-22.json": {
+    "treeCommit": "3f08143c5e0c78ca42288d16589f36673c9ba854",
+    "lastCommitHoldingIt": "e32364dd618d779744d4a30b40bb6998f0a15754"
+   },
+   "kill-then-fresh-run-sweep-disabled-2026-10-22.json": {
+    "treeCommit": "3f08143c5e0c78ca42288d16589f36673c9ba854",
+    "lastCommitHoldingIt": "e32364dd618d779744d4a30b40bb6998f0a15754"
+   },
+   "interrupt-term-head-2026-10-22.json": {
+    "treeCommit": "3f08143c5e0c78ca42288d16589f36673c9ba854",
+    "lastCommitHoldingIt": "e32364dd618d779744d4a30b40bb6998f0a15754"
+   },
+   "mutants-sweep-2026-10-22.json": {
+    "treeCommit": "3f08143c5e0c78ca42288d16589f36673c9ba854",
+    "lastCommitHoldingIt": "e32364dd618d779744d4a30b40bb6998f0a15754"
+   },
+   "cli-sweep-probe-head-2026-10-22.json": {
+    "treeCommit": "3f08143c5e0c78ca42288d16589f36673c9ba854",
+    "lastCommitHoldingIt": "e32364dd618d779744d4a30b40bb6998f0a15754"
+   },
+   "cli-sweep-probe-mutant-2026-10-22.json": {
+    "treeCommit": "3f08143c5e0c78ca42288d16589f36673c9ba854",
+    "lastCommitHoldingIt": "e32364dd618d779744d4a30b40bb6998f0a15754"
+   },
+   "test-lists-2026-10-22.json": {
+    "treeCommit": "3f08143c5e0c78ca42288d16589f36673c9ba854",
+    "lastCommitHoldingIt": "e32364dd618d779744d4a30b40bb6998f0a15754"
+   },
+   "note": "each was replaced in this commit by a record of the round-2 head; the earlier one is in git history at lastCommitHoldingIt and named the commit shown"
   }
  },
  "oneOffCleanup": {

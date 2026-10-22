@@ -1,15 +1,15 @@
 {
  "tool": "cli_sweep_probe.py",
- "treeCommit": "3f08143c5e0c78ca42288d16589f36673c9ba854",
+ "treeCommit": "88dcdf76db2ad6a30df5856361dc3f9cef8757f5",
  "mode": "mutant",
  "file": "apps/three-surface-poc/src/polaris-accessibility-main.ts",
  "sha256AtCommit": "5eb9f3ad7eea419601d5f276b31b20eb29ee86c8fae52b4a0820ca8888e6b4db",
- "seededDeadPid": 1893784,
+ "seededDeadPid": 1516669,
  "pidNamespace": "4026531836",
  "seeded": [
-  "syzygy-poc-surface-fixture-p1893784-n4026531836-CliProbe",
-  "syzygy-poc-surface-fixture-template-p1893784-n4026531836-CliProbe",
-  "syzygy-poc-surface-fixture-p1893584-n4026531836-CliLive1",
+  "syzygy-poc-surface-fixture-p1516669-n4026531836-CliProbe",
+  "syzygy-poc-surface-fixture-template-p1516669-n4026531836-CliProbe",
+  "syzygy-poc-surface-fixture-p1516017-n4026531836-CliLive1",
   "syzygy-poc-surface-fixture-CliLegacy"
  ],
  "mutant": {
@@ -41,16 +41,16 @@
  },
  "left": [
   "syzygy-poc-surface-fixture-CliLegacy",
-  "syzygy-poc-surface-fixture-p1893584-n4026531836-CliLive1",
-  "syzygy-poc-surface-fixture-p1893784-n4026531836-CliProbe",
-  "syzygy-poc-surface-fixture-template-p1893784-n4026531836-CliProbe"
+  "syzygy-poc-surface-fixture-p1516017-n4026531836-CliLive1",
+  "syzygy-poc-surface-fixture-p1516669-n4026531836-CliProbe",
+  "syzygy-poc-surface-fixture-template-p1516669-n4026531836-CliProbe"
  ],
  "deadProcessDirectoriesLeft": [
-  "syzygy-poc-surface-fixture-p1893784-n4026531836-CliProbe",
-  "syzygy-poc-surface-fixture-template-p1893784-n4026531836-CliProbe"
+  "syzygy-poc-surface-fixture-p1516669-n4026531836-CliProbe",
+  "syzygy-poc-surface-fixture-template-p1516669-n4026531836-CliProbe"
  ],
  "liveAndLegacyKept": [
-  "syzygy-poc-surface-fixture-p1893584-n4026531836-CliLive1",
+  "syzygy-poc-surface-fixture-p1516017-n4026531836-CliLive1",
   "syzygy-poc-surface-fixture-CliLegacy"
  ],
  "holds": true
