@@ -36,18 +36,6 @@ const ISLAND = [
   'apps/three-surface-poc/src/polaris-generation/self-corpus-main.ts',
   'apps/three-surface-poc/src/polaris-generation/self-corpus.ts',
 ];
-// Reached, and its imports not followed. consent-ports.ts is parked egress
-// code (owner packet Q8): it takes pipeline types and `digestCanonicalJson`
-// from this package's root, which re-exports the island. Two importers reach
-// it: the consent barrel (`polaris-generation-consent/src/index.ts`)
-// re-exports it, and `package-reader.ts` imports two of its helpers; the
-// screen and the gate sources reach both. Stopping at this one file covers
-// both edges. Neither importer is this bead's to change (package-reader.ts is
-// syzygy-bpyt.8.4's), so the edge stands as a named residual until
-// syzygy-bpyt.8.19 removes it; the last test fails once it no longer reaches
-// the island.
-const UNFOLLOWED = ['packages/polaris-generation-consent/src/consent-ports.ts'];
-
 interface Edge { readonly from: string; readonly specifier: string; readonly to: string }
 
 const isFile = (path: string): boolean => existsSync(join(ROOT, path)) && statSync(join(ROOT, path)).isFile();
@@ -79,15 +67,14 @@ function resolve(from: string, specifier: string): string | null | undefined {
   return isFile(module) ? module : undefined;
 }
 
-/** Every module the entry reaches, the edges from them into the island, and any workspace specifier that names no module. */
-function reach(unfollowed: readonly string[]): { reachable: string[]; intoIsland: Edge[]; unresolved: Omit<Edge, 'to'>[] } {
+/** Every module `entry` reaches, the edges from them into the island, and any workspace specifier that names no module. */
+function reach(entry: string): { reachable: string[]; intoIsland: Edge[]; unresolved: Omit<Edge, 'to'>[] } {
   const island = new Set(ISLAND);
-  const seen = new Set([ENTRY]);
-  const queue = [ENTRY];
+  const seen = new Set([entry]);
+  const queue = [entry];
   const intoIsland: Edge[] = [];
   const unresolved: Omit<Edge, 'to'>[] = [];
   for (let file = queue.shift(); file !== undefined; file = queue.shift()) {
-    if (unfollowed.includes(file)) continue;
     for (const { fileName: specifier } of ts.preProcessFile(readFileSync(join(ROOT, file), 'utf8'), true, true).importedFiles) {
       const to = resolve(file, specifier);
       if (to === null) continue;
@@ -106,20 +93,24 @@ describe('the syzygy CLI and the parked provider island', () => {
   });
 
   it('resolves every workspace import the CLI reaches, dynamic ones included', () => {
-    const { reachable, unresolved } = reach(UNFOLLOWED);
+    const { reachable, unresolved } = reach(ENTRY);
     expect(unresolved.map(edge => `${edge.from} imports ${edge.specifier}`)).toEqual([]);
     expect(reachable).toContain('apps/three-surface-poc/src/polaris-generation/dossier-site.ts');
-    expect(reachable).toContain(UNFOLLOWED[0]);
+    expect(reachable).toContain('packages/polaris-generation-consent/src/in-force.ts');
   });
 
   it('reaches no island module from the CLI entry', () => {
-    const { reachable, intoIsland } = reach(UNFOLLOWED);
+    const { reachable, intoIsland } = reach(ENTRY);
     expect(intoIsland.map(edge => `${edge.from} imports ${edge.specifier} (${edge.to})`)).toEqual([]);
     expect(reachable.filter(path => ISLAND.includes(path))).toEqual([]);
   });
 
-  it('follows every edge but one, and that one still reaches the island', () => {
-    const { intoIsland } = reach([]);
-    expect(intoIsland.length).toBeGreaterThan(0);
+  // The consent package root re-exports consent-ports.ts, parked egress code
+  // that imports this package's root, so a module the CLI reaches takes
+  // consent names from `@syzygy/polaris-generation-consent/live`
+  // (syzygy-bpyt.8.19). The same walk from that root finds the island, which
+  // also shows the walk sees an edge into it.
+  it('reaches the island from the consent package root, which the CLI does not import', () => {
+    expect(reach('packages/polaris-generation-consent/src/index.ts').intoIsland.length).toBeGreaterThan(0);
   });
 });
