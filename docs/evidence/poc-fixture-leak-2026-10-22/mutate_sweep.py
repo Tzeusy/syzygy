@@ -1,19 +1,19 @@
 #!/usr/bin/env python3
-"""Rule-6 run for the owner-pid naming and the dead-process sweep in
-apps/three-surface-poc/src/test-model-fixture.ts.
+"""Rule-6 run for the owner-pid naming and the dead-process sweep of the POC surface fixtures.
 
-Usage: mutate_teardown.py <worktree> <out.json> <private-tmpdir>
+Usage: mutate_sweep.py <worktree> <out.json> <private-tmpdir>
 
-Each mutant edits test-model-fixture.ts in <worktree>; test-model-fixture.test.ts
-runs ALONE under a private TMPDIR (so a mutant that leaks, leaks there and not
-into a shared /tmp), and the file is restored byte for byte afterwards. A control
-(the unmutated tree) runs first and must pass. A mutant is `killed` when the test
-file exits non-zero. A fragment that does not occur exactly once in the file is
-recorded as FRAGMENT-COUNT-n and never guessed.
+Each mutant is a list of (file, old, new) edits to the sources below; the two test files run
+ALONE under a private TMPDIR (so a mutant that leaks, leaks there and not into a shared /tmp,
+and the app project's global setup sweeps that directory and nothing else), and every edited
+file is restored byte for byte afterwards. A control (the unmutated tree) runs first and must
+pass and leave no fixture directory. A mutant is `killed` when the run exits non-zero. A
+fragment that does not occur exactly once in its file is recorded as FRAGMENT-COUNT-n and never
+guessed.
 
-Records, per mutant: the old and new fragment, the command, the commit the run was
-made at and every failing test with its first error line (from vitest's JSON
-reporter). The tree must be committed at the two files before the run.
+Records, per mutant: the edits (old and new fragments), the command, the commit the run was
+made at and every failing test with its first error line (from vitest's JSON reporter). The
+edited files and the two test files must be committed before the run.
 """
 import hashlib
 import json
@@ -25,42 +25,57 @@ import sys
 import tempfile
 
 WT, OUT, PRIVATE_TMP = pathlib.Path(sys.argv[1]).resolve(), pathlib.Path(sys.argv[2]).resolve(), pathlib.Path(sys.argv[3]).resolve()
-SRC = 'apps/three-surface-poc/src/test-model-fixture.ts'
-TEST = 'apps/three-surface-poc/src/test-model-fixture.test.ts'
+FD = 'apps/three-surface-poc/src/fixture-directories.ts'
+GS = 'apps/three-surface-poc/src/test-fixture-sweep.global-setup.ts'
+TM = 'apps/three-surface-poc/src/test-model-fixture.ts'
+VC = 'vitest.config.ts'
+TESTS = ['apps/three-surface-poc/src/fixture-directories.test.ts', 'apps/three-surface-poc/src/test-model-fixture.test.ts']
+GLOBAL_SETUP_LINE = "          // Once per run: removes the fixture directories of killed runs (syzygy-bpyt.4.10).\n          globalSetup: [fileURLToPath(new URL('./apps/three-surface-poc/src/test-fixture-sweep.global-setup.ts', import.meta.url))],\n"
+TRY = "    try {\n      if (lstatSync(entry).isDirectory()) rmSync(entry, { recursive: true, force: true });\n    } catch {\n      // Left for the next run.\n    }\n"
 
 MUTANTS = [
-    ('sweep-not-called', 'the first template of a file no longer sweeps',
-     '  removeFixturesOfDeadProcesses();\n  const root = mkdtempSync(join(tmpdir(), `${FIXTURE_PREFIX}template-p',
-     '  const root = mkdtempSync(join(tmpdir(), `${FIXTURE_PREFIX}template-p'),
     ('live-pid-removed', 'a directory whose pid is alive is removed too',
-     'if (pid === undefined || ownerMayBeAlive(Number(pid))) continue;', 'if (pid === undefined) continue;'),
+     [(FD, 'if (pid === undefined || ownerMayBeAlive(Number(pid))) continue;', 'if (pid === undefined) continue;')]),
     ('every-error-means-dead', 'EPERM and an out-of-range pid count as dead',
-     "return (error as NodeJS.ErrnoException).code !== 'ESRCH';", 'return false;'),
+     [(FD, "return (error as NodeJS.ErrnoException).code !== 'ESRCH';", 'return false;')]),
     ('name-without-pid-is-dead', 'a name with no pid segment is swept as pid 4194305',
-     'const pid = FIXTURE_NAME_WITH_OWNER.exec(name)?.[1];', "const pid = FIXTURE_NAME_WITH_OWNER.exec(name)?.[1] ?? '4194305';"),
+     [(FD, 'const pid = FIXTURE_NAME_WITH_OWNER.exec(name)?.[1];', "const pid = FIXTURE_NAME_WITH_OWNER.exec(name)?.[1] ?? '4194305';")]),
     ('hyphen-after-pid-dropped', 'a pid with no hyphen after it matches',
-     'p(\\d+)-/;', 'p(\\d+)/;'),
+     [(FD, 'p(\\d+)-/;', 'p(\\d+)/;')]),
     ('anchor-dropped', 'the prefix may sit inside a longer name',
-     'const FIXTURE_NAME_WITH_OWNER = /^syzygy-', 'const FIXTURE_NAME_WITH_OWNER = /syzygy-'),
+     [(FD, 'const FIXTURE_NAME_WITH_OWNER = /^syzygy-', 'const FIXTURE_NAME_WITH_OWNER = /syzygy-')]),
     ('template-form-unmatched', 'a template directory of a dead process is never swept',
-     '(?:template-)?p(\\d+)-/;', 'p(\\d+)-/;'),
-    ('copy-name-without-pid', 'a copy is named as before, with no pid',
-     '`${FIXTURE_PREFIX}p${process.pid}-`', '`${FIXTURE_PREFIX}`'),
-    ('template-name-without-pid', 'the template is named as before, with no pid',
-     '`${FIXTURE_PREFIX}template-p${process.pid}-`', '`${FIXTURE_PREFIX}template-`'),
+     [(FD, '(?:template-)?p(\\d+)-/;', 'p(\\d+)-/;')]),
+    ('lstat-dropped', 'a symlink or file with a dead-pid name is removed, not only a directory',
+     [(FD, 'if (lstatSync(entry).isDirectory()) rmSync(', 'rmSync(')]),
     ('removal-failure-propagates', 'a directory that cannot be removed fails the run that sweeps',
-     '    try {\n      rmSync(join(directory, name), { recursive: true, force: true });\n    } catch {\n      // Left for the next run.\n    }\n',
-     '    rmSync(join(directory, name), { recursive: true, force: true });\n'),
+     [(FD, TRY, "    if (lstatSync(entry).isDirectory()) rmSync(entry, { recursive: true, force: true });\n")]),
+    ('lists-the-parent', 'the sweep lists the parent of the directory it is given',
+     [(FD, 'readdirSync(directory)', "readdirSync(join(directory, '..'))")]),
+    ('copy-name-without-pid', 'a copy is named as before, with no pid',
+     [(FD, '`${FIXTURE_PREFIX}p${process.pid}-`', '`${FIXTURE_PREFIX}`')]),
+    ('template-name-without-pid', 'the template is named as before, with no pid',
+     [(FD, '`${FIXTURE_PREFIX}template-p${process.pid}-`', '`${FIXTURE_PREFIX}template-`')]),
+    ('global-setup-does-not-sweep', 'the global setup runs and sweeps nothing',
+     [(GS, '  removeFixturesOfDeadProcesses();\n', '')]),
+    ('global-setup-not-registered', 'the app project registers no global setup: no sweep at all',
+     [(VC, GLOBAL_SETUP_LINE, '')]),
+    ('global-setup-on-every-project', 'the global setup is registered at the root, so every project runs it',
+     [(VC, "    maxWorkers: '50%',\n", "    maxWorkers: '50%',\n    globalSetup: [fileURLToPath(new URL('./apps/three-surface-poc/src/test-fixture-sweep.global-setup.ts', import.meta.url))],\n")]),
+    ('sweep-per-file', 'every file sweeps when it makes its template, as well as the global setup',
+     [(TM, "import { ownedCopyPrefix, ownedTemplatePrefix } from './fixture-directories.js';", "import { ownedCopyPrefix, ownedTemplatePrefix, removeFixturesOfDeadProcesses } from './fixture-directories.js';"),
+      (TM, '  const root = mkdtempSync(join(tmpdir(), ownedTemplatePrefix()));', '  removeFixturesOfDeadProcesses();\n  const root = mkdtempSync(join(tmpdir(), ownedTemplatePrefix()));')]),
 ]
 
 run = lambda *a: subprocess.run(a, cwd=WT, capture_output=True, text=True, check=True).stdout.strip()
 commit = run('git', 'rev-parse', 'HEAD')
-dirty = run('git', 'status', '--porcelain', '--', SRC, TEST)
-assert dirty == '', f'{SRC} and {TEST} must be committed before a rule-6 run: {dirty}'
-originals = {name: (WT / name).read_text() for name in (SRC, TEST)}
+FILES = sorted({f for _, _, edits in MUTANTS for f, _, _ in edits} | set(TESTS))
+dirty = run('git', 'status', '--porcelain', '--', *FILES)
+assert dirty == '', f'{FILES} must be committed before a rule-6 run: {dirty}'
+originals = {name: (WT / name).read_text() for name in FILES}
 digests = {name: hashlib.sha256(text.encode()).hexdigest() for name, text in originals.items()}
 report = pathlib.Path(tempfile.mkdtemp(prefix='zz-mutate-sweep-')) / 'report.json'
-command = ['npx', 'vitest', 'run', TEST, '--project', '@syzygy/three-surface-poc-app', '--reporter=json', f'--outputFile={report}']
+command = ['npx', 'vitest', 'run', *TESTS, '--project', '@syzygy/three-surface-poc-app', '--reporter=json', f'--outputFile={report}']
 
 
 def vitest() -> tuple[int, int, list[dict], int]:
@@ -82,20 +97,22 @@ try:
     exit_code, total, failing, leaked = vitest()
     control = {'exit': exit_code, 'testsRun': total, 'failing': failing, 'fixtureDirectoriesLeftInPrivateTmpdir': leaked, 'holds': exit_code == 0 and total > 0 and leaked == 0}
     print('control', control['holds'], total, leaked, flush=True)
-    assert control['holds'], 'the unmutated tree must pass test-model-fixture.test.ts and leave no fixture directory'
-    for name, meaning, old, new in MUTANTS:
-        text = originals[SRC]
-        if text.count(old) != 1:
-            results.append({'id': name, 'meaning': meaning, 'old': old, 'new': new, 'outcome': f'FRAGMENT-COUNT-{text.count(old)}'})
+    assert control['holds'], 'the unmutated tree must pass both test files and leave no fixture directory'
+    for name, meaning, edits in MUTANTS:
+        record = {'id': name, 'meaning': meaning, 'edits': [{'file': f, 'old': old, 'new': new} for f, old, new in edits]}
+        counts = [originals[f].count(old) for f, old, _ in edits]
+        if any(c != 1 for c in counts):
+            results.append(record | {'outcome': 'FRAGMENT-COUNT-' + '/'.join(map(str, counts))})
             print(name, results[-1]['outcome'], flush=True)
             continue
-        (WT / SRC).write_text(text.replace(old, new, 1))
         try:
+            for f, old, new in edits:
+                (WT / f).write_text((WT / f).read_text().replace(old, new, 1))
             exit_code, total, failing, leaked = vitest()
         finally:
-            (WT / SRC).write_text(text)
-        results.append({'id': name, 'meaning': meaning, 'old': old, 'new': new, 'exit': exit_code, 'outcome': 'killed' if exit_code != 0 else 'SURVIVED',
-                        'testsRun': total, 'failing': failing, 'fixtureDirectoriesLeftInPrivateTmpdir': leaked})
+            for f in {f for f, _, _ in edits}:
+                (WT / f).write_text(originals[f])
+        results.append(record | {'exit': exit_code, 'outcome': 'killed' if exit_code != 0 else 'SURVIVED', 'testsRun': total, 'failing': failing, 'fixtureDirectoriesLeftInPrivateTmpdir': leaked})
         print(name, results[-1]['outcome'], len(failing), flush=True)
 finally:
     for name, text in originals.items():
@@ -105,8 +122,8 @@ for name, text in originals.items():
     assert hashlib.sha256((WT / name).read_text().encode()).hexdigest() == digests[name]
 OUT.write_text(json.dumps({
     'tool': 'mutate_sweep.py',
-    'testFile': TEST,
-    'command': ' '.join(command[:6]),
+    'testFiles': TESTS,
+    'command': ' '.join(command[:7]),
     'treeCommit': commit,
     'sha256AtCommit': digests,
     'control': control,

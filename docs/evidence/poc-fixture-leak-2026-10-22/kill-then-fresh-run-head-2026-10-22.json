@@ -1,11 +1,10 @@
 {
  "tool": "kill_then_fresh_run.py",
- "treeCommit": "baf064755ebb4e5a9b5da7dbf259aa7c27ab6d5b",
+ "treeCommit": "d59d76c36987f1f36580d741962266aa6f4537b6",
  "mode": "sweep",
  "command": "npx vitest run --project @syzygy/three-surface-poc-app (TMPDIR=<emptied private directory>)",
  "sha256AtCommit": {
-  "apps/three-surface-poc/src/test-model-fixture.ts": "8cc4f6bea2b7f8486b0609c7e7b58d73e9a7dba335b01f17d698de583ed64e87",
-  "apps/three-surface-poc/src/test-model-fixture.test.ts": "ca3c4b4506120eee6f53dfde10684dbdfea8effba52eb036457c6bdd2399f5b0"
+  "vitest.config.ts": "19ce11f72818ed2c256812af7054540b64154b1a9a5c63d5a66adb5f797d5a42"
  },
  "minCopiesBeforeKill": 3,
  "killedRun": {
@@ -13,7 +12,7 @@
   "sentToTheProcessGroupOfTheRunItStarted": true,
   "runFinishedBeforeTheSignal": false,
   "atKill": {
-   "secondsIntoTheRun": 4.4,
+   "secondsIntoTheRun": 25.1,
    "fixtureDirectories": 5,
    "ofDeadProcesses": {
     "count": 0,
@@ -38,8 +37,8 @@
     "copies": 3,
     "templates": 2,
     "ownerPids": [
-     2844525,
-     2844544
+     3555936,
+     3555976
     ]
    },
    "ofLiveProcesses": {
@@ -55,14 +54,14 @@
  },
  "freshRun": {
   "exit": 0,
-  "seconds": 60.2,
-  "numTotalTestSuites": 261,
-  "numPassedTests": 1100,
+  "seconds": 229.7,
+  "numTotalTestSuites": 263,
+  "numPassedTests": 1104,
   "numFailedTests": 0,
   "numPendingTests": 2,
-  "numTotalTests": 1102,
+  "numTotalTests": 1106,
   "success": true,
-  "testFiles": 89,
+  "testFiles": 90,
   "testFilesFailed": 0,
   "failing": [],
   "left": {
@@ -81,17 +80,15 @@
    "withoutAnOwnerPid": {
     "count": 0
    },
-   "otherEntries": 15
+   "otherEntries": 14
   }
  },
  "processesStillNamingThisTmpdir": [
-  2844868,
-  2844869,
-  2844894,
-  2844895,
-  2844897,
-  2844899,
-  2844907,
-  2844909
+  3557269,
+  3557313,
+  3557315,
+  3557441,
+  3557462,
+  3557465
  ]
 }

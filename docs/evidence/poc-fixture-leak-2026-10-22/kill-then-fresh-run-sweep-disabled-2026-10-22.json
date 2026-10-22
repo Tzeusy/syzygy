@@ -1,11 +1,10 @@
 {
  "tool": "kill_then_fresh_run.py",
- "treeCommit": "baf064755ebb4e5a9b5da7dbf259aa7c27ab6d5b",
+ "treeCommit": "d59d76c36987f1f36580d741962266aa6f4537b6",
  "mode": "mutant",
  "command": "npx vitest run --project @syzygy/three-surface-poc-app (TMPDIR=<emptied private directory>)",
  "sha256AtCommit": {
-  "apps/three-surface-poc/src/test-model-fixture.ts": "8cc4f6bea2b7f8486b0609c7e7b58d73e9a7dba335b01f17d698de583ed64e87",
-  "apps/three-surface-poc/src/test-model-fixture.test.ts": "ca3c4b4506120eee6f53dfde10684dbdfea8effba52eb036457c6bdd2399f5b0"
+  "vitest.config.ts": "19ce11f72818ed2c256812af7054540b64154b1a9a5c63d5a66adb5f797d5a42"
  },
  "minCopiesBeforeKill": 3,
  "killedRun": {
@@ -13,7 +12,7 @@
   "sentToTheProcessGroupOfTheRunItStarted": true,
   "runFinishedBeforeTheSignal": false,
   "atKill": {
-   "secondsIntoTheRun": 8.1,
+   "secondsIntoTheRun": 32.7,
    "fixtureDirectories": 5,
    "ofDeadProcesses": {
     "count": 0,
@@ -29,7 +28,7 @@
    "withoutAnOwnerPid": {
     "count": 0
    },
-   "otherEntries": 15
+   "otherEntries": 14
   },
   "fiveSecondsAfterKill": {
    "fixtureDirectories": 5,
@@ -38,8 +37,8 @@
     "copies": 3,
     "templates": 2,
     "ownerPids": [
-     2896846,
-     2896854
+     3658466,
+     3658481
     ]
    },
    "ofLiveProcesses": {
@@ -50,30 +49,36 @@
    "withoutAnOwnerPid": {
     "count": 0
    },
-   "otherEntries": 15
+   "otherEntries": 14
   }
  },
  "mutant": {
-  "id": "sweep-not-called",
-  "old": "  removeFixturesOfDeadProcesses();\n  const root = mkdtempSync(join(tmpdir(), `${FIXTURE_PREFIX}template-p",
-  "new": "  const root = mkdtempSync(join(tmpdir(), `${FIXTURE_PREFIX}template-p"
+  "id": "global-setup-not-registered",
+  "file": "vitest.config.ts",
+  "old": "          // Once per run: removes the fixture directories of killed runs (syzygy-bpyt.4.10).\n          globalSetup: [fileURLToPath(new URL('./apps/three-surface-poc/src/test-fixture-sweep.global-setup.ts', import.meta.url))],\n",
+  "new": ""
  },
  "freshRun": {
   "exit": 1,
-  "seconds": 65.5,
-  "numTotalTestSuites": 261,
-  "numPassedTests": 1099,
-  "numFailedTests": 1,
+  "seconds": 319.3,
+  "numTotalTestSuites": 263,
+  "numPassedTests": 1102,
+  "numFailedTests": 2,
   "numPendingTests": 2,
-  "numTotalTests": 1102,
+  "numTotalTests": 1106,
   "success": false,
-  "testFiles": 89,
-  "testFilesFailed": 1,
+  "testFiles": 90,
+  "testFilesFailed": 2,
   "failing": [
    {
-    "file": "three-surface-poc/src/test-model-fixture.test.ts",
-    "test": "fixture directories a killed run left behind (syzygy-bpyt.4.10) sweeps the dead before it makes the file's template, and keeps the live and the legacy",
-    "firstErrorLine": "AssertionError: expected [ \u2026(2) ] to deeply equal []"
+    "file": "three-surface-poc/src/fixture-directories.test.ts",
+    "test": "fixture directories a killed run left behind (syzygy-bpyt.4.10) is registered as a global setup of the app project and of no other project, so it runs once per run",
+    "firstErrorLine": "AssertionError: expected [] to deeply equal [ '@syzygy/three-surface-poc-app' ]"
+   },
+   {
+    "file": "three-surface-poc/src/polaris-generation/public-source-screening.test.ts",
+    "test": "the policy act gate fails closed the default port reads this checkout's chain: the latest recorded version loads the policy it names",
+    "firstErrorLine": "Error: STACK_TRACE_ERROR"
    }
   ],
   "left": {
@@ -83,8 +88,8 @@
     "copies": 3,
     "templates": 2,
     "ownerPids": [
-     2896846,
-     2896854
+     3658466,
+     3658481
     ]
    },
    "ofLiveProcesses": {
@@ -95,17 +100,15 @@
    "withoutAnOwnerPid": {
     "count": 0
    },
-   "otherEntries": 16
+   "otherEntries": 15
   }
  },
  "processesStillNamingThisTmpdir": [
-  2897386,
-  2897387,
-  2897395,
-  2897397,
-  2897423,
-  2897424,
-  2897444,
-  2897451
+  3659543,
+  3659557,
+  3659560,
+  3659583,
+  3659611,
+  3659614
  ]
 }

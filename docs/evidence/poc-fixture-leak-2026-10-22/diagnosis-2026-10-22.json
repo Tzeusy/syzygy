@@ -91,7 +91,7 @@
   },
   "conclusion": "no caller was found that drains nothing: 0 of 42, by the static scan plus the by-hand reading above, and 0 of 42 test files by the per-file run (perFileAtBase)",
   "atTheFinalCodeCommit": {
-   "treeCommit": "baf064755ebb4e5a9b5da7dbf259aa7c27ab6d5b",
+   "treeCommit": "d59d76c36987f1f36580d741962266aa6f4537b6",
    "filesNamingTheHelper": 45,
    "callers": 43,
    "scanFlaggedNoDrain": [
@@ -110,8 +110,8 @@
     }
    },
    "perFileRun": {
-    "treeCommit": "baf064755ebb4e5a9b5da7dbf259aa7c27ab6d5b",
-    "testFilesInDirectory": 89,
+    "treeCommit": "d59d76c36987f1f36580d741962266aa6f4537b6",
+    "testFilesInDirectory": 90,
     "fixtureUsingTestFiles": 43,
     "filesWithCopiesLeft": 0,
     "filesWithTemplatesLeft": 0,

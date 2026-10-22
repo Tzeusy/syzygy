@@ -35,8 +35,8 @@ shutil.copyfile(scratch / 'drain-scan-new.json', evidence / f'drain-scan-{DATE}.
 shutil.copyfile(scratch / 'leak-by-file-head-new.json', evidence / f'leak-by-file-head-{DATE}.json')
 lists = json.loads((scratch / 'test-lists.json').read_text())
 (evidence / f'test-lists-{DATE}.json').write_text(json.dumps({
-    'tool': 'compare_test_lists.py (docs/evidence/poc-hygiene-2026-10-22)', 'baseTree': f'{rev(code)} with test-model-fixture.test.ts as at {rev(main)}', 'headTree': rev(code),
-    'command': 'npx vitest list', 'note': 'the base list is the code commit with test-model-fixture.test.ts at origin/main: that is the only test file under apps/ and packages/ that differs',
+    'tool': 'compare_test_lists.py (docs/evidence/poc-hygiene-2026-10-22)', 'baseTree': f'{rev(code)} with test-model-fixture.test.ts as at {rev(main)} and fixture-directories.test.ts absent', 'headTree': rev(code),
+    'command': 'npx vitest list', 'note': 'the base list is the code commit with those two test files put back to origin/main (one reverted, one set aside) and restored afterwards: they are the only test files under apps/ and packages/ that differ',
     **lists}, indent=1) + '\n')
 
 scan, by_file_head, by_file_base = load(f'drain-scan-{DATE}.json'), load(f'leak-by-file-head-{DATE}.json'), load(f'leak-by-file-base-{DATE}.json')
@@ -81,9 +81,14 @@ def listing(directory: pathlib.Path) -> dict:
 gate_tail = lambda name: [line for line in (scratch / name).read_text().splitlines() if line.strip()][-1]
 clean, killed, disabled, mutants = load(f'clean-run-head-{DATE}.json'), load(f'kill-then-fresh-run-head-{DATE}.json'), load(f'kill-then-fresh-run-sweep-disabled-{DATE}.json'), load(f'mutants-sweep-{DATE}.json')
 run_keys = ('exit', 'seconds', 'numTotalTests', 'numPassedTests', 'numFailedTests', 'numPendingTests', 'testFiles', 'testFilesFailed', 'failing')
-test_names = [line.split(' > ', 1)[1] for line in (scratch / 'list-head.txt').read_text().splitlines() if 'a killed run left behind (syzygy-bpyt.4.10)' in line]
+test_names = [line.split(' > ', 1)[0].rsplit(' ', 1)[-1] + ' > ' + line.split(' > ', 1)[1] for line in (scratch / 'list-head.txt').read_text().splitlines() if '(syzygy-bpyt.4.10)' in line]
 first_verification = earlier(f'verification-{DATE}.json')
-full_run = {'summary': lines_of('vitest-full-head.log', 'Test Files', 'Tests ', 'Duration'), 'left': listing(full_tmp)}
+attempt_one = (scratch / 'vitest-full-head-attempt-1.log').read_text()
+full_run = {'summary': lines_of('vitest-full-head.log', 'Test Files', 'Tests ', 'Duration'), 'left': listing(full_tmp),
+            'attemptBefore': {'summary': lines_of('vitest-full-head-attempt-1.log', 'Test Files', 'Tests ', 'Duration'),
+                              'failed': [line.strip() for line in attempt_one.splitlines() if line.strip().startswith('FAIL')],
+                              'firstErrorLine': next(line for line in attempt_one.splitlines() if line.startswith('Error:')),
+                              'note': 'one test of packages/polaris-generation-consent timed out at the 5 s default under machine load averaging about 30 to 55; that package does not touch the fixture helper. The run was repeated, not scored; the repeat is the figure above.'}}
 verification = {
     'subject': {'baseCommit': rev(base), 'mergedMainCommit': rev(main), 'codeCommit': rev(code), 'treeAtRecording': rev('HEAD')},
     'appsAndPackagesDiffSinceCodeCommit': git('diff', '--stat', code, 'HEAD', '--', 'apps', 'packages'),
@@ -94,19 +99,25 @@ verification = {
         'command': 'npx vitest run --project @syzygy/three-surface-poc-app',
         'run': {k: clean['freshRun'][k] for k in run_keys} | {'left': clean['freshRun']['left']},
         'perFile': {k: by_file_head[k] for k in summary_keys},
-        'note': 'base leaves 0 too in a clean run (diagnosis), so this criterion shows the change leaves nothing new; AC3 is what the change is for. A first attempt of this run at the same commit, under machine load 30, failed sync-child-process-guard.test.ts: the new test used spawnSync, which that guard forbids; the test now awaits an async spawn. Its report was not retained.',
+        'note': 'base leaves 0 too in a clean run (diagnosis), so this criterion shows the change leaves nothing new; AC3 is what the change is for. An earlier revision of this branch (baf06475) failed sync-child-process-guard.test.ts in this run because its test used spawnSync, which that guard forbids; the tests now await an async spawn. That attempt\'s report was not retained and no figure from it is used.',
     },
     'ac3': {
         'claim': 'a run killed with SIGKILL, followed by one fresh run, leaves 0 directories of dead processes; with the sweep disabled they stay',
         'withTheSweep': {'killedRun': killed['killedRun'], 'freshRun': {k: killed['freshRun'][k] for k in run_keys} | {'left': killed['freshRun']['left']}},
         'sweepDisabled': {'mutant': disabled['mutant'], 'killedRun': disabled['killedRun'], 'freshRun': {k: disabled['freshRun'][k] for k in run_keys} | {'left': disabled['freshRun']['left']},
-                          'note': 'the fresh run exits 1 because the unit test that exercises the sweep fails on the mutated tree; the 5 directories of the killed run stay'},
+                          'note': 'the 5 directories of the killed run stay. The fresh run exits 1 with two failing tests: the unit test that pins the global setup\'s registration (as intended), and a second, public-source-screening.test.ts, whose error line is vitest\'s timeout placeholder at machine load of about 55 [Inferred: a load timeout, unrelated to the change; it passed in the other three runs of this commit]'},
         'unitMutants': {k: mutants[k] for k in ('treeCommit', 'command', 'mutants', 'killed')} | {'control': mutants['control'], 'ids': [(r['id'], r['outcome']) for r in mutants['results']]},
+    },
+    'oncePerRun': {
+        'claim': 'the sweep runs once per run, from a global setup of the app project, and not once per test file',
+        'unitTests': [name for name in test_names if 'global setup' in name or 'does not sweep when a file makes its template' in name],
+        'mutantsThatMustDie': {r['id']: r['outcome'] for r in mutants['results'] if r['id'] in ('global-setup-does-not-sweep', 'global-setup-not-registered', 'global-setup-on-every-project', 'sweep-per-file')},
     },
     'ac4ac5': {
         'claim': 'a directory whose pid is alive survives the sweep (the current process\'s pid, in a unit test); a legacy name with no pid survives',
-        'unitTestsAddedToTestModelFixtureTestTs': test_names,
-        'withNoPidSegmentKept': 'seven name shapes in one test: legacy copy, legacy template, pid with no hyphen, pid not straight after the prefix (copy and template forms), another prefix, the prefix inside a longer name, the prefix without its last hyphen',
+        'unitTestsAdded': test_names,
+        'withNoPidSegmentKept': 'eight name shapes in one test: legacy copy, legacy template, pid with no hyphen, pid not straight after the prefix (copy and template forms), another prefix, the prefix inside a longer name, the prefix without its last hyphen',
+        'noSymlinkFollowed': 'one test: a symlink to a directory outside the swept one, and a file, both with dead-pid names, are kept; the outside directory is untouched',
     },
     'ac6': {k: load(f'test-lists-{DATE}.json')[k] for k in ('baseTree', 'headTree', 'baseLines', 'headLines', 'added', 'removed', 'addedByFile', 'testsLine')},
     'gates': {
