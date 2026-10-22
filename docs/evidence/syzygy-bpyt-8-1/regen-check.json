@@ -1,6 +1,6 @@
 {
   "tree": "/home/tze/GitHub/syzygy/.worktrees/parallel-agents/syzygy-bpyt.8.1",
-  "commit": "2106f2608d861aa13509e9d8b4bffe0145ee6454",
+  "commit": "ee89766ad99b248338e72d1ff5538f60d6c60e17",
   "generators": [
     {
       "script": "gen/split_provider_draft.py",
@@ -30,8 +30,8 @@
     },
     {
       "script": "gen/split_dossier_render.py",
-      "scriptSha256": "d744ed73085246b239f0fac53a604ba8f14fb10fd1ad38e4c89c7a3cb1520e66",
-      "input": "0d4d50984f6aa501217fe7109b6aec1b9679e4c9:apps/three-surface-poc/src/polaris-generation/dossier-render.ts",
+      "scriptSha256": "1f053d2b37f6fd30d178a400532505aac8429e5db86b01e8a04d52ecc3866ad4",
+      "input": "0d4d5098:apps/three-surface-poc/src/polaris-generation/dossier-render.ts",
       "inputSha256": "c5074742af6fece7d5b27fe092507d84e8bcfd5f830ec8c93d92f5cbb3ed00dc",
       "files": [
         {
@@ -43,8 +43,8 @@
         {
           "file": "apps/three-surface-poc/src/polaris-generation/dossier-render.ts",
           "identical": true,
-          "generatedSha256": "bb7a78a6c77225b166e448c592b05f1e862d853b89609011996cd1d8945c2883",
-          "treeSha256": "bb7a78a6c77225b166e448c592b05f1e862d853b89609011996cd1d8945c2883"
+          "generatedSha256": "0232633dad42621d74b8d916abce4cbcbcd565b7d18af10569ed2fe784f5f0d1",
+          "treeSha256": "0232633dad42621d74b8d916abce4cbcbcd565b7d18af10569ed2fe784f5f0d1"
         }
       ]
     }

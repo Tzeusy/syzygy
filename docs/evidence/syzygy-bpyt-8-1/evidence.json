@@ -1,19 +1,42 @@
 {
-  "format": "syzygy-bpyt-8-1-index/1",
+  "format": "syzygy-bpyt-8-1-index/2",
   "bead": "syzygy-bpyt.8.1",
-  "subjectCommit": "2106f2608d861aa13509e9d8b4bffe0145ee6454",
-  "commitBefore": "0d4d50984f6aa501217fe7109b6aec1b9679e4c9",
+  "subjectCommit": "ee89766ad99b248338e72d1ff5538f60d6c60e17",
+  "commitBefore": "c55acb73753dc8d29d53b34b38b5d2af0cee6080",
   "beadBaseCommit": "3000698f3706a7e583a21be37dfdc30e3ffef551",
   "subjectFileSha256": {
     "apps/syzygy/src/main.ts": "0d07992fb55cc7f256ac4d0b49dfa672e54fc65d869f02587a476b9df18bdbae",
-    "apps/three-surface-poc/package.json": "da64c38df848d39389b08bf7dc82c50dfb094c9266a9c1c6251ef11813172e08",
+    "apps/three-surface-poc/package.json": "32f006927e7a817d07f1423322c529ad838da8fae5bbd8d55b66b511e354f586",
     "apps/three-surface-poc/src/polaris-generation/diagram-layout.ts": "41cb62258b2ecef69b546a0adff2cdc322f49f381a1542b90aa70af7187c0eaf",
     "apps/three-surface-poc/src/polaris-generation/dossier-render-local.ts": "0f0f56681b83e081cf7a4b97d2b5db224235c24bb78cecc66d691493ee5fdac4",
     "apps/three-surface-poc/src/polaris-generation/dossier-render.test.ts": "890ced7bf89d7ed93793e16efe1f3d497308eb9854369739c6730b93ae1821c7",
-    "apps/three-surface-poc/src/polaris-generation/dossier-render.ts": "bb7a78a6c77225b166e448c592b05f1e862d853b89609011996cd1d8945c2883",
+    "apps/three-surface-poc/src/polaris-generation/dossier-render.ts": "0232633dad42621d74b8d916abce4cbcbcd565b7d18af10569ed2fe784f5f0d1",
     "apps/three-surface-poc/src/polaris-generation/dossier-site.ts": "c1f82e84a0ad7d398fcc617c19b0de9b4deff3affd2d2e3f757e0a73560bb8f9",
     "apps/three-surface-poc/src/polaris-generation/draft-preview.ts": "2ca88887779eba1c7d503fd3358ca5e3e12283065e835800539bc080e3b64bfa",
     "apps/three-surface-poc/src/polaris-generation/page-sink.test.ts": "59a3e63e976fff6ea52a28768c31a676bd175dabea98df745907d80665f41944",
+    "docs/evidence/syzygy-bpyt-8-1/assemble.py": "7b939e5d4a4f229ac9090e7e8da5a19097fe5f28122b5b149ea3ae47fcb0bd94",
+    "docs/evidence/syzygy-bpyt-8-1/consent_differential.py": "e7085109eb80e47daa26375d9be810eadd1a9acc09b9d79dd0a9478fb2164762",
+    "docs/evidence/syzygy-bpyt-8-1/differential.json": "93f46599a2822857093d93d1b303a49ca7a255ecff13e5b80d604617061eef01",
+    "docs/evidence/syzygy-bpyt-8-1/differential.mjs": "0c7bb409220a0167ca33ab666e40a8dd7b155932aec3b42972d5b1efa61576ae",
+    "docs/evidence/syzygy-bpyt-8-1/digest-citers.json": "850326df75b9ea860c6dc1d511f17149af1c98da9a7660269c5ea28c252532f5",
+    "docs/evidence/syzygy-bpyt-8-1/digest_citers.py": "9d189268a5a0111115852691fc64417144ea1418d299bdea8ed48a38840f826a",
+    "docs/evidence/syzygy-bpyt-8-1/evidence.json": "0524110aca548d71392e8fcd2f61a2c48d845a230efea3e9072c0b86614a9b17",
+    "docs/evidence/syzygy-bpyt-8-1/export-surface.json": "ae489e68734e26320d180f5b826d064568258b2f958519f6831d142875565a63",
+    "docs/evidence/syzygy-bpyt-8-1/export_surface.mjs": "3cc1a5fcc554b244fa58a9654051ca21b51e40a1406cfca91284c0ae1f11c319",
+    "docs/evidence/syzygy-bpyt-8-1/gen/guidance.mjs": "805808833949ce61baeb44e970f135d1c9e0fc77c4b821ede05cf9d7ae6d398f",
+    "docs/evidence/syzygy-bpyt-8-1/gen/split_dossier_render.py": "1f053d2b37f6fd30d178a400532505aac8429e5db86b01e8a04d52ecc3866ad4",
+    "docs/evidence/syzygy-bpyt-8-1/gen/split_provider_draft.py": "bd675bd169b5bb48d4459d4372deeda1446a090a59b030ec2a063950f8e65798",
+    "docs/evidence/syzygy-bpyt-8-1/locator_check.py": "dc3a61da405752d86ee49843ecca6d1ce461edcca893c447540ffbcbfdd76946",
+    "docs/evidence/syzygy-bpyt-8-1/mutants-spec.json": "8621eab400a5e7ff557a38dd952029d343fec7d5f312947dc5a658ee5d05e5e4",
+    "docs/evidence/syzygy-bpyt-8-1/mutants.json": "f753a2f8493826a5f42afb33e33be8350325a15124414fa3a69c19bc65bc0ffa",
+    "docs/evidence/syzygy-bpyt-8-1/mutate.py": "01d7daa5d4f8cccec4f7e0aafd3352e982556a1c84e64444fbbff85c30379cb2",
+    "docs/evidence/syzygy-bpyt-8-1/reach-after.json": "9d38b9ff79abd989391d0ce695ce0c72d6682008ed10221094511fd939142a7b",
+    "docs/evidence/syzygy-bpyt-8-1/reach-before.json": "f091a27d748182488c065fb5ef40cd57a56f57fee4dc6c89defaf3e2ddc66cbf",
+    "docs/evidence/syzygy-bpyt-8-1/reach_sweep.mjs": "d1e6bd77135af1ecf1ccbd4e241dfc461472b31894c52bf091511bc201982e5c",
+    "docs/evidence/syzygy-bpyt-8-1/regen-check.json": "8e9b135774035daa3c13a38afd73dd39273651dbc0c020e15844413654ce8f6e",
+    "docs/evidence/syzygy-bpyt-8-1/regen_check.py": "221a76ee8ab88c2756a722a87aff6a3039c3038dde57000721b68017b9ff3d99",
+    "docs/evidence/syzygy-bpyt-8-1/tests-delta.json": "dc80996165059cf83a4b4a5c9f601a73a326f506996c56b505d9a83eb78d8d3d",
+    "docs/evidence/syzygy-bpyt-8-1/tests_delta.mjs": "c30ed2b899f9ed6d77242723e05980ca4e17c1eb1b5284b767b18f8b02e2be11",
     "packages/cap1-system/src/daemon-entry-unchanged.system.test.ts": "8cdf783965250cf824df26b6f9f314516d5e3b93ec547d5c9d69203c7e9d2b3f",
     "packages/polaris-dossier/src/brief.test.ts": "e117172021abfc3b55350b43e4d75c6cf67bf025f6dc92634ef2441ac4745f44",
     "packages/polaris-dossier/src/brief.ts": "e5462829e60200ad906cd3037644c400cbf545b246638f41a24034f6c4427809",
@@ -49,7 +72,7 @@
     "packages/polaris-generation-core/src/draft-model.ts": "0c64dd7330a52676f2ae46e520cc97ee021cfdb1ab50ccf91e39902596c5b42a",
     "packages/polaris-generation-core/src/generation-source.ts": "3ff111820b63f4f198f8cef20d0cd88312881ef5c73d10a0ca7a471aea25a069",
     "packages/polaris-generation-core/src/index.ts": "988193e7867bc0295c3751ba212b5f2724cc2c1d62a7e156657946595a3fd027",
-    "packages/polaris-generation-core/src/island-boundary.test.ts": "4dfbb7f1f5afeb47c971e92483b0d699c786fabe7a350d7cd40208df320be4ba",
+    "packages/polaris-generation-core/src/island-boundary.test.ts": "da32d4e082eb2e3479d4484d86418af5d8f8a403e5d1be3338caed4cfc475550",
     "packages/polaris-generation-core/src/live.ts": "b09f9a109ac8e89d93377e7673b8c5e17da561419b310d5c3b161477c7f69862",
     "packages/polaris-generation-core/src/local-render.ts": "f08119b4053d297062f78942742b7bbd3681fccaf02f3158cad9f643710a4b6f",
     "packages/polaris-generation-core/src/provider-draft.ts": "9294fd906187fd2abe8012e363beecbb3d9d420f4d272bd8accc2fb6a9d01734",
@@ -60,26 +83,32 @@
     "vitest.config.ts": "ffb1627f3de8a1fa4ac64bf651eb8274a99a422949f3c7cbb326db1202add11f"
   },
   "records": {
-    "differential.json": "93f46599a2822857093d93d1b303a49ca7a255ecff13e5b80d604617061eef01",
-    "digest-citers.json": "850326df75b9ea860c6dc1d511f17149af1c98da9a7660269c5ea28c252532f5",
-    "export-surface.json": "ae489e68734e26320d180f5b826d064568258b2f958519f6831d142875565a63",
-    "mutants-spec.json": "2f5069597c89c4dc9eef8b8b7acf2d5b345d8e27e78b9a568f5d9c96e646fb66",
-    "mutants.json": "f753a2f8493826a5f42afb33e33be8350325a15124414fa3a69c19bc65bc0ffa",
-    "reach-after.json": "9d38b9ff79abd989391d0ce695ce0c72d6682008ed10221094511fd939142a7b",
-    "reach-before.json": "f091a27d748182488c065fb5ef40cd57a56f57fee4dc6c89defaf3e2ddc66cbf",
-    "regen-check.json": "8e9b135774035daa3c13a38afd73dd39273651dbc0c020e15844413654ce8f6e",
-    "tests-delta.json": "dc80996165059cf83a4b4a5c9f601a73a326f506996c56b505d9a83eb78d8d3d"
+    "consent-census-after.json": "08672563e24b2148cf86ae1aaa12d0df21aef8d4d670fc53d4173f6781e181ea",
+    "consent-census-before.json": "a2e3680e09fb14783deb1c0b6157bde1b81537b5eb0efe41ff0f6f2d961c2900",
+    "consent-differential.json": "c55da46ad04171ff92520a26fe85e6f7018b07cb9498e030a1b5071a6f092851",
+    "differential.json": "ca5893739e82a678c041f06c56d933f691220e28609b492e8522212752cb8fc9",
+    "digest-citers.json": "237fdd956be76c52aa07bb56b3870a4631d79c21514802f593d27de2bbc42997",
+    "export-surface.json": "3ed0e26115796e165bd79683db1f25f466d3539f5e938cf6266931c4f261cf9d",
+    "locators.json": "c022147d25c8ec6eba3e5f356eb130d7b20264f99784985dbf7d92e83c77d26b",
+    "mutants-spec.json": "8621eab400a5e7ff557a38dd952029d343fec7d5f312947dc5a658ee5d05e5e4",
+    "mutants.json": "70f3043e08473941e1922fe465017bad8713c72c0f8f8a5b8363be36849d2a5f",
+    "reach-after.json": "a5c4cdb2fe9e5f37fdc6d4911c7e698e20a4331df6dddcbb59100bffbffc8ef1",
+    "reach-before.json": "3fc25cb6aeab737bf177c3766a176f0c58f711b206672762c41579563146a58e",
+    "regen-check.json": "a9ebbc1d2bde7e99550334c1db42f6505a2fc1ba23830c45c4977485dce0f43e",
+    "tests-delta.json": "828390535c084e4f8787fb62ca031dd9f70550ddb20219727981a0d23d4f29eb"
   },
   "scripts": {
-    "assemble.py": "80d6b7f24e339f514838dbe239d1a469aa4b75804f976a3cd465abdc2f220521",
+    "assemble.py": "7b939e5d4a4f229ac9090e7e8da5a19097fe5f28122b5b149ea3ae47fcb0bd94",
+    "consent_differential.py": "e7085109eb80e47daa26375d9be810eadd1a9acc09b9d79dd0a9478fb2164762",
     "differential.mjs": "0c7bb409220a0167ca33ab666e40a8dd7b155932aec3b42972d5b1efa61576ae",
     "digest_citers.py": "9d189268a5a0111115852691fc64417144ea1418d299bdea8ed48a38840f826a",
-    "export_surface.mjs": "d966ef07af6379f09b95b9a635be784558585979e0ec715295415b14c3058ba1",
+    "export_surface.mjs": "3cc1a5fcc554b244fa58a9654051ca21b51e40a1406cfca91284c0ae1f11c319",
     "gen/guidance.mjs": "805808833949ce61baeb44e970f135d1c9e0fc77c4b821ede05cf9d7ae6d398f",
-    "gen/split_dossier_render.py": "d744ed73085246b239f0fac53a604ba8f14fb10fd1ad38e4c89c7a3cb1520e66",
+    "gen/split_dossier_render.py": "1f053d2b37f6fd30d178a400532505aac8429e5db86b01e8a04d52ecc3866ad4",
     "gen/split_provider_draft.py": "bd675bd169b5bb48d4459d4372deeda1446a090a59b030ec2a063950f8e65798",
-    "mutate.py": "31f3a14f9b2cc19e730af615a11c810eb9fe7a2a29da01348190765e86627748",
-    "reach_sweep.mjs": "249291a176172778c0a43eaa05e089d428a6dbad7154dd30b49b0f57d2e35dbe",
+    "locator_check.py": "dc3a61da405752d86ee49843ecca6d1ce461edcca893c447540ffbcbfdd76946",
+    "mutate.py": "01d7daa5d4f8cccec4f7e0aafd3352e982556a1c84e64444fbbff85c30379cb2",
+    "reach_sweep.mjs": "d1e6bd77135af1ecf1ccbd4e241dfc461472b31894c52bf091511bc201982e5c",
     "regen_check.py": "221a76ee8ab88c2756a722a87aff6a3039c3038dde57000721b68017b9ff3d99",
     "tests_delta.mjs": "c30ed2b899f9ed6d77242723e05980ca4e17c1eb1b5284b767b18f8b02e2be11"
   },
@@ -87,6 +116,7 @@
     "before": {
       "everyEdge": {
         "reachableModules": 138,
+        "edges": 513,
         "reachableIslandModules": 7,
         "coreRootImporters": [
           "apps/three-surface-poc/src/polaris-generation/diagram-layout.ts",
@@ -117,6 +147,7 @@
       },
       "consentPortsUnfollowed": {
         "reachableModules": 138,
+        "edges": 511,
         "reachableIslandModules": 7,
         "coreRootImporters": [
           "apps/three-surface-poc/src/polaris-generation/diagram-layout.ts",
@@ -143,11 +174,69 @@
         ],
         "edgesIntoIsland": 14,
         "unresolved": 0
+      },
+      "runtimeEveryEdge": {
+        "reachableModules": 135,
+        "edges": 404,
+        "reachableIslandModules": 7,
+        "coreRootImporters": [
+          "apps/three-surface-poc/src/polaris-generation/dossier-render-local.ts",
+          "apps/three-surface-poc/src/polaris-generation/dossier-render.ts",
+          "apps/three-surface-poc/src/polaris-generation/draft-preview.ts",
+          "packages/polaris-dossier/src/brief.ts",
+          "packages/polaris-dossier/src/check.ts",
+          "packages/polaris-dossier/src/close.ts",
+          "packages/polaris-dossier/src/credential-probe.ts",
+          "packages/polaris-dossier/src/design-review.ts",
+          "packages/polaris-dossier/src/draft-schema.ts",
+          "packages/polaris-dossier/src/execution-choice.ts",
+          "packages/polaris-dossier/src/inventory.ts",
+          "packages/polaris-dossier/src/render.ts",
+          "packages/polaris-dossier/src/reverify.ts",
+          "packages/polaris-dossier/src/review.ts",
+          "packages/polaris-dossier/src/run-config.ts",
+          "packages/polaris-dossier/src/run-record.ts",
+          "packages/polaris-dossier/src/screen.ts",
+          "packages/polaris-dossier/src/status.ts",
+          "packages/polaris-dossier/src/waiting-sessions.ts",
+          "packages/polaris-generation-consent/src/consent-ports.ts"
+        ],
+        "edgesIntoIsland": 8,
+        "unresolved": 0
+      },
+      "runtimeConsentPortsUnfollowed": {
+        "reachableModules": 135,
+        "edges": 402,
+        "reachableIslandModules": 7,
+        "coreRootImporters": [
+          "apps/three-surface-poc/src/polaris-generation/dossier-render-local.ts",
+          "apps/three-surface-poc/src/polaris-generation/dossier-render.ts",
+          "apps/three-surface-poc/src/polaris-generation/draft-preview.ts",
+          "packages/polaris-dossier/src/brief.ts",
+          "packages/polaris-dossier/src/check.ts",
+          "packages/polaris-dossier/src/close.ts",
+          "packages/polaris-dossier/src/credential-probe.ts",
+          "packages/polaris-dossier/src/design-review.ts",
+          "packages/polaris-dossier/src/draft-schema.ts",
+          "packages/polaris-dossier/src/execution-choice.ts",
+          "packages/polaris-dossier/src/inventory.ts",
+          "packages/polaris-dossier/src/render.ts",
+          "packages/polaris-dossier/src/reverify.ts",
+          "packages/polaris-dossier/src/review.ts",
+          "packages/polaris-dossier/src/run-config.ts",
+          "packages/polaris-dossier/src/run-record.ts",
+          "packages/polaris-dossier/src/screen.ts",
+          "packages/polaris-dossier/src/status.ts",
+          "packages/polaris-dossier/src/waiting-sessions.ts"
+        ],
+        "edgesIntoIsland": 8,
+        "unresolved": 0
       }
     },
     "after": {
       "everyEdge": {
         "reachableModules": 143,
+        "edges": 526,
         "reachableIslandModules": 7,
         "coreRootImporters": [
           "packages/polaris-generation-consent/src/consent-ports.ts"
@@ -157,6 +246,25 @@
       },
       "consentPortsUnfollowed": {
         "reachableModules": 135,
+        "edges": 489,
+        "reachableIslandModules": 0,
+        "coreRootImporters": [],
+        "edgesIntoIsland": 0,
+        "unresolved": 0
+      },
+      "runtimeEveryEdge": {
+        "reachableModules": 140,
+        "edges": 416,
+        "reachableIslandModules": 7,
+        "coreRootImporters": [
+          "packages/polaris-generation-consent/src/consent-ports.ts"
+        ],
+        "edgesIntoIsland": 7,
+        "unresolved": 0
+      },
+      "runtimeConsentPortsUnfollowed": {
+        "reachableModules": 132,
+        "edges": 384,
         "reachableIslandModules": 0,
         "coreRootImporters": [],
         "edgesIntoIsland": 0,
@@ -195,8 +303,8 @@
     }
   },
   "mutants": {
-    "total": 21,
-    "killed": 19,
+    "total": 25,
+    "killed": 23,
     "survived": 2,
     "survivors": [
       "S4-local-view-runs-the-quote-check",
@@ -205,7 +313,7 @@
   },
   "regeneratedSplitIdentical": true,
   "digestCiters": {
-    "changedFiles": 53,
+    "changedFiles": 76,
     "citedFiles": 21,
     "citerClasses": [
       "evidence record"
@@ -213,8 +321,6 @@
     "governedPlaneCiters": []
   },
   "exportSurface": {
-    "ranAt": "be5850ed81e829411583870276054a9c50d18ef1",
-    "differsFromSubjectOnlyIn": "docs/evidence/syzygy-bpyt-8-1/",
     "delta": {
       "packages/polaris-generation-core/src/index.ts": {
         "before": 239,
@@ -230,23 +336,30 @@
       },
       "apps/three-surface-poc/src/polaris-generation/dossier-render.ts": {
         "before": 4,
-        "after": 2,
+        "after": 4,
         "added": 0,
-        "removed": 2
+        "removed": 0
       },
       "apps/three-surface-poc/src/polaris-generation/dossier-site.ts": {
         "before": null,
         "after": 8,
         "added": 8,
         "removed": 0
+      },
+      "packages/polaris-generation-consent/src/consent-ports.ts": {
+        "before": 12,
+        "after": 12,
+        "added": 0,
+        "removed": 0
+      },
+      "packages/polaris-generation-consent/src/index.ts": {
+        "before": 57,
+        "after": 57,
+        "added": 0,
+        "removed": 0
       }
     },
-    "removed": {
-      "apps/three-surface-poc/src/polaris-generation/dossier-render.ts": [
-        "DossierRenderError",
-        "sourceRoute"
-      ]
-    },
+    "removed": {},
     "packageExports": {
       "packages/polaris-generation-core/package.json": {
         ".": {
@@ -262,9 +375,72 @@
       },
       "apps/three-surface-poc/package.json": {
         ".": "./dist/main.js",
+        "./dossier-render": "./dist/polaris-generation/dossier-render.js",
         "./dossier-site": "./dist/polaris-generation/dossier-site.js"
+      },
+      "packages/polaris-generation-consent/package.json": {
+        ".": {
+          "types": "./dist/index.d.ts",
+          "import": "./dist/index.js",
+          "default": "./dist/index.js"
+        },
+        "./testing": {
+          "types": "./dist/testing.d.ts",
+          "import": "./dist/testing.js",
+          "default": "./dist/testing.js"
+        }
       }
+    },
+    "consentCensus": {
+      "before": {
+        "commit": "c55acb73753dc8d29d53b34b38b5d2af0cee6080",
+        "readerImportsFromPorts": [
+          "NotInForce",
+          "inForceRecords",
+          "notInForceRecords"
+        ],
+        "missingFromPorts": []
+      },
+      "after": {
+        "commit": "ee89766ad99b248338e72d1ff5538f60d6c60e17",
+        "readerImportsFromPorts": [
+          "NotInForce",
+          "inForceRecords",
+          "notInForceRecords"
+        ],
+        "missingFromPorts": []
+      },
+      "barrelExportsUnchanged": true,
+      "portsExportsUnchanged": true,
+      "packageExportsUnchanged": true
     }
+  },
+  "locators": {
+    "changedFiles": 76,
+    "existingAtOld": 46,
+    "locators": 494,
+    "ambiguousSkipped": 355,
+    "staleAtOld": 337,
+    "shifted": 23,
+    "shiftedByCiter": {
+      "docs/pursuits/2026-09-22-vision-pursuit-data.json": 5,
+      "docs/pursuits/2026-09-22-vision-pursuit-harvest.json": 5,
+      "docs/reviews/R-GP-IMPL-CONSENT-RECOGNITION-1-RAW.md": 1,
+      "docs/reviews/R-GP-IMPL-CONSENT-RECOGNITION-2-RAW.md": 1,
+      "docs/reviews/R-GP-IMPL-LAUNCHED-MARKER-2-RAW.md": 5,
+      "docs/reviews/R-GP-IMPL-LAUNCHED-MARKER-3-RAW.md": 3,
+      "docs/reviews/R-GP-IMPL-POC-APP-HYGIENE-1-RAW.md": 3
+    },
+    "shiftedInGovernedPlane": 0
+  },
+  "consentDifferential": {
+    "records": 15,
+    "recordsIdentical": 15,
+    "fixtureCount": 1890,
+    "distinctAnswers": 9,
+    "checkLinesIdentical": true,
+    "supersededRegenerationIdentical": true,
+    "wholeDocumentIdentical": true
   },
   "tests": "Tests: +7 ~9 -0"
 }
