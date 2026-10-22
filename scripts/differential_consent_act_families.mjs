@@ -1,13 +1,17 @@
 #!/usr/bin/env node
-// Old-versus-new differential of the consent gate's act-record readers (syzygy-bpyt.8.4). Evidence tool, not a check and not authority.
+// Old-versus-new differential of the consent gate's act-record readers (syzygy-bpyt.8.4; extended for syzygy-bpyt.8.20 and 8.22).
+// Evidence tool, not a check and not authority.
 //
 //   (in each tree) npm ci && npx tsc -b packages/polaris-generation-consent packages/polaris-dossier
-//   node scripts/differential_consent_act_families.mjs --old <tree> --new <tree> --out <file.json> [--workers <n>] [--kinds <k,...>] [--count]
+//   node scripts/differential_consent_act_families.mjs --old <tree> --new <tree> --out <file.json> --bead <id>
+//     [--workers <n>] [--kinds <k,...>] [--count] [--expect-mismatches --control-note <text>]
 //
 // `--old` and `--new` are two Syzygy checkouts with those packages built: the base and the change. Every reader the gate composes over
-// owner-act records (the admission, policy-chain, class-act, in-force egress, digest-bound, sign-off and dossier sitting reads, and
-// each question the admission records port answers) runs from both trees' compiled packages over the same worlds, at the same
-// instants, and the two answers are compared as text: the answer's JSON, or the error the read throws.
+// owner-act records (the admission, policy-chain, class-act, in-force egress, digest-bound, sign-off and dossier sitting reads, each
+// question the admission records port answers, and the dossier's package gate sources: D9, the RFC7-20 ruling, the registry entry,
+// each drawer and each repository's provider statements) runs from both trees' compiled packages over the same worlds, at the same
+// instants, and the two answers are compared as text: the answer's JSON, or the error the read throws. `--expect-mismatches` marks a
+// negative-control run (a `--new` tree carrying a known mutant): it succeeds only when some answer differs.
 //
 // A world is the files of `--old` (read through the readers' own file-system port, rooted there for both trees) with in-memory
 // overrides: an act record altered, added or deleted, an artifact altered or deleted, or a decisions file added. Nothing on disk is
@@ -19,21 +23,28 @@
 //   registry act): each non-blank line on its own with ` [altered]` appended, deleted, duplicated, and fenced;
 // - for each act record, field-parsed or byte-exact: named alterations of its head (act type values and duplicates, the fixed
 //   recorder lines, the instant line, the supersession field, the identity, the title, the date) and of its prose, the latter being
-//   the `PROSE_ALTERATIONS` and `HEAD_FIELD_ALTERATION` corpus of syzygy-bpyt.8.10 (PR #500), copied below because that PR has not
-//   merged;
+//   the `PROSE_ALTERATIONS` and `HEAD_FIELD_ALTERATION` corpus of syzygy-bpyt.8.10 (PR #500), imported from `--new`'s built test
+//   support (`packages/polaris-generation-consent/dist/testing.js`);
 // - each pinned file (the owner-answers direction, the three historical policy acts) altered and deleted, and each act's artifact
 //   altered and deleted;
+// - the policy file overlaid with the bytes each screening-scope policy act binds, where the checkout's git history holds them, so
+//   the chain reads ok at an instant where that act is in force;
 // - one added decisions file per (needle, placement): every stem, path and field stem the families sweep for, in prose, on each
-//   swept field line, behind a `>`, spelled loosely, in the file's name, with a withdrawal word in the name, and in the aggregate
-//   acceptance record.
-// The output names each tree's commit and the sha256 of each tree's package-reader.ts, counts the worlds and the distinct answers,
-// and lists every world whose answers differ (there should be none). Answers are stored by sha256 with a short label; a label never
-// carries a digest.
+//   swept field line, behind a `>`, spelled loosely, in upper case with underscores, with soft hyphens, zero-width spaces, other dash
+//   code points, spaces or fullwidth forms, in a subdirectory, in the file's name, with a withdrawal word in the name, in the
+//   aggregate acceptance record, and walked after a file that does not name it;
+// - every decisions file of the checkout, each with one needle appended (the needles in turn), beside the reduced tree;
+// - for one needle of each family, one probe file read three times in one world: not naming it, naming it, not naming it.
+// The output names each tree's commit and the sha256 of each tree's package-reader.ts and gate-sources.ts sources and compiled
+// files, and the corpus's digest; counts the worlds, the distinct answer vectors and the distinct label vectors; and lists every
+// answer that differs (there should be none, except in a negative-control run). Answers are stored by sha256 with a short label; a
+// label never carries a digest.
 
 import { execFileSync, spawnSync } from 'node:child_process';
 import { createHash } from 'node:crypto';
 import * as fs from 'node:fs';
 import * as fsp from 'node:fs/promises';
+import { createRequire } from 'node:module';
 import * as os from 'node:os';
 import * as path from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
@@ -110,7 +121,14 @@ function readers(consent, gate, probe) {
       out['absence-redis'] = await port.consentAbsenceFor(probe.redisUrl);
       return out;
     }],
+    // The dossier's package gate sources, which compose the digest-bound reads above (syzygy-bpyt.8.20).
+    ['gate-d9', true, (fs, root, now) => sources(fs, root, now).d9()],
+    ['gate-rfc7-20', true, (fs, root, now) => sources(fs, root, now).rfc720Ruling()],
+    ['gate-registry-entry', true, (fs, root, now) => sources(fs, root, now).registryEntry()],
+    ...Object.keys(gate.DRAWER_FORMS).map(id => [`gate-drawer:${id}`, true, (fs, root, now) => sources(fs, root, now).projectInput.drawerFor(id)]),
+    ...Object.keys(gate.STATEMENT_FORMS).map(id => [`gate-statements:${id}`, true, (fs, root, now) => sources(fs, root, now).providerStatements.statementsFor(id)]),
   ];
+  function sources(fs, root, now) { return gate.createPackageGateSources({ root, fs, now: () => now }); }
 }
 
 if (!isMainThread) {
@@ -121,15 +139,20 @@ if (!isMainThread) {
     probe,
   )));
   const dropped = Object.fromEntries(drops.map(rel => [rel, null]));
-  parentPort.on('message', async ({ id, overlay, names, instants, reduced }) => {
-    const fs = overlayFs(root, reduced ? { ...dropped, ...overlay } : overlay), out = [];
+  // A world with `steps` is read once per step, in order, each step's overlay replacing the last: one process reading a file whose bytes
+  // change between reads.
+  parentPort.on('message', async ({ id, overlay, steps, names, instants, reduced }) => {
+    const out = [];
     for (const list of loaded) {
       const answers = [];
-      for (const [name, timed, read] of list) {
-        if (!names.includes(name)) continue;
-        for (const [at, now] of timed ? INSTANTS.filter(([instant]) => instants.includes(instant)) : [[null, null]]) {
-          const text = await answer(() => read(fs, root, now));
-          answers.push([at === null ? name : `${name}@${at}`, sha256(text), label(text)]);
+      for (const [step, layer] of (steps ?? [overlay]).entries()) {
+        const fs = overlayFs(root, reduced ? { ...dropped, ...layer } : layer);
+        for (const [name, timed, read] of list) {
+          if (!names.includes(name)) continue;
+          for (const [at, now] of timed ? INSTANTS.filter(([instant]) => instants.includes(instant)) : [[null, null]]) {
+            const text = await answer(() => read(fs, root, now));
+            answers.push([`${steps === undefined ? '' : `step${step + 1}:`}${at === null ? name : `${name}@${at}`}`, sha256(text), label(text)]);
+          }
         }
       }
       out.push(answers);
@@ -147,7 +170,7 @@ function pool(size, data) {
   };
   for (const worker of workers) worker.on('message', message => { const w = waiting.get(message.id); waiting.delete(message.id); idle.push(w.worker); w.resolve(message); pump(); });
   return {
-    run: world => new Promise(resolve => { queue.push({ id: next++, overlay: world.overlay, names: world.readers, instants: world.instants, reduced: world.reduced, resolve }); pump(); }),
+    run: world => new Promise(resolve => { queue.push({ id: next++, overlay: world.overlay, steps: world.steps, names: world.readers, instants: world.instants, reduced: world.reduced, resolve }); pump(); }),
     close: () => Promise.all(workers.map(w => w.terminate())),
   };
 }
@@ -155,20 +178,8 @@ function pool(size, data) {
 // ---------------------------------------------------------------------------------------------------------------------------------
 // The corpus.
 
-/** syzygy-bpyt.8.10's `PROSE_ALTERATIONS` and `HEAD_FIELD_ALTERATION` (packages/polaris-generation-consent/src/recorder-fixtures.testkit.ts
- * at c08a015dae4b57b9f62b328d35924dd3eec31f1b, PR #500), copied verbatim in behaviour. */
-const PROSE_ALTERATIONS = [
-  ['effect-widened', text => text.replace(/(\n## (?:Effect|What this records)\n\n)[^\n]+(?:\n[^\n]+)*/, '$1The act grants every read, egress, write and execution, for every repository, tool and provider.')],
-  ['limits-removed', text => text.replace(/\n## What this (?:act does not authorize|does not do)\n[\s\S]*?(?=\n## |$)/, '')],
-  ['selection-replaced', text => {
-    for (const [pattern, replacement] of [[/^\| "[^"\n]*" \| "/m, '| "Decline" | "'], [/^> .+$/m, '> Decline'], [/^Owner selection: .+$/m, 'Owner selection: Decline']]) {
-      if (pattern.test(text)) return text.replace(pattern, replacement);
-    }
-    return text;
-  }],
-  ['withdrawal-appended', text => `${text}\n## Withdrawal\n\nThe owner withdraws this act; it no longer counts.\n`],
-];
-const HEAD_FIELD_ALTERATION = text => text.replace(/^(Date: .+)$/m, '$1 [altered]');
+/** The built test-support module of `--new` that carries syzygy-bpyt.8.10's altered-prose corpus (PR #500). */
+const TESTING = 'packages/polaris-generation-consent/dist/testing.js';
 
 const TYPE_LINE = /^Act type: `([^`\n]+)`$/m;
 const swapLine = (text, re, line) => text.replace(re, line);
@@ -176,10 +187,11 @@ const afterLine = (text, re, extra) => text.replace(re, match => `${match}\n${ex
 const instantLine = /^(Recorded at \(UTC\)|Act instant): (\S+)$/m;
 const shiftInstant = (text, ms) => text.replace(instantLine, (_, label, value) => `${label}: ${new Date(Date.parse(value) + ms).toISOString().slice(0, 19)}Z`);
 
-/** Named alterations of an act record's head and prose. A no-op on a record is skipped. */
-const NAMED = [
-  ...PROSE_ALTERATIONS,
-  ['date-field-altered', HEAD_FIELD_ALTERATION],
+/** Named alterations of an act record's head and prose, the prose ones and the date one from `testing` (`TESTING`, imported, never
+ * copied). A no-op on a record is skipped. */
+const namedAlterations = testing => [
+  ...testing.PROSE_ALTERATIONS,
+  ['date-field-altered', testing.HEAD_FIELD_ALTERATION],
   ...['consent-observation', 'consent-egress', 'approve-policy', 'contract-amendment', 'adopt-registry-entry', 'Approve-Policy', 'approve policy', 'other-type']
     .map(value => [`type-${value.replace(/\s/g, '_')}`, text => swapLine(text, TYPE_LINE, `Act type: \`${value}\``)]),
   ...['same', 'other-type', 'Other Type', 'consent-egress', 'approve-policy']
@@ -224,6 +236,9 @@ const LINE_OPERATORS = [
   ['fence', (lines, i) => { const copy = [...lines]; copy.splice(i, 1, '```', lines[i], '```'); return copy; }],
 ];
 
+/** The dash code points `fold` reads as `-`, other than `-` itself. */
+const DASHES = ['\u2010', '\u2011', '\u2012', '\u2013', '\u2014', '\u2015', '\u2212', '\ufe58', '\ufe63', '\uff0d'];
+
 /** The placements of a needle in an added decisions file (or in the aggregate record). */
 const PLACEMENTS = [
   ['prose', n => [['ZZ-PROBE.md', `# Probe\n\nSee ${n}.\n`]]],
@@ -233,6 +248,15 @@ const PLACEMENTS = [
   ['loose-spelling', n => [['ZZ-PROBE.md', `# Probe\n\nSee ${n.slice(0, 1)}\`${n.slice(1).replace(/:/g, ' : ').replace(/,/g, ' , ')}.\n`]]],
   ['upper-underscored', n => [['ZZ-PROBE.md', `# Probe\n\nSee ${n.toUpperCase().replace(/-/g, '_')}.\n`]]],
   ['soft-hyphenated', n => [['ZZ-PROBE.md', `# Probe\n\nSee ${n.replace(/-/g, '­-')}.\n`]]],
+  // The spellings every fold reads as a dash or drops (syzygy-bpyt.8.20): a zero-width space, the other dash code points in turn, a
+  // space, and the fullwidth forms of every printable ASCII character.
+  ['zero-width-spaced', n => [['ZZ-PROBE.md', `# Probe\n\nSee ${n.replace(/-/g, '\u200b-')}.\n`]]],
+  ['dash-code-points', n => { let i = 0; return [['ZZ-PROBE.md', `# Probe\n\nSee ${n.replace(/-/g, () => DASHES[i++ % DASHES.length])}.\n`]]; }],
+  ['spaced', n => [['ZZ-PROBE.md', `# Probe\n\nSee ${n.replace(/-/g, ' ')}.\n`]]],
+  ['fullwidth', n => [['ZZ-PROBE.md', `# Probe\n\nSee ${n.replace(/[!-~]/g, c => String.fromCharCode(c.charCodeAt(0) + 0xfee0))}.\n`]]],
+  // The file that names the act is walked after a swept file that does not.
+  ['walked-second', n => [['AA-PROBE.md', '# Probe\n\nNothing here.\n'], ['AB-PROBE.md', `# Probe\n\nSee ${n}.\n`]]],
+  ['aggregate-field-walked-second', n => [['AA-PROBE.md', '# Probe\n\nNothing here.\n'], ['ACCEPTANCE-ACT-RECORD.md', null, `\nRecord ID: ${n}\n`]]],
   ['in-subdirectory', n => [['sub/ZZ-PROBE.md', `# Probe\n\nSee ${n}.\n`]]],
   ['in-name', n => [[`ZZ-${n.replace(/[^A-Za-z0-9-]+/g, '-').slice(-60)}.md`, '# Probe\n\nNothing here.\n']]],
   ['in-name-withdrawal', n => [[`ZZ-${n.replace(/[^A-Za-z0-9-]+/g, '-').slice(-50)}-WITHDRAWAL.md`, '# Probe\n\nNothing here.\n']]],
@@ -251,9 +275,8 @@ function render(root, module, call) {
 function walk(dir, prefix = '') {
   return fs.readdirSync(dir, { withFileTypes: true }).flatMap(entry => (entry.isDirectory() ? walk(path.join(dir, entry.name), `${prefix}${entry.name}/`) : [`${prefix}${entry.name}`]));
 }
-const ALL_READERS = ['admission', 'policy-reader', 'policy-chain', 'class-act', 'in-force-egress', 'registry-git-source', 'local-agent-signoff', 'dossier-d9', 'dossier-rfc7-20', 'dossier-drawer', 'dossier-statement-v1', 'dossier-provider-v2', 'port'];
-
-async function corpus(root, consent, gate, allowlist) {
+async function corpus(root, consent, gate, allowlist, NAMED) {
+  const ALL_READERS = readers(consent, gate, null).map(([name]) => name);
   const read = rel => fs.readFileSync(path.join(root, rel), 'utf8');
   const exists = rel => fs.existsSync(path.join(root, rel));
   const at = form => `${D}/${form.file}`;
@@ -337,7 +360,10 @@ async function corpus(root, consent, gate, allowlist) {
 
   // Every needle a family sweeps for: the admission stems and paths, the policy and scope stems and the policy path, the class stem and
   // module, and each digest-bound and sign-off form's stems, field stems and artifact.
-  const forms = [registry, gate.D9_ACT_FORM, gate.RFC7_20_RULING_ACT_FORM, gate.DRAWER_FORMS['redis-redis'], statementV1, gate.PROVIDER_V2_FORM];
+  const forms = [...new Set([
+    registry, gate.D9_ACT_FORM, gate.RFC7_20_RULING_ACT_FORM, ...Object.values(gate.DRAWER_FORMS), statementV1, gate.PROVIDER_V2_FORM,
+    ...Object.values(gate.STATEMENT_FORMS).flat().flatMap(st => [st.form, st.successor].filter(Boolean)),
+  ])];
   const needles = [...new Set([
     'public-repo-admission', 'public-egress-v2', 'public-obs-', 'public-egress-anthropic', 'public-egress-',
     '.syzygy/governance/contracts/candidates/public-repo-admission/instances', ...consent.ADMISSION_ACT_FORMS.map(f => f.artifact),
@@ -355,6 +381,34 @@ async function corpus(root, consent, gate, allowlist) {
       add('probe', needle, name, 'all-acts', overlay, ALL_READERS.filter(n => n !== 'port'), [INSTANT_LATE]);
     }
   }
+  // Each decisions file of the checkout with one needle appended, the needles in turn, beside the reduced tree (syzygy-bpyt.8.20): every
+  // real text, with whatever it spells, is swept with a needle in it.
+  for (const [i, rel] of walk(path.join(root, D)).map(r => `${D}/${r}`).entries()) {
+    add('real-file', rel, `appended:${needles[i % needles.length]}`, 'all-acts', { [rel]: `${textOf('all-acts', rel)}\n\nSee ${needles[i % needles.length]}.\n` }, ALL_READERS.filter(n => n !== 'port'), [INSTANT_LATE]);
+  }
+  // One probe file read three times in one world, its bytes changing between reads: not naming the act, naming it, not naming it; for
+  // one needle of each family (syzygy-bpyt.8.20).
+  const PROBE = `${D}/ZZ-PROBE.md`, quiet = '# Probe\n\nNothing here.\n';
+  for (const needle of [...new Set(['public-repo-admission', 'public-source-scope', 'rfc5-project-documentation', ...forms.map(f => f.stems[0]), consent.LOCAL_AGENT_GIT_SOURCE_SIGNOFF_FORM.stems[0]])]) {
+    worlds.push({
+      kind: 'edited-between-reads', subject: needle, operator: 'quiet,named,quiet', base: 'all-acts', overlay: {},
+      steps: [quiet, `# Probe\n\nSee ${needle}.\n`, quiet].map(text => ({ ...BASES['all-acts'], [PROBE]: text })),
+      readers: ALL_READERS.filter(n => n !== 'port'), instants: [INSTANT_LATE], reduced: true,
+    });
+  }
+  // The policy file with the bytes each screening-scope policy act binds, found in the checkout's git history (N6 of the
+  // syzygy-bpyt.8.4 review): at an instant where that act is in force, the chain reads ok.
+  const policyBytes = [];
+  const history = git(root, 'log', '--format=%H', '--', consent.POLICY_PATH).split('\n').filter(Boolean);
+  const blob = commit => execFileSync('git', ['-C', root, 'show', `${commit}:${consent.POLICY_PATH}`], { encoding: 'utf8' });
+  for (const f of consent.POLICY_ACT_FORMS) {
+    if (!exists(at(f))) continue;
+    const bound = /^Exact digest \(SHA-256\): `([0-9a-f]{64})`$/m.exec(read(at(f)))?.[1];
+    const commit = history.find(c => sha256(blob(c)) === bound);
+    policyBytes.push({ act: f.file, fromCommit: commit ?? null });
+    if (commit === undefined) continue;
+    add('policy-bytes', f.file, `policy-at:${commit}`, 'checkout', { [consent.POLICY_PATH]: blob(commit) }, ['policy-reader', 'policy-chain', 'port']);
+  }
   // The reduced tree: the decisions files any reader names (every form's record, its exempt records and its bound files, the pins, the
   // aggregate record, the allowlisted files and the README); every other decisions file is left out, so a read sweeps a few hundred
   // kilobytes, not the whole directory. Base worlds run over the whole tree too.
@@ -366,7 +420,7 @@ async function corpus(root, consent, gate, allowlist) {
     `${D}/ACCEPTANCE-ACT-RECORD.md`, `${D}/README.md`, ...[...allowlist.keys()].map(rel => `${D}/${rel}`),
   ]);
   const drops = walk(path.join(root, D)).map(rel => `${D}/${rel}`).filter(rel => !keep.has(rel));
-  return { worlds, subjects: SUBJECTS, needles, drops, kept: [...keep].filter(exists).sort(), bases: Object.fromEntries(Object.entries(BASES).map(([k, v]) => [k, Object.keys(v)])) };
+  return { worlds, subjects: SUBJECTS, needles, drops, policyBytes, kept: [...keep].filter(exists).sort(), bases: Object.fromEntries(Object.entries(BASES).map(([k, v]) => [k, Object.keys(v)])) };
 }
 
 // ---------------------------------------------------------------------------------------------------------------------------------
@@ -376,10 +430,13 @@ function label(text) {
   if (text.startsWith('throws ')) return text;
   const value = JSON.parse(text);
   const one = v => {
-    if (Array.isArray(v)) return `[${v.map(r => (typeof r === 'string' ? 'item' : r.recordId !== undefined ? `${r.recordId}@${r.version} ${r.inForceAt === null ? 'unbound' : 'bound'}` : r.actIdentity ?? (r.label !== undefined ? 'revision' : '?'))).join(', ')}]`;
+    // A provider statement (the gate's `statementsFor`) carries `act` and `withdrawn` beside its record id (syzygy-bpyt.8.20).
+    const statement = r => (r.act === undefined ? '' : `${r.act === null ? ' no-act' : ` ${r.act.identity}`}${r.withdrawn ? ' withdrawn' : ''}`);
+    if (Array.isArray(v)) return `[${v.map(r => (typeof r === 'string' ? 'item' : r.recordId !== undefined ? `${r.recordId}@${r.version} ${r.inForceAt === null ? 'unbound' : 'bound'}${statement(r)}` : r.actIdentity ?? (r.label !== undefined ? 'revision' : '?'))).join(', ')}]`;
     if (v === null || typeof v !== 'object') return String(v);
-    if ('state' in v) return v.state === 'ok' ? `ok ${v.final?.identity ?? v.act?.identity ?? v.recordId ?? ''}${v.acts !== undefined ? ` over ${v.acts.length}` : ''}`.trim() : `${v.state}: ${v.why}`;
+    if ('state' in v) return v.state === 'ok' ? `ok ${v.final?.identity ?? v.act?.identity ?? v.recordId ?? v.record ?? ''}${v.acts !== undefined ? ` over ${v.acts.length}` : ''}`.trim() : `${v.state}: ${v.why}`;
     if ('satisfied' in v) return v.satisfied ? `satisfied ${v.record}` : `unsatisfied: ${v.why}`;
+    if ('stated' in v) return v.stated ? `stated ${v.drawer} ${v.record}` : `unstated: ${v.why}`;
     return Object.entries(v).map(([k, sub]) => `${k}=${one(sub)}`).join('; ');
   };
   return one(value).replace(/\b[0-9a-f]{40,64}\b/g, '<hex>');
@@ -387,12 +444,30 @@ function label(text) {
 
 async function main(argv) {
   const arg = flag => (argv.includes(flag) ? argv[argv.indexOf(flag) + 1] : undefined);
-  const oldTree = arg('--old'), newTree = arg('--new'), out = arg('--out');
-  if (oldTree === undefined || newTree === undefined || out === undefined) {
-    process.stderr.write('usage: node scripts/differential_consent_act_families.mjs --old <tree> --new <tree> --out <file.json> [--workers <n>]\n');
+  const oldTree = arg('--old'), newTree = arg('--new'), out = arg('--out'), bead = arg('--bead'), control = argv.includes('--expect-mismatches');
+  if (oldTree === undefined || newTree === undefined || ((out === undefined || bead === undefined) && !argv.includes('--count')) || (control && arg('--control-note') === undefined)) {
+    process.stderr.write('usage: node scripts/differential_consent_act_families.mjs --old <tree> --new <tree> --out <file.json> --bead <id> [--workers <n>] [--kinds <k,...>] [--count] [--expect-mismatches --control-note <text>]\n');
     return 2;
   }
   const trees = [path.resolve(oldTree), path.resolve(newTree)], root = trees[0];
+  // Each tree's sources and the compiled files the workers load (N5 of the syzygy-bpyt.8.4 review), and whether its dossier build
+  // resolves the consent package inside its own tree (a fresh worktree without `npm ci` resolves the main checkout's).
+  const FILES = {
+    packageReaderTs: 'packages/polaris-generation-consent/src/package-reader.ts', packageReaderJs: 'packages/polaris-generation-consent/dist/package-reader.js',
+    gateSourcesTs: 'packages/polaris-dossier/src/gate-sources.ts', gateSourcesJs: 'packages/polaris-dossier/dist/gate-sources.js', testingJs: TESTING,
+  };
+  const binding = trees.map((tree, i) => ({
+    role: i === 0 ? 'old' : 'new',
+    commit: git(tree, 'rev-parse', 'HEAD'),
+    clean: git(tree, 'status', '--porcelain', '--untracked-files=no') === '',
+    sha256: Object.fromEntries(Object.entries(FILES).map(([key, rel]) => [key, fs.existsSync(path.join(tree, rel)) ? sha256(fs.readFileSync(path.join(tree, rel), 'utf8')) : null])),
+    dossierResolvesConsentInsideTree: fs.realpathSync(createRequire(path.join(tree, FILES.gateSourcesJs)).resolve('@syzygy/polaris-generation-consent'))
+      === fs.realpathSync(path.join(tree, 'packages/polaris-generation-consent/dist/index.js')),
+  }));
+  if (!binding.every(b => b.dossierResolvesConsentInsideTree)) throw new Error('a dossier build resolves the consent package outside its own tree');
+  const testing = await import(pathToFileURL(path.join(trees[1], TESTING)).href);
+  if (!Array.isArray(testing.PROSE_ALTERATIONS) || typeof testing.HEAD_FIELD_ALTERATION !== 'function') throw new Error(`${TESTING} in --new exports no PROSE_ALTERATIONS and HEAD_FIELD_ALTERATION`);
+  const NAMED = namedAlterations(testing);
   const consent = await import(pathToFileURL(path.join(root, 'packages/polaris-generation-consent/dist/index.js')).href);
   const gate = await import(pathToFileURL(path.join(root, 'packages/polaris-dossier/dist/gate-sources.js')).href);
   const instance = rel => fs.readFileSync(path.join(root, rel), 'utf8');
@@ -402,12 +477,18 @@ async function main(argv) {
   const probe = { redisId: repo(redis), redisRevision: firstRow(redis), redisUrl: /^Upstream: (\S+)/m.exec(redis)[1], requestsId: repo(requests), requestsRevision: firstRow(requests) };
 
   const { CITATION_ALLOWLIST } = await import(pathToFileURL(path.join(root, 'packages/polaris-generation-consent/dist/citation-allowlist.js')).href);
-  const built = await corpus(root, consent, gate, CITATION_ALLOWLIST), kinds = arg('--kinds')?.split(',');
-  const { subjects, needles, bases, drops, kept } = built, worlds = kinds === undefined ? built.worlds : built.worlds.filter(w => kinds.includes(w.kind));
+  const built = await corpus(root, consent, gate, CITATION_ALLOWLIST, NAMED), kinds = arg('--kinds')?.split(',');
+  const { subjects, needles, bases, drops, kept, policyBytes } = built, worlds = kinds === undefined ? built.worlds : built.worlds.filter(w => kinds.includes(w.kind));
+  // The corpus's digest: each world's kind, subject, operator, base, readers, instants and tree, and each overlaid file's path and the
+  // sha256 of its text, with the reduced tree's dropped files.
+  const layer = overlay => Object.entries(overlay).sort(([a], [b]) => a.localeCompare(b)).map(([rel, text]) => [rel, text === null ? null : sha256(text)]);
+  const corpusSha256 = sha256(JSON.stringify({
+    drops, worlds: worlds.map(w => [w.kind, w.subject, w.operator, w.base, w.readers, w.instants, w.reduced, (w.steps ?? [w.overlay]).map(layer)]),
+  }));
   if (argv.includes('--count')) {
     const count = {};
     for (const w of built.worlds) count[w.kind] = (count[w.kind] ?? 0) + 1;
-    process.stdout.write(`${JSON.stringify({ worlds: built.worlds.length, byKind: count, subjects: subjects.map(x => x.key) })}\n`);
+    process.stdout.write(`${JSON.stringify({ worlds: built.worlds.length, byKind: count, corpusSha256, needles: needles.length, policyBytes, subjects: subjects.map(x => x.key) })}\n`);
     return 0;
   }
   const workers = Number(arg('--workers') ?? Math.max(1, Math.min(os.availableParallelism() - 2, 8)));
@@ -421,10 +502,13 @@ async function main(argv) {
   }));
   await runs.close();
 
-  const rows = [], mismatches = [], vectors = new Map(), perReader = new Map();
+  const rows = [], mismatches = [], vectors = new Map(), labelVectors = new Map(), perReader = new Map();
   for (const [k, world] of worlds.entries()) {
     const { old: before, new: after } = results[k];
     const vectorSha = sha256(before.map(([name, sha]) => `${name} ${sha}`).join('\n'));
+    // The same vector over labels: what each answer says, digests and texts dropped (N6 of the syzygy-bpyt.8.4 review).
+    const labelSha = sha256(before.map(([name, , said]) => `${name} ${said}`).join('\n'));
+    labelVectors.set(labelSha, (labelVectors.get(labelSha) ?? 0) + 1);
     for (const [j, [name, sha, said]] of before.entries()) {
       const [, otherSha, otherSaid] = after[j];
       if (otherSha !== sha) mismatches.push({ world: k, kind: world.kind, subject: world.subject, operator: world.operator, reader: name, old: { sha256: sha, label: said }, new: { sha256: otherSha, label: otherSaid } });
@@ -437,21 +521,19 @@ async function main(argv) {
     const v = vectors.get(vectorSha) ?? { sha256: vectorSha, worlds: 0, first: k };
     v.worlds += 1;
     vectors.set(vectorSha, v);
-    rows.push({ world: k, kind: world.kind, base: world.base, subject: world.subject, operator: world.operator, answers: vectorSha, same: before.every(([, sha], j) => after[j][1] === sha) });
+    rows.push({ world: k, kind: world.kind, base: world.base, subject: world.subject, operator: world.operator, answers: vectorSha, labels: labelSha, same: before.every(([, sha], j) => after[j][1] === sha) });
   }
   const readerNames = [...new Set(results.flatMap(r => r.old.map(([name]) => name)))];
   const document = {
-    schema: 'consent-act-family-differential/1',
-    bead: 'syzygy-bpyt.8.4',
-    text: 'Evidence record, not authority: the consent gate\'s act-record readers before and after the act-family convergence, over one corpus. Generated by the script named here; do not edit.',
+    schema: 'consent-act-family-differential/2',
+    bead,
+    role: control ? 'negative-control' : 'differential',
+    ...(control ? { controlNote: arg('--control-note') } : {}),
+    text: 'Evidence record, not authority: the consent gate\'s act-record readers in two trees over one corpus. Generated by the script named here; do not edit.',
     script: { path: SCRIPT_REL, sha256: sha256(fs.readFileSync(SCRIPT, 'utf8')) },
-    trees: trees.map((tree, i) => ({
-      role: i === 0 ? 'old' : 'new',
-      commit: git(tree, 'rev-parse', 'HEAD'),
-      clean: git(tree, 'status', '--porcelain', '--untracked-files=no') === '',
-      packageReaderSha256: sha256(fs.readFileSync(path.join(tree, 'packages/polaris-generation-consent/src/package-reader.ts'), 'utf8')),
-    })),
+    trees: binding,
     corpusRoot: 'old',
+    corpus: { sha256: corpusSha256, alterations: { module: TESTING, tree: 'new', named: NAMED.map(([n]) => n) }, policyBytes },
     instants: INSTANTS.map(([at]) => at),
     pool: { workers, node: process.version, wallSeconds: Math.round((Date.now() - started) / 1000) },
     readers: readerNames,
@@ -466,16 +548,18 @@ async function main(argv) {
       answersCompared: results.reduce((n, r) => n + r.old.length, 0),
       mismatches: mismatches.length,
       distinctAnswerVectors: vectors.size,
+      distinctLabelVectors: labelVectors.size,
       worldsWithDistinctVector: [...vectors.values()].filter(v => v.worlds === 1).length,
       distinctAnswersPerReader: Object.fromEntries([...perReader].map(([name, answers]) => [name, answers.size])),
+      distinctLabelsPerReader: Object.fromEntries([...perReader].map(([name, answers]) => [name, new Set([...answers.values()].map(a => a.label)).size])),
     },
     mismatches,
     answersPerReader: Object.fromEntries([...perReader].map(([name, answers]) => [name, [...answers.values()].sort((a, b) => b.worlds - a.worlds)])),
     worlds: rows,
   };
   fs.writeFileSync(out, `${JSON.stringify(document, null, 1)}\n`);
-  process.stderr.write(`${worlds.length} worlds, ${document.totals.answersCompared} answers compared, ${mismatches.length} mismatches, ${vectors.size} distinct answer vectors\n`);
-  return mismatches.length === 0 ? 0 : 1;
+  process.stderr.write(`${worlds.length} worlds, ${document.totals.answersCompared} answers compared, ${mismatches.length} mismatches, ${vectors.size} distinct answer vectors, ${labelVectors.size} distinct label vectors\n`);
+  return (mismatches.length === 0) !== control ? 0 : 1;
 }
 
 if (isMainThread) process.exitCode = await main(process.argv.slice(2));
