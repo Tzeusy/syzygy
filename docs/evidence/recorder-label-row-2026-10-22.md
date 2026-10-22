@@ -41,20 +41,38 @@ consent and dossier packages export. In every case it is the label row:
 - the provider statement version 2 act;
 - version 1 of that statement, as version 2's form reads past it.
 
-The timing record finds these 7 by rendering every exported template with
+The timing records find these 7 by rendering every exported template with
 marker values (`templates.withRowKeys`). The eighth template, the
 local-agent source-acquisition sign-off, has one slot per line, so none of
 its slots qualifies. `package-reader.ts` and `gate-sources.ts` are not
 touched. No rendered byte, wire format or verdict changes.
 
 [Observed] Before the change, a sitting-form record that failed after a
-label holding `" | "` k times cost about k times its line:
+label holding `" | "` k times cost about k times its line. The 8.17
+reviewer measured such reads at about 104 KB, failing at the last byte,
+at 1-minute load 23 to 29:
 
-- the 8.17 reviewer measured 16.1 s and 17.4 s at about 104 KB;
-- in the timing record below, every old read of a 120 KB failing record
-  ran past its 60 s cap.
+- 16,079 ms for the provider statement version 2 act;
+- 17,449 ms for D9.
 
-After the change, each such read takes milliseconds.
+That is the old `recorder-template.ts` this change replaces: the same
+bytes as at main `9a30237e`.
+
+After the change, a failing read of that row at about 124 KB takes at
+most 7.34 ms of CPU time. That covers the last byte changed, the closing
+mark changed, or a CR in the description, over two runs at 1-minute load 55.8 to 93.0
+(acceptance 1, below). Its wall time is under 160 ms in all but one of
+126 samples at that load. The worst sample is 316 ms at load 57.4, with
+4.84 ms of CPU.
+
+[Inferred] So the old read costs about two thousand times the new one, or
+more: 16 to 17 s of wall time at load 23 to 29, against under 8 ms of CPU
+time. The two figures are not the same measure, and the old one was taken
+at a lower load.
+
+In the timing runs below, every old read of a 124 KB failing record was
+still running at its 60 s cap. Those samples are recorded as capped, and
+no ratio is taken from a cap.
 
 ## Why the answers cannot change
 
@@ -117,7 +135,7 @@ that bound. No recorder template has one.
 ## What was run
 
 The host is shared with other lanes and has 12 cores. Its 1-minute load
-average stayed between about 35 and 111 throughout this work, and no idle
+average stayed between about 35 and 130 throughout this work, and no idle
 window came. Every time below is wall time under that load unless it is
 marked as CPU time.
 
@@ -235,14 +253,22 @@ templates no other pair qualifies, and B (`" | "`) itself holds TAIL's
 (M10) is therefore still satisfied, and still fast, on those records. The
 consent tests reach each of these predicates.
 
-### Acceptance 1: the timing record
+### Acceptance 1: the timing records
 
-`docs/evidence/recorder-label-row-timing-2026-10-22.json`, from
-`scripts/measure_label_row_reads.mjs`:
+**How acceptance 1 is judged.** The coordinator ruled on 2026-10-22 that
+acceptance 1 is judged on CPU time. Every failing read of at least 100 KB
+must take under 100 ms of CPU time in every sample, for every template
+carrying the row. Old and new reads are interleaved, each in a fresh
+process.
 
-- **What it measured.** The new tree is `433561f2`, whose
-  `recorder-template.ts` hashes the same as at the PR head. The old tree is
-  main `a0406967`.
+Wall time is recorded beside the CPU time, with each sample's 1-minute
+load. On a host loaded past its cores, the wall time counts the waits for
+a core, so it is a figure for host contention, not for the read. Old
+samples capped at 60 s are recorded as capped, and no ratio is taken
+from a cap.
+
+**The tool.** `scripts/measure_label_row_reads.mjs`:
+
 - **The templates.** It finds them by walking the dossier gate's exports
   and rendering each one with marker values. It finds the 7 named above,
   and it asserts that they are those 7.
@@ -255,47 +281,58 @@ consent tests reach each of these predicates.
   - the row's closing `" |` changed to `" ;`;
   - a CR added to the description.
 - **The samples.** Each is one read in a fresh Node process, and only the
-  read is timed. The new tree took 3 rounds; the old tree took 1, with a
-  60 s cap.
-- **What each sample records.** The wall time; the CPU time (user plus
-  system) the process spent in the read; and the load averages as it
-  started.
+  read is timed. The new tree takes 3 rounds. The old tree takes 1,
+  interleaved with the first round and capped at 60 s.
+- **What each sample records.** The wall time; the process's CPU time
+  (user plus system) over the read; and the load averages as it started.
+  The CPU time is the whole process's, V8's helper threads included, so
+  it can exceed the wall time.
 
-[Observed] The results, with the 1-minute load between 55.8 and 85.2:
+**The two runs.**
 
-| | New tree, 63 failing reads | Old tree, 21 failing reads |
+- **Run 2** (`docs/evidence/recorder-label-row-timing-run-2-2026-10-22.json`)
+  is the record of the tool as committed. It judges each failing sample on
+  CPU time and lists every wall sample at or over 100 ms with its load.
+  - New tree: `8c024867`, the PR head's code.
+  - Old tree: main `9a30237e`.
+- **Run 1** (`docs/evidence/recorder-label-row-timing-run-1-2026-10-22.json`)
+  is the lowest-load run of the day.
+  - New tree: `433561f2`, with the same `recorder-template.ts`.
+  - Old tree: `a0406967`, with the same old file.
+  - It ran an earlier version of the tool, which judged on wall time, so
+    its own `failingReadsUnderLimit: false` is that earlier predicate.
+    Its samples carry the same fields.
+
+No idle window came for a third run.
+
+[Observed] Over the 63 failing reads of each run (7 templates, 3 failing
+kinds, 3 rounds):
+
+| | Run 1, load1 55.8 to 85.2 | Run 2, load1 69.4 to 93.0 |
 |---|---|---|
-| CPU time | at most 5.66 ms | not recorded: every read was stopped at its cap |
-| Wall time | median 10.92 ms; 59 of 63 under 100 ms | every read still running at the 60 s cap |
-| Fastest of 3 rounds, per template and kind | at most 23.66 ms | — |
-| Answers | each failing record refused | no read completed, so nothing to compare |
+| CPU time, slowest sample | 5.66 ms | 7.34 ms |
+| **Acceptance 1, judged on CPU time** | **met: 63 of 63 under 100 ms, all refused** | **met: 63 of 63 under 100 ms, all refused** |
+| Wall time, median | 10.92 ms | 12.61 ms |
+| Wall samples at or over 100 ms | 4 of 63 | 2 of 63 |
+| Old tree, the 21 failing reads | every one still running at the 60 s cap | every one still running at the 60 s cap |
 
-On the records as rendered, both trees read the same slots, and every read
-took under 63 ms.
+On the records as rendered, both trees read the same slots in both runs.
 
-Four of the 63 new failing samples took 100 ms or more of wall time.
-The same four spent at most 4.84 ms of CPU:
+The wall time does break 100 ms under load, on these samples:
 
-| Template | Kind | Round | Wall | CPU | 1-minute load |
-|---|---|---|---|---|---|
-| STATEMENT_FORMS.redis-redis.0 | CR in the description | 2 | 316.41 ms | 4.84 ms | 57.4 |
-| STATEMENT_FORMS.redis-redis.0 | CR in the description | 1 | 152.56 ms | 4.68 ms | 72.2 |
-| PROVIDER_V2_FORM.exemptRecords.0 | no closing mark | 2 | 150.51 ms | 4.83 ms | 55.8 |
-| DRAWER_FORMS.redis-redis | last byte changed | 3 | 104.22 ms | 4.15 ms | 56.8 |
+| Run | Template | Kind | Round | Wall | CPU | load1 |
+|---|---|---|---|---|---|---|
+| 1 | STATEMENT_FORMS.redis-redis.0 | CR in the description | 2 | 316.41 ms | 4.84 ms | 57.4 |
+| 1 | STATEMENT_FORMS.redis-redis.0 | CR in the description | 1 | 152.56 ms | 4.68 ms | 72.2 |
+| 1 | PROVIDER_V2_FORM.exemptRecords.0 | no closing mark | 2 | 150.51 ms | 4.83 ms | 55.8 |
+| 1 | DRAWER_FORMS.redis-redis | last byte changed | 3 | 104.22 ms | 4.15 ms | 56.8 |
+| 2 | DRAWER_FORMS.redis-redis | no closing mark | 1 | 157.68 ms | 5.33 ms | 82.1 |
+| 2 | STATEMENT_FORMS.redis-redis.1 | CR in the description | 2 | 118.98 ms | 4.98 ms | 85.1 |
 
-[Inferred] The gap between wall and CPU is time spent waiting for a core
-on a host loaded about five times past its 12 cores. Each of those
-template-and-kind pairs also has a round under 13 ms.
-
-So, against acceptance 1:
-
-- the bound holds in CPU time on every sample;
-- in wall time it holds on 59 of 63 samples and on the fastest round of
-  every pair;
-- it does not hold on every wall-time sample.
-
-The script exits 1 for that reason, by design. No idle window came for a
-re-run.
+[Inferred] Each of these spent under 5.4 ms of CPU. The rest of its wall
+time was waiting for a core, on a host whose 1-minute load stood at 4.6
+to 7.1 times its 12 cores. [Unknown] What the wall times would be on an
+idle host: no idle window came.
 
 ### The GP-Q0 differential (acceptance 3)
 
@@ -367,16 +404,27 @@ holding `" | "` is "a separator inside". A slot starting with a blank is
 "a space first", "a tab first" and "an ideographic space first". A blank
 slot is "blank" and "spaces only".
 
-The slot worlds are bounded to the two slots of the row, and to four
-variants. Each reader world costs about 90 s per tree at this load, and
-the template answers already cover every slot variant on every subject.
+**What was cut, and why.** The slot reader worlds cover only the row's
+two slots, `label` and `description`, with four of the twelve variants.
+That leaves out the other 4 line slots and 8 variants: 210 slot worlds of
+the 258 slot inputs. Three reasons:
+
+- the label row is what changed;
+- each reader world cost about 90 s per tree, at 1-minute load between
+  about 60 and 111;
+- the template answers above still cover every slot variant on every
+  subject.
+
+The coordinator accepted this bound for acceptance 3. The base worlds, 45
+of them, are not cut.
 
 [Observed] The result: 2,002 inputs and 17,504 answers compared (1,909 ×
 8 template answers, plus 93 × 24 reader answers), **0 mismatches**. That
 is 0 verdict changes and 0 captured-value changes. 209 of the 1,909
 template inputs are read by at least one template, and there are 262
 distinct answer vectors. The run took 4,336 s with 4 workers. The
-1-minute load was 92.6 at the start and 65.2 at the end.
+1-minute load was 92.6 at the start and 65.2 at the end, and between
+about 60 and 111 at the checks taken while it ran.
 
 ### The negative controls
 
@@ -407,8 +455,10 @@ differential see these two failures.
 2. [Inferred] A line of three or more line slots qualifies at most one
    pair, and the slot before that pair can still end at many places. No
    recorder template has such a line.
-3. [Observed] Every old read of a 120 KB failing record ran past its cap,
-   so the old figures in the timing record are lower bounds.
+3. [Observed] Every old read of a 124 KB failing record was still running
+   at its 60 s cap. So the timing records hold no completed old failing
+   time, and no ratio is taken from the cap. The ratio above rests on the
+   8.17 review's 104 KB figures.
 4. [Observed] The negative-control trees are the commit `a9f3364a` with
    the mutant applied and committed in a scratch clone. Those commits
    (`39cb5329` for M4, `c1d7ebfc` for M5) are reachable from no shared
@@ -418,24 +468,29 @@ differential see these two failures.
 5. [Observed] Three of the checks ran before main moved, on trees that
    predate PR #512:
    - rule 6 ran at `de01d484`;
-   - the timing ran at `433561f2`;
+   - timing run 1 ran at `433561f2`;
    - the controls ran against `a0406967`.
+
+   Timing run 2 and the differential ran after the merge.
 
    PR #512 changed `package-reader.ts` and did not change
    `recorder-template.ts`:
    - the new `recorder-template.ts` and the two test files hash the same
-     at `de01d484`, at `433561f2` and at the PR head;
+     at `de01d484`, at `433561f2`, at `8c024867` and at the PR head;
    - the old `recorder-template.ts` hashes the same at `a0406967` and at
      `9a30237e`.
 
-   [Inferred] The merge does not move those results. The timing record
+   [Inferred] The merge does not move those results. The timing runs
    and the consent tests call `templateFields` directly. The dossier test
    first renders each record with the real recorder, through the consent
    package's testing renderers, then does the same.
 
-   The differential ran after the merge. A first differential, `a0406967` against
-   `433561f2`, was stopped at 1,500 of its 2,002 inputs once main moved,
-   and it is not recorded.
+   A first differential, `a0406967` against `433561f2`, is superseded. It
+   ran at 4 workers, and its reader worlds were taking about 2.4 times as
+   long as on the merged trees. At about 15:08 +08:00 its `timeout`
+   wrapper was SIGSTOPped, so that it could not kill the run at 9,000 s.
+   Once main moved, the run was stopped at 1,500 of its 2,002 inputs. No
+   verdict was taken from it, and its partial output is dropped.
 6. [Inferred] The bound on the slot reader worlds rests on this: a reader
    that applies a template can answer differently only where the template
    does. That holds if the readers apply only the exported templates,
