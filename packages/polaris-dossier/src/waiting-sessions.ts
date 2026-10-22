@@ -1,7 +1,7 @@
 import { createHash } from 'node:crypto';
 import * as fs from 'node:fs';
 import * as path from 'node:path';
-import { parseBoundedJson } from '@syzygy/polaris-generation-core';
+import { parseBoundedJson } from '@syzygy/polaris-generation-core/live';
 import { DRAFT_MAX_BYTES, type CheckDeps } from './check.js';
 import { RECORDS_WITHIN_REACH, type GateSources } from './gate-sources.js';
 import {

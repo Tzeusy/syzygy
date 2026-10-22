@@ -34,7 +34,7 @@ const { runDossierCli } = await dist('packages/polaris-dossier/dist/cli.js');
 const { openPinnedObjectReader } = await dist('packages/polaris-dossier/dist/git-object-reader.js');
 const { cloneGitDirShape, cloneStoreShape } = await dist('packages/polaris-dossier/dist/clone-shape.js');
 const { initRun } = await dist('packages/polaris-dossier/dist/init.js');
-const { renderDossier } = await dist('apps/three-surface-poc/dist/polaris-generation/dossier-render.js');
+const { renderLocalDossier } = await dist('apps/three-surface-poc/dist/polaris-generation/dossier-site.js');
 
 // ---- the synthetic repository ------------------------------------------------------------------------------------------------
 let seed = 0x5eed1234;
@@ -112,7 +112,7 @@ const countingReader = (options) => {
   };
 };
 let clock = kit.NOW;
-const ports = { env: {}, now: () => clock, sources: kit.fixtureSources(commit), loadScreen: async () => kit.FIXTURE_SCREEN, renderer: renderDossier, openReader: countingReader };
+const ports = { env: {}, now: () => clock, sources: kit.fixtureSources(commit), loadScreen: async () => kit.FIXTURE_SCREEN, renderer: renderLocalDossier, openReader: countingReader };
 const steps = [];
 let failure = null;
 const cli = async (argv) => {
