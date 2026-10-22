@@ -1,0 +1,205 @@
+{
+ "tool": "launch_probe.py",
+ "treeCommit": "8dc316a79ce1310af0ab7c88a7b8f35a740718ad",
+ "mode": "head",
+ "file": "apps/three-surface-poc/src/cdp-browser.ts",
+ "sha256AtCommit": "5aa37832503987641a36c444f137ff2cc63c689eb963a30902b1f0e862726584",
+ "launchesRequested": 24,
+ "build": {
+  "command": "npx tsc -b apps/three-surface-poc",
+  "exit": 0,
+  "firstLine": []
+ },
+ "run": {
+  "command": "TMPDIR=<private> node launch_close.mjs <worktree> <launches>",
+  "exit": 0,
+  "stderrFirstLine": []
+ },
+ "executable": "/usr/bin/google-chrome",
+ "privateTmpdirLength": 18,
+ "rows": [
+  {
+   "launch": 1,
+   "closeMs": 3295,
+   "exitCode": null,
+   "signalCode": "SIGKILL",
+   "newEntries": []
+  },
+  {
+   "launch": 2,
+   "closeMs": 1991,
+   "exitCode": null,
+   "signalCode": "SIGKILL",
+   "newEntries": []
+  },
+  {
+   "launch": 3,
+   "closeMs": 3354,
+   "exitCode": null,
+   "signalCode": "SIGKILL",
+   "newEntries": []
+  },
+  {
+   "launch": 4,
+   "closeMs": 2367,
+   "exitCode": null,
+   "signalCode": "SIGKILL",
+   "newEntries": []
+  },
+  {
+   "launch": 5,
+   "closeMs": 1310,
+   "exitCode": 0,
+   "signalCode": null,
+   "newEntries": []
+  },
+  {
+   "launch": 6,
+   "closeMs": 1202,
+   "exitCode": 0,
+   "signalCode": null,
+   "newEntries": []
+  },
+  {
+   "launch": 7,
+   "closeMs": 555,
+   "exitCode": 0,
+   "signalCode": null,
+   "newEntries": []
+  },
+  {
+   "launch": 8,
+   "closeMs": 2312,
+   "exitCode": 0,
+   "signalCode": null,
+   "newEntries": []
+  },
+  {
+   "launch": 9,
+   "closeMs": 4433,
+   "exitCode": null,
+   "signalCode": "SIGKILL",
+   "newEntries": []
+  },
+  {
+   "launch": 10,
+   "closeMs": 2163,
+   "exitCode": null,
+   "signalCode": "SIGKILL",
+   "newEntries": []
+  },
+  {
+   "launch": 11,
+   "closeMs": 2728,
+   "exitCode": null,
+   "signalCode": "SIGKILL",
+   "newEntries": []
+  },
+  {
+   "launch": 12,
+   "closeMs": 2703,
+   "exitCode": 0,
+   "signalCode": null,
+   "newEntries": []
+  },
+  {
+   "launch": 13,
+   "closeMs": 3044,
+   "exitCode": null,
+   "signalCode": "SIGKILL",
+   "newEntries": []
+  },
+  {
+   "launch": 14,
+   "closeMs": 2657,
+   "exitCode": null,
+   "signalCode": "SIGKILL",
+   "newEntries": []
+  },
+  {
+   "launch": 15,
+   "closeMs": 2621,
+   "exitCode": null,
+   "signalCode": "SIGKILL",
+   "newEntries": []
+  },
+  {
+   "launch": 16,
+   "closeMs": 2310,
+   "exitCode": 0,
+   "signalCode": null,
+   "newEntries": []
+  },
+  {
+   "launch": 17,
+   "closeMs": 2261,
+   "exitCode": 0,
+   "signalCode": null,
+   "newEntries": []
+  },
+  {
+   "launch": 18,
+   "closeMs": 1816,
+   "exitCode": 0,
+   "signalCode": null,
+   "newEntries": []
+  },
+  {
+   "launch": 19,
+   "closeMs": 1500,
+   "exitCode": 0,
+   "signalCode": null,
+   "newEntries": []
+  },
+  {
+   "launch": 20,
+   "closeMs": 1629,
+   "exitCode": 0,
+   "signalCode": null,
+   "newEntries": []
+  },
+  {
+   "launch": 21,
+   "closeMs": 2777,
+   "exitCode": 0,
+   "signalCode": null,
+   "newEntries": []
+  },
+  {
+   "launch": 22,
+   "closeMs": 1878,
+   "exitCode": 0,
+   "signalCode": null,
+   "newEntries": []
+  },
+  {
+   "launch": 23,
+   "closeMs": 1938,
+   "exitCode": null,
+   "signalCode": "SIGKILL",
+   "newEntries": []
+  },
+  {
+   "launch": 24,
+   "closeMs": 3293,
+   "exitCode": 0,
+   "signalCode": null,
+   "newEntries": []
+  }
+ ],
+ "summary": {
+  "launches": 24,
+  "launchesThatClosed": 24,
+  "launchesWhoseCloseThrew": 0,
+  "closeErrors": [],
+  "killed": 11,
+  "exitedCleanly": 13,
+  "killedAndLeftAChromeDirectory": 0,
+  "exitedAndLeftAChromeDirectory": 0,
+  "closedLaunchesThatLeftAnything": 0,
+  "leftByLaunchesWhoseCloseThrew": [],
+  "entriesInPrivateTmpdirAtTheEnd": [],
+  "entriesAtTheEndNotLeftByAThrownClose": [],
+  "holds": true
+ }
+}

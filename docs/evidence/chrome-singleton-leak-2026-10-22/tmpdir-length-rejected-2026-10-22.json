@@ -1,0 +1,126 @@
+{
+ "tool": "tmpdir_length_probe.py",
+ "treeCommit": "8dc316a79ce1310af0ab7c88a7b8f35a740718ad",
+ "mode": "rejected",
+ "file": "apps/three-surface-poc/src/cdp-browser.ts",
+ "sha256AtCommit": "5aa37832503987641a36c444f137ff2cc63c689eb963a30902b1f0e862726584",
+ "mutant": {
+  "id": "chrome-temp-directory-is-profile",
+  "file": "apps/three-surface-poc/src/cdp-browser.ts",
+  "edits": [
+   {
+    "old": "{ stdio: ['ignore', 'ignore', 'pipe'], detached: true },",
+    "new": "{ stdio: ['ignore', 'ignore', 'pipe'], detached: true, env: { ...process.env, TMPDIR: profile } },"
+   }
+  ]
+ },
+ "lengthsTried": [
+  30,
+  36,
+  38,
+  39,
+  40,
+  41,
+  42,
+  44,
+  50,
+  56,
+  62,
+  64,
+  65,
+  66,
+  67,
+  70,
+  80
+ ],
+ "rows": [
+  {
+   "tmpdirLength": 30,
+   "launched": true,
+   "firstErrorLine": null
+  },
+  {
+   "tmpdirLength": 36,
+   "launched": true,
+   "firstErrorLine": null
+  },
+  {
+   "tmpdirLength": 38,
+   "launched": true,
+   "firstErrorLine": null
+  },
+  {
+   "tmpdirLength": 39,
+   "launched": true,
+   "firstErrorLine": null
+  },
+  {
+   "tmpdirLength": 40,
+   "launched": false,
+   "firstErrorLine": "browser exited with signal before announcing a DevTools endpoint:"
+  },
+  {
+   "tmpdirLength": 41,
+   "launched": false,
+   "firstErrorLine": "browser exited with signal before announcing a DevTools endpoint:"
+  },
+  {
+   "tmpdirLength": 42,
+   "launched": false,
+   "firstErrorLine": "browser exited with signal before announcing a DevTools endpoint:"
+  },
+  {
+   "tmpdirLength": 44,
+   "launched": false,
+   "firstErrorLine": "browser exited with signal before announcing a DevTools endpoint:"
+  },
+  {
+   "tmpdirLength": 50,
+   "launched": false,
+   "firstErrorLine": "browser exited with signal before announcing a DevTools endpoint:"
+  },
+  {
+   "tmpdirLength": 56,
+   "launched": false,
+   "firstErrorLine": "browser exited with signal before announcing a DevTools endpoint:"
+  },
+  {
+   "tmpdirLength": 62,
+   "launched": false,
+   "firstErrorLine": "private browser profile drain did not verify two empty scans before deadline"
+  },
+  {
+   "tmpdirLength": 64,
+   "launched": false,
+   "firstErrorLine": "browser exited with signal before announcing a DevTools endpoint:"
+  },
+  {
+   "tmpdirLength": 65,
+   "launched": false,
+   "firstErrorLine": "browser exited with signal before announcing a DevTools endpoint:"
+  },
+  {
+   "tmpdirLength": 66,
+   "launched": false,
+   "firstErrorLine": "browser exited with signal before announcing a DevTools endpoint:"
+  },
+  {
+   "tmpdirLength": 67,
+   "launched": false,
+   "firstErrorLine": "browser exited with signal before announcing a DevTools endpoint:"
+  },
+  {
+   "tmpdirLength": 70,
+   "launched": false,
+   "firstErrorLine": "browser exited with signal before announcing a DevTools endpoint:"
+  },
+  {
+   "tmpdirLength": 80,
+   "launched": false,
+   "firstErrorLine": "browser exited with signal before announcing a DevTools endpoint:"
+  }
+ ],
+ "longestLaunched": 39,
+ "shortestFailed": 40,
+ "monotone": true
+}

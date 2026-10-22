@@ -1,0 +1,386 @@
+{
+ "tool": "browser_files_run.py",
+ "treeCommit": "8dc316a79ce1310af0ab7c88a7b8f35a740718ad",
+ "label": "head",
+ "project": "@syzygy/three-surface-poc-app",
+ "attemptsPerFile": 3,
+ "listA": [
+  "apps/three-surface-poc/src/cdp-browser.browser.test.ts",
+  "apps/three-surface-poc/src/cdp-browser.test.ts",
+  "apps/three-surface-poc/src/orrery.browser.test.ts",
+  "apps/three-surface-poc/src/polaris-accessibility.browser.test.ts",
+  "apps/three-surface-poc/src/polaris-accessible-names.browser.test.ts",
+  "apps/three-surface-poc/src/polaris-generation/draft-preview.browser.test.ts",
+  "apps/three-surface-poc/src/polaris-opening-index.browser.test.ts",
+  "apps/three-surface-poc/src/proposal-disclosure.test.ts",
+  "apps/three-surface-poc/src/surface-routes.test.ts",
+  "apps/three-surface-poc/src/trajectory-narrowing.browser.test.ts",
+  "apps/three-surface-poc/src/tuple-encoding.test.ts"
+ ],
+ "listB": [
+  "apps/three-surface-poc/src/cdp-browser.browser.test.ts",
+  "apps/three-surface-poc/src/orrery.browser.test.ts",
+  "apps/three-surface-poc/src/polaris-accessibility.browser.test.ts",
+  "apps/three-surface-poc/src/polaris-accessible-names.browser.test.ts",
+  "apps/three-surface-poc/src/polaris-generation/draft-preview.browser.test.ts",
+  "apps/three-surface-poc/src/polaris-opening-index.browser.test.ts",
+  "apps/three-surface-poc/src/trajectory-narrowing.browser.test.ts"
+ ],
+ "perFile": [
+  {
+   "file": "apps/three-surface-poc/src/cdp-browser.browser.test.ts",
+   "attempts": [
+    {
+     "exit": 1,
+     "tests": 2,
+     "passed": 1,
+     "skipped": 0,
+     "failing": [
+      {
+       "test": "disposable Chrome teardown in a real browser leaves no Chrome singleton directory behind when the leader is killed",
+       "firstErrorLine": "Error: promise rejected \"Error: private browser profile drain did \u2026\" instead of resolving"
+      }
+     ],
+     "suiteFailures": [],
+     "left": {
+      "entries": [
+       ".com.google.Chrome.3H6uVz",
+       "syzygy-poc-browser-tOJTmy"
+      ],
+      "chromeSingletonDirectories": 1,
+      "draftPreviewDirectories": 0,
+      "browserProfiles": 1,
+      "other": []
+     },
+     "attempt": 1
+    },
+    {
+     "exit": 0,
+     "tests": 2,
+     "passed": 2,
+     "skipped": 0,
+     "failing": [],
+     "suiteFailures": [],
+     "left": {
+      "entries": [],
+      "chromeSingletonDirectories": 0,
+      "draftPreviewDirectories": 0,
+      "browserProfiles": 0,
+      "other": []
+     },
+     "attempt": 2
+    }
+   ],
+   "passed": true,
+   "testsOnPassingAttempt": 2,
+   "skippedOnPassingAttempt": 0
+  },
+  {
+   "file": "apps/three-surface-poc/src/cdp-browser.test.ts",
+   "attempts": [
+    {
+     "exit": 0,
+     "tests": 23,
+     "passed": 23,
+     "skipped": 0,
+     "failing": [],
+     "suiteFailures": [],
+     "left": {
+      "entries": [],
+      "chromeSingletonDirectories": 0,
+      "draftPreviewDirectories": 0,
+      "browserProfiles": 0,
+      "other": []
+     },
+     "attempt": 1
+    }
+   ],
+   "passed": true,
+   "testsOnPassingAttempt": 23,
+   "skippedOnPassingAttempt": 0
+  },
+  {
+   "file": "apps/three-surface-poc/src/orrery.browser.test.ts",
+   "attempts": [
+    {
+     "exit": 1,
+     "tests": 1,
+     "passed": 0,
+     "skipped": 0,
+     "failing": [
+      {
+       "test": "Orrery rendered geometry preserves district size differences and readable labels (C3-3, POC-REQ-050)",
+       "firstErrorLine": "Error: STACK_TRACE_ERROR"
+      }
+     ],
+     "suiteFailures": [],
+     "left": {
+      "entries": [],
+      "chromeSingletonDirectories": 0,
+      "draftPreviewDirectories": 0,
+      "browserProfiles": 0,
+      "other": []
+     },
+     "attempt": 1
+    },
+    {
+     "exit": 0,
+     "tests": 1,
+     "passed": 1,
+     "skipped": 0,
+     "failing": [],
+     "suiteFailures": [],
+     "left": {
+      "entries": [],
+      "chromeSingletonDirectories": 0,
+      "draftPreviewDirectories": 0,
+      "browserProfiles": 0,
+      "other": []
+     },
+     "attempt": 2
+    }
+   ],
+   "passed": true,
+   "testsOnPassingAttempt": 1,
+   "skippedOnPassingAttempt": 0
+  },
+  {
+   "file": "apps/three-surface-poc/src/polaris-accessibility.browser.test.ts",
+   "attempts": [
+    {
+     "exit": 0,
+     "tests": 15,
+     "passed": 15,
+     "skipped": 0,
+     "failing": [],
+     "suiteFailures": [],
+     "left": {
+      "entries": [],
+      "chromeSingletonDirectories": 0,
+      "draftPreviewDirectories": 0,
+      "browserProfiles": 0,
+      "other": []
+     },
+     "attempt": 1
+    }
+   ],
+   "passed": true,
+   "testsOnPassingAttempt": 15,
+   "skippedOnPassingAttempt": 0
+  },
+  {
+   "file": "apps/three-surface-poc/src/polaris-accessible-names.browser.test.ts",
+   "attempts": [
+    {
+     "exit": 0,
+     "tests": 26,
+     "passed": 26,
+     "skipped": 0,
+     "failing": [],
+     "suiteFailures": [],
+     "left": {
+      "entries": [],
+      "chromeSingletonDirectories": 0,
+      "draftPreviewDirectories": 0,
+      "browserProfiles": 0,
+      "other": []
+     },
+     "attempt": 1
+    }
+   ],
+   "passed": true,
+   "testsOnPassingAttempt": 26,
+   "skippedOnPassingAttempt": 0
+  },
+  {
+   "file": "apps/three-surface-poc/src/polaris-generation/draft-preview.browser.test.ts",
+   "attempts": [
+    {
+     "exit": 0,
+     "tests": 1,
+     "passed": 1,
+     "skipped": 0,
+     "failing": [],
+     "suiteFailures": [],
+     "left": {
+      "entries": [],
+      "chromeSingletonDirectories": 0,
+      "draftPreviewDirectories": 0,
+      "browserProfiles": 0,
+      "other": []
+     },
+     "attempt": 1
+    }
+   ],
+   "passed": true,
+   "testsOnPassingAttempt": 1,
+   "skippedOnPassingAttempt": 0
+  },
+  {
+   "file": "apps/three-surface-poc/src/polaris-opening-index.browser.test.ts",
+   "attempts": [
+    {
+     "exit": 0,
+     "tests": 14,
+     "passed": 13,
+     "skipped": 1,
+     "failing": [],
+     "suiteFailures": [],
+     "left": {
+      "entries": [],
+      "chromeSingletonDirectories": 0,
+      "draftPreviewDirectories": 0,
+      "browserProfiles": 0,
+      "other": []
+     },
+     "attempt": 1
+    }
+   ],
+   "passed": true,
+   "testsOnPassingAttempt": 14,
+   "skippedOnPassingAttempt": 1
+  },
+  {
+   "file": "apps/three-surface-poc/src/proposal-disclosure.test.ts",
+   "attempts": [
+    {
+     "exit": 0,
+     "tests": 5,
+     "passed": 5,
+     "skipped": 0,
+     "failing": [],
+     "suiteFailures": [],
+     "left": {
+      "entries": [],
+      "chromeSingletonDirectories": 0,
+      "draftPreviewDirectories": 0,
+      "browserProfiles": 0,
+      "other": []
+     },
+     "attempt": 1
+    }
+   ],
+   "passed": true,
+   "testsOnPassingAttempt": 5,
+   "skippedOnPassingAttempt": 0
+  },
+  {
+   "file": "apps/three-surface-poc/src/surface-routes.test.ts",
+   "attempts": [
+    {
+     "exit": 0,
+     "tests": 18,
+     "passed": 18,
+     "skipped": 0,
+     "failing": [],
+     "suiteFailures": [],
+     "left": {
+      "entries": [],
+      "chromeSingletonDirectories": 0,
+      "draftPreviewDirectories": 0,
+      "browserProfiles": 0,
+      "other": []
+     },
+     "attempt": 1
+    }
+   ],
+   "passed": true,
+   "testsOnPassingAttempt": 18,
+   "skippedOnPassingAttempt": 0
+  },
+  {
+   "file": "apps/three-surface-poc/src/trajectory-narrowing.browser.test.ts",
+   "attempts": [
+    {
+     "exit": 0,
+     "tests": 2,
+     "passed": 2,
+     "skipped": 0,
+     "failing": [],
+     "suiteFailures": [],
+     "left": {
+      "entries": [],
+      "chromeSingletonDirectories": 0,
+      "draftPreviewDirectories": 0,
+      "browserProfiles": 0,
+      "other": []
+     },
+     "attempt": 1
+    }
+   ],
+   "passed": true,
+   "testsOnPassingAttempt": 2,
+   "skippedOnPassingAttempt": 0
+  },
+  {
+   "file": "apps/three-surface-poc/src/tuple-encoding.test.ts",
+   "attempts": [
+    {
+     "exit": 0,
+     "tests": 6,
+     "passed": 6,
+     "skipped": 0,
+     "failing": [],
+     "suiteFailures": [],
+     "left": {
+      "entries": [],
+      "chromeSingletonDirectories": 0,
+      "draftPreviewDirectories": 0,
+      "browserProfiles": 0,
+      "other": []
+     },
+     "attempt": 1
+    }
+   ],
+   "passed": true,
+   "testsOnPassingAttempt": 6,
+   "skippedOnPassingAttempt": 0
+  }
+ ],
+ "combinedRun": {
+  "exit": 1,
+  "tests": 113,
+  "passed": 109,
+  "skipped": 1,
+  "failing": [
+   {
+    "test": "Polaris keyboard, non-visual and contrast checks in a real browser keeps diagram labels legible and flow order unambiguous across widths",
+    "firstErrorLine": "Error: STACK_TRACE_ERROR"
+   },
+   {
+    "test": "Polaris keyboard, non-visual and contrast checks in a real browser opens a linked component guide and can reveal the complete declaration",
+    "firstErrorLine": "Error: STACK_TRACE_ERROR"
+   },
+   {
+    "test": "Polaris keyboard, non-visual and contrast checks in a real browser keeps complete source columns visible while citation targets remain keyboard-reachable",
+    "firstErrorLine": "Error: STACK_TRACE_ERROR"
+   }
+  ],
+  "suiteFailures": [],
+  "left": {
+   "entries": [],
+   "chromeSingletonDirectories": 0,
+   "draftPreviewDirectories": 0,
+   "browserProfiles": 0,
+   "other": []
+  }
+ },
+ "summary": {
+  "filesInListA": 11,
+  "filesInListB": 7,
+  "inAButNotB": [
+   "apps/three-surface-poc/src/cdp-browser.test.ts",
+   "apps/three-surface-poc/src/proposal-disclosure.test.ts",
+   "apps/three-surface-poc/src/surface-routes.test.ts",
+   "apps/three-surface-poc/src/tuple-encoding.test.ts"
+  ],
+  "inBButNotA": [],
+  "filesWithAPassingAttempt": 11,
+  "chromeSingletonDirectoriesLeftOnPassingAttempts": 0,
+  "draftPreviewDirectoriesLeftOnPassingAttempts": 0,
+  "combinedRunExit": 1,
+  "combinedRunChromeSingletonDirectoriesLeft": 0,
+  "combinedRunDraftPreviewDirectoriesLeft": 0,
+  "everyFilePassedAloneAndLeftNone": true
+ }
+}
