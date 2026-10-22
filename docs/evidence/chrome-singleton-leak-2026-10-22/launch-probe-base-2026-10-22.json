@@ -1,9 +1,9 @@
 {
  "tool": "launch_probe.py",
- "treeCommit": "8dc316a79ce1310af0ab7c88a7b8f35a740718ad",
+ "treeCommit": "dccd484f4749b55f981f2e5211de4112ab7951de",
  "mode": "base",
  "file": "apps/three-surface-poc/src/cdp-browser.ts",
- "sha256AtCommit": "5aa37832503987641a36c444f137ff2cc63c689eb963a30902b1f0e862726584",
+ "sha256AtCommit": "c6c0ac6cc626b76155d870502c5549aa430d7cee35a058b0001d849586842033",
  "launchesRequested": 24,
  "mutant": {
   "id": "singleton-directory-kept",
@@ -26,190 +26,187 @@
   "stderrFirstLine": []
  },
  "executable": "/usr/bin/google-chrome",
- "privateTmpdirLength": 18,
+ "browserVersion": "Google Chrome 120.0.6099.224",
+ "privateTmpdirLength": 15,
  "rows": [
   {
    "launch": 1,
-   "closeMs": 1712,
+   "closeMs": 1649,
    "exitCode": 0,
    "signalCode": null,
    "newEntries": []
   },
   {
    "launch": 2,
-   "closeMs": 2940,
-   "exitCode": null,
-   "signalCode": "SIGKILL",
+   "closeMs": 2680,
+   "exitCode": 0,
+   "signalCode": null,
    "newEntries": []
   },
   {
    "launch": 3,
-   "closeMs": 3443,
-   "exitCode": null,
-   "signalCode": "SIGKILL",
-   "newEntries": [
-    ".com.google.Chrome.cktpGD"
-   ]
+   "closeMs": 2971,
+   "exitCode": 0,
+   "signalCode": null,
+   "newEntries": []
   },
   {
    "launch": 4,
-   "closeMs": 2169,
+   "closeMs": 3131,
    "exitCode": 0,
    "signalCode": null,
    "newEntries": []
   },
   {
    "launch": 5,
-   "closeMs": 2430,
-   "exitCode": null,
-   "signalCode": "SIGKILL",
-   "newEntries": [
-    ".com.google.Chrome.6BvpbN"
-   ]
-  },
-  {
-   "launch": 6,
-   "closeMs": 3593,
-   "exitCode": null,
-   "signalCode": "SIGKILL",
-   "newEntries": [
-    ".com.google.Chrome.vmS3WW"
-   ]
-  },
-  {
-   "launch": 7,
-   "closeMs": 3745,
-   "exitCode": null,
-   "signalCode": "SIGKILL",
-   "newEntries": [
-    ".com.google.Chrome.6HDCbf"
-   ]
-  },
-  {
-   "launch": 8,
-   "closeMs": 3259,
+   "closeMs": 2322,
    "exitCode": 0,
    "signalCode": null,
    "newEntries": []
   },
   {
+   "launch": 6,
+   "closeMs": 3438,
+   "exitCode": 0,
+   "signalCode": null,
+   "newEntries": []
+  },
+  {
+   "launch": 7,
+   "closeMs": 3719,
+   "exitCode": 0,
+   "signalCode": null,
+   "newEntries": []
+  },
+  {
+   "launch": 8,
+   "closeMs": 1783,
+   "exitCode": null,
+   "signalCode": "SIGKILL",
+   "newEntries": [
+    ".com.google.Chrome.amnNr5"
+   ]
+  },
+  {
    "launch": 9,
-   "closeMs": 3779,
+   "closeMs": 2399,
    "exitCode": 0,
    "signalCode": null,
    "newEntries": []
   },
   {
    "launch": 10,
-   "closeMs": 2094,
-   "exitCode": null,
-   "signalCode": "SIGKILL",
-   "newEntries": [
-    ".com.google.Chrome.LhPzHk"
-   ]
-  },
-  {
-   "launch": 11,
-   "closeMs": 3299,
-   "exitCode": null,
-   "signalCode": "SIGKILL",
-   "newEntries": [
-    ".com.google.Chrome.BSEhxa"
-   ]
-  },
-  {
-   "launch": 12,
-   "closeMs": 1882,
+   "closeMs": 2630,
    "exitCode": 0,
    "signalCode": null,
    "newEntries": []
   },
   {
-   "launch": 13,
-   "closeMs": 1858,
+   "launch": 11,
+   "closeMs": 1452,
+   "exitCode": 0,
+   "signalCode": null,
+   "newEntries": []
+  },
+  {
+   "launch": 12,
+   "closeMs": 3949,
    "exitCode": null,
    "signalCode": "SIGKILL",
    "newEntries": [
-    ".com.google.Chrome.YWC7l3"
+    ".com.google.Chrome.DWujYe"
+   ]
+  },
+  {
+   "launch": 13,
+   "closeMs": 1963,
+   "exitCode": null,
+   "signalCode": "SIGKILL",
+   "newEntries": [
+    ".com.google.Chrome.BgAwIr"
    ]
   },
   {
    "launch": 14,
-   "closeMs": 1504,
-   "exitCode": 0,
-   "signalCode": null,
-   "newEntries": []
-  },
-  {
-   "launch": 15,
-   "closeMs": 4115,
+   "closeMs": 4203,
    "exitCode": null,
    "signalCode": "SIGKILL",
    "newEntries": [
-    ".com.google.Chrome.KiJ1Oh"
+    ".com.google.Chrome.ArXmst"
+   ]
+  },
+  {
+   "launch": 15,
+   "closeMs": 3391,
+   "exitCode": null,
+   "signalCode": "SIGKILL",
+   "newEntries": [
+    ".com.google.Chrome.sq20wG"
    ]
   },
   {
    "launch": 16,
-   "closeMs": 2608,
-   "exitCode": 0,
-   "signalCode": null,
-   "newEntries": []
+   "closeMs": 2225,
+   "exitCode": null,
+   "signalCode": "SIGKILL",
+   "newEntries": [
+    ".com.google.Chrome.IsbvfR"
+   ]
   },
   {
    "launch": 17,
-   "closeMs": 2799,
+   "closeMs": 1931,
    "exitCode": 0,
    "signalCode": null,
    "newEntries": []
   },
   {
    "launch": 18,
-   "closeMs": 3484,
-   "exitCode": null,
-   "signalCode": "SIGKILL",
-   "newEntries": [
-    ".com.google.Chrome.iyL1So"
-   ]
+   "closeMs": 1760,
+   "exitCode": 0,
+   "signalCode": null,
+   "newEntries": []
   },
   {
    "launch": 19,
-   "closeMs": 1749,
+   "closeMs": 3510,
    "exitCode": 0,
    "signalCode": null,
    "newEntries": []
   },
   {
    "launch": 20,
-   "closeMs": 1811,
+   "closeMs": 2166,
    "exitCode": 0,
    "signalCode": null,
    "newEntries": []
   },
   {
    "launch": 21,
-   "closeMs": 2725,
+   "closeMs": 1638,
    "exitCode": 0,
    "signalCode": null,
    "newEntries": []
   },
   {
    "launch": 22,
-   "closeMs": 2887,
+   "closeMs": 1917,
    "exitCode": 0,
    "signalCode": null,
    "newEntries": []
   },
   {
    "launch": 23,
-   "closeMs": 1437,
-   "exitCode": 0,
-   "signalCode": null,
-   "newEntries": []
+   "closeMs": 3013,
+   "exitCode": null,
+   "signalCode": "SIGKILL",
+   "newEntries": [
+    ".com.google.Chrome.kJAbFD"
+   ]
   },
   {
    "launch": 24,
-   "closeMs": 2414,
+   "closeMs": 2394,
    "exitCode": 0,
    "signalCode": null,
    "newEntries": []
@@ -220,33 +217,29 @@
   "launchesThatClosed": 24,
   "launchesWhoseCloseThrew": 0,
   "closeErrors": [],
-  "killed": 10,
-  "exitedCleanly": 14,
-  "killedAndLeftAChromeDirectory": 9,
+  "killed": 7,
+  "exitedCleanly": 17,
+  "killedAndLeftAChromeDirectory": 7,
   "exitedAndLeftAChromeDirectory": 0,
-  "closedLaunchesThatLeftAnything": 9,
+  "closedLaunchesThatLeftAnything": 7,
   "leftByLaunchesWhoseCloseThrew": [],
   "entriesInPrivateTmpdirAtTheEnd": [
-   ".com.google.Chrome.6BvpbN",
-   ".com.google.Chrome.6HDCbf",
-   ".com.google.Chrome.BSEhxa",
-   ".com.google.Chrome.KiJ1Oh",
-   ".com.google.Chrome.LhPzHk",
-   ".com.google.Chrome.YWC7l3",
-   ".com.google.Chrome.cktpGD",
-   ".com.google.Chrome.iyL1So",
-   ".com.google.Chrome.vmS3WW"
+   ".com.google.Chrome.ArXmst",
+   ".com.google.Chrome.BgAwIr",
+   ".com.google.Chrome.DWujYe",
+   ".com.google.Chrome.IsbvfR",
+   ".com.google.Chrome.amnNr5",
+   ".com.google.Chrome.kJAbFD",
+   ".com.google.Chrome.sq20wG"
   ],
   "entriesAtTheEndNotLeftByAThrownClose": [
-   ".com.google.Chrome.6BvpbN",
-   ".com.google.Chrome.6HDCbf",
-   ".com.google.Chrome.BSEhxa",
-   ".com.google.Chrome.KiJ1Oh",
-   ".com.google.Chrome.LhPzHk",
-   ".com.google.Chrome.YWC7l3",
-   ".com.google.Chrome.cktpGD",
-   ".com.google.Chrome.iyL1So",
-   ".com.google.Chrome.vmS3WW"
+   ".com.google.Chrome.ArXmst",
+   ".com.google.Chrome.BgAwIr",
+   ".com.google.Chrome.DWujYe",
+   ".com.google.Chrome.IsbvfR",
+   ".com.google.Chrome.amnNr5",
+   ".com.google.Chrome.kJAbFD",
+   ".com.google.Chrome.sq20wG"
   ],
   "holds": true
  }

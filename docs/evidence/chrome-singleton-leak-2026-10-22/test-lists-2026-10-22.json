@@ -6,20 +6,20 @@
   "listSha256": "eb63a2d0268999737b4ec0af4337a243e7b903174af08548cb40dd99432b984e"
  },
  "headTree": {
-  "commit": "8dc316a79ce1310af0ab7c88a7b8f35a740718ad",
+  "commit": "dccd484f4749b55f981f2e5211de4112ab7951de",
   "trackedFilesModified": false,
-  "listSha256": "016212e382e6fa983ac5e3eda607f1dfd5aae4814900634f750ffbddb85cf650"
+  "listSha256": "ec6946b857614749cdcdf5ee388c4477bed9cdcfe9fc28d12c0ada0f40cfb731"
  },
  "baseLines": 5115,
- "headLines": 5126,
+ "headLines": 5127,
  "baseDistinctNames": 5106,
- "headDistinctNames": 5117,
- "added": 11,
+ "headDistinctNames": 5118,
+ "added": 12,
  "removed": 0,
  "addedByFile": {
   "[@syzygy/three-surface-poc-app] apps/three-surface-poc/src/cdp-browser.browser.test.ts": 1,
-  "[@syzygy/three-surface-poc-app] apps/three-surface-poc/src/cdp-browser.test.ts": 10
+  "[@syzygy/three-surface-poc-app] apps/three-surface-poc/src/cdp-browser.test.ts": 11
  },
  "removedByFile": {},
- "testsLine": "Tests: +11 ~0 -0"
+ "testsLine": "Tests: +12 ~0 -0"
 }
