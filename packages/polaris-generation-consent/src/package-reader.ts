@@ -614,13 +614,33 @@ function everyField(needles: readonly string[]): ActSweep['fields'] {
 const FIELD_LINE = /^\s*(?:[-*>]\s*)?\**\s*(artifact\s+identity|act\s+identity|record\s+id|subject)\s*\**\s*:\s*(.*)$/u;
 const UNQUOTED_FIELD_LINE = /^\s*(?:[-*]\s*)?\**\s*(artifact\s+identity|act\s+identity|record\s+id|subject)\s*\**\s*:\s*(.*)$/u;
 
-function namesAct(sweep: ActSweep, rel: string, text: string): boolean {
+/** One swept file's text in the spellings a sweep compares needles in, each computed on its first use and kept for every later needle
+ * (syzygy-bpyt.8.20): `plain`, its `stemFolds`; `slack`, the `stemFolds` of its `loose` reading; and `folded`, its `fold`, which the
+ * field lines are read from. Each is a pure function of the text, so a kept value is the one a fresh call would return, and each is
+ * first computed at the needle where a per-needle call first computed it, so a fold that throws still throws there. `findActRecords`
+ * builds one for each file inside its loop and drops it with that file: nothing is shared between files, sweeps or calls, and nothing
+ * is held at module level. */
+interface TextForms { plain(): readonly string[]; slack(): readonly string[]; folded(): string }
+function textForms(text: string): TextForms {
+  let plain: readonly string[] | undefined, slack: readonly string[] | undefined, folded: string | undefined;
+  return { plain: () => (plain ??= stemFolds(text)), slack: () => (slack ??= stemFolds(loose(text))), folded: () => (folded ??= fold(text)) };
+}
+/** `carries(text, needle)` for the text `forms` holds, or, `loosely`, `carriesLoosely(text, needle)`. */
+function formsCarry(forms: TextForms, needle: string, loosely: boolean): boolean {
+  const n = stemFolds(needle)[0]!;
+  if (forms.plain().some(form => form.includes(n))) return true;
+  if (!loosely) return false;
+  const m = stemFolds(loose(needle))[0]!;
+  return forms.slack().some(form => form.includes(m));
+}
+
+function namesAct(sweep: ActSweep, rel: string, forms: TextForms): boolean {
   const has = sweep.loose ? carriesLoosely : carries;
   if (sweep.stems.some(stem => carries(rel, stem))) return true;
   if (sweep.withdrawal !== undefined && carries(rel, sweep.withdrawal) && /withdraw|revok/u.test(fold(rel))) return true;
-  if (rel !== AGGREGATE_RECORD && [...sweep.stems, ...sweep.needles].some(needle => has(text, needle))) return true;
+  if (rel !== AGGREGATE_RECORD && [...sweep.stems, ...sweep.needles].some(needle => formsCarry(forms, needle, sweep.loose))) return true;
   const line = sweep.quoted ? FIELD_LINE : UNQUOTED_FIELD_LINE;
-  return fold(text).split('\n').some(each => {
+  return forms.folded().split('\n').some(each => {
     const field = line.exec(each);
     return field !== null && (sweep.fields[field[1]!.replace(/\s+/gu, ' ') as SweptField] ?? []).some(needle => has(field[2]!, needle));
   });
@@ -649,7 +669,7 @@ async function findActRecords<F extends { readonly file: string }>(fs: PackageRe
     const pinned = family.pins?.get(rel);
     if (pinned !== undefined) { if (sha256(text) !== pinned) refuse(); continue; }
     if ((family.exempt ?? []).some(exempt => exempt.file === rel && templateFields(exempt.template, text) !== null)) continue;
-    if (namesAct(family.sweep, rel, await swept(rel, text))) {
+    if (namesAct(family.sweep, rel, textForms(await swept(rel, text)))) {
       return { why: `${DECISIONS_DIR}/${rel} names the act without being its record: a withdrawal or a form this reader does not define`, namedBy: `${DECISIONS_DIR}/${rel}` };
     }
   }
