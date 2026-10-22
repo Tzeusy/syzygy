@@ -35,12 +35,18 @@ export function templateFields(template: RecorderTemplate, text: string): Readon
 }
 
 /** Slot patterns the recorders' values take. A `line` holds a non-space character and no line break of either kind: the recorders
- * refuse a blank selection (R-POLARIS-DOSSIER-GATE-SOURCES-3 note 3). */
+ * refuse a blank selection (R-POLARIS-DOSSIER-GATE-SOURCES-3 note 3).
+ *
+ * `line` names its first non-space character: only spaces other than CR and LF come before it. The language is the earlier
+ * `[^\r\n]*\S[^\r\n]*` one (CR and LF are both `\s`, so the leading run is still free of breaks, and any such line splits at its
+ * first `\S`), and a slot followed by more template still captures the longest value the rest accepts. But the earlier pattern could
+ * place its `\S` at any of the line's characters, so a record that failed late was retried once per placement in every slot; this one
+ * places it once (syzygy-bpyt.8.17). */
 export const SLOT = Object.freeze({
   date: '\\d{4}-\\d{2}-\\d{2}',
   instant: '\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}Z',
   sha256: '[0-9a-f]{64}',
   commit: '[0-9a-f]{40}',
   verdict: 'CONFIRM WITH EXCEPTIONS|CONFIRM',
-  line: '[^\\r\\n]*\\S[^\\r\\n]*',
+  line: '[^\\S\\r\\n]*\\S[^\\r\\n]*',
 });
