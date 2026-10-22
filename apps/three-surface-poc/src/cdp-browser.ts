@@ -10,9 +10,9 @@
 // ever opens the `file://` pages the caller writes.
 
 import { spawn, spawnSync, type ChildProcess } from 'node:child_process';
-import { existsSync, mkdtempSync, readFileSync, readdirSync, statSync } from 'node:fs';
+import { existsSync, lstatSync, mkdtempSync, readFileSync, readdirSync, readlinkSync, rmSync, statSync } from 'node:fs';
 import { tmpdir } from 'node:os';
-import { join } from 'node:path';
+import { basename, dirname, join } from 'node:path';
 
 import { removeTemporaryDirectory, type TemporaryDirectoryCleanupOptions } from './temporary-directory.js';
 
@@ -262,13 +262,56 @@ function waitForDevToolsUrl(child: ChildProcess): Promise<string> {
   });
 }
 
+/** Chrome keeps its process singleton's socket outside the profile, in a directory of its
+ * own directly under the temp directory (`.com.google.Chrome.<random>`; Chromium builds
+ * name it `.org.chromium.Chromium.<random>`), and links `<profile>/SingletonSocket` to the
+ * socket in it. A Chrome that exits cleanly removes the directory. One that is killed, as
+ * closeDisposableBrowser does when the leader misses its close grace, leaves it behind the
+ * profile (syzygy-bpyt.4.11). Chrome unlinks the profile's link as it starts to shut down,
+ * so the directory is read from the link while Chrome runs, and again at removal for a
+ * Chrome that was killed before it announced itself. */
+const CHROME_SINGLETON_DIRECTORY = /^\.(?:com\.google\.Chrome|org\.chromium\.Chromium)\.[A-Za-z0-9]+$/;
+
+function isChromeSingletonDirectory(directory: string): boolean {
+  return dirname(directory) === tmpdir() && CHROME_SINGLETON_DIRECTORY.test(basename(directory));
+}
+
+/** The singleton directory the profile's Chrome made, if the profile's link names a socket
+ * in a directory of that name directly under the temp directory. */
+function chromeSingletonDirectory(profile: string): string | undefined {
+  let directory: string;
+  try { directory = dirname(readlinkSync(join(profile, 'SingletonSocket'))); }
+  catch { return undefined; }
+  return isChromeSingletonDirectory(directory) ? directory : undefined;
+}
+
+/** Removes the directory only if it is named like Chrome's, directly under the temp
+ * directory, a real directory (never a link) and the running user's. A failure leaves it:
+ * tidying must not fail the run. */
+function removeChromeSingletonDirectory(directory: string): void {
+  if (!isChromeSingletonDirectory(directory)) return;
+  try {
+    const entry = lstatSync(directory);
+    const user = process.getuid?.();
+    if (entry.isDirectory() && (user === undefined || entry.uid === user)) rmSync(directory, { recursive: true, force: true });
+  } catch { /* left for the temp directory's owner */ }
+}
+
+export interface BrowserProfileRemoval extends TemporaryDirectoryCleanupOptions {
+  /** The singleton directory read while Chrome ran; read from the profile's link if absent. */
+  readonly singleton?: string;
+}
+
 // Test seam: exported for the tests; production code reaches it only inside this file.
-/** Removes the throwaway profile after Chrome has released its files. */
+/** Removes the throwaway profile after Chrome has released its files, and the Chrome
+ * singleton directory that profile's Chrome made beside it. */
 export function removeBrowserProfile(
   profile: string,
-  options?: TemporaryDirectoryCleanupOptions,
+  options: BrowserProfileRemoval = {},
 ): void {
+  const singleton = options.singleton ?? chromeSingletonDirectory(profile);
   removeTemporaryDirectory(profile, options);
+  if (singleton !== undefined) removeChromeSingletonDirectory(singleton);
 }
 
 interface DisposableBrowserProcess {
@@ -443,6 +486,8 @@ export async function closeDisposableBrowser(
 /** Launches `executable` headless with a throwaway profile and connects. */
 export async function launchBrowser(executable: string): Promise<Browser> {
   const profile = mkdtempSync(join(tmpdir(), 'syzygy-poc-browser-'));
+  let singleton: string | undefined;
+  const cleanup: BrowserCleanupOptions = { removeProfile: (path) => removeBrowserProfile(path, { singleton }) };
   const child = spawn(
     executable,
     [
@@ -464,16 +509,7 @@ export async function launchBrowser(executable: string): Promise<Browser> {
       '--window-size=1280,2000',
       'about:blank',
     ],
-    {
-      stdio: ['ignore', 'ignore', 'pipe'],
-      detached: true,
-      // Chrome makes the directory of its process singleton's socket in the temp
-      // directory (`.com.google.Chrome.<random>`, linked from the profile) and
-      // removes it only on a clean exit; the SIGKILL of closeDisposableBrowser
-      // leaves it. With the temp directory set to the profile, that directory is
-      // made inside the profile and goes with it (syzygy-bpyt.4.11).
-      env: { ...process.env, TMPDIR: profile },
-    },
+    { stdio: ['ignore', 'ignore', 'pipe'], detached: true },
   );
   let group: PrivateBrowserGroup;
   try { group = privateBrowserGroup(child); }
@@ -486,12 +522,13 @@ export async function launchBrowser(executable: string): Promise<Browser> {
   try {
     connection = await CdpConnection.open(await waitForDevToolsUrl(child));
   } catch (error) {
-    await closeDisposableBrowser({ close: () => undefined, send: async () => { throw new Error('CDP unavailable'); } }, child, profile, group);
+    await closeDisposableBrowser({ close: () => undefined, send: async () => { throw new Error('CDP unavailable'); } }, child, profile, group, cleanup);
     throw error;
   }
+  singleton = chromeSingletonDirectory(profile);
   let versionInfo: { readonly product: string };
   try { versionInfo = await connection.send<{ readonly product: string }>('Browser.getVersion'); }
-  catch (error) { await closeDisposableBrowser(connection, child, profile, group); throw error; }
+  catch (error) { await closeDisposableBrowser(connection, child, profile, group, cleanup); throw error; }
   return {
     executable,
     version: versionInfo.product,
@@ -508,7 +545,7 @@ export async function launchBrowser(executable: string): Promise<Browser> {
       return new CdpPage(connection, sessionId, targetId);
     },
     async close(): Promise<void> {
-      await closeDisposableBrowser(connection, child, profile, group);
+      await closeDisposableBrowser(connection, child, profile, group, cleanup);
     },
   };
 }

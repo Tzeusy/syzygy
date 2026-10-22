@@ -9,10 +9,11 @@
 //
 // syzygy-bpyt.4.11: the same kill leaves Chrome's singleton directory behind. Chrome makes
 // `.com.google.Chrome.<random>` in its temp directory and removes it only on a clean exit,
-// so a killed leader left one in TMPDIR on every such run. The launch now gives Chrome its
-// profile as the temp directory, so that directory is made inside the profile.
+// so a killed leader left one in TMPDIR on every such run. The helper reads that directory
+// from the profile's link while Chrome runs and removes it with the profile.
 import { existsSync, readdirSync, readFileSync, readlinkSync } from 'node:fs';
-import { dirname, join } from 'node:path';
+import { tmpdir } from 'node:os';
+import { basename, dirname, join } from 'node:path';
 
 import { describe, expect, it } from 'vitest';
 
@@ -78,7 +79,7 @@ describe.skipIf(executable === undefined || process.platform !== 'linux')('dispo
     }
   }, 60_000);
 
-  it('leaves no Chrome singleton directory behind when the leader is killed, because it is made inside the profile', async () => {
+  it('leaves no Chrome singleton directory behind when the leader is killed', async () => {
     const browser = await launchBrowser(executable as string);
     let frozen: number[] = [];
     let closeAttempted = false;
@@ -87,10 +88,11 @@ describe.skipIf(executable === undefined || process.platform !== 'linux')('dispo
       await page.navigate('data:text/html,<p>singleton</p>');
       const profile = ownProfile();
       // Chrome links the profile to the directory of its singleton socket; that directory exists
-      // now and sits inside the profile, not beside it in the shared temp directory.
+      // now, beside the profile in the temp directory, and is this launch's alone.
       const singleton = dirname(readlinkSync(join(profile, 'SingletonSocket')));
       expect(existsSync(singleton)).toBe(true);
-      expect(dirname(singleton)).toBe(profile);
+      expect(dirname(singleton)).toBe(tmpdir());
+      expect(basename(singleton)).toMatch(/^\.(com\.google\.Chrome|org\.chromium\.Chromium)\./);
       // As in the case above, a helper that cannot exit makes the leader miss its close grace
       // and be killed, which is the exit that skips Chrome's own cleanup.
       frozen = ownNetworkHelpers();
