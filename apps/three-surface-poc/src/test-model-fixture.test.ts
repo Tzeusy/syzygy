@@ -1,12 +1,12 @@
-import { execFileSync, spawn } from 'node:child_process';
-import { once } from 'node:events';
-import { chmodSync, existsSync, mkdirSync, mkdtempSync, readdirSync, rmSync, writeFileSync } from 'node:fs';
+import { execFileSync } from 'node:child_process';
+import { existsSync, mkdirSync, mkdtempSync, readdirSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import type { PocModel } from '@syzygy/three-surface-poc-core';
 
-import { fixtureRepoWithGit, frozenFixture, removeFixturesOfDeadProcesses, sharedFixtureModels } from './test-model-fixture.js';
+import { FIXTURE_PREFIX } from './fixture-directories.js';
+import { fixtureRepoWithGit, frozenFixture, sharedFixtureModels } from './test-model-fixture.js';
 
 describe('fixture repositories (syzygy-jsyi)', () => {
   const git = (root: string, args: readonly string[]): string => execFileSync('git', ['-C', root, ...args], { encoding: 'utf8' }).trim();
@@ -81,128 +81,42 @@ describe('shared fixture models (syzygy-k66p)', () => {
   });
 });
 
-describe('fixture directories a killed run left behind (syzygy-bpyt.4.10)', () => {
-  const FIXTURE_PREFIX = 'syzygy-poc-surface-fixture-';
+describe('fixture directory names (syzygy-bpyt.4.10)', () => {
   const privateTmp: string[] = [];
   afterEach(() => {
-    vi.restoreAllMocks();
     vi.unstubAllEnvs();
     vi.resetModules();
     for (const directory of privateTmp.splice(0)) rmSync(directory, { recursive: true, force: true });
   });
 
-  function newTmp(): string {
-    const tmp = mkdtempSync(join(tmpdir(), 'syzygy-fixture-sweep-'));
+  /** A fresh copy of the helper module that sees only this test's own TMPDIR, so the
+   * directories it makes can be counted without another test file's. */
+  async function freshHelper(): Promise<{ readonly helper: typeof import('./test-model-fixture.js'); readonly tmp: string }> {
+    const tmp = mkdtempSync(join(tmpdir(), 'syzygy-fixture-names-'));
     privateTmp.push(tmp);
-    return tmp;
-  }
-  /** The pid of a process that has run and been reaped, checked to answer ESRCH. */
-  async function deadPid(): Promise<number> {
-    const child = spawn(process.execPath, ['-e', '']);
-    await once(child, 'exit');
-    const pid = child.pid!;
-    expect(() => process.kill(pid, 0)).toThrow(expect.objectContaining({ code: 'ESRCH' }));
-    return pid;
-  }
-  const entries = (tmp: string): string[] => readdirSync(tmp).sort();
-  const make = (tmp: string, ...names: string[]): void => {
-    for (const name of names) {
-      mkdirSync(join(tmp, name, 'repo'), { recursive: true });
-      writeFileSync(join(tmp, name, 'repo', 'README.md'), '# left behind\n');
-    }
-  };
-
-  it('removes the copy and the template of a process that is gone', async () => {
-    const tmp = newTmp();
-    const dead = await deadPid();
-    make(tmp, `${FIXTURE_PREFIX}p${dead}-AbCdEf`, `${FIXTURE_PREFIX}template-p${dead}-AbCdEf`);
-    removeFixturesOfDeadProcesses(tmp);
-    expect(entries(tmp)).toEqual([]);
-  });
-
-  it('keeps the directories of a live process, the current one included', () => {
-    const tmp = newTmp();
-    const mine = [`${FIXTURE_PREFIX}p${process.pid}-AbCdEf`, `${FIXTURE_PREFIX}template-p${process.pid}-AbCdEf`];
-    make(tmp, ...mine);
-    removeFixturesOfDeadProcesses(tmp);
-    expect(entries(tmp)).toEqual([...mine].sort());
-  });
-
-  it('keeps a name that carries no pid segment, whatever its suffix', async () => {
-    const tmp = newTmp();
-    const dead = await deadPid();
-    const kept = [
-      `${FIXTURE_PREFIX}AbCdEf`, // made before pids were added
-      `${FIXTURE_PREFIX}template-AbCdEf`,
-      `${FIXTURE_PREFIX}p${dead}`, // pid with no hyphen after it
-      `${FIXTURE_PREFIX}x-p${dead}-AbCdEf`, // pid segment not straight after the prefix
-      `${FIXTURE_PREFIX}template-x-p${dead}-AbCdEf`,
-      `other-fixture-p${dead}-AbCdEf`, // another prefix
-      `copy-of-${FIXTURE_PREFIX}p${dead}-AbCdEf`, // the prefix inside a longer name
-      `${FIXTURE_PREFIX.slice(0, -1)}p${dead}-AbCdEf`, // prefix without its last hyphen
-    ];
-    make(tmp, ...kept);
-    removeFixturesOfDeadProcesses(tmp);
-    expect(entries(tmp)).toEqual([...kept].sort());
-  });
-
-  it('keeps a directory whose pid fails with anything but ESRCH', async () => {
-    const tmp = newTmp();
-    const dead = await deadPid();
-    const denied = `${FIXTURE_PREFIX}p${dead}-AbCdEf`;
-    const outOfRange = `${FIXTURE_PREFIX}template-p99999999999999999999-AbCdEf`;
-    make(tmp, denied, outOfRange);
-    const kill = process.kill.bind(process);
-    vi.spyOn(process, 'kill').mockImplementation((pid, signal) => {
-      if (pid === dead) throw Object.assign(new Error('operation not permitted'), { code: 'EPERM' });
-      return kill(pid, signal);
-    });
-    removeFixturesOfDeadProcesses(tmp);
-    expect(entries(tmp)).toEqual([denied, outOfRange].sort());
-  });
-
-  it('does not fail the run when a dead process\'s directory cannot be removed', async () => {
-    const tmp = newTmp();
-    const dead = await deadPid();
-    const stuck = `${FIXTURE_PREFIX}p${dead}-AbCdEf`;
-    make(tmp, stuck, `${FIXTURE_PREFIX}template-p${dead}-AbCdEf`);
-    chmodSync(join(tmp, stuck), 0o555);
-    try {
-      expect(() => removeFixturesOfDeadProcesses(tmp)).not.toThrow();
-      // The other directory is still removed: one failure does not end the sweep.
-      expect(entries(tmp)).not.toContain(`${FIXTURE_PREFIX}template-p${dead}-AbCdEf`);
-    } finally {
-      chmodSync(join(tmp, stuck), 0o755);
-    }
-  });
-
-  it('names the template and each copy with the pid of the process that made them', async () => {
-    const tmp = newTmp();
     vi.stubEnv('TMPDIR', tmp);
     vi.resetModules();
-    const helper = await import('./test-model-fixture.js');
+    return { helper: await import('./test-model-fixture.js'), tmp };
+  }
+
+  it('names the template and each copy with the pid of the process that made them', async () => {
+    const { helper, tmp } = await freshHelper();
     const copies = [helper.fixtureRepoWithGit([]), helper.fixtureRepoWithGit([])];
-    const names = entries(tmp);
+    const names = readdirSync(tmp).sort();
     expect(names.filter((name) => new RegExp(`^${FIXTURE_PREFIX}template-p${process.pid}-[A-Za-z0-9]{6}$`).test(name))).toHaveLength(1);
     expect(names.filter((name) => new RegExp(`^${FIXTURE_PREFIX}p${process.pid}-[A-Za-z0-9]{6}$`).test(name))).toHaveLength(2);
     expect(names).toHaveLength(3);
     expect(copies.map((copy) => copy.repoRoot.startsWith(join(tmp, `${FIXTURE_PREFIX}p${process.pid}-`)))).toEqual([true, true]);
   }, 30_000);
 
-  it('sweeps the dead before it makes the file\'s template, and keeps the live and the legacy', async () => {
-    const tmp = newTmp();
-    const dead = await deadPid();
-    const survivors = [`${FIXTURE_PREFIX}p${process.pid}-AbCdEf`, `${FIXTURE_PREFIX}AbCdEf`, `${FIXTURE_PREFIX}template-AbCdEf`];
-    make(tmp, `${FIXTURE_PREFIX}p${dead}-AbCdEf`, `${FIXTURE_PREFIX}template-p${dead}-AbCdEf`, ...survivors);
-    vi.stubEnv('TMPDIR', tmp);
-    vi.resetModules();
-    const helper = await import('./test-model-fixture.js');
-    expect(entries(tmp)).toHaveLength(survivors.length + 2);
-    const copy = helper.fixtureRepoWithGit([]);
-    const after = entries(tmp);
-    expect(after.filter((name) => name.includes(`p${dead}-`))).toEqual([]);
-    expect(after).toEqual(expect.arrayContaining(survivors));
-    expect(after).toHaveLength(survivors.length + 2);
-    expect(existsSync(copy.repoRoot)).toBe(true);
+  it('does not sweep when a file makes its template: the sweep is the global setup\'s, once per run', async () => {
+    const { helper, tmp } = await freshHelper();
+    const deadPid = 4_194_305; // above the largest pid Linux hands out, so never alive
+    expect(() => process.kill(deadPid, 0)).toThrow(expect.objectContaining({ code: 'ESRCH' }));
+    const leftover = `${FIXTURE_PREFIX}p${deadPid}-AbCdEf`;
+    mkdirSync(join(tmp, leftover));
+    helper.fixtureRepoWithGit([]);
+    expect(existsSync(join(tmp, leftover))).toBe(true);
+    expect(readdirSync(tmp)).toHaveLength(3);
   }, 30_000);
 });

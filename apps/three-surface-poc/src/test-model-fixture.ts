@@ -1,12 +1,13 @@
 // Test support: exports with no non-test importer are consumed by tests only, by design.
 
 import { execFileSync } from 'node:child_process';
-import { cpSync, mkdirSync, mkdtempSync, readdirSync, rmSync, writeFileSync } from 'node:fs';
+import { cpSync, mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { dirname, join } from 'node:path';
 
 import { BUTLERS_POC_SEEDS, buildPocModel, type PocEvaluationEvidence, type PocModel, type ProjectShapeModelInput, type WalkthroughJudgmentInputs } from '@syzygy/three-surface-poc-core';
 
+import { ownedCopyPrefix, ownedTemplatePrefix } from './fixture-directories.js';
 import { pwbReadinessTraversal } from './walkthrough-inputs.js';
 
 function git(root: string, args: readonly string[]): string {
@@ -42,48 +43,13 @@ interface FixtureRepo {
  */
 export function fixtureRepoWithGit(cleanups: string[]): FixtureRepo {
   template ??= committedFixtureRepo();
-  const root = mkdtempSync(join(tmpdir(), `${FIXTURE_PREFIX}p${process.pid}-`));
+  const root = mkdtempSync(join(tmpdir(), ownedCopyPrefix()));
   cleanups.push(root);
   cpSync(template.repoRoot, root, { recursive: true });
   return { repoRoot: root, revision: template.revision };
 }
 
 let template: FixtureRepo | undefined;
-
-const FIXTURE_PREFIX = 'syzygy-poc-surface-fixture-';
-/** Only a name that carries its owner's pid, `p<pid>-` straight after the prefix
- * (or after `template-`), is ever swept. A name made before pids were added has
- * the random suffix there and no hyphen after it, so it never matches. */
-const FIXTURE_NAME_WITH_OWNER = /^syzygy-poc-surface-fixture-(?:template-)?p(\d+)-/;
-
-/**
- * A run killed before its teardown hooks run (SIGKILL, a CI timeout, a closed
- * terminal) leaves its fixture directories behind; a later run removes the ones
- * whose owner process is gone (syzygy-bpyt.4.10). A pid that answers signal 0, or
- * fails with anything but ESRCH (EPERM, a pid out of range), may be alive and is
- * kept, as is every name without a pid segment. A directory that cannot be
- * removed is left: a sweep must not fail the run that starts it.
- */
-export function removeFixturesOfDeadProcesses(directory: string = tmpdir()): void {
-  for (const name of readdirSync(directory)) {
-    const pid = FIXTURE_NAME_WITH_OWNER.exec(name)?.[1];
-    if (pid === undefined || ownerMayBeAlive(Number(pid))) continue;
-    try {
-      rmSync(join(directory, name), { recursive: true, force: true });
-    } catch {
-      // Left for the next run.
-    }
-  }
-}
-
-function ownerMayBeAlive(pid: number): boolean {
-  try {
-    process.kill(pid, 0);
-    return true;
-  } catch (error) {
-    return (error as NodeJS.ErrnoException).code !== 'ESRCH';
-  }
-}
 
 /** Removes the template when the test file ends, through the hook
  * `vitest.setup.ts` installs; outside Vitest (the accessibility CLI imports
@@ -99,8 +65,7 @@ function removeAtEndOfFile(root: string): void {
 }
 
 function committedFixtureRepo(): FixtureRepo {
-  removeFixturesOfDeadProcesses();
-  const root = mkdtempSync(join(tmpdir(), `${FIXTURE_PREFIX}template-p${process.pid}-`));
+  const root = mkdtempSync(join(tmpdir(), ownedTemplatePrefix()));
   removeAtEndOfFile(root);
   const files: Readonly<Record<string, string>> = {
     'docs/superpowers/specs/2026-08-24-whatsapp-identity-reconciliation-design.md':
