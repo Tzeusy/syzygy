@@ -30,6 +30,7 @@ import hashlib
 import json
 import os
 import pathlib
+import re
 import shutil
 import subprocess
 import sys
@@ -42,7 +43,8 @@ TESTS = ['apps/three-surface-poc/src/cdp-browser.test.ts', 'apps/three-surface-p
 PROJECT = '@syzygy/three-surface-poc-app'
 ATTEMPTS = 3
 LOAD_SIGNATURES = ('drain did not verify', 'still held by', 'timed out', 'STACK_TRACE_ERROR')
-REGEX = r"const CHROME_SINGLETON_DIRECTORY = /^\.(?:com\.google\.Chrome|org\.chromium\.Chromium)\.[A-Za-z0-9]+$/;"
+REGEX = r"const CHROME_SINGLETON_DIRECTORY = /^\.?(?:com\.google\.Chrome|org\.chromium\.Chromium)\.[A-Za-z0-9]+$/;"
+CHROME_NAME = re.compile(r'^\.?(com\.google\.Chrome|org\.chromium\.Chromium)\.')  # a leftover directory of Chrome's, dotted (Chrome 120) or not (147 and later)
 READ = '  const singleton = options.singleton ?? chromeSingletonDirectory(profile);\n'
 REMOVE_PROFILE = '  removeTemporaryDirectory(profile, options);\n'
 REMOVAL = '  if (singleton !== undefined) removeChromeSingletonDirectory(singleton);\n'
@@ -78,6 +80,14 @@ MUTANTS = [
      [(CDP, REGEX, REGEX.replace('= /^\\.', '= /\\.'))]),
     ('name-suffix-unrestricted', 'tests', 'any suffix after the prefix, symbols included',
      [(CDP, REGEX, REGEX.replace('[A-Za-z0-9]+$', '.*$'))]),
+    ('leading-dot-required', 'tests', 'the pattern needs the leading dot again: the pre-fix behavior, which leaves the directory a Chrome 147 or later makes (hosted run 39768592736)',
+     [(CDP, REGEX, REGEX.replace('/^\\.?(?:', '/^\\.(?:'))]),
+    ('leading-dot-forbidden', 'tests', 'the pattern takes no leading dot: the dotted name of Chrome 120 is no longer removed',
+     [(CDP, REGEX, REGEX.replace('/^\\.?(?:', '/^(?:'))]),
+    ('leading-dot-repeatable', 'tests', 'any number of leading dots: a name with two dots is removed',
+     [(CDP, REGEX, REGEX.replace('/^\\.?(?:', '/^\\.*(?:'))]),
+    ('leading-character-any', 'tests', 'the optional leading character is any character, not a dot: a name with a letter before Chrome\'s prefix is removed',
+     [(CDP, REGEX, REGEX.replace('/^\\.?(?:', '/^.?(?:'))]),
     ('chromium-form-dropped', 'tests', 'the Chromium form of the name is not removed',
      [(CDP, REGEX, REGEX.replace('(?:com\\.google\\.Chrome|org\\.chromium\\.Chromium)', '(?:com\\.google\\.Chrome)'))]),
     ('stat-follows-links', 'tests', 'a link to a directory is judged by its target',
@@ -143,7 +153,7 @@ results = []
 control = {}
 try:
     status, exit_code, total, failing, left, attempts = decide(TESTS, {})
-    chrome_left = [n for n in left if n.startswith(('.com.google.Chrome.', '.org.chromium.Chromium.'))]
+    chrome_left = [n for n in left if CHROME_NAME.match(n)]
     control = {'command': 'npx vitest run ' + ' '.join(TESTS) + ' --project ' + PROJECT, 'exit': exit_code, 'testsRun': total, 'failing': failing, 'left': left, 'attempts': attempts,
                'holds': exit_code == 0 and total > 0 and not chrome_left}
     print('control tests', control['holds'], total, left, flush=True)

@@ -36,7 +36,7 @@ assert git('status', '--porcelain', '--', 'apps', 'packages', 'vitest.config.ts'
 
 list_a = sorted(set(git('grep', '-l', '-E', 'launchBrowser|findBrowserExecutable|withBrowserPage', '--', 'apps/three-surface-poc/src/*.test.ts').splitlines()))
 list_b = sorted(set(git('ls-files', 'apps/three-surface-poc/src/*.browser.test.ts').splitlines()))
-chrome = re.compile(r'^\.(com\.google\.Chrome|org\.chromium\.Chromium)\.')
+chrome = re.compile(r'^\.?(com\.google\.Chrome|org\.chromium\.Chromium)\.')
 
 
 def classify(directory: pathlib.Path) -> dict:

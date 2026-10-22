@@ -67,7 +67,7 @@ finally:
     assert rebuilt.returncode == 0, rebuilt.stdout + rebuilt.stderr
 assert hashlib.sha256((WT / SRC).read_bytes()).hexdigest() == digest, 'source not restored'
 
-chrome = re.compile(r'^\.(com\.google\.Chrome|org\.chromium\.Chromium)\.')
+chrome = re.compile(r'^\.?(com\.google\.Chrome|org\.chromium\.Chromium)\.')
 rows = result['rows']
 closed = [r for r in rows if 'error' not in r]
 threw = [r for r in rows if 'error' in r]
