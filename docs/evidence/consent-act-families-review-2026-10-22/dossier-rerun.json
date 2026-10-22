@@ -1,0 +1,258 @@
+{
+  "subject": {
+    "commit": "9f49b6cbec290c2cc0d3a94f3af820d83f5fb780",
+    "branch": "HEAD",
+    "fileSha256": {
+      "packages/polaris-generation-consent/src/package-reader.ts": "6efd4c4edc29f00c021f8723cc4b0716171c1ae05099892cef3fb21d6f13063c"
+    },
+    "testFileSha256": {
+      "packages/polaris-dossier/src/gate-acts.test.ts": "9e7e3654a62ac34400a88099844d70852aa9d0d6a23a2385fba587120793e5f6"
+    }
+  },
+  "runnerPath": "scripts/rule6_mutation_runner.py",
+  "runnerSha256": "2bc35be550f0beb6ad355e0fc89719c1ae28320d186f41929af96dd59a376b22",
+  "runner": "single-occurrence textual replacement of `old` by `new` in `file`, then `npx vitest run --project <project> <testFiles>` in the tree; killed = at least one failed test; file restored from git after each run",
+  "project": "@syzygy/polaris-generation-consent",
+  "ranAt": "2026-10-21T21:27:20+00:00",
+  "mutants": [
+    {
+      "id": "db-fieldstems",
+      "file": "packages/polaris-generation-consent/src/package-reader.ts",
+      "old": "return { stems: form.stems, needles: [artifact], fields: everyField([...form.stems, ...(form.fieldStems ?? []), artifact]), quoted: true, loose: true, citations: true };",
+      "new": "return { stems: form.stems, needles: [artifact], fields: everyField([...form.stems, artifact]), quoted: true, loose: true, citations: true };",
+      "tests": [
+        "packages/polaris-dossier/src/gate-acts.test.ts"
+      ],
+      "command": "npx vitest run --project @syzygy/polaris-dossier packages/polaris-dossier/src/gate-acts.test.ts",
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 130,
+      "failures": [
+        {
+          "test": "the sitting's acts fail closed withdraw what a decisions file names by the drawer's Subject on a field line",
+          "firstErrorLine": "AssertionError: expected { d9: 'ok', rfc720: 'ok', \u2026(3) } to deeply equal { d9: 'ok', rfc720: 'ok', \u2026(3) }"
+        }
+      ]
+    },
+    {
+      "id": "g-exempt",
+      "file": "packages/polaris-generation-consent/src/package-reader.ts",
+      "old": "    if ((family.exempt ?? []).some(exempt => exempt.file === rel && templateFields(exempt.template, text) !== null)) continue;\n",
+      "new": "",
+      "tests": [
+        "packages/polaris-dossier/src/gate-acts.test.ts"
+      ],
+      "command": "npx vitest run --project @syzygy/polaris-dossier packages/polaris-dossier/src/gate-acts.test.ts",
+      "outcome": "killed",
+      "failedTests": 10,
+      "totalTests": 130,
+      "failures": [
+        {
+          "test": "the sitting's acts as gate sources, with no act recorded follow this checkout's tree: each source absent while its act record is, and established once the sitting records it",
+          "firstErrorLine": "AssertionError: expected [ [ \u2026(3) ], [ \u2026(3) ] ] to deeply equal [ [ \u2026(3) ] ]"
+        },
+        {
+          "test": "the sitting's acts as gate sources, with no act recorded follow the tree in either state: no records, every record, and each act alone",
+          "firstErrorLine": "AssertionError: expected [ [ \u2026(3) ], [ \u2026(3) ], [ \u2026(3) ] ] to deeply equal [ [ \u2026(3) ], [ \u2026(3) ] ]"
+        },
+        {
+          "test": "version 2 of the Anthropic statement replaces version 1 from its act's instant, one statement for the pair, the OpenAI statement untouched",
+          "firstErrorLine": "AssertionError: expected [ { \u2026(8) }, { \u2026(8) }, { \u2026(8) } ] to deeply equal [ { \u2026(8) }, { \u2026(8) } ]"
+        },
+        {
+          "test": "version 2 of the Anthropic statement leaves version 1 alone in force before version 2's instant",
+          "firstErrorLine": "AssertionError: expected [ \u2026(3) ] to deeply equal [ \u2026(2) ]"
+        },
+        {
+          "test": "version 2 of the Anthropic statement is what preflight lists in force, before and after its instant, agreeing with the gate",
+          "firstErrorLine": "AssertionError: expected [ Array(1) ] to deeply equal [ \u2026(2) ]"
+        },
+        {
+          "test": "version 2 of the Anthropic statement fails closed when its act record has an appended line: version 1 reads withdrawn and version 2 unbound, so the pair has no statement",
+          "firstErrorLine": "AssertionError: expected [ [ true, true ], [ true, true ] ] to deeply equal [ [ true, true ], [ false, true ] ]"
+        },
+        {
+          "test": "version 2 of the Anthropic statement fails closed when its act record has another supersession: version 1 reads withdrawn and version 2 unbound, so the pair has no statement",
+          "firstErrorLine": "AssertionError: expected [ [ true, true ], [ true, true ] ] to deeply equal [ [ true, true ], [ false, true ] ]"
+        },
+        {
+          "test": "version 2 of the Anthropic statement fails closed when its act record has another effect: version 1 reads withdrawn and version 2 unbound, so the pair has no statement",
+          "firstErrorLine": "AssertionError: expected [ [ true, true ], [ true, true ] ] to deeply equal [ [ true, true ], [ false, true ] ]"
+        },
+        {
+          "test": "version 2 of the Anthropic statement fails closed when its act record has a digest in the packet words: version 1 reads withdrawn and version 2 unbound, so the pair has no statement",
+          "firstErrorLine": "AssertionError: expected [ [ true, true ], [ true, true ] ] to deeply equal [ [ true, false ], [ false, true ] ]"
+        },
+        {
+          "test": "version 2 of the Anthropic statement fails closed once its record changes after the act",
+          "firstErrorLine": "AssertionError: expected [ [ true, true ], [ true, true ] ] to deeply equal [ [ true, false ], [ false, true ] ]"
+        }
+      ]
+    },
+    {
+      "id": "g-exempt-bytes",
+      "file": "packages/polaris-generation-consent/src/package-reader.ts",
+      "old": "exempt.file === rel && templateFields(exempt.template, text) !== null",
+      "new": "exempt.file === rel",
+      "tests": [
+        "packages/polaris-dossier/src/gate-acts.test.ts"
+      ],
+      "command": "npx vitest run --project @syzygy/polaris-dossier packages/polaris-dossier/src/gate-acts.test.ts",
+      "outcome": "killed",
+      "failedTests": 4,
+      "totalTests": 130,
+      "failures": [
+        {
+          "test": "version 2 of the Anthropic statement fails closed when its act record has an appended line: version 1 reads withdrawn and version 2 unbound, so the pair has no statement",
+          "firstErrorLine": "AssertionError: expected [ [ true, false ], [ false, true ] ] to deeply equal [ [ true, true ], [ false, true ] ]"
+        },
+        {
+          "test": "version 2 of the Anthropic statement fails closed when its act record has another supersession: version 1 reads withdrawn and version 2 unbound, so the pair has no statement",
+          "firstErrorLine": "AssertionError: expected [ [ true, false ], [ false, true ] ] to deeply equal [ [ true, true ], [ false, true ] ]"
+        },
+        {
+          "test": "version 2 of the Anthropic statement fails closed when its act record has another effect: version 1 reads withdrawn and version 2 unbound, so the pair has no statement",
+          "firstErrorLine": "AssertionError: expected [ [ true, false ], [ false, true ] ] to deeply equal [ [ true, true ], [ false, true ] ]"
+        },
+        {
+          "test": "version 2 of the Anthropic statement reads version 1's act record past only at its exact render, and version 1 reads version 2's the same way",
+          "firstErrorLine": "AssertionError: expected [ false ] to deeply equal [ true, true ]"
+        }
+      ]
+    },
+    {
+      "id": "g-why",
+      "file": "packages/polaris-generation-consent/src/package-reader.ts",
+      "old": "names the act without being its record: a withdrawal or a form this reader does not define`",
+      "new": "names the act without being its record`",
+      "tests": [
+        "packages/polaris-dossier/src/gate-acts.test.ts"
+      ],
+      "command": "npx vitest run --project @syzygy/polaris-dossier packages/polaris-dossier/src/gate-acts.test.ts",
+      "outcome": "killed",
+      "failedTests": 6,
+      "totalTests": 130,
+      "failures": [
+        {
+          "test": "the sitting's acts fail closed refuse an act another decisions file names: a withdrawal in a form the reader does not define",
+          "firstErrorLine": "AssertionError: expected { state: 'refused', \u2026(1) } to deeply equal { state: 'refused', \u2026(1) }"
+        },
+        {
+          "test": "the sitting's acts fail closed refuse the registry sign-off another decisions file names by its tag",
+          "firstErrorLine": "AssertionError: expected { state: 'refused', \u2026(1) } to deeply equal { state: 'refused', \u2026(1) }"
+        },
+        {
+          "test": "the sitting's acts fail closed refuse the registry sign-off another decisions file names by its tag, in another case",
+          "firstErrorLine": "AssertionError: expected { state: 'refused', \u2026(1) } to deeply equal { state: 'refused', \u2026(1) }"
+        },
+        {
+          "test": "the sitting's acts fail closed refuse the registry sign-off another decisions file names by the package as signed off, spelled sign-off",
+          "firstErrorLine": "AssertionError: expected { state: 'refused', \u2026(1) } to deeply equal { state: 'refused', \u2026(1) }"
+        },
+        {
+          "test": "the sitting's acts fail closed refuse the registry sign-off another decisions file names by the package as signed off, spelled signoff",
+          "firstErrorLine": "AssertionError: expected { state: 'refused', \u2026(1) } to deeply equal { state: 'refused', \u2026(1) }"
+        },
+        {
+          "test": "the sitting's acts fail closed read the resolved P-104 register row as any other line, and refuse a row that cites the sign-off's tag",
+          "firstErrorLine": "AssertionError: | P-104 | The local-agent Redis sitting:: expected { state: 'refused', \u2026(1) } to deeply equal { state: 'refused', \u2026(1) }"
+        }
+      ]
+    },
+    {
+      "id": "g-template",
+      "file": "packages/polaris-generation-consent/src/package-reader.ts",
+      "old": "if (form.template !== undefined) fromTemplate(form.template, text);",
+      "new": "if (false) fromTemplate(form.template, text);",
+      "tests": [
+        "packages/polaris-dossier/src/gate-acts.test.ts"
+      ],
+      "command": "npx vitest run --project @syzygy/polaris-dossier packages/polaris-dossier/src/gate-acts.test.ts",
+      "outcome": "killed",
+      "failedTests": 20,
+      "totalTests": 130,
+      "failures": [
+        {
+          "test": "version 2 of the Anthropic statement fails closed when its act record has an appended line: version 1 reads withdrawn and version 2 unbound, so the pair has no statement",
+          "firstErrorLine": "AssertionError: expected [ [ false, false ] ] to deeply equal [ [ true, true ], [ false, true ] ]"
+        },
+        {
+          "test": "version 2 of the Anthropic statement fails closed when its act record has another supersession: version 1 reads withdrawn and version 2 unbound, so the pair has no statement",
+          "firstErrorLine": "AssertionError: expected [ [ false, false ] ] to deeply equal [ [ true, true ], [ false, true ] ]"
+        },
+        {
+          "test": "version 2 of the Anthropic statement fails closed when its act record has another effect: version 1 reads withdrawn and version 2 unbound, so the pair has no statement",
+          "firstErrorLine": "AssertionError: expected [ [ false, false ] ] to deeply equal [ [ true, true ], [ false, true ] ]"
+        },
+        {
+          "test": "version 2 of the Anthropic statement fails closed when its act record has a digest in the packet words: version 1 reads withdrawn and version 2 unbound, so the pair has no statement",
+          "firstErrorLine": "AssertionError: expected [ [ false, false ] ] to deeply equal [ [ true, false ], [ false, true ] ]"
+        },
+        {
+          "test": "version 2 of the Anthropic statement reads version 1's act record past only at its exact render, and version 1 reads version 2's the same way",
+          "firstErrorLine": "AssertionError: expected [ false, true ] to deeply equal [ true, true ]"
+        },
+        {
+          "test": "the sitting's acts fail closed refuse every sitting act whose record has its supersession line removed",
+          "firstErrorLine": "AssertionError: expected 'ok' to be 'refused' // Object.is equality"
+        },
+        {
+          "test": "the sitting's acts fail closed refuse every sitting act whose record has another supersession",
+          "firstErrorLine": "AssertionError: expected 'ok' to be 'refused' // Object.is equality"
+        },
+        {
+          "test": "the sitting's acts fail closed refuse every sitting act whose record has its phrase removed",
+          "firstErrorLine": "AssertionError: expected 'ok' to be 'refused' // Object.is equality"
+        },
+        {
+          "test": "the sitting's acts fail closed refuse every sitting act whose record has a phrase whose argument is not the exact digest",
+          "firstErrorLine": "AssertionError: expected 'ok' to be 'refused' // Object.is equality"
+        },
+        {
+          "test": "the sitting's acts fail closed refuse every sitting act whose record has another second provenance line",
+          "firstErrorLine": "AssertionError: expected 'ok' to be 'refused' // Object.is equality"
+        },
+        {
+          "test": "the sitting's acts fail closed refuse every sitting act whose record has a second provenance state",
+          "firstErrorLine": "AssertionError: expected 'ok' to be 'refused' // Object.is equality"
+        },
+        {
+          "test": "the sitting's acts fail closed refuse every sitting act whose record has another effect",
+          "firstErrorLine": "AssertionError: expected 'ok' to be 'refused' // Object.is equality"
+        },
+        {
+          "test": "the sitting's acts fail closed refuse every sitting act whose record has \"Withdrawn by this record.\" appended",
+          "firstErrorLine": "AssertionError: expected 'ok' to be 'refused' // Object.is equality"
+        },
+        {
+          "test": "the sitting's acts fail closed refuse every sitting act whose record has a digest in the owner's selection",
+          "firstErrorLine": "AssertionError: expected 'ok' to be 'refused' // Object.is equality"
+        },
+        {
+          "test": "the sitting's acts fail closed refuse every sitting act whose record has a recording tag for another date",
+          "firstErrorLine": "AssertionError: expected 'ok' to be 'refused' // Object.is equality"
+        },
+        {
+          "test": "the sitting's acts fail closed refuse every sitting act whose record has a blank selection label",
+          "firstErrorLine": "AssertionError: expected 'ok' to be 'refused' // Object.is equality"
+        },
+        {
+          "test": "the sitting's acts fail closed refuse every sitting act whose record has a carriage return in the selection",
+          "firstErrorLine": "AssertionError: expected 'ok' to be 'refused' // Object.is equality"
+        },
+        {
+          "test": "the sitting's acts fail closed refuse an act record, and the registry sign-off, with no scope",
+          "firstErrorLine": "AssertionError: expected 'ok' to be 'refused' // Object.is equality"
+        },
+        {
+          "test": "the sitting's acts fail closed refuse an act record, and the registry sign-off, with a wider scope",
+          "firstErrorLine": "AssertionError: expected 'ok' to be 'refused' // Object.is equality"
+        },
+        {
+          "test": "the sitting's acts fail closed refuse an act record, and the registry sign-off, with a second scope",
+          "firstErrorLine": "AssertionError: expected 'ok' to be 'refused' // Object.is equality"
+        }
+      ]
+    }
+  ]
+}
