@@ -2,8 +2,8 @@
 
 Evidence report, not authority. It records why the consent gate's recorder
 templates now read their `| "{label}" | "{description}" |` row in one pass,
-why no verdict and no captured value changes, and what was run to check
-that. CC-REV-1 class 4 (availability on the consent gate), under GP-Q0
+why no verdict and no captured value changes below the engine's
+backtrack-stack limit, and what was run to check that. CC-REV-1 class 4 (availability on the consent gate), under GP-Q0
 part 1 of
 `.syzygy/governance/decisions/OWNER-DIRECTION-GREENFIELD-PARITY-ANSWERS-2026-10-21.md`.
 It answers notes N1 and N2 of
@@ -74,7 +74,7 @@ In the timing runs below, every old read of a 124 KB failing record was
 still running at its 60 s cap. Those samples are recorded as capped, and
 no ratio is taken from a cap.
 
-## Why the answers cannot change
+## Why the answers cannot change below the engine's limit
 
 The argument is written beside `lineReadOnce` in the source, so that a
 reader can check it without this page.
@@ -105,11 +105,24 @@ backtracks into the slots before x, as before.
 The first lookahead holds for any text the line matches, because x, B and
 y hold no CR or LF. So it refuses nothing the plain read accepts.
 
-The two reads therefore accept the same records and capture the same
-values in every slot.
+Below the engine's backtrack-stack limit, the two reads therefore accept
+the same records and capture the same values in every slot.
 
 [Inferred] That is an argument over the regex structure, not a
 measurement. The checks below test it.
+
+At that limit they differ, by the round-1 review's measurement
+(docs/reviews/R-GP-IMPL-RECORDER-LABEL-ROW-1-RAW.md §3.7, finding F1)
+[Observed, by the reviewer]. On Node v24.6.0, on every one of the 7 row
+templates, a well-formed record whose label is 8,388,232–8,388,442
+characters (D9, marker values) throws
+`RangeError: Maximum call stack size exceeded` from `RegExp.exec` in the
+old read, and reads in the new one. Through the gate,
+`readDigestBoundActState` over the real D9 record with an 8,388,100- or
+8,388,200-character label throws in `9a30237e` and returns `ok` in
+`8b143272`. That band is with the owner (the 2026-10-22 packet, the item
+for syzygy-bpyt.8.21). Above about 8.39 MB both reads throw; that
+pre-existing crash is syzygy-bpyt.8.29.
 
 ## Why it is linear
 
@@ -146,7 +159,9 @@ The new tests are in
 `a line of two line slots, read once (syzygy-bpyt.8.21)`. Each compares the
 new read with the plain one, which the test writes out itself. It compares
 the raw slots, and `templateFields`, which keeps slots only when they
-render back to the text. Nothing is imported from the module under test.
+render back to the text. The plain read, the oracle, is written out in
+the test; the test imports `SLOT`, `recorderTemplate` and `templateFields`
+from the module under test.
 
 - **Literal cases.** The expected values are hard-coded literals:
   - a label holding the separator once and twice (the longest label
@@ -295,7 +310,7 @@ from a cap.
   CPU time and lists every wall sample at or over 100 ms with its load.
   - New tree: `8c024867`, the PR head's code.
   - Old tree: main `9a30237e`.
-- **Run 1** (`docs/evidence/recorder-label-row-timing-run-1-2026-10-22.json`)
+- **Run 1** (`docs/evidence/recorder-label-row-timing-2026-10-22.json`)
   is the lowest-load run of the day.
   - New tree: `433561f2`, with the same `recorder-template.ts`.
   - Old tree: `a0406967`, with the same old file.
@@ -382,7 +397,7 @@ The inputs by kind:
 | one line of a subject | a mark appended | 373 |
 | | the line deleted | 373 |
 | one line slot of a subject: 22 slots over the 7 subjects (`opening`, `label`, `description`, `quote`, `review`, `disposition`); a variant that renders a record already in the corpus is skipped | a separator inside | 22 |
-| | two separators inside | 22 |
+| | three separators | 22 |
 | | a separator first | 16 |
 | | a separator last | 22 |
 | | a closing mark inside | 22 |
@@ -396,7 +411,7 @@ The inputs by kind:
 | a reader world (the checkout with one file replaced) | the checkout unchanged | 1 |
 | | a rendered record added | 2 |
 | | each of the 6 named file alterations, on each of the 7 subjects | 42 |
-| | `label` or `description` of each of the 6 sitting-form subjects: separator inside, two separators inside, space first, blank | 48 |
+| | `label` or `description` of each of the 6 sitting-form subjects: separator inside, three separators, space first, blank | 48 |
 | **total** | | **2,002** |
 
 Three of the slot variants are the ones acceptance 3 names. A label
@@ -439,7 +454,7 @@ which is how the tool reports mismatches when a mutant is applied.
 
 | Control | Record | Mismatches | Where |
 |---|---|---|---|
-| M4, the committed split takes the shortest label | `docs/evidence/recorder-label-row-negative-control-M4-2026-10-22.json` | **35** of 15,272 answers, over 30 inputs | read in both trees, other captured values: a separator inside, two separators inside and a separator last in `label`; a separator inside and two separators inside in `description`; on each of the 7 row templates |
+| M4, the committed split takes the shortest label | `docs/evidence/recorder-label-row-negative-control-M4-2026-10-22.json` | **35** of 15,272 answers, over 30 inputs | read in both trees, other captured values: a separator inside, three separators and a separator last in `label`; a separator inside and three separators in `description`; on each of the 7 row templates |
 | M5, the committed description accepts a blank | `docs/evidence/recorder-label-row-negative-control-M5-2026-10-22.json` | **21** of 15,272 answers, over 18 inputs | refused in the old tree, read in the new: blank and spaces only in `description`; read in both, other values: a separator last in `description`; on each of the 7 row templates |
 
 [Observed] Every mismatch in both controls is a slot input. The file and
