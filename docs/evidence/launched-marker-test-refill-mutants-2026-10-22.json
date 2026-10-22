@@ -1,0 +1,305 @@
+{
+  "title": "syzygy-bpyt.8.14 rule-6 mutants: each launch form on a freshly planted run, and each race asserted staged before its state",
+  "bead": "syzygy-bpyt.8.14",
+  "subject": [
+    "packages/polaris-dossier/src/launched.test.ts"
+  ],
+  "testSha256": {
+    "base": "e151d97765c541090cf5b4b15bfa0763ad2812e8d2c6d3dbc595dfedf0be9003",
+    "fix": "3ffaed9f28b831e04792762bb0677daeedcc570f85d0067f7365ec31adcb0ef7"
+  },
+  "readerSha256": "c7a25b8b45fe12e2add7874f88d46b2bad1eef16ffa4a17e2464d5c671424921",
+  "base": "b7697f6ac82c7fdb47c6858f70b23febdd3f505c",
+  "commit": "f25b335cfc7f7dc5a50f6c2743e3107abd056dc3",
+  "command": "npx vitest run --project @syzygy/polaris-dossier --reporter=json --outputFile=<scratch>/mutant-vitest.json packages/polaris-dossier/src/launched.test.ts",
+  "timeoutSeconds": 300,
+  "unmutated": {
+    "base": {
+      "testSha256": "e151d97765c541090cf5b4b15bfa0763ad2812e8d2c6d3dbc595dfedf0be9003",
+      "exitCode": 0,
+      "counts": {
+        "numTotalTests": 43,
+        "numPassedTests": 43,
+        "numFailedTests": 0
+      },
+      "failedTests": []
+    },
+    "fix": {
+      "testSha256": "3ffaed9f28b831e04792762bb0677daeedcc570f85d0067f7365ec31adcb0ef7",
+      "exitCode": 0,
+      "counts": {
+        "numTotalTests": 43,
+        "numPassedTests": 43,
+        "numFailedTests": 0
+      },
+      "failedTests": []
+    }
+  },
+  "mutants": [
+    {
+      "id": "F1-isFile-off-for-syzygy-launched-only",
+      "tests": "base",
+      "edits": [
+        {
+          "file": "packages/polaris-dossier/src/launched.ts",
+          "old": "export function launchedMarkerState(runDir: string): LaunchedMarkerState {",
+          "new": "export function launchedMarkerState(runDir: string, anyFileType = false): LaunchedMarkerState {"
+        },
+        {
+          "file": "packages/polaris-dossier/src/launched.ts",
+          "old": "    if (!stat.isFile() || stat.size > MARKER_BYTES_MAX) return 'unreadable';",
+          "new": "    if ((!anyFileType && !stat.isFile()) || stat.size > MARKER_BYTES_MAX) return 'unreadable';"
+        },
+        {
+          "file": "packages/polaris-dossier/src/launched.ts",
+          "old": "  const state = launchedMarkerState(runDir);\n  if (state === 'unreadable')",
+          "new": "  const state = launchedMarkerState(runDir, form['value'] === SYZYGY_LAUNCHED);\n  if (state === 'unreadable')"
+        }
+      ],
+      "exitCode": 1,
+      "counts": {
+        "numTotalTests": 43,
+        "numPassedTests": 42,
+        "numFailedTests": 1
+      },
+      "failedTests": [
+        {
+          "test": "launch forms in a run whose marker is unreadable count neither a declared form nor a syzygy-launched one: a FIFO holding the marker's bytes",
+          "firstErrorLine": "AssertionError: expected null to be 'the run\\'s launched marker is present\u2026' // Object.is equality"
+        }
+      ],
+      "blocked": false,
+      "outcome": "killed",
+      "restored": true
+    },
+    {
+      "id": "F2-declared-forms-drain-then-judge-type-syzygy-launched-unchecked",
+      "tests": "base",
+      "edits": [
+        {
+          "file": "packages/polaris-dossier/src/launched.ts",
+          "old": "export function launchedMarkerState(runDir: string): LaunchedMarkerState {",
+          "new": "export function launchedMarkerState(runDir: string, anyFileType = false): LaunchedMarkerState {"
+        },
+        {
+          "file": "packages/polaris-dossier/src/launched.ts",
+          "old": "    if (!stat.isFile() || stat.size > MARKER_BYTES_MAX) return 'unreadable';",
+          "new": "    if (stat.size > MARKER_BYTES_MAX) return 'unreadable';"
+        },
+        {
+          "file": "packages/polaris-dossier/src/launched.ts",
+          "old": "    if (length > MARKER_BYTES_MAX) return 'unreadable';",
+          "new": "    if (length > MARKER_BYTES_MAX || (!anyFileType && !stat.isFile())) return 'unreadable';"
+        },
+        {
+          "file": "packages/polaris-dossier/src/launched.ts",
+          "old": "  const state = launchedMarkerState(runDir);\n  if (state === 'unreadable')",
+          "new": "  const state = launchedMarkerState(runDir, form['value'] === SYZYGY_LAUNCHED);\n  if (state === 'unreadable')"
+        }
+      ],
+      "exitCode": 0,
+      "counts": {
+        "numTotalTests": 43,
+        "numPassedTests": 43,
+        "numFailedTests": 0
+      },
+      "failedTests": [],
+      "blocked": false,
+      "outcome": "survived",
+      "restored": true
+    },
+    {
+      "id": "H1-readSync-hook-disabled",
+      "tests": "base",
+      "edits": [
+        {
+          "file": "packages/polaris-dossier/src/launched.test.ts",
+          "old": "      if (!rewritten) { rewritten = true; fs.writeFileSync(marker(dir), after); }",
+          "new": "      if (!rewritten && call !== 'readSync') { rewritten = true; fs.writeFileSync(marker(dir), after); }"
+        }
+      ],
+      "exitCode": 1,
+      "counts": {
+        "numTotalTests": 43,
+        "numPassedTests": 42,
+        "numFailedTests": 1
+      },
+      "failedTests": [
+        {
+          "test": "launchedMarkerState is unreadable for a marker that grows past 4096 bytes between two reads, the first of which held the whole marker",
+          "firstErrorLine": "AssertionError: expected 'launched' to be 'unreadable' // Object.is equality"
+        }
+      ],
+      "blocked": false,
+      "outcome": "killed",
+      "restored": true
+    },
+    {
+      "id": "H2-read-with-readFileSync-utf8-as-c571fb9f",
+      "tests": "base",
+      "edits": [
+        {
+          "file": "packages/polaris-dossier/src/launched.ts",
+          "old": "    const bytes = Buffer.alloc(MARKER_BYTES_MAX + 1);\n    let length = 0;\n    while (length < bytes.length) {\n      const read = fs.readSync(fd, bytes, length, bytes.length - length, null);\n      if (read === 0) break;\n      length += read;\n    }\n    if (length > MARKER_BYTES_MAX) return 'unreadable';\n    const marker = JSON.parse(bytes.toString('utf8', 0, length)) as unknown;\n",
+          "new": "    const text = fs.readFileSync(fd, 'utf8');\n    if (Buffer.byteLength(text) > MARKER_BYTES_MAX) return 'unreadable';\n    const marker = JSON.parse(text) as unknown;\n"
+        }
+      ],
+      "exitCode": 1,
+      "counts": {
+        "numTotalTests": 43,
+        "numPassedTests": 42,
+        "numFailedTests": 1
+      },
+      "failedTests": [
+        {
+          "test": "launchedMarkerState is unreadable for a marker that grows past 4096 bytes between two reads, the first of which held the whole marker",
+          "firstErrorLine": "AssertionError: expected 'launched' to be 'unreadable' // Object.is equality"
+        }
+      ],
+      "blocked": false,
+      "outcome": "killed",
+      "restored": true
+    },
+    {
+      "id": "F1-isFile-off-for-syzygy-launched-only",
+      "tests": "fix",
+      "edits": [
+        {
+          "file": "packages/polaris-dossier/src/launched.ts",
+          "old": "export function launchedMarkerState(runDir: string): LaunchedMarkerState {",
+          "new": "export function launchedMarkerState(runDir: string, anyFileType = false): LaunchedMarkerState {"
+        },
+        {
+          "file": "packages/polaris-dossier/src/launched.ts",
+          "old": "    if (!stat.isFile() || stat.size > MARKER_BYTES_MAX) return 'unreadable';",
+          "new": "    if ((!anyFileType && !stat.isFile()) || stat.size > MARKER_BYTES_MAX) return 'unreadable';"
+        },
+        {
+          "file": "packages/polaris-dossier/src/launched.ts",
+          "old": "  const state = launchedMarkerState(runDir);\n  if (state === 'unreadable')",
+          "new": "  const state = launchedMarkerState(runDir, form['value'] === SYZYGY_LAUNCHED);\n  if (state === 'unreadable')"
+        }
+      ],
+      "exitCode": 1,
+      "counts": {
+        "numTotalTests": 43,
+        "numPassedTests": 42,
+        "numFailedTests": 1
+      },
+      "failedTests": [
+        {
+          "test": "launch forms in a run whose marker is unreadable count neither a declared form nor a syzygy-launched one: a FIFO holding the marker's bytes",
+          "firstErrorLine": "AssertionError: expected null to be 'the run\\'s launched marker is present\u2026' // Object.is equality"
+        }
+      ],
+      "blocked": false,
+      "outcome": "killed",
+      "restored": true
+    },
+    {
+      "id": "F2-declared-forms-drain-then-judge-type-syzygy-launched-unchecked",
+      "tests": "fix",
+      "edits": [
+        {
+          "file": "packages/polaris-dossier/src/launched.ts",
+          "old": "export function launchedMarkerState(runDir: string): LaunchedMarkerState {",
+          "new": "export function launchedMarkerState(runDir: string, anyFileType = false): LaunchedMarkerState {"
+        },
+        {
+          "file": "packages/polaris-dossier/src/launched.ts",
+          "old": "    if (!stat.isFile() || stat.size > MARKER_BYTES_MAX) return 'unreadable';",
+          "new": "    if (stat.size > MARKER_BYTES_MAX) return 'unreadable';"
+        },
+        {
+          "file": "packages/polaris-dossier/src/launched.ts",
+          "old": "    if (length > MARKER_BYTES_MAX) return 'unreadable';",
+          "new": "    if (length > MARKER_BYTES_MAX || (!anyFileType && !stat.isFile())) return 'unreadable';"
+        },
+        {
+          "file": "packages/polaris-dossier/src/launched.ts",
+          "old": "  const state = launchedMarkerState(runDir);\n  if (state === 'unreadable')",
+          "new": "  const state = launchedMarkerState(runDir, form['value'] === SYZYGY_LAUNCHED);\n  if (state === 'unreadable')"
+        }
+      ],
+      "exitCode": 1,
+      "counts": {
+        "numTotalTests": 43,
+        "numPassedTests": 42,
+        "numFailedTests": 1
+      },
+      "failedTests": [
+        {
+          "test": "launch forms in a run whose marker is unreadable count neither a declared form nor a syzygy-launched one: a FIFO holding the marker's bytes",
+          "firstErrorLine": "AssertionError: expected null to be 'the run\\'s launched marker is present\u2026' // Object.is equality"
+        }
+      ],
+      "blocked": false,
+      "outcome": "killed",
+      "restored": true
+    },
+    {
+      "id": "H1-readSync-hook-disabled",
+      "tests": "fix",
+      "edits": [
+        {
+          "file": "packages/polaris-dossier/src/launched.test.ts",
+          "old": "      if (!rewritten) { rewritten = true; fs.writeFileSync(marker(dir), after); }",
+          "new": "      if (!rewritten && call !== 'readSync') { rewritten = true; fs.writeFileSync(marker(dir), after); }"
+        }
+      ],
+      "exitCode": 1,
+      "counts": {
+        "numTotalTests": 43,
+        "numPassedTests": 42,
+        "numFailedTests": 1
+      },
+      "failedTests": [
+        {
+          "test": "launchedMarkerState is unreadable for a marker that grows past 4096 bytes between two reads, the first of which held the whole marker",
+          "firstErrorLine": "AssertionError: expected false to be true // Object.is equality"
+        }
+      ],
+      "blocked": false,
+      "outcome": "killed",
+      "restored": true
+    },
+    {
+      "id": "H2-read-with-readFileSync-utf8-as-c571fb9f",
+      "tests": "fix",
+      "edits": [
+        {
+          "file": "packages/polaris-dossier/src/launched.ts",
+          "old": "    const bytes = Buffer.alloc(MARKER_BYTES_MAX + 1);\n    let length = 0;\n    while (length < bytes.length) {\n      const read = fs.readSync(fd, bytes, length, bytes.length - length, null);\n      if (read === 0) break;\n      length += read;\n    }\n    if (length > MARKER_BYTES_MAX) return 'unreadable';\n    const marker = JSON.parse(bytes.toString('utf8', 0, length)) as unknown;\n",
+          "new": "    const text = fs.readFileSync(fd, 'utf8');\n    if (Buffer.byteLength(text) > MARKER_BYTES_MAX) return 'unreadable';\n    const marker = JSON.parse(text) as unknown;\n"
+        }
+      ],
+      "exitCode": 1,
+      "counts": {
+        "numTotalTests": 43,
+        "numPassedTests": 42,
+        "numFailedTests": 1
+      },
+      "failedTests": [
+        {
+          "test": "launchedMarkerState is unreadable for a marker that grows past 4096 bytes between two reads, the first of which held the whole marker",
+          "firstErrorLine": "AssertionError: expected false to be true // Object.is equality"
+        }
+      ],
+      "blocked": false,
+      "outcome": "killed",
+      "restored": true
+    }
+  ],
+  "trackedTreeCleanAfter": true,
+  "summary": {
+    "F1-isFile-off-for-syzygy-launched-only / base tests": "killed",
+    "F1-isFile-off-for-syzygy-launched-only / fix tests": "killed",
+    "F2-declared-forms-drain-then-judge-type-syzygy-launched-unchecked / base tests": "survived",
+    "F2-declared-forms-drain-then-judge-type-syzygy-launched-unchecked / fix tests": "killed",
+    "H1-readSync-hook-disabled / base tests": "killed",
+    "H1-readSync-hook-disabled / fix tests": "killed",
+    "H2-read-with-readFileSync-utf8-as-c571fb9f / base tests": "killed",
+    "H2-read-with-readFileSync-utf8-as-c571fb9f / fix tests": "killed"
+  },
+  "harnessSource": "\"\"\"Rule-6 mutants for syzygy-bpyt.8.14, a test-only change to launched.test.ts. Each mutant is run twice: against the base commit's\nlaunched.test.ts and against the fix's, so the record shows what the edited tests catch that the old ones did not.\n\nF1 is the acceptance criteria's mutant: the isFile check removed from the syzygy-launched path only. F2 is R3-N1's failure scenario: the\ndeclared forms read the bytes before judging the file type, so they drain a FIFO, and the syzygy-launched path keeps no type check at all.\nH1 disables the readSync race hook in the test (R3-N2, as the acceptance criteria state it); H2 reads the marker the way c571fb9f did,\nwith readFileSync(fd, 'utf8'), which makes no readSync call, so the hook never fires (R3-N2's own account).\n\nEach mutant replaces exact fragments (each must occur exactly once), runs the test file in its own process group with vitest's JSON\nreporter, restores the bytes and verifies their digests. Killed: at least one test failed, or the run did not finish within the timeout.\nEach failed test is stored with the first line of its first failure message.\nUsage: python3 mutants.py <worktree> <base> <scratch> <out.json>\n\"\"\"\nimport hashlib, json, os, signal, subprocess, sys\nfrom pathlib import Path\n\nROOT, BASE, SCRATCH, OUT = Path(sys.argv[1]).resolve(), sys.argv[2], Path(sys.argv[3]).resolve(), Path(sys.argv[4])\nTIMEOUT = 300\nREADER = 'packages/polaris-dossier/src/launched.ts'\nTEST = 'packages/polaris-dossier/src/launched.test.ts'\nREPORT = SCRATCH / 'mutant-vitest.json'\nCOMMAND = ['npx', 'vitest', 'run', '--project', '@syzygy/polaris-dossier', '--reporter=json', f'--outputFile={REPORT}', TEST]\n\nSIGNATURE = ('export function launchedMarkerState(runDir: string): LaunchedMarkerState {',\n             'export function launchedMarkerState(runDir: string, anyFileType = false): LaunchedMarkerState {')\nCALL = (\"  const state = launchedMarkerState(runDir);\\n  if (state === 'unreadable')\",\n        \"  const state = launchedMarkerState(runDir, form['value'] === SYZYGY_LAUNCHED);\\n  if (state === 'unreadable')\")\nTYPE_CHECK = \"    if (!stat.isFile() || stat.size > MARKER_BYTES_MAX) return 'unreadable';\"\nREAD_LOOP = (\"    const bytes = Buffer.alloc(MARKER_BYTES_MAX + 1);\\n\"\n             \"    let length = 0;\\n\"\n             \"    while (length < bytes.length) {\\n\"\n             \"      const read = fs.readSync(fd, bytes, length, bytes.length - length, null);\\n\"\n             \"      if (read === 0) break;\\n\"\n             \"      length += read;\\n\"\n             \"    }\\n\"\n             \"    if (length > MARKER_BYTES_MAX) return 'unreadable';\\n\"\n             \"    const marker = JSON.parse(bytes.toString('utf8', 0, length)) as unknown;\\n\")\nHOOK = '      if (!rewritten) { rewritten = true; fs.writeFileSync(marker(dir), after); }'\n\nMUTANTS = [\n    ('F1-isFile-off-for-syzygy-launched-only', [\n        (READER, *SIGNATURE),\n        (READER, TYPE_CHECK, \"    if ((!anyFileType && !stat.isFile()) || stat.size > MARKER_BYTES_MAX) return 'unreadable';\"),\n        (READER, *CALL)]),\n    ('F2-declared-forms-drain-then-judge-type-syzygy-launched-unchecked', [\n        (READER, *SIGNATURE),\n        (READER, TYPE_CHECK, \"    if (stat.size > MARKER_BYTES_MAX) return 'unreadable';\"),\n        (READER, \"    if (length > MARKER_BYTES_MAX) return 'unreadable';\",\n         \"    if (length > MARKER_BYTES_MAX || (!anyFileType && !stat.isFile())) return 'unreadable';\"),\n        (READER, *CALL)]),\n    ('H1-readSync-hook-disabled', [\n        (TEST, HOOK, HOOK.replace('if (!rewritten)', \"if (!rewritten && call !== 'readSync')\"))]),\n    ('H2-read-with-readFileSync-utf8-as-c571fb9f', [\n        (READER, READ_LOOP,\n         \"    const text = fs.readFileSync(fd, 'utf8');\\n\"\n         \"    if (Buffer.byteLength(text) > MARKER_BYTES_MAX) return 'unreadable';\\n\"\n         \"    const marker = JSON.parse(text) as unknown;\\n\")]),\n]\n\n\ndef sha(data):\n    return hashlib.sha256(data).hexdigest()\n\n\ndef git(*args):\n    return subprocess.run(['git', '-C', str(ROOT), *args], capture_output=True, text=True, check=True).stdout\n\n\ndef run_suite():\n    REPORT.unlink(missing_ok=True)\n    proc = subprocess.Popen(COMMAND, cwd=ROOT, env={**os.environ, 'CI': '1'}, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, start_new_session=True)\n    try:\n        proc.communicate(timeout=TIMEOUT)\n    except subprocess.TimeoutExpired:\n        os.killpg(proc.pid, signal.SIGKILL)\n        proc.communicate()\n        return None, None, []\n    if not REPORT.exists():\n        return proc.returncode, None, []\n    report = json.loads(REPORT.read_text())\n    failed = [{'test': test['fullName'],\n               'firstErrorLine': next((line for message in test['failureMessages'] for line in message.splitlines() if line.strip()), None)}\n              for file in report['testResults'] for test in file['assertionResults'] if test['status'] == 'failed']\n    return proc.returncode, {k: report[k] for k in ('numTotalTests', 'numPassedTests', 'numFailedTests')}, failed\n\n\ndef main():\n    assert git('status', '--porcelain', '--untracked-files=no') == ''\n    head_test = (ROOT / TEST).read_bytes()\n    tests = {'base': git('show', f'{BASE}:{TEST}').encode('utf8'), 'fix': head_test}\n    originals = {READER: (ROOT / READER).read_bytes(), TEST: head_test}\n    assert git('show', f'{BASE}:{READER}').encode('utf8') == originals[READER], 'the reader differs between base and fix'\n    results, unmutated = [], {}\n    try:\n        for side, test_bytes in tests.items():\n            (ROOT / TEST).write_bytes(test_bytes)\n            code, counts, failed = run_suite()\n            unmutated[side] = {'testSha256': sha(test_bytes), 'exitCode': code, 'counts': counts, 'failedTests': failed}\n            for mutant_id, edits in MUTANTS:\n                current = {READER: originals[READER].decode('utf8'), TEST: test_bytes.decode('utf8')}\n                for file, old, new in edits:\n                    assert current[file].count(old) == 1, (mutant_id, side, old)\n                    current[file] = current[file].replace(old, new)\n                for file in current:\n                    (ROOT / file).write_bytes(current[file].encode('utf8'))\n                try:\n                    code, counts, failed = run_suite()\n                finally:\n                    (ROOT / READER).write_bytes(originals[READER])\n                    (ROOT / TEST).write_bytes(test_bytes)\n                blocked = code is None\n                results.append({'id': mutant_id, 'tests': side, 'edits': [{'file': f, 'old': o, 'new': n} for f, o, n in edits],\n                                'exitCode': code, 'counts': counts, 'failedTests': failed, 'blocked': blocked,\n                                'outcome': 'killed' if blocked or (code != 0 and failed) else 'survived',\n                                'restored': sha((ROOT / READER).read_bytes()) == sha(originals[READER])})\n                print(mutant_id, side, results[-1]['outcome'], counts, flush=True)\n    finally:\n        for file, data in originals.items():\n            (ROOT / file).write_bytes(data)\n    record = {\n        'title': 'syzygy-bpyt.8.14 rule-6 mutants: each launch form on a freshly planted run, and each race asserted staged before its state',\n        'bead': 'syzygy-bpyt.8.14', 'subject': [TEST], 'testSha256': {side: sha(data) for side, data in tests.items()},\n        'readerSha256': sha(originals[READER]), 'base': BASE, 'commit': git('rev-parse', 'HEAD').strip(),\n        'command': ' '.join(COMMAND).replace(str(REPORT), '<scratch>/mutant-vitest.json'), 'timeoutSeconds': TIMEOUT,\n        'unmutated': unmutated, 'mutants': results,\n        'trackedTreeCleanAfter': git('status', '--porcelain', '--untracked-files=no') == '',\n        'summary': {f'{m} / {side} tests': next(r['outcome'] for r in results if r['id'] == m and r['tests'] == side)\n                    for m, _ in MUTANTS for side in tests},\n        'harnessSource': Path(__file__).read_text(),\n    }\n    OUT.write_text(json.dumps(record, indent=2) + '\\n')\n    print('summary', json.dumps(record['summary'], indent=1))\n\n\nmain()\n"
+}

@@ -1,0 +1,53 @@
+{
+ "tool": "compare_route_captures.py",
+ "capturedBy": "docs/evidence/poc-hygiene-2026-10-22/route-capture.mjs",
+ "fixtureRepository": {
+  "path": "<FIXTURE-REPO>",
+  "revision": "1f892687d53c829f9c2a4ee99bccccb23d6158df",
+  "note": "a directory inside the author scratch area, deleted after the run; body digests are bound to its path, so the same path was used for every capture here"
+ },
+ "base": {
+  "treeCommit": "5837512f5be2cba4fa5caa7fd493b457ded744c8",
+  "file": "route-base.json",
+  "rawSha256": "55586857d3a9e2c3ad1affba695fdecd8d3b178c31db1ba0ae5b100f561f4f8c",
+  "canonicalSha256": "55586857d3a9e2c3ad1affba695fdecd8d3b178c31db1ba0ae5b100f561f4f8c",
+  "pathOccurrencesReplaced": 0
+ },
+ "head": {
+  "treeCommit": "e8cb47d5daef652f98c2b0d8aac9e981ba73cd21",
+  "file": "route-head.json",
+  "rawSha256": "55586857d3a9e2c3ad1affba695fdecd8d3b178c31db1ba0ae5b100f561f4f8c",
+  "canonicalSha256": "55586857d3a9e2c3ad1affba695fdecd8d3b178c31db1ba0ae5b100f561f4f8c",
+  "pathOccurrencesReplaced": 0
+ },
+ "baseSecondRun": {
+  "treeCommit": "5837512f5be2cba4fa5caa7fd493b457ded744c8",
+  "file": "route-base-run2.json",
+  "rawSha256": "55586857d3a9e2c3ad1affba695fdecd8d3b178c31db1ba0ae5b100f561f4f8c",
+  "canonicalSha256": "55586857d3a9e2c3ad1affba695fdecd8d3b178c31db1ba0ae5b100f561f4f8c",
+  "pathOccurrencesReplaced": 0
+ },
+ "variants": [
+  "shape-admitted",
+  "shape-not-evaluated",
+  "shape-rejected",
+  "shape-with-baseline-spec",
+  "shape-with-secret"
+ ],
+ "requestKeys": 230,
+ "requestKeysEqualBaseVersusHead": 230,
+ "differingBaseVersusHead": [],
+ "baseVersusBaseSecondRunDiffering": [],
+ "statuses": {
+  "200": 150,
+  "401": 40,
+  "403": 20,
+  "502": 20
+ },
+ "nonVacuity": {
+  "distinctBodyDigests": 73,
+  "requestPathsWhoseBodyDiffersAcrossVariants": 30,
+  "requestPathsInAllVariants": 46
+ },
+ "claim": "equality between the base and head trees over these fixtures; the digests are not comparable across other fixture paths"
+}

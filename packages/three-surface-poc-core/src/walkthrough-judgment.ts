@@ -52,7 +52,6 @@ import {
   type ProvenanceLabel,
 } from './act-fields.js';
 import {
-  COMMON_INVALID_CASES,
   type A1Expectation,
   type ActRecordInput,
   type ArtifactInput,
@@ -126,14 +125,6 @@ export type JudgmentInvalidCase =
   | (typeof RUN_RECORD_INVALID_CASES)[number]
   | (typeof JUDGMENT_FIELD_INVALID_CASES)[number]
   | (typeof GOVERNANCE_HOME_INVALID_CASES)[number];
-
-// The 84-case present-invalid population, in evaluation order.
-export const JUDGMENT_INVALID_CASE_IDS: readonly JudgmentInvalidCase[] = [
-  ...GOVERNANCE_HOME_INVALID_CASES,
-  ...RUN_RECORD_INVALID_CASES,
-  ...JUDGMENT_FIELD_INVALID_CASES,
-  ...COMMON_INVALID_CASES,
-];
 
 export const JUDGMENT_ABSENT_CASES = ['no-run-record', 'no-judgment'] as const;
 export type JudgmentAbsentCase = (typeof JUDGMENT_ABSENT_CASES)[number];
@@ -789,6 +780,9 @@ function evaluateOutcome(inputs: WalkthroughJudgmentInputs): WalkthroughJudgment
 // Judgment history is append-only: a later evaluation (for example one
 // whose A1 correlation succeeded) is a new entry and never rewrites the
 // provenance under which an earlier judgment took effect (PWB-REQ-022).
+// Test seam: no production code calls it; walkthrough-judgment.test.ts pins the
+// append-only rule through it, and the mutation sweep's history-append-only
+// site is in its body.
 export function appendJudgmentEvaluation(
   history: readonly WalkthroughJudgmentEvaluation[],
   evaluation: WalkthroughJudgmentEvaluation,

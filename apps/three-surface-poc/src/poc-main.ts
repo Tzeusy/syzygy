@@ -80,6 +80,7 @@ export interface PocMainDeps {
   readonly pocObserverInputsAreClean: typeof pocObserverInputsAreClean;
   readonly buildProductionPocModel: typeof buildProductionPocModel;
   readonly createDaemon: typeof createDaemon;
+  readonly materializeRoutes: typeof materializeRoutes;
 }
 
 const REAL_DEPS: PocMainDeps = {
@@ -91,6 +92,7 @@ const REAL_DEPS: PocMainDeps = {
   pocObserverInputsAreClean,
   buildProductionPocModel,
   createDaemon,
+  materializeRoutes,
 };
 
 /** Runs the POC and resolves to the process exit code. A binding the P1
@@ -192,7 +194,7 @@ async function serveBoundRepository(repoRoot: string, config: PocCliConfig, io: 
         // route — the observed shape's own admitted baseline-spec object,
         // read at render and never stored.
         ...pocRoutes(session.model, undefined, (current) => ({ verbatim: verbatimRouteReader(current, gitBlobReaderFor(repoRoot)) }), servedResponses, () => credentialProvision, session.latest),
-        ...materializeRoutes({
+        ...deps.materializeRoutes({
           getModel: session.model,
           targetRepoRoot: repoRoot,
           stateDir: () => stateDir,
