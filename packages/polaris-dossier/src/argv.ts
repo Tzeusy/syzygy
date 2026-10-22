@@ -3,9 +3,9 @@ import { parseArgs } from 'node:util';
 /** The one argument reader of the `syzygy` entry: the daemon, `syzygy dossier` and `syzygy polaris` (syzygy-bpyt.8.2).
  *
  * node:util's parseArgs splits the list into tokens; the spec then decides what each token is, exactly as each family read its
- * arguments before this reader existed. An option is recognised only when its argument is the option's own literal name, so
- * `--name=value`, a group such as `-abc`, a negative number, a lone `-` and `--` are each one unrecognised argument: no family
- * has taken any of these forms. */
+ * arguments before this reader existed. Each token is judged by the whole argument it came from, so an option is recognised only
+ * when that argument is the option's own literal name: `--name=value`, a group such as `-abc`, a negative number, a lone `-` and
+ * `--` are each one unrecognised argument, as no family has ever taken them. */
 
 export interface ArgvSpec {
   /** Options that take the next argument as their value. */
@@ -49,9 +49,7 @@ export function readArgv(args: readonly string[], spec: ArgvSpec): ArgvRead | Ar
     if (token.kind === 'positional') {
       if (!spec.positionals || arg.startsWith('-')) return { fault: 'unknown', arg };
       positional.push(arg);
-    } else if (token.kind === 'option-terminator' || arg !== token.rawName || token.inlineValue === true) {
-      return { fault: 'unknown', arg };
-    } else if (spec.valued.includes(arg)) {
+    } else if (token.kind === 'option' && spec.valued.includes(arg)) {
       if (spec.repeat === 'refuse' && values.has(arg)) return { fault: 'repeated', arg };
       if (token.value === undefined || (spec.dashValue === 'refuse' && token.value.startsWith('-'))) return { fault: 'missing-value', arg };
       values.set(arg, token.value);
