@@ -31,17 +31,19 @@ const fifoHoldingTheMarker = (dir: string): void => {
   fs.writeSync(writer, TYPED);
   fs.closeSync(writer);
 };
-/** What the test sees of a run's marker without asking the reader: its lstat (mode, inode, size), a link's target, and the bytes of a
- * regular file the test can read, followed through a link. It opens no FIFO or device, so it drains no pipe. Times are left out: a read
- * moves the access time, and neither time is what the snapshot checks. */
+/** What the test sees of a run's marker without asking the reader: its lstat (mode, inode, size, change time), a link's target, and the
+ * bytes of a regular file the test can read, followed through a link. It opens no FIFO or device, so it drains no pipe. Times are left
+ * out except the change time: a read moves the access time, and nothing that leaves the marker as it was moves the change time. */
 const markerSnapshot = (dir: string): Readonly<Record<string, unknown>> | null => {
-  const stat = fs.lstatSync(marker(dir), { throwIfNoEntry: false });
+  const stat = fs.lstatSync(marker(dir), { bigint: true, throwIfNoEntry: false });
   if (stat === undefined) return null;
   let bytes: string | null = null;
   if (fs.statSync(marker(dir), { throwIfNoEntry: false })?.isFile()) {
     try { bytes = fs.readFileSync(marker(dir)).toString('base64'); } catch { bytes = null; }
   }
-  return { mode: stat.mode, ino: stat.ino, size: stat.size, link: stat.isSymbolicLink() ? fs.readlinkSync(marker(dir)) : null, bytes };
+  return {
+    mode: stat.mode, ino: stat.ino, size: stat.size, ctimeNs: stat.ctimeNs, link: stat.isSymbolicLink() ? fs.readlinkSync(marker(dir)) : null, bytes,
+  };
 };
 
 const PRESENT_BUT_NOT_THE_MARKER: readonly [string, (dir: string) => void][] = [
