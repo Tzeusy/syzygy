@@ -30,15 +30,16 @@ const PACKAGE_ROOT = path.join(REPO_ROOT, 'packages', 'cap1-system');
 const COLLECT_TIMEOUT_MS = 45_000;
 
 // Collects the tier with this package's config, runs nothing, and prints one
-// line: each test's file, full name and collected state.
+// line: each test's file, full name and collected state, and every collection
+// error.
 const COLLECT = `
 const { createVitest } = await import('vitest/node');
 const vitest = await createVitest('test', { config: 'packages/cap1-system/vitest.config.ts', watch: false });
-const { testModules } = await vitest.collect();
+const { testModules, unhandledErrors } = await vitest.collect();
 const tests = testModules.flatMap((module) => [...module.children.allTests()].map((test) => ({
   file: module.moduleId, name: test.fullName, state: test.result().state,
 })));
-const errors = testModules.flatMap((module) => module.errors().map((error) => String(error.message)));
+const errors = [...testModules.flatMap((module) => module.errors()), ...unhandledErrors].map((error) => String(error?.message ?? error));
 await vitest.close();
 console.log('CENSUS ' + JSON.stringify({ tests, errors }));
 `;
@@ -49,7 +50,7 @@ interface Census {
 }
 
 /** Runs COLLECT in a process group of its own, killed whole at the timeout. */
-function collectTier(): Promise<Census> {
+function collectTier(): Promise<{ code: number | null; census: Census }> {
   const env = Object.fromEntries(Object.entries(process.env).filter(([key]) => !key.startsWith('VITEST')));
   const child = spawn(process.execPath, ['--input-type=module', '-e', COLLECT], {
     cwd: REPO_ROOT, env, detached: true, stdio: ['ignore', 'pipe', 'pipe'],
@@ -66,20 +67,21 @@ function collectTier(): Promise<Census> {
     child.once('close', (code, signal) => {
       clearTimeout(timer);
       const line = out.split('\n').find((text) => text.startsWith('CENSUS '));
-      if (code !== 0 || line === undefined) {
-        reject(new Error(`tier collection exited ${code ?? signal} within ${COLLECT_TIMEOUT_MS} ms\nstdout:\n${out}\nstderr:\n${err}`));
+      if (line === undefined) {
+        reject(new Error(`tier collection ended (${code ?? signal}) with no census; it is killed at ${COLLECT_TIMEOUT_MS} ms\nstdout:\n${out}\nstderr:\n${err}`));
         return;
       }
-      resolve(JSON.parse(line.slice('CENSUS '.length)) as Census);
+      resolve({ code, census: JSON.parse(line.slice('CENSUS '.length)) as Census });
     });
   });
 }
 
 describe('system tier: the skipped population', () => {
   it('skips exactly the expected tests, by SYZYGY_FRESH_CLONE and uid', async () => {
-    const census = await collectTier();
+    const { code, census } = await collectTier();
     const rows = census.tests.map((test) => ({ ...test, row: `${path.relative(PACKAGE_ROOT, test.file)} > ${test.name}` }));
     expect(census.errors, `collection errors: ${JSON.stringify(census.errors)}`).toEqual([]);
+    expect(code).toBe(0);
     expect(rows.find((test) => test.row === THIS_ROW)?.state).toBe('pending');
     const skipped = rows.filter((test) => test.state === 'skipped').map((test) => test.row).sort();
     const expected = [
