@@ -77,6 +77,8 @@ export default defineConfig({
         test: {
           name: '@syzygy/three-surface-poc-app',
           include: ['apps/three-surface-poc/src/**/*.test.ts'],
+          // Once per run: removes the fixture directories of killed runs (syzygy-bpyt.4.10).
+          globalSetup: [fileURLToPath(new URL('./apps/three-surface-poc/src/test-fixture-sweep.global-setup.ts', import.meta.url))],
         },
       },
     ],
