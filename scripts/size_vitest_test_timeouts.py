@@ -12,8 +12,9 @@ in a run stopped early, so its duration there is a lower bound and is marked so.
 test's worst duration in them is listed beside its timeout.
 
 The denominator is every test vitest collects from FILE in TREE (all of them skipped, so no test or hook runs), with the timeout each
-carries. With `--check`, the script exits 1 unless each sized test carries exactly its sized timeout, every other test carries the
-default, and every collected test was measured in at least one `--record`. It writes only OUT.json."""
+carries. With `--check`, the script exits 1 unless the default the tests carry is 2 x THRESHOLD_MS (the 5000 ms the threshold is half
+of), each sized test carries exactly its sized timeout, every other test carries that default, and every collected test was measured
+in at least one `--record`. It writes only OUT.json."""
 import datetime, hashlib, json, math, os, subprocess, sys, tempfile
 
 THRESHOLD_MS, MARGIN, STEP_MS = 2500, 3, 5000
@@ -94,6 +95,7 @@ collected = collect()
 names = [r['name'] for r in collected]
 default = max(set(r['timeout'] for r in collected), key=[r['timeout'] for r in collected].count)
 problems = [f'observed but not collected: {n}' for n in sorted(set(observations) - set(names))]
+if default != 2 * THRESHOLD_MS: problems.append(f'the default the tests carry is {default} ms, not {2 * THRESHOLD_MS} ms: the threshold assumes a {2 * THRESHOLD_MS} ms default')
 rows = []
 for r in collected:
     seen = observations.get(r['name'], [])

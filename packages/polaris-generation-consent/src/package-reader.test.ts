@@ -15,7 +15,10 @@ vi.mock('./citation-allowlist.js', () => ({ CITATION_ALLOWLIST: ALLOWLIST }));
 // Explicit timeouts (syzygy-bpyt.4.13): a test whose worst measured duration, alone or inside a full run under load, exceeded 2.5 s
 // carries one, that worst case x 3 rounded up to a whole 5 s. Most of those wait on recorder renders (one Python spawn each); the
 // port-and-chain agreement sweep is all reads. Every test's measurements are in docs/evidence/syzygy-bpyt-4-13/timeout-sizing.json,
-// and scripts/size_vitest_test_timeouts.py --check confirms each timeout against the rule.
+// and scripts/size_vitest_test_timeouts.py --check confirms each timeout against the rule. They are sized for load1 up to about 127
+// on 12 cores, and ten of the sixteen from lower bounds: tests that timed out at that load. They are also sized for the whole file run
+// in order. The render cache moves each render's cost to whichever test needs it first, so a run filtered with -t, or shuffled, can
+// time out a test that carries no timeout.
 
 const REDIS_REV = '498ecd0d6d007db11ddb3aea9428552598a78622';
 const OTHER_REV = 'd2c8a4b91e8c0e6aefd1f5bc0bf582cddbe046b7';

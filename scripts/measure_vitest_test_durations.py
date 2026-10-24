@@ -9,11 +9,22 @@ timeout still applies). `alone` runs FILE in PROJECT by itself; `full` runs ever
 tests. For each run OUT.json records the start time, wall time, exit code, the 1-minute load average at the start and the end and its
 minimum and maximum over 5 s samples, and every test of FILE with its status and the duration vitest reports.
 
-With `--profile`, each run first applies the instrumentation below and restores both files from git after it: the recorder testkit's
-`spawnSync` is wrapped to add up its wall time and calls, and FILE gets a `beforeEach`/`afterEach` pair that prints, per test, the
-test's wall time between the hooks and the render time and calls inside it. The instrumentation's `old` and `new` fragments are in
-OUT.json. It writes only OUT.json, and the two instrumented files while a profiled run is in progress."""
-import datetime, hashlib, json, os, subprocess, sys, tempfile, threading, time
+With `--profile`, each run first applies the instrumentation below: the recorder testkit's `spawnSync` is wrapped to add up its wall
+time and calls, and FILE gets a `beforeEach`/`afterEach` pair that prints, per test, the test's wall time between the hooks and the
+render time and calls inside it. Both anchors are checked before either file is written, and whichever file was written is restored
+from git when the run ends, however it ends short of SIGKILL: normally, by an exception, or by SIGINT, SIGTERM or SIGHUP (SIGTERM and
+SIGHUP exit 128 + the signal number once restored). The instrumentation's `old` and `new` fragments are in OUT.json.
+
+vitest runs in a session of its own. When a run ends, or the script is stopped, that process group gets SIGTERM, and SIGKILL after
+GRACE_SECONDS, so no descendant outlives the run.
+
+It writes OUT.json and, only while a profiled run is in progress, the two instrumented files. A SIGKILL of the script itself can
+leave them written and vitest running; the next run then refuses, since the tracked files are not clean."""
+import datetime, hashlib, json, os, signal, subprocess, sys, tempfile, threading, time
+
+GRACE_SECONDS = 10
+STOP_SIGNALS = (signal.SIGINT, signal.SIGTERM, signal.SIGHUP)
+for _signal in (signal.SIGTERM, signal.SIGHUP): signal.signal(_signal, lambda number, _frame: sys.exit(128 + number))
 
 SCRIPT = 'scripts/measure_vitest_test_durations.py'
 TESTKIT = 'packages/polaris-generation-consent/src/recorder-fixtures.testkit.ts'
@@ -41,12 +52,32 @@ def git(*a): return subprocess.run(['git', *a], cwd=tree, capture_output=True, t
 def at_head(path): return subprocess.run(['git', 'show', f'HEAD:{path}'], cwd=tree, capture_output=True, check=True).stdout
 if git('status', '--porcelain', '--untracked-files=no'): sys.exit('tracked files not clean')
 
-def instrument():
+def instrument(written):
+    """Checks both anchors before writing either file; appends each path to `written` before writing it."""
+    texts = {}
     for path, old, new in ((TESTKIT, KIT_OLD, KIT_NEW), (test_file, FILE_OLD, FILE_NEW)):
-        full = os.path.join(tree, path)
-        text = open(full, encoding='utf8').read()
+        text = open(os.path.join(tree, path), encoding='utf8').read()
         if text.count(old) != 1: sys.exit(f'{path}: the instrumentation anchor occurs {text.count(old)} times')
-        open(full, 'w', encoding='utf8').write(text.replace(old, new))
+        texts[path] = text.replace(old, new)
+    for path, text in texts.items():
+        written.append(path)
+        open(os.path.join(tree, path), 'w', encoding='utf8').write(text)
+
+def end_group(proc):
+    """SIGTERM to the run's process group, then SIGKILL to whatever of it is left after GRACE_SECONDS."""
+    def alive():
+        proc.poll()
+        try: os.killpg(proc.pid, 0)
+        except ProcessLookupError: return False
+        return True
+    if not alive(): return
+    os.killpg(proc.pid, signal.SIGTERM)
+    deadline = time.monotonic() + GRACE_SECONDS
+    while alive() and time.monotonic() < deadline: time.sleep(0.2)
+    if alive():
+        try: os.killpg(proc.pid, signal.SIGKILL)
+        except ProcessLookupError: pass
+    proc.wait()
 
 def one_run(index):
     with tempfile.TemporaryDirectory() as tmp:
@@ -59,26 +90,33 @@ def one_run(index):
         sampler = threading.Thread(target=sample, daemon=True)
         started_at = datetime.datetime.now(datetime.timezone.utc).isoformat(timespec='seconds')
         load_start, t0 = os.getloadavg()[0], time.monotonic()
-        if profile: instrument()
+        written, proc = [], None
         sampler.start()
         try:
-            done = subprocess.run(command, cwd=tree, capture_output=True, text=True)
+            if profile: instrument(written)
+            proc = subprocess.Popen(command, cwd=tree, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, start_new_session=True)
+            stdout, _ = proc.communicate()
         finally:
-            stop.set(); sampler.join()
-            if profile: subprocess.run(['git', 'checkout', '--', TESTKIT, test_file], cwd=tree, check=True)
+            ignored = {s: signal.signal(s, signal.SIG_IGN) for s in STOP_SIGNALS}   # a second stop signal cannot cut the cleanup short
+            try:
+                stop.set(); sampler.join()
+                if proc is not None: end_group(proc)
+                if written: subprocess.run(['git', 'checkout', '--', *written], cwd=tree, check=True)
+            finally:
+                for s, handler in ignored.items(): signal.signal(s, handler)
         wall, load_end = round(time.monotonic() - t0, 1), os.getloadavg()[0]
         data = json.load(open(report, encoding='utf8')) if os.path.exists(report) else {}
     suites = [s for s in data.get('testResults', []) if os.path.relpath(s['name'], tree) == test_file]
     tests = [{'name': a['fullName'], 'status': a['status'], 'durationMs': None if a.get('duration') is None else round(a['duration'])}
              for s in suites for a in s.get('assertionResults', [])]
     prof = [dict(zip(('name', 'totalMs', 'spawnMs', 'spawns'), (p[1], int(p[2]), int(p[3]), int(p[4]))))
-            for p in (line.split('\t') for line in done.stdout.split('\n') if line.startswith('PROF\t'))] if profile else None
-    run = {'index': index, 'startedAt': started_at, 'command': ' '.join(command).replace(report, '<tmp>'), 'exitCode': done.returncode,
+            for p in (line.split('\t') for line in stdout.split('\n') if line.startswith('PROF\t'))] if profile else None
+    run = {'index': index, 'startedAt': started_at, 'command': ' '.join(command).replace(report, '<tmp>'), 'exitCode': proc.returncode,
            'wallSeconds': wall, 'load1': {'start': round(load_start, 2), 'end': round(load_end, 2), 'min': round(min(samples), 2), 'max': round(max(samples), 2), 'samples': len(samples)},
            'suiteTotals': {k: data.get(k) for k in ('numTotalTests', 'numPassedTests', 'numFailedTests', 'numPendingTests')},
            'fileTests': len(tests), 'tests': tests}
     if prof is not None: run['profile'] = prof
-    print(f"run {index}: exit {done.returncode}, {wall} s, load1 {run['load1']}, {len(tests)} tests of the file, "
+    print(f"run {index}: exit {proc.returncode}, {wall} s, load1 {run['load1']}, {len(tests)} tests of the file, "
           f"{sum(t['status'] == 'failed' for t in tests)} failed", flush=True)
     return run
 
