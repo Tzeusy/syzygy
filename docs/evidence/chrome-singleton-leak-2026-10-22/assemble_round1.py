@@ -68,6 +68,15 @@ for key, (changed, tests, mutants) in FINDINGS.items():
 assert mut['control']['holds'] and mut['controlLaunchFailure']['holds'], 'the mutant control must hold'
 survivors = {k: v for k, v in outcome.items() if v != 'killed'}
 
+# Assertions unchanged, against main: every line the change removes from a test file that main has (an import line is counted apart).
+ASSERTION = re.compile(r'\bexpect\b|\bassert\b|\.to[A-Z]\w*\(|\.resolves\b|\.rejects\b')
+removed = {}
+for f in (f for f in git('diff', '--name-only', main, code).splitlines() if f.endswith('.test.ts')):
+    lines = [l[1:] for l in git('diff', '-U0', main, code, '--', f).splitlines() if l.startswith('-') and not l.startswith('---')]
+    removed[f] = {'removedLines': len(lines), 'removedImportLines': sum(1 for l in lines if l.lstrip().startswith('import')),
+                  'removedLinesNamingAnAssertion': sum(1 for l in lines if not l.lstrip().startswith('import') and ASSERTION.search(l)), 'removed': lines}
+outside = [f for f in git('diff', '--name-only', main, code).splitlines() if not f.startswith('docs/evidence/chrome-singleton-leak-2026-10-22/')]
+
 tools = sorted(p.name for p in evidence.iterdir() if p.suffix in ('.py', '.mjs'))
 raw_text = raw.read_text().splitlines()
 gates = {}
@@ -95,6 +104,8 @@ verification = {
                        'runs': [{'version': r['version'], 'status': r['status'], 'singletonShapedLeft': len(r['singletonShapedLeft'])} for r in matrix['rows']]}},
     'tests': {'record': f'test-lists-r1-{DATE}.json', 'testsLine': lists['testsLine'], 'baseTree': lists['baseTree'], 'headTree': lists['headTree'], 'baseLines': lists['baseLines'], 'headLines': lists['headLines'],
               'addedByFile': lists['addedByFile'], 'removedByFile': lists['removedByFile']},
+    'changedOutsideTheEvidenceDirectory': outside,
+    'ac3': {'claim': 'no existing assertion changes (against main as merged)', 'changedTestFiles': removed},
     'gates': gates,
     'residuals': {
         'N6': 'when TMPDIR is unset and TMP or TEMP is set, Node\'s os.tmpdir() and Chrome\'s temp directory disagree, the parent check fails closed and a killed Chrome\'s directory is left in /tmp as at the base; Chrome\'s spawn environment is not changed',
