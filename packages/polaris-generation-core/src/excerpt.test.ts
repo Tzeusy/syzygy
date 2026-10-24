@@ -3,8 +3,11 @@ import { describe, expect, it } from 'vitest';
 import { DECLARATION_LINE_MAX, DOC_COMMENT_SHARE_PERCENT, EXCERPT_KINDS, LICENCE_MARKERS, MAX_EXCERPT_RANGES, PATTERN_PREFIX_MAX, buildExcerpt } from './excerpt.js';
 
 const BUDGET = 1500;
-/** CPU milliseconds since `from`: the work done, which load on the host does not stretch the way it stretches wall time. */
-const cpuMsSince = (from: NodeJS.CpuUsage): number => { const { user, system } = process.cpuUsage(from); return (user + system) / 1000; };
+/** CPU milliseconds this thread has spent since `from`: the work done, which neither load on the host nor the pool running the file stretches. */
+const cpuMsSince = (from: NodeJS.CpuUsage): number => { const { user, system } = process.threadCpuUsage(from); return (user + system) / 1000; };
+// A CPU-time bound sits at the geometric mean of the slowest head run of its region and the fastest run of the quadratic
+// mutant it names, at least 10x from each (docs/evidence/syzygy-bpyt-4-5/cpu-separation.json, syzygy-bpyt.4.5).
+const HOSTILE_LINE_CPU_MS = 500; // the prefix cap removed and FUNCTION_LINE given overlapping blank runs
 const LICENCE = `/*
  * Copyright (c) 2009-2024, Example Author
  * All rights reserved.
@@ -259,9 +262,9 @@ describe('excerpt: line endings and hostile lines', () => {
   for (const [name, lead] of [['a tag keyword', 'struct'], ['an identifier', 'a']] as const) {
     it(`stays linear on one 100k line of spaces after ${name}`, () => {
       const hostile = `${lead}${' '.repeat(100_000)}x\nint f(int a) {\n}\n`;
-      const cpu = process.cpuUsage();
+      const cpu = process.threadCpuUsage();
       const ex = buildExcerpt('a.c', hostile, 0, BUDGET);
-      expect(cpuMsSince(cpu)).toBeLessThan(500);
+      expect(cpuMsSince(cpu)).toBeLessThan(HOSTILE_LINE_CPU_MS);
       expect(ex.text).toBe('int f(int a) {');
     });
   }

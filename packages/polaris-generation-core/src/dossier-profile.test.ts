@@ -10,8 +10,11 @@ const file = (path: string): GenerationSource => generationSourcesForBody({ sour
   revision: 'a'.repeat(40), path, objectId: gitBlobObjectId('x\n'), evaluationId: 'e', body: 'x\n' })[0]!;
 const deferredRow = (path: string): GenerationSource => { const { body: _b, spans: _s, ...rest } = file(path); return { ...rest, exclusion: { excluded: true, reason: 'deferred-by-budget' }, spans: [] }; };
 const answer = (id: OwnerAnswer['id'], text: unknown = 'a purpose'): OwnerAnswer => ({ id, answer: text, attribution: 'owner', revision: 'r1', permittedDraftUse: true });
-/** CPU milliseconds since `from`: the work done, which load on the host does not stretch the way it stretches wall time. */
-const cpuMsSince = (from: NodeJS.CpuUsage): number => { const { user, system } = process.cpuUsage(from); return (user + system) / 1000; };
+/** CPU milliseconds this thread has spent since `from`: the work done, which neither load on the host nor the pool running the file stretches. */
+const cpuMsSince = (from: NodeJS.CpuUsage): number => { const { user, system } = process.threadCpuUsage(from); return (user + system) / 1000; };
+// A CPU-time bound sits at the geometric mean of the slowest head run of its region and the fastest run of the quadratic
+// mutant it names, at least 10x from each (docs/evidence/syzygy-bpyt-4-5/cpu-separation.json, syzygy-bpyt.4.5).
+const EDGE_TRIM_CPU_MS = 2000; // the backtracking edge trim before d7e25daf
 
 describe('dossier profile', () => {
   it('exports the five questions as {id, topics, text} matching the owner topics and the frozen file shape', () => {
@@ -163,14 +166,14 @@ describe('REQ-031 clarification', () => {
     expect(spaced.answers[0]).toMatchObject({ disposition: 'answered' });
     // Each filler goes in as a blank attribution and as a blank run between visible characters, the shape a
     // backtracking edge trim takes quadratic time on.
-    const cpu = process.cpuUsage();
+    const cpu = process.threadCpuUsage();
     for (const filler of [' ', '\u200b', '\u3164', '\t \u2003']) {
       for (const attribution of [filler.repeat(40_000), `a${filler.repeat(40_000)}b`]) {
         const blank = await clarify({ sources: mechanicsOnly, mode: 'interactive', maxQuestions: 1, ask: async q => ({ ...answer(q.id), answer: `${filler.repeat(40_000)}x`.slice(0, 40_000), attribution }) });
         expect(blank.aborted).toEqual({ id: 'purpose', reason: 'invalid-owner-answer' });
       }
     }
-    expect(cpuMsSince(cpu)).toBeLessThan(2000);
+    expect(cpuMsSince(cpu)).toBeLessThan(EDGE_TRIM_CPU_MS);
   });
 
   it('records an owner answer with attribution without adopting it, and keeps a declined one as a limitation', async () => {

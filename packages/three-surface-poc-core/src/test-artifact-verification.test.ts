@@ -20,8 +20,12 @@ import {
   type OperatorReportedTestArtifactRecord,
 } from './test-artifact-verification.js';
 
-/** CPU milliseconds since `from`: the work done, which load on the host does not stretch the way it stretches wall time. */
-const cpuMsSince = (from: NodeJS.CpuUsage): number => { const { user, system } = process.cpuUsage(from); return (user + system) / 1000; };
+/** CPU milliseconds this thread has spent since `from`: the work done, which neither load on the host nor the pool running the file stretches. */
+const cpuMsSince = (from: NodeJS.CpuUsage): number => { const { user, system } = process.threadCpuUsage(from); return (user + system) / 1000; };
+// A CPU-time bound sits at the geometric mean of the slowest head run of its region and the fastest run of the quadratic
+// mutant it names, at least 10x from each (docs/evidence/syzygy-bpyt-4-5/cpu-separation.json, syzygy-bpyt.4.5).
+const TAG_SCAN_CPU_MS = 2_000; // the `<testsuite\s+([^>]*?)\/?>` scan 169e38db replaced
+const ATTRIBUTE_SCAN_CPU_MS = 2_000; // the `(\w+)="…"` attribute scan 169e38db replaced
 
 const cleanups: string[] = [];
 afterEach(() => {
@@ -94,16 +98,16 @@ describe('parseJUnitRootTotals', () => {
     ['near-miss tag names', '<testsuitex '],
   ])('scans %s at the ceiling in linear time', (_label, unit) => {
     const crafted = unit.repeat(Math.floor(MAX_JUNIT_ARTIFACT_BYTES / unit.length));
-    const cpu = process.cpuUsage();
+    const cpu = process.threadCpuUsage();
     expect(parseJUnitRootTotals(crafted)).toBeNull();
-    expect(cpuMsSince(cpu)).toBeLessThan(2_000);
+    expect(cpuMsSince(cpu)).toBeLessThan(TAG_SCAN_CPU_MS);
   });
 
   it('scans one tag body that is a single word run at the ceiling in linear time', () => {
     const crafted = `<testsuite ${'a'.repeat(MAX_JUNIT_ARTIFACT_BYTES - 32)} tests="1">`;
-    const cpu = process.cpuUsage();
+    const cpu = process.threadCpuUsage();
     expect(parseJUnitRootTotals(crafted)).toEqual({ tests: 1, failures: 0, errors: 0, skipped: 0, time: null });
-    expect(cpuMsSince(cpu)).toBeLessThan(2_000);
+    expect(cpuMsSince(cpu)).toBeLessThan(ATTRIBUTE_SCAN_CPU_MS);
   });
 
   // Round-2 note 6: last-wins let `failures="1" … failures="0"` read as 0.
