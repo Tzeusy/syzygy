@@ -62,9 +62,12 @@ describe('the shared workspace resolver', () => {
     ['module-sync', { 'module-sync': './dist/index.js', import: './dist/argv.js' }],
     ['require', { import: './dist/argv.js', require: './dist/index.js' }],
     ['default', { import: './dist/argv.js', default: './dist/index.js' }],
-    ['a nested', { import: { types: './dist/argv.d.ts', default: './dist/argv.js' } }],
   ])('reads an export whose %s condition names another target as naming no module', (_condition, dot) => {
     expect(resolveIn(workspace({}, dot), 'apps/app/src/main.ts', '@syzygy/lib')).toBeUndefined();
+  });
+
+  it('reads an export whose condition holds further conditions as naming no module', () => {
+    expect(resolveIn(workspace({}, { import: { types: './dist/argv.d.ts', default: './dist/argv.js' } }), 'apps/app/src/main.ts', '@syzygy/lib')).toBeUndefined();
   });
 
   it('resolves an export whose conditions other than types all name one target', () => {
