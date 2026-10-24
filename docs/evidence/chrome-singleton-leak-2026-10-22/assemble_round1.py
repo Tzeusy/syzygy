@@ -70,11 +70,13 @@ survivors = {k: v for k, v in outcome.items() if v != 'killed'}
 
 # Assertions unchanged, against main: every line the change removes from a test file that main has (an import line is counted apart).
 ASSERTION = re.compile(r'\bexpect\b|\bassert\b|\.to[A-Z]\w*\(|\.resolves\b|\.rejects\b')
+MATCHER = re.compile(r'\.to[A-Z]\w*\(|\.resolves\b|\.rejects\b')
 removed = {}
 for f in (f for f in git('diff', '--name-only', main, code).splitlines() if f.endswith('.test.ts')):
     lines = [l[1:] for l in git('diff', '-U0', main, code, '--', f).splitlines() if l.startswith('-') and not l.startswith('---')]
     removed[f] = {'removedLines': len(lines), 'removedImportLines': sum(1 for l in lines if l.lstrip().startswith('import')),
-                  'removedLinesNamingAnAssertion': sum(1 for l in lines if not l.lstrip().startswith('import') and ASSERTION.search(l)), 'removed': lines}
+                  'removedLinesNamingAnAssertion': sum(1 for l in lines if not l.lstrip().startswith('import') and ASSERTION.search(l)),
+                  'removedLinesNamingAMatcher': sum(1 for l in lines if MATCHER.search(l)), 'removed': lines}
 outside = [f for f in git('diff', '--name-only', main, code).splitlines() if not f.startswith('docs/evidence/chrome-singleton-leak-2026-10-22/')]
 
 tools = sorted(p.name for p in evidence.iterdir() if p.suffix in ('.py', '.mjs'))
@@ -105,7 +107,8 @@ verification = {
     'tests': {'record': f'test-lists-r1-{DATE}.json', 'testsLine': lists['testsLine'], 'baseTree': lists['baseTree'], 'headTree': lists['headTree'], 'baseLines': lists['baseLines'], 'headLines': lists['headLines'],
               'addedByFile': lists['addedByFile'], 'removedByFile': lists['removedByFile']},
     'changedOutsideTheEvidenceDirectory': outside,
-    'ac3': {'claim': 'no existing assertion changes (against main as merged)', 'changedTestFiles': removed},
+    'ac3': {'claim': 'no existing assertion changes (against main as merged)', 'changedTestFiles': removed,
+            'note': 'the lines of cdp-browser.test.ts that name `expect` are the two `expect(() => removeBrowserProfile(<profile>, {` openings whose first argument changed from /tmp/syzygy-browser-profile to a path in a private root (F1 fix 1); the matcher lines below them (`.toThrow(...)`) are not removed, so no matcher and no expected value changes'},
     'gates': gates,
     'residuals': {
         'N6': 'when TMPDIR is unset and TMP or TEMP is set, Node\'s os.tmpdir() and Chrome\'s temp directory disagree, the parent check fails closed and a killed Chrome\'s directory is left in /tmp as at the base; Chrome\'s spawn environment is not changed',
