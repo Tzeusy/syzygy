@@ -1,0 +1,1034 @@
+{
+ "schema": "syzygy-bpyt-4-5-bounds-and-pins/1",
+ "bead": "syzygy-bpyt.4.5",
+ "subject": {
+  "base": "c104771ff90f47ffd070f2339c36010458679c71",
+  "evidenceCommit": "0a6645ae7d59230b261f27c3c05ef9a9f384ebd1",
+  "testFiles": [
+   {
+    "path": "apps/three-surface-poc/src/capture-test-artifact-main.test.ts",
+    "sha256": "a70f825e873925d0b4b1bbc652dc8ba5309f5514309a57d98fc6597d0919d3ff"
+   },
+   {
+    "path": "apps/three-surface-poc/src/main.test.ts",
+    "sha256": "2e04bb219f7bef50b345e85149015ad8b767059e9e1152cd0909496b75844190"
+   },
+   {
+    "path": "apps/three-surface-poc/src/polaris-generation/redis-shaped-discovery.test.ts",
+    "sha256": "a75c62efd676e2d85553afa8a4688d152336f6bd3614a8fb962445a46c409daa"
+   },
+   {
+    "path": "packages/cap1-system/src/daemon-entry-unchanged.system.test.ts",
+    "sha256": "e4d2cfa11df4a52ff94879fe350e925c303e503df9f898554d78f0f74acde0e2"
+   },
+   {
+    "path": "packages/polaris-dossier/src/git-object-reader.test.ts",
+    "sha256": "1c4f7fd74241f85d166c909c63568c7610f7a8c0b8ff60df62b3014fa97e45c9"
+   },
+   {
+    "path": "packages/polaris-generation-core/src/dossier-evaluation.test.ts",
+    "sha256": "d550f85ef32f34f7213487151fa51f7eb9672a0bf8611f94a9eb29a8b1fee812"
+   },
+   {
+    "path": "packages/polaris-generation-core/src/dossier-profile.test.ts",
+    "sha256": "46f6dcb7363ceb5a9dcac776ee58d189b9caf2687ce47bd171aac1dc294f4050"
+   },
+   {
+    "path": "packages/polaris-generation-core/src/excerpt.test.ts",
+    "sha256": "145383c013b62459c7e9ade974243ab1b4da7dd3b0b8a24245162260fd78b20b"
+   },
+   {
+    "path": "packages/three-surface-poc-core/src/test-artifact-verification.test.ts",
+    "sha256": "c56e9a32ab4e139d62bca28c8468fa6633b62b8a87c9281ebe13ed837f9bef98"
+   }
+  ],
+  "testDiffSha256": "91a67f353e2c3b7113a2de0e26e39a69b65f12bf708771688930b4fa4853c243",
+  "note": "The test files are the subject; no product file differs between base and the evidence commit."
+ },
+ "productFilesChanged": [],
+ "files": [
+  {
+   "path": "docs/evidence/syzygy-bpyt-4-5/bound-and-pin-mutants.json",
+   "sha256": "27b95981a0dec573ded4ca04fa12e5a674d7e55e7fafd6ae40764330cf88a066"
+  },
+  {
+   "path": "docs/evidence/syzygy-bpyt-4-5/census-base.json",
+   "sha256": "1a7f336817bea73babce870c2757aab1c8d1741b5fb29f345339736b793da6ec"
+  },
+  {
+   "path": "docs/evidence/syzygy-bpyt-4-5/census-head.json",
+   "sha256": "faa48b6b90d3d2e12c0767f35a7600992957c52cbb1bc3509e55fa6ba528f9f5"
+  },
+  {
+   "path": "docs/evidence/syzygy-bpyt-4-5/cpu-margins.json",
+   "sha256": "2ec43a8b2d6cd06bf5d9b96a0ea92db6307d3380b77ade7efa0d9c154b3bbdbd"
+  },
+  {
+   "path": "docs/evidence/syzygy-bpyt-4-5/daemon-entry-base-test.json",
+   "sha256": "ffd44225184516f1b3a34e446f4de8cc562ae2d0356ff01a119b5df3bb876507"
+  },
+  {
+   "path": "docs/evidence/syzygy-bpyt-4-5/daemon-entry-head.json",
+   "sha256": "265f1cfb35968ebc43c0fa12273372cfb21a2c720fe3937c2a6f61e7cd496386"
+  },
+  {
+   "path": "docs/evidence/syzygy-bpyt-4-5/full-suite/attempt-1.json",
+   "sha256": "62e8b2ca3456a2e9ad502e4f02c57668077157bcda1e8f0fa7f1593e5618601b"
+  },
+  {
+   "path": "docs/evidence/syzygy-bpyt-4-5/full-suite/attempt-2.json",
+   "sha256": "953e654ba7ce7f1cd7a32f1767fb60d14ba345c1469e483741d9ff1025fac079"
+  },
+  {
+   "path": "docs/evidence/syzygy-bpyt-4-5/full-suite/attempt-3.json",
+   "sha256": "6d882557347cc7b330cab4a15fe81c8166c96ecd42641e8587a4469809a0ee4c"
+  },
+  {
+   "path": "docs/evidence/syzygy-bpyt-4-5/tools/bound_and_pin_mutants.py",
+   "sha256": "d27ca42029e99125c973d89c745964cad1cec26a9d7b14ea1de3c0c88726a4d6"
+  },
+  {
+   "path": "docs/evidence/syzygy-bpyt-4-5/tools/build_record.py",
+   "sha256": "f2a1d349336c30ddb4645eec97aba778953e1ed50f10d0da4d9b84ca2df6ebbc"
+  },
+  {
+   "path": "docs/evidence/syzygy-bpyt-4-5/tools/cpu_margins.py",
+   "sha256": "6c4137369a80789fadd34b8609cdec33ddc0263e29a7c79a6ca4216b94082dfe"
+  },
+  {
+   "path": "docs/evidence/syzygy-bpyt-4-5/tools/daemon_entry_probe.py",
+   "sha256": "c76473b4fef7487b4e665c4408d30665ec4a1023baecc41f85602dda2841a187"
+  },
+  {
+   "path": "docs/evidence/syzygy-bpyt-4-5/tools/mutant-cases.json",
+   "sha256": "a1eddc42ccb40bcabd066eb6721f37f36b9ae0b826f034d58cd536a16b862ece"
+  },
+  {
+   "path": "docs/evidence/syzygy-bpyt-4-5/tools/suite_summary.py",
+   "sha256": "3d770a1d698c7c5f564548972da88fac36cac422a6ace0f8b3843cb1e8a1e464"
+  },
+  {
+   "path": "docs/evidence/syzygy-bpyt-4-5/tools/timing_census.py",
+   "sha256": "79aad9c52e1a11f8887d8fe5475a86e93bd742ac8aec436089a69cb098840f48"
+  }
+ ],
+ "ac1Sweep": {
+  "population": {
+   "base": 249,
+   "head": 249
+  },
+  "elapsedFirstMethod": {
+   "base": 7,
+   "head": 0
+  },
+  "elapsedSecondMethod": {
+   "base": 8,
+   "head": 1,
+   "headLines": [
+    {
+     "path": "apps/three-surface-poc/src/polaris-generation/public-source-screening.test.ts",
+     "line": 525,
+     "text": "const recordBase = { project: 'project:fixture', version: '1', digest: 'a'.repeat(64), inForceAt: now - 1, withdrawnAt: null,"
+    }
+   ]
+  },
+  "raceTimers": {
+   "base": 2,
+   "head": [
+    {
+     "path": "apps/three-surface-poc/src/cdp-browser.test.ts",
+     "line": 22,
+     "kind": "race",
+     "text": "return new Promise<never>((_resolve, reject) => setTimeout(() => reject(new Error('no acknowledgement')), timeoutMs ?? 0));"
+    }
+   ]
+  },
+  "cpuBounds": [
+   {
+    "path": "packages/polaris-generation-core/src/dossier-profile.test.ts",
+    "line": 173,
+    "kind": "cpu-bound",
+    "text": "expect(cpuMsSince(cpu)).toBeLessThan(2000);"
+   },
+   {
+    "path": "packages/polaris-generation-core/src/excerpt.test.ts",
+    "line": 264,
+    "kind": "cpu-bound",
+    "text": "expect(cpuMsSince(cpu)).toBeLessThan(500);"
+   },
+   {
+    "path": "packages/three-surface-poc-core/src/test-artifact-verification.test.ts",
+    "line": 99,
+    "kind": "cpu-bound",
+    "text": "expect(cpuMsSince(cpu)).toBeLessThan(2_000);"
+   },
+   {
+    "path": "packages/three-surface-poc-core/src/test-artifact-verification.test.ts",
+    "line": 106,
+    "kind": "cpu-bound",
+    "text": "expect(cpuMsSince(cpu)).toBeLessThan(2_000);"
+   }
+  ],
+  "thirdMethod": {
+   "regex": "hrtime|performance\\.now\\(\\)|Date\\.now\\(\\) *-|elapsed|getTime\\(\\) *-|cpuUsage",
+   "over": "apps/*.test.* and packages/*.test.* at the evidence commit, git grep -E",
+   "lines": [
+    "0a6645ae7d59230b261f27c3c05ef9a9f384ebd1:apps/three-surface-poc/src/capture-test-artifact-main.test.ts:379:    // The message names the lstat refusal, made before any open. No elapsed-time bound: a blocking open never",
+    "0a6645ae7d59230b261f27c3c05ef9a9f384ebd1:packages/polaris-dossier/src/status.test.ts:111:    expect(before.ok && before.report.limitsSpent.deadline).toBe('PT3H from the brief, ending at 2026-10-07T13:00:00.000Z on Syzygy\\'s clock; elapsed time not recorded');",
+    "0a6645ae7d59230b261f27c3c05ef9a9f384ebd1:packages/polaris-dossier/src/status.test.ts:115:    expect(after.ok && after.report.limitsSpent.deadline).toBe('PT3H from the brief, ended at 2026-10-07T13:00:00.000Z on Syzygy\\'s clock; elapsed time not recorded');",
+    "0a6645ae7d59230b261f27c3c05ef9a9f384ebd1:packages/polaris-generation-core/src/dossier-profile.test.ts:14:const cpuMsSince = (from: NodeJS.CpuUsage): number => { const { user, system } = process.cpuUsage(from); return (user + system) / 1000; };",
+    "0a6645ae7d59230b261f27c3c05ef9a9f384ebd1:packages/polaris-generation-core/src/dossier-profile.test.ts:166:    const cpu = process.cpuUsage();",
+    "0a6645ae7d59230b261f27c3c05ef9a9f384ebd1:packages/polaris-generation-core/src/excerpt.test.ts:7:const cpuMsSince = (from: NodeJS.CpuUsage): number => { const { user, system } = process.cpuUsage(from); return (user + system) / 1000; };",
+    "0a6645ae7d59230b261f27c3c05ef9a9f384ebd1:packages/polaris-generation-core/src/excerpt.test.ts:262:      const cpu = process.cpuUsage();",
+    "0a6645ae7d59230b261f27c3c05ef9a9f384ebd1:packages/three-surface-poc-core/src/test-artifact-verification.test.ts:24:const cpuMsSince = (from: NodeJS.CpuUsage): number => { const { user, system } = process.cpuUsage(from); return (user + system) / 1000; };",
+    "0a6645ae7d59230b261f27c3c05ef9a9f384ebd1:packages/three-surface-poc-core/src/test-artifact-verification.test.ts:97:    const cpu = process.cpuUsage();",
+    "0a6645ae7d59230b261f27c3c05ef9a9f384ebd1:packages/three-surface-poc-core/src/test-artifact-verification.test.ts:104:    const cpu = process.cpuUsage();"
+   ]
+  },
+  "unreasonedTimeouts": {
+   "sites": 142,
+   "withReason": 32,
+   "withoutReason": 110,
+   "files": [
+    "apps/three-surface-poc/src/cdp-browser.browser.test.ts",
+    "apps/three-surface-poc/src/cdp-browser.test.ts",
+    "apps/three-surface-poc/src/fixture-directories.test.ts",
+    "apps/three-surface-poc/src/governing-intent-sweep.test.ts",
+    "apps/three-surface-poc/src/main.test.ts",
+    "apps/three-surface-poc/src/orrery.browser.test.ts",
+    "apps/three-surface-poc/src/polaris-accessibility.browser.test.ts",
+    "apps/three-surface-poc/src/polaris-accessible-names.browser.test.ts",
+    "apps/three-surface-poc/src/polaris-copy.test.ts",
+    "apps/three-surface-poc/src/polaris-generation/dossier-cap-measure.test.ts",
+    "apps/three-surface-poc/src/polaris-generation/draft-preview.browser.test.ts",
+    "apps/three-surface-poc/src/polaris-generation/pipeline-demo.test.ts",
+    "apps/three-surface-poc/src/polaris-generation/public-source-screening.test.ts",
+    "apps/three-surface-poc/src/polaris-generation/redis-shaped-discovery.test.ts",
+    "apps/three-surface-poc/src/polaris-generation/self-corpus.test.ts",
+    "apps/three-surface-poc/src/polaris-opening-index.browser.test.ts",
+    "apps/three-surface-poc/src/polaris-reconciliation.test.ts",
+    "apps/three-surface-poc/src/proposal-disclosure.test.ts",
+    "apps/three-surface-poc/src/restart.test.ts",
+    "apps/three-surface-poc/src/surface-routes.test.ts",
+    "apps/three-surface-poc/src/test-model-fixture.test.ts",
+    "apps/three-surface-poc/src/trajectory-narrowing.browser.test.ts",
+    "apps/three-surface-poc/src/tuple-encoding.test.ts",
+    "apps/three-surface-poc/src/unknown-route-sweep.test.ts",
+    "packages/cap1-system/src/skipped-population.system.test.ts",
+    "packages/polaris-dossier/src/git-object-reader.test.ts",
+    "packages/polaris-dossier/src/no-egress.test.ts",
+    "packages/polaris-generation-consent/src/package-reader.test.ts",
+    "packages/three-surface-poc-core/src/test-artifact-verification.live.test.ts"
+   ]
+  },
+  "clockReadingsAtHead": {
+   "deadline": 13,
+   "now-input": 16
+  }
+ },
+ "sites": [
+  {
+   "site": "apps/three-surface-poc/src/capture-test-artifact-main.test.ts:381 (base)",
+   "was": "expect(Date.now() - started).toBeLessThan(5_000)",
+   "property": "a FIFO is refused before any open",
+   "now": "the lstat-refusal message alone; no elapsed bound",
+   "mutants": [
+    "fifo-no-lstat",
+    "fifo-blocking-open"
+   ],
+   "outcomes": {
+    "fifo-no-lstat": {
+     "base": "fail",
+     "head": "fail"
+    },
+    "fifo-blocking-open": {
+     "base": "killed",
+     "head": "killed"
+    }
+   }
+  },
+  {
+   "site": "apps/three-surface-poc/src/main.test.ts:547 (base)",
+   "was": "expect(Date.now() - began).toBeLessThan(WAIT_MS / 2)",
+   "property": "started() reports a finished run at once",
+   "now": "a bound twice the test's own timeout, so a report made at the bound times the test out",
+   "mutants": [
+    "started-waits-for-bound"
+   ],
+   "outcomes": {
+    "started-waits-for-bound": {
+     "base": "fail",
+     "head": "fail"
+    }
+   }
+  },
+  {
+   "site": "packages/polaris-dossier/src/git-object-reader.test.ts:581 (base) and refusedWithin, 9 call sites",
+   "was": "expect(Date.now() - started).toBeLessThan(30_000); refusedWithin(2000 | 5000 | 30_000, ...)",
+   "property": "refusal by the byte budget, the depth cap or the stored bound; a special file never blocks",
+   "now": "refusal() and each test's own timeout",
+   "mutants": [
+    "reader-no-call-budget",
+    "reader-no-depth-cap",
+    "reader-blocking-open",
+    "reader-no-stored-bound"
+   ],
+   "outcomes": {
+    "reader-no-call-budget": {
+     "base": "fail",
+     "head": "fail"
+    },
+    "reader-no-depth-cap": {
+     "base": "fail",
+     "head": "fail"
+    },
+    "reader-blocking-open": {
+     "base": "fail",
+     "head": "fail"
+    },
+    "reader-no-stored-bound": {
+     "base": "fail",
+     "head": "fail"
+    }
+   }
+  },
+  {
+   "site": "packages/polaris-generation-core/src/dossier-profile.test.ts:167 (base)",
+   "was": "expect(performance.now() - started).toBeLessThan(2000)",
+   "property": "the edge trim is linear",
+   "now": "a CPU-time bound, and each filler also as a blank run between visible characters",
+   "mutants": [
+    "edge-backtracking-regex"
+   ],
+   "outcomes": {
+    "edge-backtracking-regex": {
+     "base": "pass",
+     "head": "killed"
+    }
+   }
+  },
+  {
+   "site": "packages/polaris-generation-core/src/excerpt.test.ts:262 (base), 2 cases",
+   "was": "expect(Date.now() - started).toBeLessThan(500)",
+   "property": "a line past the pattern prefix is never pattern-matched",
+   "now": "a CPU-time bound",
+   "mutants": [
+    "excerpt-quadratic-pattern-only",
+    "excerpt-no-prefix-cap",
+    "excerpt-no-cap-quadratic-pattern"
+   ],
+   "outcomes": {
+    "excerpt-quadratic-pattern-only": {
+     "base": "pass",
+     "head": "pass"
+    },
+    "excerpt-no-prefix-cap": {
+     "base": "fail",
+     "head": "fail"
+    },
+    "excerpt-no-cap-quadratic-pattern": {
+     "base": "fail",
+     "head": "fail"
+    }
+   }
+  },
+  {
+   "site": "packages/three-surface-poc-core/src/test-artifact-verification.test.ts:96,103 (base), 4 cases",
+   "was": "expect(performance.now() - started).toBeLessThan(2_000)",
+   "property": "the JUnit tag and attribute scans are linear",
+   "now": "a CPU-time bound",
+   "mutants": [
+    "junit-tag-regex",
+    "junit-attr-regex"
+   ],
+   "outcomes": {
+    "junit-tag-regex": {
+     "base": "killed",
+     "head": "killed"
+    },
+    "junit-attr-regex": {
+     "base": "killed",
+     "head": "killed"
+    }
+   }
+  },
+  {
+   "site": "packages/polaris-generation-core/src/dossier-evaluation.test.ts:107-113,127-131 (base)",
+   "was": "byte literals 1038, 670, 235, 1273, 669",
+   "property": "page bytes, bytes through the last level-0 close, per-depth and total bytes",
+   "now": "counts taken from the fixture text",
+   "mutants": [
+    "dossier-page-bytes-plus-one",
+    "dossier-first-level-short",
+    "dossier-total-first-page",
+    "dossier-budget-first-level-short",
+    "dossier-budget-total-first-page"
+   ],
+   "outcomes": {
+    "dossier-page-bytes-plus-one": {
+     "base": "fail",
+     "head": "fail"
+    },
+    "dossier-first-level-short": {
+     "base": "fail",
+     "head": "fail"
+    },
+    "dossier-total-first-page": {
+     "base": "fail",
+     "head": "fail"
+    },
+    "dossier-budget-first-level-short": {
+     "base": "fail",
+     "head": "fail"
+    },
+    "dossier-budget-total-first-page": {
+     "base": "fail",
+     "head": "fail"
+    }
+   }
+  },
+  {
+   "site": "apps/three-surface-poc/src/polaris-generation/redis-shaped-discovery.test.ts:137 (base)",
+   "was": "expect(bytes.selected).toBeGreaterThan(390_000)",
+   "property": "the byte cap is filled greedily",
+   "now": "every unsplit deferred file holds more quotable bytes than the room left; the 400,000 cap stays (the contract, named in the describe title)",
+   "mutants": [
+    "redis-stop-at-first-misfit"
+   ],
+   "outcomes": {
+    "redis-stop-at-first-misfit": {
+     "base": "fail",
+     "head": "fail"
+    }
+   }
+  }
+ ],
+ "controls": {
+  "control-capture": {
+   "base": "pass",
+   "head": "pass"
+  },
+  "control-dossier-budget": {
+   "base": "pass",
+   "head": "pass"
+  },
+  "control-dossier-profile": {
+   "base": "pass",
+   "head": "pass"
+  },
+  "control-dossier-scan": {
+   "base": "pass",
+   "head": "pass"
+  },
+  "control-excerpt": {
+   "base": "pass",
+   "head": "pass"
+  },
+  "control-junit-tags": {
+   "base": "pass",
+   "head": "pass"
+  },
+  "control-junit-word-run": {
+   "base": "pass",
+   "head": "pass"
+  },
+  "control-main": {
+   "base": "pass",
+   "head": "pass"
+  },
+  "control-reader-amp": {
+   "base": "pass",
+   "head": "pass"
+  },
+  "control-reader-cycle": {
+   "base": "pass",
+   "head": "pass"
+  },
+  "control-reader-pad": {
+   "base": "pass",
+   "head": "pass"
+  },
+  "control-reader-special": {
+   "base": "pass",
+   "head": "pass"
+  },
+  "control-redis": {
+   "base": "pass",
+   "head": "pass"
+  }
+ },
+ "residuals": [
+  "The CPU-time bounds read process.cpuUsage(), which counts every thread of the worker process, so garbage collection or other work in the same worker during the region counts toward the bound; the worst of 5 runs leaves the margins in cpuMargins.",
+  "dossier-evaluation's INDEX and DEEP fixtures are ASCII, so a module that counted string length instead of UTF-8 bytes would pass every byte assertion there, at the base (literals) and at the head (counts) alike.",
+  "A FIFO capture with the lstat refusal removed blocks in a synchronous open at both sides: the row fails by the test timeout or the run is killed, never by a fast refusal (fifo-blocking-open).",
+  "Explicit timeouts are harness bounds, not assertions, and stay; most carry no one-line reason (unreasonedTimeouts).",
+  "Under parallel load the full suite was not green on this host at the base or the head: every failure was a 5 s default timeout or a 10 s hook timeout in a file this change does not touch (fullSuite)."
+ ],
+ "mutantTotals": {
+  "cases": 32,
+  "sides": 64,
+  "asExpected": 64
+ },
+ "daemonEntry": {
+  "newRow": {
+   "control": {
+    "passed": 15,
+    "failed": []
+   },
+   "P-static": {
+    "passed": 14,
+    "failed": [
+     "daemon entry: the one changed input, `dossier` as the first argument the daemon path never loads the POC app, and the `dossier render` branch does"
+    ]
+   },
+   "P-daemon-dynamic": {
+    "passed": 14,
+    "failed": [
+     "daemon entry: the one changed input, `dossier` as the first argument the daemon path never loads the POC app, and the `dossier render` branch does"
+    ]
+   },
+   "P-transitive": {
+    "passed": 14,
+    "failed": [
+     "daemon entry: the one changed input, `dossier` as the first argument the daemon path never loads the POC app, and the `dossier render` branch does"
+    ]
+   },
+   "H-hook-blind": {
+    "passed": 14,
+    "failed": [
+     "daemon entry: the one changed input, `dossier` as the first argument the daemon path never loads the POC app, and the `dossier render` branch does"
+    ]
+   },
+   "H-no-preload": {
+    "passed": 14,
+    "failed": [
+     "daemon entry: the one changed input, `dossier` as the first argument the daemon path never loads the POC app, and the `dossier render` branch does"
+    ]
+   }
+  },
+  "oldTextPin": {
+   "control": {
+    "passed": 15,
+    "failed": []
+   },
+   "P-static": {
+    "passed": 14,
+    "failed": [
+     "daemon entry: the one changed input, `dossier` as the first argument the daemon path never loads the POC app: each import is dynamic and inside the `dossier` or `polaris` branch"
+    ]
+   },
+   "P-daemon-dynamic": {
+    "passed": 14,
+    "failed": [
+     "daemon entry: the one changed input, `dossier` as the first argument the daemon path never loads the POC app: each import is dynamic and inside the `dossier` or `polaris` branch"
+    ]
+   },
+   "P-transitive": {
+    "passed": 15,
+    "failed": []
+   },
+   "H-hook-blind": "skipped",
+   "H-no-preload": "skipped"
+  }
+ },
+ "cpuMargins": [
+  {
+   "file": "packages/polaris-generation-core/src/dossier-profile.test.ts",
+   "probeIndex": 0,
+   "boundMs": 2000,
+   "worstCpuMs": 63.296,
+   "margin": 31.6
+  },
+  {
+   "file": "packages/polaris-generation-core/src/excerpt.test.ts",
+   "probeIndex": 0,
+   "boundMs": 500,
+   "worstCpuMs": 0.188,
+   "margin": 2659.6
+  },
+  {
+   "file": "packages/polaris-generation-core/src/excerpt.test.ts",
+   "probeIndex": 1,
+   "boundMs": 500,
+   "worstCpuMs": 0.158,
+   "margin": 3164.6
+  },
+  {
+   "file": "packages/three-surface-poc-core/src/test-artifact-verification.test.ts",
+   "probeIndex": 0,
+   "boundMs": 2000,
+   "worstCpuMs": 22.89,
+   "margin": 87.4
+  },
+  {
+   "file": "packages/three-surface-poc-core/src/test-artifact-verification.test.ts",
+   "probeIndex": 1,
+   "boundMs": 2000,
+   "worstCpuMs": 56.87,
+   "margin": 35.2
+  },
+  {
+   "file": "packages/three-surface-poc-core/src/test-artifact-verification.test.ts",
+   "probeIndex": 2,
+   "boundMs": 2000,
+   "worstCpuMs": 41.223,
+   "margin": 48.5
+  },
+  {
+   "file": "packages/three-surface-poc-core/src/test-artifact-verification.test.ts",
+   "probeIndex": 3,
+   "boundMs": 2000,
+   "worstCpuMs": 151.95,
+   "margin": 13.2
+  }
+ ],
+ "fullSuite": [
+  {
+   "tool": "suite_summary.py",
+   "attempt": "attempt 1: two concurrent runs of the head",
+   "cpus": 12,
+   "changedFilesBetween": [
+    "c104771f",
+    "0a6645ae7d59230b261f27c3c05ef9a9f384ebd1"
+   ],
+   "runs": [
+    {
+     "name": "A",
+     "commit": "0a6645ae7d59230b261f27c3c05ef9a9f384ebd1",
+     "start": "2026-10-25T06:11:47+08:00",
+     "load1Start": 21.11,
+     "exit": 1,
+     "end": "2026-10-25T06:20:35+08:00",
+     "load1End": 56.47,
+     "success": false,
+     "totals": {
+      "numTotalTestSuites": 854,
+      "numFailedTestSuites": 7,
+      "numTotalTests": 5278,
+      "numPassedTests": 5202,
+      "numFailedTests": 6,
+      "numPendingTests": 70,
+      "numTodoTests": 0
+     },
+     "failedTests": [
+      {
+       "file": "packages/polaris-dossier/src/gate-acts.test.ts",
+       "test": "the sitting's acts fail closed withdraw what a decisions file names by the installed entry's basename",
+       "first": "Error: STACK_TRACE_ERROR",
+       "durationMs": 5130,
+       "inChangedFile": false
+      },
+      {
+       "file": "packages/polaris-dossier/src/gate-acts.test.ts",
+       "test": "the registry entry's version-tagged sign-off refuses a record with another package",
+       "first": "Error: STACK_TRACE_ERROR",
+       "durationMs": 5341,
+       "inChangedFile": false
+      },
+      {
+       "file": "packages/polaris-dossier/src/gate-acts.test.ts",
+       "test": "the gate forms against the recorders render the sign-off record byte for byte as render_record does, from the same fields: CONFIRM",
+       "first": "Error: STACK_TRACE_ERROR",
+       "durationMs": 7429,
+       "inChangedFile": false
+      },
+      {
+       "file": "packages/polaris-dossier/src/gate-acts.test.ts",
+       "test": "the gate forms against the recorders render the sign-off record byte for byte as render_record does, from the same fields: CONFIRM WITH EXCEPTIONS",
+       "first": "Error: STACK_TRACE_ERROR",
+       "durationMs": 7396,
+       "inChangedFile": false
+      },
+      {
+       "file": "packages/polaris-dossier/src/run-evidence.test.ts",
+       "test": "dossier run evidence record (S12) names the subject, the Syzygy commit and the digest of every file the run and its sessions left",
+       "first": "Error: STACK_TRACE_ERROR",
+       "durationMs": 5160,
+       "inChangedFile": false
+      },
+      {
+       "file": "packages/polaris-dossier/src/run-evidence.test.ts",
+       "test": "dossier run evidence record (S12) reports an open run as not closed, and refuses anything but one run directory",
+       "first": "Error: STACK_TRACE_ERROR",
+       "durationMs": 5076,
+       "inChangedFile": false
+      }
+     ],
+     "failedFilesWithoutFailedTest": [
+      {
+       "file": "packages/polaris-generation-consent/src/act-families.test.ts",
+       "first": "Hook timed out in 10000ms.",
+       "inChangedFile": false
+      }
+     ],
+     "failuresInChangedFiles": 0
+    },
+    {
+     "name": "B",
+     "commit": "0a6645ae7d59230b261f27c3c05ef9a9f384ebd1",
+     "start": "2026-10-25T06:11:47+08:00",
+     "load1Start": 21.11,
+     "exit": 1,
+     "end": "2026-10-25T06:20:32+08:00",
+     "load1End": 58.78,
+     "success": false,
+     "totals": {
+      "numTotalTestSuites": 854,
+      "numFailedTestSuites": 9,
+      "numTotalTests": 5278,
+      "numPassedTests": 5202,
+      "numFailedTests": 6,
+      "numPendingTests": 70,
+      "numTodoTests": 0
+     },
+     "failedTests": [
+      {
+       "file": "packages/polaris-dossier/src/close.test.ts",
+       "test": "close (S10) closes a run once, and refuses after the deadline",
+       "first": "Error: STACK_TRACE_ERROR",
+       "durationMs": 5528,
+       "inChangedFile": false
+      },
+      {
+       "file": "packages/polaris-dossier/src/gate-acts.test.ts",
+       "test": "the sitting's acts fail closed withdraw what a decisions file names by the D9 record's relative path",
+       "first": "Error: STACK_TRACE_ERROR",
+       "durationMs": 5057,
+       "inChangedFile": false
+      },
+      {
+       "file": "packages/polaris-dossier/src/gate-acts.test.ts",
+       "test": "the registry entry's version-tagged sign-off refuses once the installed entry changes",
+       "first": "Error: STACK_TRACE_ERROR",
+       "durationMs": 5593,
+       "inChangedFile": false
+      },
+      {
+       "file": "packages/polaris-dossier/src/gate-acts.test.ts",
+       "test": "the gate forms against the recorders render the sign-off record byte for byte as render_record does, from the same fields: CONFIRM",
+       "first": "Error: STACK_TRACE_ERROR",
+       "durationMs": 5627,
+       "inChangedFile": false
+      },
+      {
+       "file": "packages/polaris-dossier/src/gate-acts.test.ts",
+       "test": "the gate forms against the recorders render the sign-off record byte for byte as render_record does, from the same fields: CONFIRM WITH EXCEPTIONS",
+       "first": "Error: STACK_TRACE_ERROR",
+       "durationMs": 5492,
+       "inChangedFile": false
+      },
+      {
+       "file": "packages/polaris-dossier/src/run-evidence.test.ts",
+       "test": "dossier run evidence record (S12) reports an open run as not closed, and refuses anything but one run directory",
+       "first": "Error: STACK_TRACE_ERROR",
+       "durationMs": 5144,
+       "inChangedFile": false
+      }
+     ],
+     "failedFilesWithoutFailedTest": [
+      {
+       "file": "packages/polaris-generation-consent/src/act-families.test.ts",
+       "first": "Hook timed out in 10000ms.",
+       "inChangedFile": false
+      }
+     ],
+     "failuresInChangedFiles": 0
+    }
+   ]
+  },
+  {
+   "tool": "suite_summary.py",
+   "attempt": "attempt 2: two concurrent runs of the head",
+   "cpus": 12,
+   "changedFilesBetween": [
+    "c104771f",
+    "0a6645ae7d59230b261f27c3c05ef9a9f384ebd1"
+   ],
+   "runs": [
+    {
+     "name": "A",
+     "commit": "0a6645ae7d59230b261f27c3c05ef9a9f384ebd1",
+     "start": "2026-10-25T06:39:06+08:00",
+     "load1Start": 41.57,
+     "exit": 1,
+     "end": "2026-10-25T06:46:41+08:00",
+     "load1End": 76.94,
+     "success": false,
+     "totals": {
+      "numTotalTestSuites": 854,
+      "numFailedTestSuites": 8,
+      "numTotalTests": 5278,
+      "numPassedTests": 5268,
+      "numFailedTests": 5,
+      "numPendingTests": 5,
+      "numTodoTests": 0
+     },
+     "failedTests": [
+      {
+       "file": "packages/polaris-dossier/src/gate-acts.test.ts",
+       "test": "version 2 of the Anthropic statement is what preflight lists in force, before and after its instant, agreeing with the gate",
+       "first": "Error: STACK_TRACE_ERROR",
+       "durationMs": 5496,
+       "inChangedFile": false
+      },
+      {
+       "file": "packages/polaris-dossier/src/gate-acts.test.ts",
+       "test": "the sitting's acts fail closed refuse an in-force record whose table binds other files than the form names, even when an act binds its bytes",
+       "first": "Error: STACK_TRACE_ERROR",
+       "durationMs": 5921,
+       "inChangedFile": false
+      },
+      {
+       "file": "packages/polaris-dossier/src/run-evidence.test.ts",
+       "test": "dossier run evidence record (S12) reports an open run as not closed, and refuses anything but one run directory",
+       "first": "Error: STACK_TRACE_ERROR",
+       "durationMs": 5105,
+       "inChangedFile": false
+      },
+      {
+       "file": "packages/polaris-dossier/src/start-gates.test.ts",
+       "test": "init: a run that passes every start gate pins the consented HEAD, records the subject and writes only run.json under the state root",
+       "first": "Error: STACK_TRACE_ERROR",
+       "durationMs": 5157,
+       "inChangedFile": false
+      },
+      {
+       "file": "packages/polaris-dossier/src/start-gates.test.ts",
+       "test": "init: the clone holds the consented commit alone (syzygy-qkea.24) refuses config naming a remote, a promisor, an include or a command the agent's git would run (R-POLARIS-DOSSIER-CLONE-SHAPE-2 finding 1)",
+       "first": "Error: STACK_TRACE_ERROR",
+       "durationMs": 5489,
+       "inChangedFile": false
+      }
+     ],
+     "failedFilesWithoutFailedTest": [],
+     "failuresInChangedFiles": 0
+    },
+    {
+     "name": "B",
+     "commit": "0a6645ae7d59230b261f27c3c05ef9a9f384ebd1",
+     "start": "2026-10-25T06:39:06+08:00",
+     "load1Start": 41.57,
+     "exit": 1,
+     "end": "2026-10-25T06:46:35+08:00",
+     "load1End": 74.84,
+     "success": false,
+     "totals": {
+      "numTotalTestSuites": 854,
+      "numFailedTestSuites": 7,
+      "numTotalTests": 5278,
+      "numPassedTests": 5269,
+      "numFailedTests": 4,
+      "numPendingTests": 5,
+      "numTodoTests": 0
+     },
+     "failedTests": [
+      {
+       "file": "packages/polaris-dossier/src/gate-acts.test.ts",
+       "test": "version 2 of the Anthropic statement is what preflight lists in force, before and after its instant, agreeing with the gate",
+       "first": "Error: STACK_TRACE_ERROR",
+       "durationMs": 5173,
+       "inChangedFile": false
+      },
+      {
+       "file": "packages/polaris-dossier/src/gate-acts.test.ts",
+       "test": "the sitting's acts fail closed refuse an in-force record whose table binds other files than the form names, even when an act binds its bytes",
+       "first": "Error: STACK_TRACE_ERROR",
+       "durationMs": 6382,
+       "inChangedFile": false
+      },
+      {
+       "file": "packages/polaris-dossier/src/run-evidence.test.ts",
+       "test": "dossier run evidence record (S12) reports an open run as not closed, and refuses anything but one run directory",
+       "first": "Error: STACK_TRACE_ERROR",
+       "durationMs": 5063,
+       "inChangedFile": false
+      },
+      {
+       "file": "packages/polaris-dossier/src/start-gates.test.ts",
+       "test": "init: the clone holds the consented commit alone (syzygy-qkea.24) refuses config naming a remote, a promisor, an include or a command the agent's git would run (R-POLARIS-DOSSIER-CLONE-SHAPE-2 finding 1)",
+       "first": "Error: STACK_TRACE_ERROR",
+       "durationMs": 5136,
+       "inChangedFile": false
+      }
+     ],
+     "failedFilesWithoutFailedTest": [],
+     "failuresInChangedFiles": 0
+    }
+   ]
+  },
+  {
+   "tool": "suite_summary.py",
+   "attempt": "attempt 3: the head beside the base, concurrently",
+   "cpus": 12,
+   "changedFilesBetween": [
+    "c104771ff90f47ffd070f2339c36010458679c71",
+    "0a6645ae7d59230b261f27c3c05ef9a9f384ebd1"
+   ],
+   "runs": [
+    {
+     "name": "head",
+     "commit": "0a6645ae7d59230b261f27c3c05ef9a9f384ebd1",
+     "start": "2026-10-25T06:48:45+08:00",
+     "load1Start": 54.16,
+     "exit": 1,
+     "end": "2026-10-25T06:57:53+08:00",
+     "load1End": 89.67,
+     "success": false,
+     "totals": {
+      "numTotalTestSuites": 854,
+      "numFailedTestSuites": 13,
+      "numTotalTests": 5278,
+      "numPassedTests": 5201,
+      "numFailedTests": 7,
+      "numPendingTests": 70,
+      "numTodoTests": 0
+     },
+     "failedTests": [
+      {
+       "file": "packages/polaris-dossier/src/execution-flags.test.ts",
+       "test": "check, render and close disclose the flags beside each command and refuse nothing (scenario \"Reported command outside the named scope\") under SEC-3's rule: the same commands are disclosed and nothing is flagged",
+       "first": "Error: STACK_TRACE_ERROR",
+       "durationMs": 5137,
+       "inChangedFile": false
+      },
+      {
+       "file": "packages/polaris-dossier/src/gate-acts.test.ts",
+       "test": "the sitting's acts fail closed refuse an in-force record whose table binds other files than the form names, even when an act binds its bytes",
+       "first": "Error: STACK_TRACE_ERROR",
+       "durationMs": 6725,
+       "inChangedFile": false
+      },
+      {
+       "file": "packages/polaris-dossier/src/review.test.ts",
+       "test": "review-check does not count a verdict whose launch record is altered to another form, role or prompt",
+       "first": "Error: STACK_TRACE_ERROR",
+       "durationMs": 5092,
+       "inChangedFile": false
+      },
+      {
+       "file": "packages/polaris-dossier/src/start-gates.test.ts",
+       "test": "init: a run that passes every start gate pins the consented HEAD, records the subject and writes only run.json under the state root",
+       "first": "Error: STACK_TRACE_ERROR",
+       "durationMs": 7305,
+       "inChangedFile": false
+      },
+      {
+       "file": "packages/polaris-dossier/src/start-gates.test.ts",
+       "test": "init: every refusal arm (REQ-polaris-generation-033 scenarios \"Clone at an unconsented revision\" and the governed arms) refuses when the signed registry entry names another implementation or no implementation version",
+       "first": "Error: STACK_TRACE_ERROR",
+       "durationMs": 6750,
+       "inChangedFile": false
+      },
+      {
+       "file": "packages/polaris-dossier/src/start-gates.test.ts",
+       "test": "preflight reports D9 and the RFC7-20 reading established once the sitting's acts bind their records, and only while the bound bytes hold",
+       "first": "Error: STACK_TRACE_ERROR",
+       "durationMs": 5607,
+       "inChangedFile": false
+      },
+      {
+       "file": "packages/polaris-dossier/src/waiting-sessions.test.ts",
+       "test": "a rendered-design reviewer's continuity, disclosed in the review-status region discloses a design reviewer that continued to round 2 (mutant: drop the design continuity sentence)",
+       "first": "Error: STACK_TRACE_ERROR",
+       "durationMs": 5270,
+       "inChangedFile": false
+      }
+     ],
+     "failedFilesWithoutFailedTest": [
+      {
+       "file": "packages/polaris-generation-consent/src/act-families.test.ts",
+       "first": "Hook timed out in 10000ms.",
+       "inChangedFile": false
+      }
+     ],
+     "failuresInChangedFiles": 0
+    },
+    {
+     "name": "base",
+     "commit": "c104771ff90f47ffd070f2339c36010458679c71",
+     "start": "2026-10-25T06:48:45+08:00",
+     "load1Start": 54.16,
+     "exit": 1,
+     "end": "2026-10-25T06:58:45+08:00",
+     "load1End": 76.81,
+     "success": false,
+     "totals": {
+      "numTotalTestSuites": 854,
+      "numFailedTestSuites": 12,
+      "numTotalTests": 5278,
+      "numPassedTests": 5200,
+      "numFailedTests": 8,
+      "numPendingTests": 70,
+      "numTodoTests": 0
+     },
+     "failedTests": [
+      {
+       "file": "packages/polaris-dossier/src/gate-acts.test.ts",
+       "test": "the sitting's acts fail closed refuse an in-force record whose table binds other files than the form names, even when an act binds its bytes",
+       "first": "Error: STACK_TRACE_ERROR",
+       "durationMs": 5772,
+       "inChangedFile": false
+      },
+      {
+       "file": "packages/polaris-dossier/src/gate-acts.test.ts",
+       "test": "the gate forms against the recorders render the sign-off record byte for byte as render_record does, from the same fields: CONFIRM",
+       "first": "Error: STACK_TRACE_ERROR",
+       "durationMs": 5074,
+       "inChangedFile": false
+      },
+      {
+       "file": "packages/polaris-dossier/src/run-evidence.test.ts",
+       "test": "dossier run evidence record (S12) lists a symbolic link without following it",
+       "first": "Error: STACK_TRACE_ERROR",
+       "durationMs": 5278,
+       "inChangedFile": false
+      },
+      {
+       "file": "packages/polaris-dossier/src/run-evidence.test.ts",
+       "test": "dossier run evidence record (S12) reports an open run as not closed, and refuses anything but one run directory",
+       "first": "Error: STACK_TRACE_ERROR",
+       "durationMs": 5011,
+       "inChangedFile": false
+      },
+      {
+       "file": "packages/polaris-dossier/src/start-gates.test.ts",
+       "test": "init: a run that passes every start gate pins the consented HEAD, records the subject and writes only run.json under the state root",
+       "first": "Error: STACK_TRACE_ERROR",
+       "durationMs": 8485,
+       "inChangedFile": false
+      },
+      {
+       "file": "packages/polaris-dossier/src/start-gates.test.ts",
+       "test": "init: the clone holds the consented commit alone (syzygy-qkea.24) refuses config naming a remote, a promisor, an include or a command the agent's git would run (R-POLARIS-DOSSIER-CLONE-SHAPE-2 finding 1)",
+       "first": "Error: STACK_TRACE_ERROR",
+       "durationMs": 5061,
+       "inChangedFile": false
+      },
+      {
+       "file": "packages/polaris-dossier/src/start-gates.test.ts",
+       "test": "init: every refusal arm (REQ-polaris-generation-033 scenarios \"Clone at an unconsented revision\" and the governed arms) counts a gitlink entry named openspec in the pinned tree as governing",
+       "first": "Error: STACK_TRACE_ERROR",
+       "durationMs": 5017,
+       "inChangedFile": false
+      },
+      {
+       "file": "apps/three-surface-poc/src/polaris-accessibility.browser.test.ts",
+       "test": "Polaris keyboard, non-visual and contrast checks in a real browser keeps complete source columns visible while citation targets remain keyboard-reachable",
+       "first": "Error: STACK_TRACE_ERROR",
+       "durationMs": 5039,
+       "inChangedFile": false
+      }
+     ],
+     "failedFilesWithoutFailedTest": [
+      {
+       "file": "packages/polaris-generation-consent/src/act-families.test.ts",
+       "first": "Hook timed out in 10000ms.",
+       "inChangedFile": false
+      }
+     ],
+     "failuresInChangedFiles": 0
+    }
+   ]
+  }
+ ]
+}

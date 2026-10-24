@@ -1,0 +1,403 @@
+{
+ "tool": {
+  "name": "daemon_entry_probe.py",
+  "sha256": "c76473b4fef7487b4e665c4408d30665ec4a1023baecc41f85602dda2841a187"
+ },
+ "commit": "0a6645ae7d59230b261f27c3c05ef9a9f384ebd1",
+ "testFileFrom": "c104771ff90f47ffd070f2339c36010458679c71",
+ "testFileSha256": "c1ff7e4d915b10fb1185241bfe61425f2bea99b64b9593926611edaf2be4821d",
+ "results": [
+  {
+   "mutant": null,
+   "exit": 0,
+   "killedAfterLimit": false,
+   "seconds": 5.1,
+   "load1Start": 35.47,
+   "rows": [
+    {
+     "title": "daemon entry: every invocation but `dossier` is unchanged [\"--help\"] prints the usage and exits 0",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: every invocation but `dossier` is unchanged [\"-h\"] prints the usage and exits 0",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: every invocation but `dossier` is unchanged [\"--help\",\"dossier\"] prints the usage and exits 0",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: every invocation but `dossier` is unchanged [\"--bogus\"] is refused with exit 1 and the same message",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: every invocation but `dossier` is unchanged [\"--port\",\"0\",\"dossier\"] is refused with exit 1 and the same message",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: every invocation but `dossier` is unchanged [\"Dossier\"] is refused with exit 1 and the same message",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: every invocation but `dossier` is unchanged [\"--port\"] is refused with exit 1 and the same message",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: every invocation but `dossier` is unchanged [\"--port\",\"70000\"] is refused with exit 1 and the same message",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: every invocation but `dossier` is unchanged a state directory inside the governed plane is refused with the same message",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: every invocation but `dossier` is unchanged with no arguments it serves from the working directory, writes the same state and shuts down the same way",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: every invocation but `dossier` is unchanged with explicit flags it serves, writes the same state and shuts down the same way",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: the one changed input, `dossier` as the first argument `dossier` alone is a dossier usage error (exit 2), not the daemon's refusal",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: the one changed input, `dossier` as the first argument `dossier status <missing>` is a dossier refusal (exit 1) and starts no daemon",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: the one changed input, `dossier` as the first argument `dossier render <missing>` reaches the run with the renderer injected, and starts no daemon",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: the one changed input, `dossier` as the first argument the daemon path never loads the POC app: each import is dynamic and inside the `dossier` or `polaris` branch",
+     "status": "passed",
+     "failure": ""
+    }
+   ],
+   "failed": [],
+   "passed": 15
+  },
+  {
+   "mutant": {
+    "id": "P-static",
+    "file": "apps/syzygy/src/main.ts",
+    "note": "a static side-effect import of the POC app at module top",
+    "old": "import { resolvePathIntent } from '@syzygy/polaris-dossier/state-directory';\n",
+    "new": "import { resolvePathIntent } from '@syzygy/polaris-dossier/state-directory';\nimport '@syzygy/three-surface-poc-app/dossier-site';\n"
+   },
+   "exit": 1,
+   "killedAfterLimit": false,
+   "seconds": 5.8,
+   "load1Start": 33.51,
+   "rows": [
+    {
+     "title": "daemon entry: every invocation but `dossier` is unchanged [\"--help\"] prints the usage and exits 0",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: every invocation but `dossier` is unchanged [\"-h\"] prints the usage and exits 0",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: every invocation but `dossier` is unchanged [\"--help\",\"dossier\"] prints the usage and exits 0",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: every invocation but `dossier` is unchanged [\"--bogus\"] is refused with exit 1 and the same message",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: every invocation but `dossier` is unchanged [\"--port\",\"0\",\"dossier\"] is refused with exit 1 and the same message",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: every invocation but `dossier` is unchanged [\"Dossier\"] is refused with exit 1 and the same message",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: every invocation but `dossier` is unchanged [\"--port\"] is refused with exit 1 and the same message",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: every invocation but `dossier` is unchanged [\"--port\",\"70000\"] is refused with exit 1 and the same message",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: every invocation but `dossier` is unchanged a state directory inside the governed plane is refused with the same message",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: every invocation but `dossier` is unchanged with no arguments it serves from the working directory, writes the same state and shuts down the same way",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: every invocation but `dossier` is unchanged with explicit flags it serves, writes the same state and shuts down the same way",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: the one changed input, `dossier` as the first argument `dossier` alone is a dossier usage error (exit 2), not the daemon's refusal",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: the one changed input, `dossier` as the first argument `dossier status <missing>` is a dossier refusal (exit 1) and starts no daemon",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: the one changed input, `dossier` as the first argument `dossier render <missing>` reaches the run with the renderer injected, and starts no daemon",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: the one changed input, `dossier` as the first argument the daemon path never loads the POC app: each import is dynamic and inside the `dossier` or `polaris` branch",
+     "status": "failed",
+     "failure": "AssertionError: expected [ \u2026(3) ] to deeply equal [ \u2026(2) ]\n    at /home/tze/GitHub/syzygy/.worktrees/parallel-agents/syzygy-bpyt.4.5/packages/cap1-system/src/daemon-entry-unchanged.system.test.ts:217:22\n    at file:///home/tze/GitHub/syzygy/.worktrees/parallel-agents/syzygy-bpyt.4.5/node_modules/@vi"
+    }
+   ],
+   "failed": [
+    "daemon entry: the one changed input, `dossier` as the first argument the daemon path never loads the POC app: each import is dynamic and inside the `dossier` or `polaris` branch"
+   ],
+   "passed": 14
+  },
+  {
+   "mutant": {
+    "id": "P-daemon-dynamic",
+    "file": "apps/syzygy/src/main.ts",
+    "note": "a dynamic import of the POC app on the daemon path, before parseCli",
+    "old": "  let parsed = parseCli(process.argv.slice(2), process.env);\n",
+    "new": "  await import('@syzygy/three-surface-poc-app/dossier-site');\n  let parsed = parseCli(process.argv.slice(2), process.env);\n"
+   },
+   "exit": 1,
+   "killedAfterLimit": false,
+   "seconds": 4.7,
+   "load1Start": 32.91,
+   "rows": [
+    {
+     "title": "daemon entry: every invocation but `dossier` is unchanged [\"--help\"] prints the usage and exits 0",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: every invocation but `dossier` is unchanged [\"-h\"] prints the usage and exits 0",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: every invocation but `dossier` is unchanged [\"--help\",\"dossier\"] prints the usage and exits 0",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: every invocation but `dossier` is unchanged [\"--bogus\"] is refused with exit 1 and the same message",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: every invocation but `dossier` is unchanged [\"--port\",\"0\",\"dossier\"] is refused with exit 1 and the same message",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: every invocation but `dossier` is unchanged [\"Dossier\"] is refused with exit 1 and the same message",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: every invocation but `dossier` is unchanged [\"--port\"] is refused with exit 1 and the same message",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: every invocation but `dossier` is unchanged [\"--port\",\"70000\"] is refused with exit 1 and the same message",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: every invocation but `dossier` is unchanged a state directory inside the governed plane is refused with the same message",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: every invocation but `dossier` is unchanged with no arguments it serves from the working directory, writes the same state and shuts down the same way",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: every invocation but `dossier` is unchanged with explicit flags it serves, writes the same state and shuts down the same way",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: the one changed input, `dossier` as the first argument `dossier` alone is a dossier usage error (exit 2), not the daemon's refusal",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: the one changed input, `dossier` as the first argument `dossier status <missing>` is a dossier refusal (exit 1) and starts no daemon",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: the one changed input, `dossier` as the first argument `dossier render <missing>` reaches the run with the renderer injected, and starts no daemon",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: the one changed input, `dossier` as the first argument the daemon path never loads the POC app: each import is dynamic and inside the `dossier` or `polaris` branch",
+     "status": "failed",
+     "failure": "AssertionError: expected [ \u2026(3) ] to deeply equal [ \u2026(2) ]\n    at /home/tze/GitHub/syzygy/.worktrees/parallel-agents/syzygy-bpyt.4.5/packages/cap1-system/src/daemon-entry-unchanged.system.test.ts:217:22\n    at file:///home/tze/GitHub/syzygy/.worktrees/parallel-agents/syzygy-bpyt.4.5/node_modules/@vi"
+    }
+   ],
+   "failed": [
+    "daemon entry: the one changed input, `dossier` as the first argument the daemon path never loads the POC app: each import is dynamic and inside the `dossier` or `polaris` branch"
+   ],
+   "passed": 14
+  },
+  {
+   "mutant": {
+    "id": "P-transitive",
+    "file": "packages/polaris-dossier/src/state-directory.ts",
+    "note": "a module main.ts imports statically (polaris-dossier state-directory) imports the POC app; main.ts itself is unchanged",
+    "old": "import * as path from 'node:path';\n",
+    "new": "import * as path from 'node:path';\nimport '@syzygy/three-surface-poc-app/dossier-site';\n"
+   },
+   "exit": 0,
+   "killedAfterLimit": false,
+   "seconds": 4.0,
+   "load1Start": 30.92,
+   "rows": [
+    {
+     "title": "daemon entry: every invocation but `dossier` is unchanged [\"--help\"] prints the usage and exits 0",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: every invocation but `dossier` is unchanged [\"-h\"] prints the usage and exits 0",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: every invocation but `dossier` is unchanged [\"--help\",\"dossier\"] prints the usage and exits 0",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: every invocation but `dossier` is unchanged [\"--bogus\"] is refused with exit 1 and the same message",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: every invocation but `dossier` is unchanged [\"--port\",\"0\",\"dossier\"] is refused with exit 1 and the same message",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: every invocation but `dossier` is unchanged [\"Dossier\"] is refused with exit 1 and the same message",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: every invocation but `dossier` is unchanged [\"--port\"] is refused with exit 1 and the same message",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: every invocation but `dossier` is unchanged [\"--port\",\"70000\"] is refused with exit 1 and the same message",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: every invocation but `dossier` is unchanged a state directory inside the governed plane is refused with the same message",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: every invocation but `dossier` is unchanged with no arguments it serves from the working directory, writes the same state and shuts down the same way",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: every invocation but `dossier` is unchanged with explicit flags it serves, writes the same state and shuts down the same way",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: the one changed input, `dossier` as the first argument `dossier` alone is a dossier usage error (exit 2), not the daemon's refusal",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: the one changed input, `dossier` as the first argument `dossier status <missing>` is a dossier refusal (exit 1) and starts no daemon",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: the one changed input, `dossier` as the first argument `dossier render <missing>` reaches the run with the renderer injected, and starts no daemon",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: the one changed input, `dossier` as the first argument the daemon path never loads the POC app: each import is dynamic and inside the `dossier` or `polaris` branch",
+     "status": "passed",
+     "failure": ""
+    }
+   ],
+   "failed": [],
+   "passed": 15
+  },
+  {
+   "mutant": {
+    "id": "H-hook-blind",
+    "file": "packages/cap1-system/src/daemon-entry-unchanged.system.test.ts",
+    "note": "the hook's POC-app prefix points at a directory nothing loads from (the new row only)",
+    "old": "    const app = `${pathToFileURL(realpathSync(path.join(REPO_ROOT, 'apps', 'three-surface-poc'))).href}/`;\n",
+    "new": "    const app = `${pathToFileURL(realpathSync(path.join(REPO_ROOT, 'apps', 'three-surface-poc'))).href}/no-such-dir/`;\n"
+   },
+   "skipped": "old occurs 0 times in packages/cap1-system/src/daemon-entry-unchanged.system.test.ts",
+   "failed": [],
+   "passed": 0,
+   "exit": null
+  },
+  {
+   "mutant": {
+    "id": "H-no-preload",
+    "file": "packages/cap1-system/src/daemon-entry-unchanged.system.test.ts",
+    "note": "NODE_OPTIONS carries no --import, so no hook runs (the new row only)",
+    "old": "    const hooked = { NODE_OPTIONS: `--import=${pathToFileURL(hook).href}`, POC_APP_URL: app, POC_LOAD_LOG: log };\n",
+    "new": "    const hooked = { NODE_OPTIONS: '', POC_APP_URL: app, POC_LOAD_LOG: log };\n"
+   },
+   "skipped": "old occurs 0 times in packages/cap1-system/src/daemon-entry-unchanged.system.test.ts",
+   "failed": [],
+   "passed": 0,
+   "exit": null
+  }
+ ]
+}
