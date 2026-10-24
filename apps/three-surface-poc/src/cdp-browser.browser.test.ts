@@ -8,7 +8,7 @@
 // skipped, never passed.
 //
 // syzygy-bpyt.4.11: the same kill leaves Chrome's singleton directory behind. Chrome makes
-// `.com.google.Chrome.<random>` in its temp directory (Chrome 120; the builds from 147 to
+// `.com.google.Chrome.<random>` in its temp directory (Chrome 120; the builds from 145 to
 // 155 name it `com.google.Chrome.<random>` or `org.chromium.Chromium.<random>`, with no
 // leading dot) and removes it only on a clean exit, so a killed leader left one in TMPDIR
 // on every such run. The helper reads that directory from the profile's link while Chrome
@@ -94,7 +94,7 @@ describe.skipIf(executable === undefined || process.platform !== 'linux')('dispo
       const singleton = dirname(readlinkSync(join(profile, 'SingletonSocket')));
       expect(existsSync(singleton)).toBe(true);
       expect(dirname(singleton)).toBe(tmpdir());
-      // The name is Chrome's: a leading dot in Chrome 120, none in the builds from 147 to 155.
+      // The name is Chrome's: a leading dot in Chrome 120, none in the builds from 145 to 155.
       expect(basename(singleton)).toMatch(/^\.?(com\.google\.Chrome|org\.chromium\.Chromium)\.[A-Za-z0-9]+$/);
       // As in the case above, a helper that cannot exit makes the leader miss its close grace
       // and be killed, which is the exit that skips Chrome's own cleanup.

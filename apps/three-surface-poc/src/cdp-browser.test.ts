@@ -1,10 +1,10 @@
-import { chmodSync, existsSync, lstatSync, mkdirSync, mkdtempSync, readdirSync, rmSync, symlinkSync, writeFileSync } from 'node:fs';
+import { chmodSync, existsSync, lstatSync, mkdirSync, mkdtempSync, readdirSync, renameSync, rmSync, symlinkSync, writeFileSync, type BigIntStats } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
-import { closeDisposableBrowser, killPrivateBrowserMembers, removeBrowserProfile, withBrowserPage, type BrowserPage } from './cdp-browser.js';
+import { closeDisposableBrowser, killPrivateBrowserMembers, removeBrowserProfile, withBrowserPage, type BrowserPage, type ChromeSingletonDirectory } from './cdp-browser.js';
 
 const privateGroup = { id: 123, uid: process.getuid?.() ?? 0, leaderStart: '1' };
 
@@ -206,9 +206,23 @@ describe('browser page lifetime', () => {
 });
 
 describe('browser profile cleanup', () => {
+  // The injected `remove` touches nothing, but removeBrowserProfile also reads `<profile>/SingletonSocket` and removes
+  // the directory that link names. So the profile is a path that does not exist, in a private root these tests make
+  // and remove, never a fixed name in the shared temp directory where another user could have planted a link.
+  const roots: string[] = [];
+  afterEach(() => {
+    for (const root of roots.splice(0)) rmSync(root, { recursive: true, force: true });
+  });
+  function privateRoot(): string {
+    const root = mkdtempSync(join(tmpdir(), 'syzygy-profile-'));
+    roots.push(root);
+    return root;
+  }
+  const missingProfile = (): string => join(privateRoot(), 'profile');
+
   it('retries transient ENOTEMPTY failures and succeeds within the bound', () => {
     let attempts = 0;
-    removeBrowserProfile('/tmp/syzygy-browser-profile', {
+    removeBrowserProfile(missingProfile(), {
       remove: () => {
         attempts += 1;
         if (attempts < 3) throw Object.assign(new Error('profile still changing'), { code: 'ENOTEMPTY' });
@@ -219,7 +233,7 @@ describe('browser profile cleanup', () => {
 
   it('does not retry a permanent profile cleanup failure', () => {
     let attempts = 0;
-    expect(() => removeBrowserProfile('/tmp/syzygy-browser-profile', {
+    expect(() => removeBrowserProfile(missingProfile(), {
       maxAttempts: 2,
       remove: () => {
         attempts += 1;
@@ -232,7 +246,7 @@ describe('browser profile cleanup', () => {
   it('preserves a retryable failure at the exact total-call bound', () => {
     let attempts = 0;
     const failure = Object.assign(new Error('profile remains busy'), { code: 'ENOTEMPTY' });
-    expect(() => removeBrowserProfile('/tmp/syzygy-browser-profile', {
+    expect(() => removeBrowserProfile(missingProfile(), {
       maxAttempts: 2,
       remove: () => {
         attempts += 1;
@@ -245,10 +259,11 @@ describe('browser profile cleanup', () => {
   it('stays bounded across repeated transient profile cleanup races', () => {
     const runs = 128;
     let totalAttempts = 0;
+    const root = privateRoot();
     for (let run = 0; run < runs; run += 1) {
       const transientFailures = run % 4;
       let attempts = 0;
-      removeBrowserProfile(`/tmp/syzygy-browser-profile-${run}`, {
+      removeBrowserProfile(join(root, `profile-${run}`), {
         remove: () => {
           attempts += 1;
           totalAttempts += 1;
@@ -291,12 +306,31 @@ describe('Chrome singleton directory (syzygy-bpyt.4.11)', () => {
     return directory;
   }
   const entries = (directory: string): string[] => readdirSync(directory).sort();
+  /** What launchBrowser records when it reads the link while Chrome runs: the path and the directory's identity. */
+  function recorded(path: string): ChromeSingletonDirectory {
+    const { dev, ino } = lstatSync(path, { bigint: true });
+    return { path, dev, ino };
+  }
+  /** An lstat that answers as the real one does, except that `path` has another owner or device than it has. */
+  function lstatWith(path: string, change: { readonly uid?: bigint; readonly dev?: bigint }): (target: string) => BigIntStats {
+    return (target) => {
+      const entry = lstatSync(target, { bigint: true });
+      return target === path ? Object.assign(Object.create(entry) as BigIntStats, change) : entry;
+    };
+  }
+  /** A profile whose link names a directory with Chrome's name that the test made and the profile's Chrome did not. */
+  function linkedProfile(): { readonly root: string; readonly profile: string; readonly victim: string } {
+    const { root, profile } = privateTemp();
+    const victim = singletonDirectory(root, '.com.google.Chrome.Victim1');
+    symlinkSync(join(victim, 'SingletonSocket'), join(profile, 'SingletonSocket'));
+    return { root, profile, victim };
+  }
 
   it('removes the singleton directory read while Chrome ran, with the profile, and only that one', () => {
     const { root, profile } = privateTemp();
     const mine = singletonDirectory(root, '.com.google.Chrome.MyOwn1');
     singletonDirectory(root, '.com.google.Chrome.Another');
-    removeBrowserProfile(profile, { singleton: mine });
+    removeBrowserProfile(profile, { singleton: recorded(mine) });
     expect(entries(root)).toEqual(['.com.google.Chrome.Another']);
   }, 30_000);
 
@@ -312,7 +346,7 @@ describe('Chrome singleton directory (syzygy-bpyt.4.11)', () => {
   it('removes the Chromium form of the name too', () => {
     const { root, profile } = privateTemp();
     const mine = singletonDirectory(root, '.org.chromium.Chromium.MyOwn1');
-    removeBrowserProfile(profile, { singleton: mine });
+    removeBrowserProfile(profile, { singleton: recorded(mine) });
     expect(entries(root)).toEqual([]);
   }, 30_000);
 
@@ -320,7 +354,7 @@ describe('Chrome singleton directory (syzygy-bpyt.4.11)', () => {
     const { root, profile } = privateTemp();
     const given = singletonDirectory(root, 'com.google.Chrome.CCtKIQ');
     singletonDirectory(root, 'com.google.Chrome.Another');
-    removeBrowserProfile(profile, { singleton: given });
+    removeBrowserProfile(profile, { singleton: recorded(given) });
     expect(entries(root)).toEqual(['com.google.Chrome.Another']);
     mkdirSync(profile);
     const read = singletonDirectory(root, 'org.chromium.Chromium.vK2oLL');
@@ -339,7 +373,7 @@ describe('Chrome singleton directory (syzygy-bpyt.4.11)', () => {
   it('keeps a directory that is not directly under the temp directory, whether it was given or read from the link', () => {
     const { root, profile } = privateTemp();
     const nested = singletonDirectory(join(root, 'elsewhere'), '.com.google.Chrome.MyOwn1');
-    removeBrowserProfile(profile, { singleton: nested });
+    removeBrowserProfile(profile, { singleton: recorded(nested) });
     expect(existsSync(join(nested, 'SingletonSocket'))).toBe(true);
     mkdirSync(profile);
     symlinkSync(join(nested, 'SingletonSocket'), join(profile, 'SingletonSocket'));
@@ -355,10 +389,12 @@ describe('Chrome singleton directory (syzygy-bpyt.4.11)', () => {
       // the dot is optional, not a wildcard: one dot at most, and the rest of the name is as strict without it
       '..com.google.Chrome.AbCdEf', 'com.google.Chrome', 'com.google.Chrome.', 'com.google.Chrome.ab-cd', 'xcom.google.Chrome.AbCdEf', 'com.google.Chromium.AbCdEf', 'org.chromium.Chrome.AbCdEf',
       'org.chromium.Chromium', 'org.chromium.Chromium.AbCd.Ef',
+      // the match is case-sensitive: Chrome's spelling and no other
+      '.COM.GOOGLE.CHROME.AbCdEf', 'com.google.chrome.AbCdEf', 'ORG.chromium.Chromium.AbCdEf',
     ];
     for (const name of names) {
       singletonDirectory(root, name);
-      removeBrowserProfile(profile, { singleton: join(root, name) });
+      removeBrowserProfile(profile, { singleton: recorded(join(root, name)) });
       mkdirSync(profile);
     }
     expect(entries(root)).toEqual([...names, 'syzygy-poc-browser-AbCdEf'].sort());
@@ -369,9 +405,12 @@ describe('Chrome singleton directory (syzygy-bpyt.4.11)', () => {
     const outside = singletonDirectory(root, 'outside');
     symlinkSync(outside, join(root, '.com.google.Chrome.LinkTo'));
     writeFileSync(join(root, '.com.google.Chrome.AFile1'), 'a file');
-    removeBrowserProfile(profile, { singleton: join(root, '.com.google.Chrome.LinkTo') });
+    removeBrowserProfile(profile, { singleton: recorded(join(root, '.com.google.Chrome.LinkTo')) });
     mkdirSync(profile);
-    removeBrowserProfile(profile, { singleton: join(root, '.com.google.Chrome.AFile1') });
+    // The same link recorded as the directory it leads to: only reading the entry without following it keeps it.
+    removeBrowserProfile(profile, { singleton: { ...recorded(outside), path: join(root, '.com.google.Chrome.LinkTo') } });
+    mkdirSync(profile);
+    removeBrowserProfile(profile, { singleton: recorded(join(root, '.com.google.Chrome.AFile1')) });
     expect(lstatSync(join(root, '.com.google.Chrome.LinkTo')).isSymbolicLink()).toBe(true);
     expect(existsSync(join(outside, 'SingletonSocket'))).toBe(true);
     expect(existsSync(join(root, '.com.google.Chrome.AFile1'))).toBe(true);
@@ -382,7 +421,7 @@ describe('Chrome singleton directory (syzygy-bpyt.4.11)', () => {
     const theirs = singletonDirectory(root, '.com.google.Chrome.TheirOw');
     const posix = process as unknown as { getuid: () => number };
     vi.spyOn(posix, 'getuid').mockReturnValue(posix.getuid() + 1);
-    removeBrowserProfile(profile, { singleton: theirs });
+    removeBrowserProfile(profile, { singleton: recorded(theirs) });
     expect(existsSync(join(theirs, 'SingletonSocket'))).toBe(true);
   }, 30_000);
 
@@ -392,18 +431,59 @@ describe('Chrome singleton directory (syzygy-bpyt.4.11)', () => {
     const original = process.getuid;
     Object.defineProperty(process, 'getuid', { value: undefined, configurable: true, writable: true });
     try {
-      removeBrowserProfile(profile, { singleton: mine });
+      removeBrowserProfile(profile, { singleton: recorded(mine) });
     } finally {
       Object.defineProperty(process, 'getuid', { value: original, configurable: true, writable: true });
     }
     expect(entries(root)).toEqual([]);
   }, 30_000);
 
-  it('does not fail the run when the singleton directory cannot be removed', () => {
+  it('removes the directory a profile\'s link names when the profile and the link are the running user\'s, whatever removes the profile', () => {
+    const { profile, victim } = linkedProfile();
+    removeBrowserProfile(profile, { remove: () => undefined });
+    expect(existsSync(victim)).toBe(false);
+  }, 30_000);
+
+  it('keeps the directory a link names when the profile is not the running user\'s, as in a shared temp directory where another user made it first', () => {
+    const { profile, victim } = linkedProfile();
+    removeBrowserProfile(profile, { remove: () => undefined, lstat: lstatWith(profile, { uid: lstatSync(profile, { bigint: true }).uid + 1n }) });
+    expect(existsSync(join(victim, 'SingletonSocket'))).toBe(true);
+  }, 30_000);
+
+  it('keeps the directory a link names when the link is not the running user\'s', () => {
+    const { profile, victim } = linkedProfile();
+    const link = join(profile, 'SingletonSocket');
+    removeBrowserProfile(profile, { remove: () => undefined, lstat: lstatWith(link, { uid: lstatSync(link, { bigint: true }).uid + 1n }) });
+    expect(existsSync(join(victim, 'SingletonSocket'))).toBe(true);
+  }, 30_000);
+
+  it('keeps a directory made under the same name after the one that was read, as when Chrome exits cleanly and another Chrome follows', () => {
+    const { root, profile } = privateTemp();
+    const read = singletonDirectory(root, '.com.google.Chrome.MyOwn1');
+    const atLaunch = recorded(read);
+    // Chrome removes its directory on a clean exit and another Chrome makes one under the same name. The first is kept
+    // under another name here so that the two cannot share an inode number, which a file system may reuse.
+    renameSync(read, join(root, 'moved-aside'));
+    const later = singletonDirectory(root, '.com.google.Chrome.MyOwn1');
+    removeBrowserProfile(profile, { singleton: atLaunch });
+    expect(existsSync(join(later, 'SingletonSocket'))).toBe(true);
+  }, 30_000);
+
+  it('keeps a directory with the recorded inode number on another device', () => {
+    const { root, profile } = privateTemp();
+    const mine = singletonDirectory(root, '.com.google.Chrome.MyOwn1');
+    const atLaunch = recorded(mine);
+    removeBrowserProfile(profile, { singleton: atLaunch, lstat: lstatWith(mine, { dev: atLaunch.dev + 1n }) });
+    expect(existsSync(join(mine, 'SingletonSocket'))).toBe(true);
+  }, 30_000);
+
+  it('does not fail the run when the singleton directory cannot be removed', ({ skip }) => {
+    // A process running as root ignores directory permission bits, so the removal below cannot be made to fail.
+    skip(process.getuid?.() === 0, 'running as root');
     const { root, profile } = privateTemp();
     const stuck = singletonDirectory(root, '.com.google.Chrome.Stuck01');
     chmodSync(stuck, 0o555);
-    expect(() => removeBrowserProfile(profile, { singleton: stuck })).not.toThrow();
+    expect(() => removeBrowserProfile(profile, { singleton: recorded(stuck) })).not.toThrow();
     expect(existsSync(profile)).toBe(false);
     expect(existsSync(join(stuck, 'SingletonSocket'))).toBe(true);
   }, 30_000);
