@@ -298,11 +298,11 @@ export function buildStoredDesignPacket(opened: Extract<OpenedRun, { ok: true }>
   return built.ok ? { ...built, site: site.number } : built;
 }
 
-export type ReviewPacketResult = Outcome<
-  | { readonly command: 'review-packet'; readonly outcome: 'built'; readonly run: string; readonly kind: 'fidelity'; readonly packetSha256: string; readonly directory: string; readonly draftRevision: number; readonly inventoryRevision: number; readonly spans: { readonly admitted: number; readonly excluded: number }; readonly label: 'Observed'; readonly disclosures: readonly string[] }
-  | { readonly command: 'review-packet'; readonly outcome: 'built'; readonly run: string; readonly kind: 'design'; readonly packetSha256: string; readonly directory: string; readonly site: number; readonly pages: number; readonly label: 'Observed'; readonly disclosures: readonly string[] },
-  { readonly command: 'review-packet'; readonly outcome: 'refused'; readonly stage: string; readonly reason: string; readonly reasons?: readonly string[]; readonly refusals?: readonly ReverifyRefusal[]; readonly disclosures: readonly string[] }
->;
+type ReviewPacketRefusal = { readonly command: 'review-packet'; readonly outcome: 'refused'; readonly stage: string; readonly reason: string; readonly reasons?: readonly string[]; readonly refusals?: readonly ReverifyRefusal[]; readonly disclosures: readonly string[] };
+/** One outcome per packet kind: two `ok: true` variants, as before Outcome; one variant with a union report is wider (syzygy-bpyt.8.32). */
+export type ReviewPacketResult =
+  | Outcome<{ readonly command: 'review-packet'; readonly outcome: 'built'; readonly run: string; readonly kind: 'fidelity'; readonly packetSha256: string; readonly directory: string; readonly draftRevision: number; readonly inventoryRevision: number; readonly spans: { readonly admitted: number; readonly excluded: number }; readonly label: 'Observed'; readonly disclosures: readonly string[] }, ReviewPacketRefusal>
+  | Outcome<{ readonly command: 'review-packet'; readonly outcome: 'built'; readonly run: string; readonly kind: 'design'; readonly packetSha256: string; readonly directory: string; readonly site: number; readonly pages: number; readonly label: 'Observed'; readonly disclosures: readonly string[] }, ReviewPacketRefusal>;
 
 /** `syzygy dossier review-packet <run> --kind fidelity|design`. */
 export async function reviewPacket(runDir: string, request: { readonly kind: string }, deps: ReviewDeps): Promise<ReviewPacketResult> {
