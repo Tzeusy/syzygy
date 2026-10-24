@@ -19,6 +19,7 @@ import { spawn, spawnSync } from 'node:child_process';
 import { mkdirSync, mkdtempSync, readFileSync, readdirSync, realpathSync, rmSync, statSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import * as path from 'node:path';
+import { pathToFileURL } from 'node:url';
 import { afterEach, describe, expect, it } from 'vitest';
 
 import { REPO_ROOT, daemonEntry } from './harness.js';
@@ -209,20 +210,28 @@ describe('daemon entry: the one changed input, `dossier` as the first argument',
     expect(sweep(dir)).toEqual(before);
   });
 
-  // The `polaris` branch (prototype, POLARIS-DOSSIER-ONE-COMMAND-RUN-2026-10-14) injects the same renderer the same way.
-  it('the daemon path never loads the POC app: each import is dynamic and inside the `dossier` or `polaris` branch', () => {
-    const main = readFileSync(path.join(REPO_ROOT, 'apps/syzygy/src/main.ts'), 'utf8');
-    const line = "    const { renderLocalDossier } = await import('@syzygy/three-surface-poc-app/dossier-site');";
-    const mentions = main.split('\n').filter((text) => text.includes('three-surface-poc-app'));
-    expect(mentions).toEqual([line, line]);
-    const daemon = main.indexOf('let parsed = parseCli(');
-    const first = main.indexOf(line), second = main.indexOf(line, first + 1);
-    const dossier = main.indexOf("if (argv[0] === 'dossier') {"), polaris = main.indexOf("if (argv[0] === 'polaris') {");
-    expect(dossier).toBeGreaterThan(-1);
-    expect(polaris).toBeGreaterThan(dossier);
-    expect(first).toBeGreaterThan(dossier);
-    expect(first).toBeLessThan(polaris);
-    expect(second).toBeGreaterThan(polaris);
-    expect(second).toBeLessThan(daemon);
+  // A load hook preloaded into the built entry logs every module it loads from the POC app. The daemon, served and shut
+  // down, logs none; `dossier render`, which injects the renderer, logs the renderer's module, so the hook does see the
+  // POC app when it loads. This pins behavior, not where main.ts spells its imports (syzygy-bpyt.4.5).
+  it('the daemon path never loads the POC app, and the `dossier render` branch does', async () => {
+    const { base: dir, root } = base();
+    const stateDir = path.join(dir, 'state'), log = path.join(dir, 'poc-loads.txt'), hook = path.join(dir, 'poc-load-hook.mjs');
+    const app = `${pathToFileURL(realpathSync(path.join(REPO_ROOT, 'apps', 'three-surface-poc'))).href}/`;
+    writeFileSync(log, '');
+    writeFileSync(hook, [
+      "import { appendFileSync } from 'node:fs';",
+      "import { registerHooks } from 'node:module';",
+      'registerHooks({ load(url, context, nextLoad) {',
+      '  if (url.startsWith(process.env.POC_APP_URL)) appendFileSync(process.env.POC_LOAD_LOG, `${url}\\n`);',
+      '  return nextLoad(url, context);',
+      '} });',
+    ].join('\n'));
+    const hooked = { NODE_OPTIONS: `--import=${pathToFileURL(hook).href}`, POC_APP_URL: app, POC_LOAD_LOG: log };
+    const served = await runDaemon(['--root', root, '--state-dir', stateDir, '--port', '0'], dir, hooked, stateDir);
+    expect(served).toMatchObject({ exit: 0, rootStatus: 200, stderr: '' });
+    expect(readFileSync(log, 'utf8')).toBe('');
+    const rendered = runSync(['dossier', 'render', path.join(dir, 'absent'), '--json'], dir, { SYZYGY_PORT: '0', ...hooked });
+    expect(JSON.parse(rendered.stdout)).toMatchObject({ command: 'render', outcome: 'refused', stage: 'run' });
+    expect(readFileSync(log, 'utf8').split('\n')).toContain(`${app}dist/polaris-generation/dossier-site.js`);
   });
 });
