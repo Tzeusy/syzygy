@@ -9,6 +9,7 @@ interface Patchable {
   openSync: typeof fs.openSync;
   fstatSync: typeof fs.fstatSync;
   readSync: typeof fs.readSync;
+  readlinkSync: typeof fs.readlinkSync;
 }
 
 const cjsFs = createRequire(import.meta.url)('node:fs') as Patchable;

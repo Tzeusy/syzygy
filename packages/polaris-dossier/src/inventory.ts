@@ -16,6 +16,7 @@ import {
 import { PERMITTING_ARM_ENABLED, decideExecutionRule, executionRuleSection, type ExecutionRule } from './execution-rule.js';
 import { RECORDS_WITHIN_REACH, type GateSources } from './gate-sources.js';
 import { expectedLaunch, launchFormRefusal, launchedMarkerState } from './launched.js';
+import type { Outcome } from './outcome.js';
 import { recheckSessionStatement, type SessionStatementOfRecord } from './session-statement.js';
 import { reverifyPinnedRevision, type ReverifiedRevision, type ReverifyOptions, type ReverifyRefusal } from './reverify.js';
 import type { RunConfig } from './run-config.js';
@@ -245,9 +246,10 @@ const BRIEF_DISCLOSURES = [
   'This is Syzygy\'s own rendering of the inventory brief, from the run record and the doctrine file; the copy in the session directory is within the agent sessions\' write reach, so it is compared, never trusted.',
 ];
 
-export type InventoryBriefResult =
-  | { readonly ok: true; readonly report: { readonly command: 'inventory-brief'; readonly outcome: 'rendered'; readonly run: string; readonly session: number; readonly sha256: string; readonly storedCopy: 'matches' | 'differs' | 'absent'; readonly brief: string; readonly disclosures: readonly string[] } }
-  | { readonly ok: false; readonly refusal: { readonly command: 'inventory-brief'; readonly outcome: 'refused'; readonly stage: string; readonly reason: string; readonly reasons?: readonly string[]; readonly refusals?: readonly ReverifyRefusal[]; readonly disclosures: readonly string[] } };
+export type InventoryBriefResult = Outcome<
+  { readonly command: 'inventory-brief'; readonly outcome: 'rendered'; readonly run: string; readonly session: number; readonly sha256: string; readonly storedCopy: 'matches' | 'differs' | 'absent'; readonly brief: string; readonly disclosures: readonly string[] },
+  { readonly command: 'inventory-brief'; readonly outcome: 'refused'; readonly stage: string; readonly reason: string; readonly reasons?: readonly string[]; readonly refusals?: readonly ReverifyRefusal[]; readonly disclosures: readonly string[] }
+>;
 
 /** `syzygy dossier inventory-brief <run>`: print Syzygy's rendering of the latest inventory session's brief. Writes nothing. */
 export async function inventoryBrief(runDir: string, deps: { readonly sources: GateSources; readonly now: () => number; readonly openReader?: ReverifyOptions['openReader'] }): Promise<InventoryBriefResult> {
@@ -313,7 +315,7 @@ export interface InventoryCheckRecord {
   readonly label: 'Inferred';
 }
 
-export type InventoryCheckResult = { readonly ok: true; readonly report: SubjectReport<InventoryCheckRecord> } | { readonly ok: false; readonly refusal: CheckRefusal };
+export type InventoryCheckResult = Outcome<SubjectReport<InventoryCheckRecord>, CheckRefusal>;
 
 const CHECK_DISCLOSURES = [
   RECORDS_WITHIN_REACH,

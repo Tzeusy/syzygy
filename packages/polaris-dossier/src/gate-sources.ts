@@ -3,7 +3,7 @@ import {
   DECISIONS_DIR, SLOT, recorderTemplate,
   type ActState, type ConsentedRevision, type DigestBoundAct, type DigestBoundActForm, type ExemptRecord, type PackageReaderFs, type RecorderTemplate,
   type VersionedSignoffForm,
-} from '@syzygy/polaris-generation-consent';
+} from '@syzygy/polaris-generation-consent/live';
 import { readdir } from 'node:fs/promises';
 import * as path from 'node:path';
 import type { DrawerStatement } from './governed.js';
