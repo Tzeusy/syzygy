@@ -348,6 +348,14 @@ def files_naming(stem: str) -> tuple:
     return tuple(sorted({f.split(':', 1)[1] for f in ran.stdout.split('\0') if f and f.split(':', 1)[1].endswith(SUFFIXES)}))
 
 
+def grep_any(*literals: str) -> list:
+    arguments = [part for literal in literals for part in ('-e', literal)]
+    ran = subprocess.run(['git', 'grep', '-F', '-l', '-z', *arguments, COMMIT, '--', 'apps', 'packages', 'scripts', '.syzygy'], cwd=WT, capture_output=True, text=True)
+    return sorted({f.split(':', 1)[1] for f in ran.stdout.split('\0') if f and f.split(':', 1)[1].endswith(SUFFIXES)})
+
+
+CHROME_LITERALS = ('--user-data-dir', '--remote-debugging')
+chrome_launchers = grep_any(*CHROME_LITERALS)
 frames_seen, innermost_seen = set(), set()
 for rows in traces.values():
     for row in rows:
@@ -404,6 +412,8 @@ for (family, cls), item in sorted(classes.items(), key=lambda kv: (kv[0][0], kv[
            'leftAfterCleanRun': {l: item['leftAtEnd'][l] for l in clean_labels if l in item['leftAtEnd']},
            'staticFilesNamingTheLiteral': list(files_naming(stem)) if stem else None, 'staticStem': stem, 'creatingFilesAmongTheStaticMatches': (bool(set(item['filesCreating']) & set(files_naming(stem))) if stem and item['filesCreating'] else None),
            'staticStemIsInferred': family == 'unattributed' if stem else None, 'exposureInTheCleanRun': exposure_of(family, cls), 'rule': verdict['rule'], 'disposition': verdict['disposition']}
+    if family == 'chrome-singleton':
+        row['launchedByFilesNaming'] = {'literals': list(CHROME_LITERALS), 'files': chrome_launchers}
     if item['observedSpellings']:
         row['observedSpellings'] = sorted(item['observedSpellings'])
     if item['observedChildren'] is not None:
@@ -432,6 +442,14 @@ for fl in fresh_labels:
     by_class = lambda names: dict(sorted(collections.Counter(classify(n, kill_index)[1] for n in names).items()))
     sweep_effect[fl] = {'killRun': seeded_from(fl), 'seededEntries': len(seeded), 'removedByTheFreshRun': len(seeded) - len(still), 'removedClasses': by_class(set(seeded) - still),
                         'stillThere': len(still), 'stillThereByClass': by_class(still)}
+
+BEAD_OBSERVATION = ('syzygy-poc-surface-fixture-p<pid>-n<ns>-', 'syzygy-public-screen-', 'syzygy-trigger-repo-', 'syzygy-build-output-', 'syzygy-dossier-src-',
+                    'syzygy-poc-surface-state-', 'syzygy-trigger-', 'syzygy-poc-browser-', 'chrome-singleton-directory')
+named = {}
+for wanted in BEAD_OBSERVATION:
+    found = [r for r in table if r['class'] == wanted]
+    named[wanted] = ({'createdInTheCleanRun': found[0]['created'].get(exposure_label, 0), 'creatingFiles': list(found[0]['creatingFiles']), 'leftInAnyOfTheKills': sorted(found[0]['leftAfterSIGKILL']) or 'none of the three',
+                      'rule': found[0]['rule'], 'exposureInTheCleanRun': found[0]['exposureInTheCleanRun']} if found else {'present': False})
 
 left_after_kill = [r for r in table if r['leftAfterSIGKILL']]
 never_left = [r for r in table if not r['leftAfterSIGKILL']]
@@ -478,6 +496,7 @@ record = {
     'classCounts': {'classes': len(table), 'leftBySomeSIGKILL': len(left_after_kill), 'neverLeftInTheseKills': len(never_left), 'byRule': dict(sorted(dispositions_by_rule.items())),
                     'byFamily': dict(sorted(collections.Counter(r['family'] for r in table).items()))},
     'whatEachFreshRunRemovedOfTheKilledRunsLeftovers': sweep_effect,
+    'namedInTheBeadObservation': named,
     'perCreatingFile': per_file,
     'leftBySIGKILL': left_after_kill,
     'neverLeftInTheseKills': [{k: r[k] for k in ('class', 'family', 'created', 'creatingFiles', 'rule', 'disposition')} for r in never_left],

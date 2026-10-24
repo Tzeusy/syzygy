@@ -1,6 +1,6 @@
 {
  "tool": "assemble_census.py --selftest",
- "sha256": "ee96952f35292b15af450fe7f01886a59bb4d12a7c1b736d2954592b9e84170f",
+ "sha256": "accbfa88ff44b982561cb460413729881e62e082049f2a8e18c31de6f8a988a5",
  "expected": {
   "dossier-records-AAAAAA": [
    "mkdtemp",
