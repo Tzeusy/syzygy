@@ -402,6 +402,36 @@
   }
  },
  {
+  "id": "excerpt-time-only",
+  "note": "excerpt-no-cap-quadratic-pattern with the CPU-time bound deleted and vitest's timeout lifted: the output assertion alone passes, so the bound is the only predicate that fails this mutant",
+  "test": "packages/polaris-generation-core/src/excerpt.test.ts",
+  "title": "stays linear on one 100k line of spaces after an identifier",
+  "limitSeconds": 150,
+  "vitestArgs": [
+   "--testTimeout=600000"
+  ],
+  "mutations": [
+   {
+    "file": "packages/polaris-generation-core/src/excerpt.ts",
+    "old": "    if (t === '' || t.length > PATTERN_PREFIX_MAX) continue;",
+    "new": "    if (t === '') continue;"
+   },
+   {
+    "file": "packages/polaris-generation-core/src/excerpt.ts",
+    "old": "const FUNCTION_LINE = /^[A-Za-z_][A-Za-z0-9_ \\t*]*[A-Za-z0-9_*][ \\t]*\\(/u;",
+    "new": "const FUNCTION_LINE = /^[A-Za-z_][A-Za-z0-9_ \\t*]*[ \\t]*[A-Za-z0-9_*][ \\t]*\\(/u;"
+   },
+   {
+    "file": "packages/polaris-generation-core/src/excerpt.test.ts",
+    "old": "      expect(cpuMsSince(cpu)).toBeLessThan(HOSTILE_LINE_CPU_MS);\n",
+    "new": ""
+   }
+  ],
+  "expect": {
+   "head": "pass"
+  }
+ },
+ {
   "id": "control-junit-tags",
   "test": "packages/three-surface-poc-core/src/test-artifact-verification.test.ts",
   "title": "at the ceiling in linear time",

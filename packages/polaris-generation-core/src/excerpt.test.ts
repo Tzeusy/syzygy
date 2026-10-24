@@ -7,7 +7,7 @@ const BUDGET = 1500;
 const cpuMsSince = (from: NodeJS.CpuUsage): number => { const { user, system } = process.threadCpuUsage(from); return (user + system) / 1000; };
 // A CPU-time bound sits at the geometric mean of the slowest head run of its region and the fastest run of the quadratic
 // mutant it names, at least 10x from each (docs/evidence/syzygy-bpyt-4-5/cpu-separation.json, syzygy-bpyt.4.5).
-const HOSTILE_LINE_CPU_MS = 500; // the prefix cap removed and FUNCTION_LINE given overlapping blank runs
+const HOSTILE_LINE_CPU_MS = 140; // the prefix cap removed and FUNCTION_LINE given overlapping blank runs
 const LICENCE = `/*
  * Copyright (c) 2009-2024, Example Author
  * All rights reserved.

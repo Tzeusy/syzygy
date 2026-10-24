@@ -24,8 +24,8 @@ import {
 const cpuMsSince = (from: NodeJS.CpuUsage): number => { const { user, system } = process.threadCpuUsage(from); return (user + system) / 1000; };
 // A CPU-time bound sits at the geometric mean of the slowest head run of its region and the fastest run of the quadratic
 // mutant it names, at least 10x from each (docs/evidence/syzygy-bpyt-4-5/cpu-separation.json, syzygy-bpyt.4.5).
-const TAG_SCAN_CPU_MS = 2_000; // the `<testsuite\s+([^>]*?)\/?>` scan 169e38db replaced
-const ATTRIBUTE_SCAN_CPU_MS = 2_000; // the `(\w+)="…"` attribute scan 169e38db replaced
+const TAG_SCAN_CPU_MS = 1_500; // the `<testsuite\s+([^>]*?)\/?>` scan 169e38db replaced
+const ATTRIBUTE_SCAN_CPU_MS = 3_000; // the `(\w+)="…"` attribute scan 169e38db replaced
 
 const cleanups: string[] = [];
 afterEach(() => {

@@ -3,7 +3,8 @@
 
 usage: python3 -I bound_and_pin_mutants.py TREE BASE_COMMIT CASES.json OUT.json [CASE-ID ...]
 
-CASES.json is a list of cases {id, test, title, mutations: [{file, old, new}], expect: {base, head}, limitSeconds}. For each
+CASES.json is a list of cases {id, test, title, mutations: [{file, old, new}], expect: {base, head}, limitSeconds, vitestArgs}
+(vitestArgs, optional, are extra arguments to `vitest run`). For each
 case and side it sets the test file to BASE_COMMIT's copy (side "base") or leaves the tree's (side "head"), applies each
 mutation (its `old` must occur exactly once in that side's file), runs `npx vitest run <test> -t <title>` with the JSON
 reporter in its own session (SIGKILLed as a group past limitSeconds, after summing the session's CPU seconds from /proc),
@@ -47,7 +48,7 @@ def side_run(case, side):
             put(m['file'], text.replace(m['old'], m['new'])); applied.append(m['file'])
         report = tempfile.mktemp(suffix='.json')
         began, load = time.time(), float(open('/proc/loadavg').read().split()[0])
-        child = subprocess.Popen(['npx', 'vitest', 'run', case['test'], '-t', case['title'], '--reporter=json', f'--outputFile={report}'],
+        child = subprocess.Popen(['npx', 'vitest', 'run', case['test'], '-t', case['title'], *case.get('vitestArgs', []), '--reporter=json', f'--outputFile={report}'],
                                  cwd=tree, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True, start_new_session=True,
                                  env={k: v for k, v in os.environ.items() if not k.startswith('VITEST')})
         killed, cpu_at_kill = False, None

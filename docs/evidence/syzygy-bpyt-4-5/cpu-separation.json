@@ -1,0 +1,1385 @@
+{
+ "tool": {
+  "name": "cpu_separation.py",
+  "sha256": "82cbaf22419cfe2269ba22e9a125d186c0fc19fa8595d6394cd17b4fc0b827f2"
+ },
+ "cases": {
+  "path": "mutant-cases.json",
+  "sha256": "a1eddc42ccb40bcabd066eb6721f37f36b9ae0b826f034d58cd536a16b862ece"
+ },
+ "tree": "ab70ef7bfbaed7833f2a36d4331efcafcd37d6e3",
+ "headRuns": 10,
+ "mutantRuns": 10,
+ "capMs": 60000,
+ "cpus": 12,
+ "node": "v24.6.0",
+ "sites": [
+  {
+   "bound": "EDGE_TRIM_CPU_MS",
+   "file": "packages/polaris-generation-core/src/dossier-profile.test.ts",
+   "lines": [
+    176
+   ],
+   "headRuns": [
+    {
+     "title": "trims a long run of spaces in linear time",
+     "exit": 0,
+     "seconds": 1.4,
+     "load1Start": 10.69,
+     "load1End": 10.88,
+     "regions": [
+      {
+       "line": 176,
+       "bound": "EDGE_TRIM_CPU_MS",
+       "cpuMs": 37.538
+      }
+     ],
+     "capped": null
+    },
+    {
+     "title": "trims a long run of spaces in linear time",
+     "exit": 0,
+     "seconds": 1.8,
+     "load1Start": 10.88,
+     "load1End": 10.88,
+     "regions": [
+      {
+       "line": 176,
+       "bound": "EDGE_TRIM_CPU_MS",
+       "cpuMs": 44
+      }
+     ],
+     "capped": null
+    },
+    {
+     "title": "trims a long run of spaces in linear time",
+     "exit": 0,
+     "seconds": 1.8,
+     "load1Start": 10.88,
+     "load1End": 10.88,
+     "regions": [
+      {
+       "line": 176,
+       "bound": "EDGE_TRIM_CPU_MS",
+       "cpuMs": 42.248
+      }
+     ],
+     "capped": null
+    },
+    {
+     "title": "trims a long run of spaces in linear time",
+     "exit": 0,
+     "seconds": 2.4,
+     "load1Start": 10.88,
+     "load1End": 12.09,
+     "regions": [
+      {
+       "line": 176,
+       "bound": "EDGE_TRIM_CPU_MS",
+       "cpuMs": 50.865
+      }
+     ],
+     "capped": null
+    },
+    {
+     "title": "trims a long run of spaces in linear time",
+     "exit": 0,
+     "seconds": 2.6,
+     "load1Start": 12.09,
+     "load1End": 12.09,
+     "regions": [
+      {
+       "line": 176,
+       "bound": "EDGE_TRIM_CPU_MS",
+       "cpuMs": 54.848
+      }
+     ],
+     "capped": null
+    },
+    {
+     "title": "trims a long run of spaces in linear time",
+     "exit": 0,
+     "seconds": 1.8,
+     "load1Start": 12.09,
+     "load1End": 12.8,
+     "regions": [
+      {
+       "line": 176,
+       "bound": "EDGE_TRIM_CPU_MS",
+       "cpuMs": 52.341
+      }
+     ],
+     "capped": null
+    },
+    {
+     "title": "trims a long run of spaces in linear time",
+     "exit": 0,
+     "seconds": 1.6,
+     "load1Start": 12.8,
+     "load1End": 12.8,
+     "regions": [
+      {
+       "line": 176,
+       "bound": "EDGE_TRIM_CPU_MS",
+       "cpuMs": 64.094
+      }
+     ],
+     "capped": null
+    },
+    {
+     "title": "trims a long run of spaces in linear time",
+     "exit": 0,
+     "seconds": 1.6,
+     "load1Start": 12.8,
+     "load1End": 12.8,
+     "regions": [
+      {
+       "line": 176,
+       "bound": "EDGE_TRIM_CPU_MS",
+       "cpuMs": 40.686
+      }
+     ],
+     "capped": null
+    },
+    {
+     "title": "trims a long run of spaces in linear time",
+     "exit": 0,
+     "seconds": 2.0,
+     "load1Start": 12.8,
+     "load1End": 12.74,
+     "regions": [
+      {
+       "line": 176,
+       "bound": "EDGE_TRIM_CPU_MS",
+       "cpuMs": 59.001
+      }
+     ],
+     "capped": null
+    },
+    {
+     "title": "trims a long run of spaces in linear time",
+     "exit": 0,
+     "seconds": 1.8,
+     "load1Start": 12.74,
+     "load1End": 12.74,
+     "regions": [
+      {
+       "line": 176,
+       "bound": "EDGE_TRIM_CPU_MS",
+       "cpuMs": 54.599
+      }
+     ],
+     "capped": null
+    }
+   ],
+   "headMaxMs": 64.094,
+   "mutants": [
+    {
+     "id": "edge-backtracking-regex",
+     "title": "trims a long run of spaces in linear time",
+     "mutations": [
+      {
+       "file": "packages/polaris-generation-core/src/dossier-profile.ts",
+       "old": "const edge = (value: string): string => {\n  const chars = [...value];\n  let start = 0, end = chars.length;\n  while (start < end && INVISIBLE.test(chars[start]!)) start++;\n  while (end > start && INVISIBLE.test(chars[end - 1]!)) end--;\n  return chars.slice(start, end).join('');\n};\n",
+       "new": "const edge = (value: string): string => value.replace(/^[\\p{Cf}\\p{Z}\\s\\p{Default_Ignorable_Code_Point}\u2800]+|[\\p{Cf}\\p{Z}\\s\\p{Default_Ignorable_Code_Point}\u2800]+$/gu, '');\n"
+      }
+     ],
+     "runs": [
+      {
+       "title": "trims a long run of spaces in linear time",
+       "exit": -9,
+       "seconds": 63.8,
+       "load1Start": 12.74,
+       "load1End": 14.35,
+       "regions": [],
+       "capped": {
+        "line": 169,
+        "regionCpuMsAtLeast": 60046.1
+       }
+      },
+      {
+       "title": "trims a long run of spaces in linear time",
+       "exit": -9,
+       "seconds": 63.6,
+       "load1Start": 14.35,
+       "load1End": 11.93,
+       "regions": [],
+       "capped": {
+        "line": 169,
+        "regionCpuMsAtLeast": 60069.1
+       }
+      },
+      {
+       "title": "trims a long run of spaces in linear time",
+       "exit": -9,
+       "seconds": 65.9,
+       "load1Start": 11.93,
+       "load1End": 12.23,
+       "regions": [],
+       "capped": {
+        "line": 169,
+        "regionCpuMsAtLeast": 60164.6
+       }
+      }
+     ],
+     "min": 60046.1,
+     "cappedRuns": 3,
+     "reached": true
+    }
+   ],
+   "mutantMinMs": 60046.1,
+   "mutantMinIsLowerBound": true,
+   "proposedBoundMs": 1900,
+   "boundOverHeadMax": 29.6,
+   "mutantMinOverBound": 31.6,
+   "separated": true
+  },
+  {
+   "bound": "HOSTILE_LINE_CPU_MS",
+   "file": "packages/polaris-generation-core/src/excerpt.test.ts",
+   "lines": [
+    267
+   ],
+   "headRuns": [
+    {
+     "title": "stays linear on one 100k line of spaces after",
+     "exit": 0,
+     "seconds": 1.6,
+     "load1Start": 12.23,
+     "load1End": 12.23,
+     "regions": [
+      {
+       "line": 267,
+       "bound": "HOSTILE_LINE_CPU_MS",
+       "cpuMs": 0.937
+      },
+      {
+       "line": 267,
+       "bound": "HOSTILE_LINE_CPU_MS",
+       "cpuMs": 0
+      }
+     ],
+     "capped": null
+    },
+    {
+     "title": "stays linear on one 100k line of spaces after",
+     "exit": 0,
+     "seconds": 1.8,
+     "load1Start": 12.23,
+     "load1End": 12.53,
+     "regions": [
+      {
+       "line": 267,
+       "bound": "HOSTILE_LINE_CPU_MS",
+       "cpuMs": 0.71
+      },
+      {
+       "line": 267,
+       "bound": "HOSTILE_LINE_CPU_MS",
+       "cpuMs": 0
+      }
+     ],
+     "capped": null
+    },
+    {
+     "title": "stays linear on one 100k line of spaces after",
+     "exit": 0,
+     "seconds": 1.8,
+     "load1Start": 12.53,
+     "load1End": 12.53,
+     "regions": [
+      {
+       "line": 267,
+       "bound": "HOSTILE_LINE_CPU_MS",
+       "cpuMs": 1
+      },
+      {
+       "line": 267,
+       "bound": "HOSTILE_LINE_CPU_MS",
+       "cpuMs": 0.345
+      }
+     ],
+     "capped": null
+    },
+    {
+     "title": "stays linear on one 100k line of spaces after",
+     "exit": 0,
+     "seconds": 1.4,
+     "load1Start": 12.53,
+     "load1End": 12.53,
+     "regions": [
+      {
+       "line": 267,
+       "bound": "HOSTILE_LINE_CPU_MS",
+       "cpuMs": 0.496
+      },
+      {
+       "line": 267,
+       "bound": "HOSTILE_LINE_CPU_MS",
+       "cpuMs": 0
+      }
+     ],
+     "capped": null
+    },
+    {
+     "title": "stays linear on one 100k line of spaces after",
+     "exit": 0,
+     "seconds": 1.4,
+     "load1Start": 12.53,
+     "load1End": 12.53,
+     "regions": [
+      {
+       "line": 267,
+       "bound": "HOSTILE_LINE_CPU_MS",
+       "cpuMs": 0.366
+      },
+      {
+       "line": 267,
+       "bound": "HOSTILE_LINE_CPU_MS",
+       "cpuMs": 0
+      }
+     ],
+     "capped": null
+    },
+    {
+     "title": "stays linear on one 100k line of spaces after",
+     "exit": 0,
+     "seconds": 1.8,
+     "load1Start": 12.53,
+     "load1End": 12.49,
+     "regions": [
+      {
+       "line": 267,
+       "bound": "HOSTILE_LINE_CPU_MS",
+       "cpuMs": 1.001
+      },
+      {
+       "line": 267,
+       "bound": "HOSTILE_LINE_CPU_MS",
+       "cpuMs": 1
+      }
+     ],
+     "capped": null
+    },
+    {
+     "title": "stays linear on one 100k line of spaces after",
+     "exit": 0,
+     "seconds": 1.6,
+     "load1Start": 12.49,
+     "load1End": 12.49,
+     "regions": [
+      {
+       "line": 267,
+       "bound": "HOSTILE_LINE_CPU_MS",
+       "cpuMs": 1
+      },
+      {
+       "line": 267,
+       "bound": "HOSTILE_LINE_CPU_MS",
+       "cpuMs": 0
+      }
+     ],
+     "capped": null
+    },
+    {
+     "title": "stays linear on one 100k line of spaces after",
+     "exit": 0,
+     "seconds": 1.4,
+     "load1Start": 12.49,
+     "load1End": 12.49,
+     "regions": [
+      {
+       "line": 267,
+       "bound": "HOSTILE_LINE_CPU_MS",
+       "cpuMs": 1.007
+      },
+      {
+       "line": 267,
+       "bound": "HOSTILE_LINE_CPU_MS",
+       "cpuMs": 1
+      }
+     ],
+     "capped": null
+    },
+    {
+     "title": "stays linear on one 100k line of spaces after",
+     "exit": 0,
+     "seconds": 1.4,
+     "load1Start": 12.49,
+     "load1End": 12.53,
+     "regions": [
+      {
+       "line": 267,
+       "bound": "HOSTILE_LINE_CPU_MS",
+       "cpuMs": 1.001
+      },
+      {
+       "line": 267,
+       "bound": "HOSTILE_LINE_CPU_MS",
+       "cpuMs": 0.385
+      }
+     ],
+     "capped": null
+    },
+    {
+     "title": "stays linear on one 100k line of spaces after",
+     "exit": 0,
+     "seconds": 1.6,
+     "load1Start": 12.53,
+     "load1End": 12.53,
+     "regions": [
+      {
+       "line": 267,
+       "bound": "HOSTILE_LINE_CPU_MS",
+       "cpuMs": 1.883
+      },
+      {
+       "line": 267,
+       "bound": "HOSTILE_LINE_CPU_MS",
+       "cpuMs": 0
+      }
+     ],
+     "capped": null
+    }
+   ],
+   "headMaxMs": 1.883,
+   "mutants": [
+    {
+     "id": "excerpt-no-cap-quadratic-pattern",
+     "title": "stays linear on one 100k line of spaces after an identifier",
+     "mutations": [
+      {
+       "file": "packages/polaris-generation-core/src/excerpt.ts",
+       "old": "    if (t === '' || t.length > PATTERN_PREFIX_MAX) continue;",
+       "new": "    if (t === '') continue;"
+      },
+      {
+       "file": "packages/polaris-generation-core/src/excerpt.ts",
+       "old": "const FUNCTION_LINE = /^[A-Za-z_][A-Za-z0-9_ \\t*]*[A-Za-z0-9_*][ \\t]*\\(/u;",
+       "new": "const FUNCTION_LINE = /^[A-Za-z_][A-Za-z0-9_ \\t*]*[ \\t]*[A-Za-z0-9_*][ \\t]*\\(/u;"
+      }
+     ],
+     "runs": [
+      {
+       "title": "stays linear on one 100k line of spaces after an identifier",
+       "exit": 1,
+       "seconds": 16.8,
+       "load1Start": 12.53,
+       "load1End": 15.83,
+       "regions": [
+        {
+         "line": 267,
+         "bound": "HOSTILE_LINE_CPU_MS",
+         "cpuMs": 13541.501
+        }
+       ],
+       "capped": null
+      },
+      {
+       "title": "stays linear on one 100k line of spaces after an identifier",
+       "exit": 1,
+       "seconds": 16.7,
+       "load1Start": 15.83,
+       "load1End": 14.88,
+       "regions": [
+        {
+         "line": 267,
+         "bound": "HOSTILE_LINE_CPU_MS",
+         "cpuMs": 13303.92
+        }
+       ],
+       "capped": null
+      },
+      {
+       "title": "stays linear on one 100k line of spaces after an identifier",
+       "exit": 1,
+       "seconds": 15.1,
+       "load1Start": 14.88,
+       "load1End": 13.86,
+       "regions": [
+        {
+         "line": 267,
+         "bound": "HOSTILE_LINE_CPU_MS",
+         "cpuMs": 12816.551
+        }
+       ],
+       "capped": null
+      },
+      {
+       "title": "stays linear on one 100k line of spaces after an identifier",
+       "exit": 1,
+       "seconds": 16.5,
+       "load1Start": 13.86,
+       "load1End": 14.24,
+       "regions": [
+        {
+         "line": 267,
+         "bound": "HOSTILE_LINE_CPU_MS",
+         "cpuMs": 13311.266
+        }
+       ],
+       "capped": null
+      },
+      {
+       "title": "stays linear on one 100k line of spaces after an identifier",
+       "exit": 1,
+       "seconds": 17.3,
+       "load1Start": 14.24,
+       "load1End": 15.41,
+       "regions": [
+        {
+         "line": 267,
+         "bound": "HOSTILE_LINE_CPU_MS",
+         "cpuMs": 14040.974
+        }
+       ],
+       "capped": null
+      },
+      {
+       "title": "stays linear on one 100k line of spaces after an identifier",
+       "exit": 1,
+       "seconds": 19.8,
+       "load1Start": 15.41,
+       "load1End": 18.46,
+       "regions": [
+        {
+         "line": 267,
+         "bound": "HOSTILE_LINE_CPU_MS",
+         "cpuMs": 14738.389
+        }
+       ],
+       "capped": null
+      },
+      {
+       "title": "stays linear on one 100k line of spaces after an identifier",
+       "exit": 1,
+       "seconds": 14.5,
+       "load1Start": 18.46,
+       "load1End": 19.11,
+       "regions": [
+        {
+         "line": 267,
+         "bound": "HOSTILE_LINE_CPU_MS",
+         "cpuMs": 12102.556
+        }
+       ],
+       "capped": null
+      },
+      {
+       "title": "stays linear on one 100k line of spaces after an identifier",
+       "exit": 1,
+       "seconds": 14.1,
+       "load1Start": 19.11,
+       "load1End": 18.18,
+       "regions": [
+        {
+         "line": 267,
+         "bound": "HOSTILE_LINE_CPU_MS",
+         "cpuMs": 12278.003
+        }
+       ],
+       "capped": null
+      },
+      {
+       "title": "stays linear on one 100k line of spaces after an identifier",
+       "exit": 1,
+       "seconds": 13.6,
+       "load1Start": 18.18,
+       "load1End": 16.49,
+       "regions": [
+        {
+         "line": 267,
+         "bound": "HOSTILE_LINE_CPU_MS",
+         "cpuMs": 11950.189
+        }
+       ],
+       "capped": null
+      },
+      {
+       "title": "stays linear on one 100k line of spaces after an identifier",
+       "exit": 1,
+       "seconds": 11.8,
+       "load1Start": 16.49,
+       "load1End": 15.83,
+       "regions": [
+        {
+         "line": 267,
+         "bound": "HOSTILE_LINE_CPU_MS",
+         "cpuMs": 10443.762
+        }
+       ],
+       "capped": null
+      }
+     ],
+     "min": 10443.762,
+     "cappedRuns": 0,
+     "reached": true
+    }
+   ],
+   "mutantMinMs": 10443.762,
+   "mutantMinIsLowerBound": false,
+   "proposedBoundMs": 140,
+   "boundOverHeadMax": 74.3,
+   "mutantMinOverBound": 74.6,
+   "separated": true
+  },
+  {
+   "bound": "TAG_SCAN_CPU_MS",
+   "file": "packages/three-surface-poc-core/src/test-artifact-verification.test.ts",
+   "lines": [
+    103
+   ],
+   "headRuns": [
+    {
+     "title": "scans (unterminated opening tags|unterminated plural tags|near-miss tag names) at the ceiling",
+     "exit": 0,
+     "seconds": 1.2,
+     "load1Start": 15.83,
+     "load1End": 15.36,
+     "regions": [
+      {
+       "line": 103,
+       "bound": "TAG_SCAN_CPU_MS",
+       "cpuMs": 10
+      },
+      {
+       "line": 103,
+       "bound": "TAG_SCAN_CPU_MS",
+       "cpuMs": 33.939
+      },
+      {
+       "line": 103,
+       "bound": "TAG_SCAN_CPU_MS",
+       "cpuMs": 23.993
+      }
+     ],
+     "capped": null
+    },
+    {
+     "title": "scans (unterminated opening tags|unterminated plural tags|near-miss tag names) at the ceiling",
+     "exit": 0,
+     "seconds": 1.2,
+     "load1Start": 15.36,
+     "load1End": 15.36,
+     "regions": [
+      {
+       "line": 103,
+       "bound": "TAG_SCAN_CPU_MS",
+       "cpuMs": 7.858
+      },
+      {
+       "line": 103,
+       "bound": "TAG_SCAN_CPU_MS",
+       "cpuMs": 27.848
+      },
+      {
+       "line": 103,
+       "bound": "TAG_SCAN_CPU_MS",
+       "cpuMs": 24.836
+      }
+     ],
+     "capped": null
+    },
+    {
+     "title": "scans (unterminated opening tags|unterminated plural tags|near-miss tag names) at the ceiling",
+     "exit": 0,
+     "seconds": 1.2,
+     "load1Start": 15.36,
+     "load1End": 15.36,
+     "regions": [
+      {
+       "line": 103,
+       "bound": "TAG_SCAN_CPU_MS",
+       "cpuMs": 10.726
+      },
+      {
+       "line": 103,
+       "bound": "TAG_SCAN_CPU_MS",
+       "cpuMs": 38.784
+      },
+      {
+       "line": 103,
+       "bound": "TAG_SCAN_CPU_MS",
+       "cpuMs": 27.994
+      }
+     ],
+     "capped": null
+    },
+    {
+     "title": "scans (unterminated opening tags|unterminated plural tags|near-miss tag names) at the ceiling",
+     "exit": 0,
+     "seconds": 1.2,
+     "load1Start": 15.36,
+     "load1End": 15.36,
+     "regions": [
+      {
+       "line": 103,
+       "bound": "TAG_SCAN_CPU_MS",
+       "cpuMs": 10.993
+      },
+      {
+       "line": 103,
+       "bound": "TAG_SCAN_CPU_MS",
+       "cpuMs": 30.945
+      },
+      {
+       "line": 103,
+       "bound": "TAG_SCAN_CPU_MS",
+       "cpuMs": 23.99
+      }
+     ],
+     "capped": null
+    },
+    {
+     "title": "scans (unterminated opening tags|unterminated plural tags|near-miss tag names) at the ceiling",
+     "exit": 0,
+     "seconds": 1.4,
+     "load1Start": 15.36,
+     "load1End": 14.93,
+     "regions": [
+      {
+       "line": 103,
+       "bound": "TAG_SCAN_CPU_MS",
+       "cpuMs": 9.999
+      },
+      {
+       "line": 103,
+       "bound": "TAG_SCAN_CPU_MS",
+       "cpuMs": 31.841
+      },
+      {
+       "line": 103,
+       "bound": "TAG_SCAN_CPU_MS",
+       "cpuMs": 23.991
+      }
+     ],
+     "capped": null
+    },
+    {
+     "title": "scans (unterminated opening tags|unterminated plural tags|near-miss tag names) at the ceiling",
+     "exit": 0,
+     "seconds": 1.6,
+     "load1Start": 14.93,
+     "load1End": 14.93,
+     "regions": [
+      {
+       "line": 103,
+       "bound": "TAG_SCAN_CPU_MS",
+       "cpuMs": 8
+      },
+      {
+       "line": 103,
+       "bound": "TAG_SCAN_CPU_MS",
+       "cpuMs": 31.921
+      },
+      {
+       "line": 103,
+       "bound": "TAG_SCAN_CPU_MS",
+       "cpuMs": 24.967
+      }
+     ],
+     "capped": null
+    },
+    {
+     "title": "scans (unterminated opening tags|unterminated plural tags|near-miss tag names) at the ceiling",
+     "exit": 0,
+     "seconds": 1.4,
+     "load1Start": 14.93,
+     "load1End": 14.93,
+     "regions": [
+      {
+       "line": 103,
+       "bound": "TAG_SCAN_CPU_MS",
+       "cpuMs": 8.041
+      },
+      {
+       "line": 103,
+       "bound": "TAG_SCAN_CPU_MS",
+       "cpuMs": 29.635
+      },
+      {
+       "line": 103,
+       "bound": "TAG_SCAN_CPU_MS",
+       "cpuMs": 24.994
+      }
+     ],
+     "capped": null
+    },
+    {
+     "title": "scans (unterminated opening tags|unterminated plural tags|near-miss tag names) at the ceiling",
+     "exit": 0,
+     "seconds": 1.2,
+     "load1Start": 14.93,
+     "load1End": 14.93,
+     "regions": [
+      {
+       "line": 103,
+       "bound": "TAG_SCAN_CPU_MS",
+       "cpuMs": 11.527
+      },
+      {
+       "line": 103,
+       "bound": "TAG_SCAN_CPU_MS",
+       "cpuMs": 30.954
+      },
+      {
+       "line": 103,
+       "bound": "TAG_SCAN_CPU_MS",
+       "cpuMs": 22.993
+      }
+     ],
+     "capped": null
+    },
+    {
+     "title": "scans (unterminated opening tags|unterminated plural tags|near-miss tag names) at the ceiling",
+     "exit": 0,
+     "seconds": 1.4,
+     "load1Start": 14.93,
+     "load1End": 15.58,
+     "regions": [
+      {
+       "line": 103,
+       "bound": "TAG_SCAN_CPU_MS",
+       "cpuMs": 9.967
+      },
+      {
+       "line": 103,
+       "bound": "TAG_SCAN_CPU_MS",
+       "cpuMs": 36.435
+      },
+      {
+       "line": 103,
+       "bound": "TAG_SCAN_CPU_MS",
+       "cpuMs": 31.333
+      }
+     ],
+     "capped": null
+    },
+    {
+     "title": "scans (unterminated opening tags|unterminated plural tags|near-miss tag names) at the ceiling",
+     "exit": 0,
+     "seconds": 1.2,
+     "load1Start": 15.58,
+     "load1End": 15.58,
+     "regions": [
+      {
+       "line": 103,
+       "bound": "TAG_SCAN_CPU_MS",
+       "cpuMs": 8.427
+      },
+      {
+       "line": 103,
+       "bound": "TAG_SCAN_CPU_MS",
+       "cpuMs": 32.408
+      },
+      {
+       "line": 103,
+       "bound": "TAG_SCAN_CPU_MS",
+       "cpuMs": 24.987
+      }
+     ],
+     "capped": null
+    }
+   ],
+   "headMaxMs": 38.784,
+   "mutants": [
+    {
+     "id": "junit-tag-regex",
+     "title": "scans unterminated opening tags at the ceiling",
+     "mutations": [
+      {
+       "file": "packages/three-surface-poc-core/src/test-artifact-verification.ts",
+       "old": "  const opener = `<${name}`;\n  let from = 0;\n  for (;;) {\n",
+       "new": "  const m = new RegExp(`<${name}\\\\s+([^>]*?)\\\\/?>`, 'i').exec(rawXml);\n  if (lowerXml.length >= 0) return m === null ? null : (m[1] ?? '');\n  const opener = `<${name}`;\n  let from = 0;\n  for (;;) {\n"
+      }
+     ],
+     "runs": [
+      {
+       "title": "scans unterminated opening tags at the ceiling",
+       "exit": -9,
+       "seconds": 61.6,
+       "load1Start": 15.58,
+       "load1End": 13.13,
+       "regions": [],
+       "capped": {
+        "line": 101,
+        "regionCpuMsAtLeast": 60171.5
+       }
+      },
+      {
+       "title": "scans unterminated opening tags at the ceiling",
+       "exit": -9,
+       "seconds": 63.3,
+       "load1Start": 13.13,
+       "load1End": 12.52,
+       "regions": [],
+       "capped": {
+        "line": 101,
+        "regionCpuMsAtLeast": 60107.1
+       }
+      },
+      {
+       "title": "scans unterminated opening tags at the ceiling",
+       "exit": -9,
+       "seconds": 62.9,
+       "load1Start": 12.52,
+       "load1End": 13.36,
+       "regions": [],
+       "capped": {
+        "line": 101,
+        "regionCpuMsAtLeast": 60188.4
+       }
+      }
+     ],
+     "min": 60107.1,
+     "cappedRuns": 3,
+     "reached": true
+    },
+    {
+     "id": "junit-tag-regex",
+     "title": "scans unterminated plural tags at the ceiling",
+     "mutations": [
+      {
+       "file": "packages/three-surface-poc-core/src/test-artifact-verification.ts",
+       "old": "  const opener = `<${name}`;\n  let from = 0;\n  for (;;) {\n",
+       "new": "  const m = new RegExp(`<${name}\\\\s+([^>]*?)\\\\/?>`, 'i').exec(rawXml);\n  if (lowerXml.length >= 0) return m === null ? null : (m[1] ?? '');\n  const opener = `<${name}`;\n  let from = 0;\n  for (;;) {\n"
+      }
+     ],
+     "runs": [
+      {
+       "title": "scans unterminated plural tags at the ceiling",
+       "exit": -9,
+       "seconds": 75.9,
+       "load1Start": 13.36,
+       "load1End": 21.15,
+       "regions": [],
+       "capped": {
+        "line": 101,
+        "regionCpuMsAtLeast": 60138.2
+       }
+      },
+      {
+       "title": "scans unterminated plural tags at the ceiling",
+       "exit": -9,
+       "seconds": 78.8,
+       "load1Start": 21.15,
+       "load1End": 20.98,
+       "regions": [],
+       "capped": {
+        "line": 101,
+        "regionCpuMsAtLeast": 60024.6
+       }
+      },
+      {
+       "title": "scans unterminated plural tags at the ceiling",
+       "exit": -9,
+       "seconds": 66.0,
+       "load1Start": 20.98,
+       "load1End": 17.23,
+       "regions": [],
+       "capped": {
+        "line": 101,
+        "regionCpuMsAtLeast": 60062.2
+       }
+      }
+     ],
+     "min": 60024.6,
+     "cappedRuns": 3,
+     "reached": true
+    },
+    {
+     "id": "junit-tag-regex",
+     "title": "scans near-miss tag names at the ceiling",
+     "mutations": [
+      {
+       "file": "packages/three-surface-poc-core/src/test-artifact-verification.ts",
+       "old": "  const opener = `<${name}`;\n  let from = 0;\n  for (;;) {\n",
+       "new": "  const m = new RegExp(`<${name}\\\\s+([^>]*?)\\\\/?>`, 'i').exec(rawXml);\n  if (lowerXml.length >= 0) return m === null ? null : (m[1] ?? '');\n  const opener = `<${name}`;\n  let from = 0;\n  for (;;) {\n"
+      }
+     ],
+     "runs": [
+      {
+       "title": "scans near-miss tag names at the ceiling",
+       "exit": 0,
+       "seconds": 2.4,
+       "load1Start": 17.23,
+       "load1End": 17.23,
+       "regions": [
+        {
+         "line": 103,
+         "bound": "TAG_SCAN_CPU_MS",
+         "cpuMs": 19.1
+        }
+       ],
+       "capped": null
+      },
+      {
+       "title": "scans near-miss tag names at the ceiling",
+       "exit": 0,
+       "seconds": 2.0,
+       "load1Start": 17.23,
+       "load1End": 17.23,
+       "regions": [
+        {
+         "line": 103,
+         "bound": "TAG_SCAN_CPU_MS",
+         "cpuMs": 17.917
+        }
+       ],
+       "capped": null
+      },
+      {
+       "title": "scans near-miss tag names at the ceiling",
+       "exit": 0,
+       "seconds": 2.4,
+       "load1Start": 17.23,
+       "load1End": 18.02,
+       "regions": [
+        {
+         "line": 103,
+         "bound": "TAG_SCAN_CPU_MS",
+         "cpuMs": 12.91
+        }
+       ],
+       "capped": null
+      },
+      {
+       "title": "scans near-miss tag names at the ceiling",
+       "exit": 0,
+       "seconds": 2.2,
+       "load1Start": 18.02,
+       "load1End": 18.02,
+       "regions": [
+        {
+         "line": 103,
+         "bound": "TAG_SCAN_CPU_MS",
+         "cpuMs": 18.501
+        }
+       ],
+       "capped": null
+      },
+      {
+       "title": "scans near-miss tag names at the ceiling",
+       "exit": 0,
+       "seconds": 2.8,
+       "load1Start": 18.02,
+       "load1End": 18.49,
+       "regions": [
+        {
+         "line": 103,
+         "bound": "TAG_SCAN_CPU_MS",
+         "cpuMs": 16.911
+        }
+       ],
+       "capped": null
+      },
+      {
+       "title": "scans near-miss tag names at the ceiling",
+       "exit": 0,
+       "seconds": 1.8,
+       "load1Start": 18.49,
+       "load1End": 18.49,
+       "regions": [
+        {
+         "line": 103,
+         "bound": "TAG_SCAN_CPU_MS",
+         "cpuMs": 14.499
+        }
+       ],
+       "capped": null
+      },
+      {
+       "title": "scans near-miss tag names at the ceiling",
+       "exit": 0,
+       "seconds": 1.6,
+       "load1Start": 18.49,
+       "load1End": 19.74,
+       "regions": [
+        {
+         "line": 103,
+         "bound": "TAG_SCAN_CPU_MS",
+         "cpuMs": 12.689
+        }
+       ],
+       "capped": null
+      },
+      {
+       "title": "scans near-miss tag names at the ceiling",
+       "exit": 0,
+       "seconds": 1.6,
+       "load1Start": 19.74,
+       "load1End": 19.74,
+       "regions": [
+        {
+         "line": 103,
+         "bound": "TAG_SCAN_CPU_MS",
+         "cpuMs": 18.507
+        }
+       ],
+       "capped": null
+      },
+      {
+       "title": "scans near-miss tag names at the ceiling",
+       "exit": 0,
+       "seconds": 1.6,
+       "load1Start": 19.74,
+       "load1End": 19.74,
+       "regions": [
+        {
+         "line": 103,
+         "bound": "TAG_SCAN_CPU_MS",
+         "cpuMs": 13.943
+        }
+       ],
+       "capped": null
+      },
+      {
+       "title": "scans near-miss tag names at the ceiling",
+       "exit": 0,
+       "seconds": 1.6,
+       "load1Start": 19.74,
+       "load1End": 19.2,
+       "regions": [
+        {
+         "line": 103,
+         "bound": "TAG_SCAN_CPU_MS",
+         "cpuMs": 14.474
+        }
+       ],
+       "capped": null
+      }
+     ],
+     "min": 12.689,
+     "cappedRuns": 0,
+     "reached": false
+    }
+   ],
+   "mutantMinMs": 60024.6,
+   "mutantMinIsLowerBound": true,
+   "proposedBoundMs": 1500,
+   "boundOverHeadMax": 38.7,
+   "mutantMinOverBound": 40.0,
+   "separated": true
+  },
+  {
+   "bound": "ATTRIBUTE_SCAN_CPU_MS",
+   "file": "packages/three-surface-poc-core/src/test-artifact-verification.test.ts",
+   "lines": [
+    110
+   ],
+   "headRuns": [
+    {
+     "title": "scans one tag body that is a single word run at the ceiling",
+     "exit": 0,
+     "seconds": 1.6,
+     "load1Start": 19.2,
+     "load1End": 19.2,
+     "regions": [
+      {
+       "line": 110,
+       "bound": "ATTRIBUTE_SCAN_CPU_MS",
+       "cpuMs": 108.638
+      }
+     ],
+     "capped": null
+    },
+    {
+     "title": "scans one tag body that is a single word run at the ceiling",
+     "exit": 0,
+     "seconds": 1.6,
+     "load1Start": 19.2,
+     "load1End": 19.2,
+     "regions": [
+      {
+       "line": 110,
+       "bound": "ATTRIBUTE_SCAN_CPU_MS",
+       "cpuMs": 121.946
+      }
+     ],
+     "capped": null
+    },
+    {
+     "title": "scans one tag body that is a single word run at the ceiling",
+     "exit": 0,
+     "seconds": 1.8,
+     "load1Start": 19.2,
+     "load1End": 19.26,
+     "regions": [
+      {
+       "line": 110,
+       "bound": "ATTRIBUTE_SCAN_CPU_MS",
+       "cpuMs": 149.441
+      }
+     ],
+     "capped": null
+    },
+    {
+     "title": "scans one tag body that is a single word run at the ceiling",
+     "exit": 0,
+     "seconds": 1.8,
+     "load1Start": 19.26,
+     "load1End": 19.26,
+     "regions": [
+      {
+       "line": 110,
+       "bound": "ATTRIBUTE_SCAN_CPU_MS",
+       "cpuMs": 142.351
+      }
+     ],
+     "capped": null
+    },
+    {
+     "title": "scans one tag body that is a single word run at the ceiling",
+     "exit": 0,
+     "seconds": 1.8,
+     "load1Start": 19.26,
+     "load1End": 19.26,
+     "regions": [
+      {
+       "line": 110,
+       "bound": "ATTRIBUTE_SCAN_CPU_MS",
+       "cpuMs": 154.665
+      }
+     ],
+     "capped": null
+    },
+    {
+     "title": "scans one tag body that is a single word run at the ceiling",
+     "exit": 0,
+     "seconds": 1.8,
+     "load1Start": 19.26,
+     "load1End": 19.72,
+     "regions": [
+      {
+       "line": 110,
+       "bound": "ATTRIBUTE_SCAN_CPU_MS",
+       "cpuMs": 137.686
+      }
+     ],
+     "capped": null
+    },
+    {
+     "title": "scans one tag body that is a single word run at the ceiling",
+     "exit": 0,
+     "seconds": 1.6,
+     "load1Start": 19.72,
+     "load1End": 19.72,
+     "regions": [
+      {
+       "line": 110,
+       "bound": "ATTRIBUTE_SCAN_CPU_MS",
+       "cpuMs": 129.14
+      }
+     ],
+     "capped": null
+    },
+    {
+     "title": "scans one tag body that is a single word run at the ceiling",
+     "exit": 0,
+     "seconds": 1.6,
+     "load1Start": 19.72,
+     "load1End": 19.72,
+     "regions": [
+      {
+       "line": 110,
+       "bound": "ATTRIBUTE_SCAN_CPU_MS",
+       "cpuMs": 119.479
+      }
+     ],
+     "capped": null
+    },
+    {
+     "title": "scans one tag body that is a single word run at the ceiling",
+     "exit": 0,
+     "seconds": 1.8,
+     "load1Start": 19.72,
+     "load1End": 20.78,
+     "regions": [
+      {
+       "line": 110,
+       "bound": "ATTRIBUTE_SCAN_CPU_MS",
+       "cpuMs": 133.335
+      }
+     ],
+     "capped": null
+    },
+    {
+     "title": "scans one tag body that is a single word run at the ceiling",
+     "exit": 0,
+     "seconds": 1.6,
+     "load1Start": 20.78,
+     "load1End": 20.78,
+     "regions": [
+      {
+       "line": 110,
+       "bound": "ATTRIBUTE_SCAN_CPU_MS",
+       "cpuMs": 129.234
+      }
+     ],
+     "capped": null
+    }
+   ],
+   "headMaxMs": 154.665,
+   "mutants": [
+    {
+     "id": "junit-attr-regex",
+     "title": "scans one tag body that is a single word run at the ceiling",
+     "mutations": [
+      {
+       "file": "packages/three-surface-poc-core/src/test-artifact-verification.ts",
+       "old": "  const attrs = new Map<string, string>();\n  let i = 0;\n",
+       "new": "  const attrs = new Map<string, string>();\n  for (const m of tagBody.matchAll(/(\\w+)=\"([^\"]*)\"/g)) { if (attrs.has(m[1]!)) return null; attrs.set(m[1]!, m[2]!); }\n  if (attrs.size >= 0) return attrs;\n  let i = 0;\n"
+      }
+     ],
+     "runs": [
+      {
+       "title": "scans one tag body that is a single word run at the ceiling",
+       "exit": -9,
+       "seconds": 64.3,
+       "load1Start": 20.78,
+       "load1End": 17.86,
+       "regions": [],
+       "capped": {
+        "line": 108,
+        "regionCpuMsAtLeast": 60032.2
+       }
+      },
+      {
+       "title": "scans one tag body that is a single word run at the ceiling",
+       "exit": -9,
+       "seconds": 73.1,
+       "load1Start": 17.86,
+       "load1End": 20.12,
+       "regions": [],
+       "capped": {
+        "line": 108,
+        "regionCpuMsAtLeast": 60179.3
+       }
+      },
+      {
+       "title": "scans one tag body that is a single word run at the ceiling",
+       "exit": -9,
+       "seconds": 62.6,
+       "load1Start": 20.12,
+       "load1End": 16.9,
+       "regions": [],
+       "capped": {
+        "line": 108,
+        "regionCpuMsAtLeast": 60090.4
+       }
+      }
+     ],
+     "min": 60032.2,
+     "cappedRuns": 3,
+     "reached": true
+    }
+   ],
+   "mutantMinMs": 60032.2,
+   "mutantMinIsLowerBound": true,
+   "proposedBoundMs": 3000,
+   "boundOverHeadMax": 19.4,
+   "mutantMinOverBound": 20.0,
+   "separated": true
+  }
+ ]
+}
