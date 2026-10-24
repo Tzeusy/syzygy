@@ -37,7 +37,7 @@ M = [
     ('O1-seed-reader-decodes-leniently', CORE + 'project-shape-observation.ts', "const text = decodeUtf8(bytes);\n    if (text === undefined) {\n      reads.push(",
      "const text: string | undefined = " + LENIENT + ";\n    if (text === undefined) {\n      reads.push(", [], [(P_CORE, [CORE + 'project-shape-observation.test.ts'])], True),
     ('O2-git-text-decodes-leniently', CORE + 'project-shape-observation.ts', "const text = decodeUtf8(bytes);\n  return text === undefined ? { kind: 'failed'",
-     "const text: string | undefined = " + LENIENT + ";\n  return text === undefined ? { kind: 'failed'", [], [(P_CORE, [CORE + 'project-shape-observation.test.ts'])], True),
+     "const text: string | undefined = " + LENIENT + ";\n  return text === undefined ? { kind: 'failed'", [(P_CORE, [CORE + 'project-shape-git-text.test.ts'])], [(P_CORE, [CORE + 'project-shape-observation.test.ts'])], True),
     ('A1-consent-decodes-leniently', CORE + 'authority-artifact-fields.ts', "const text = decodeUtf8(bytes);\n  if (text === undefined) return { kind: 'undecodable', detail: 'not strict UTF-8' };",
      "const text: string | undefined = " + LENIENT + ";\n  if (text === undefined) return { kind: 'undecodable', detail: 'not strict UTF-8' };", [(P_CORE, [CORE + 'authority-artifact-fields.test.ts'])], [], True),
     ('A2-json-artifact-decodes-leniently', CORE + 'authority-artifact-fields.ts', "const text = decodeUtf8(bytes);\n  if (text === undefined) return { ok: false, detail: 'not strict UTF-8' };",
