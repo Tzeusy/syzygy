@@ -29,10 +29,13 @@ import sweep  # noqa: E402  (same directory)
 HASH_BASE_INLINE = re.compile(r"""createHash\(\s*['"]sha256['"]\s*\)\s*\.update\(""")
 CALL = re.compile(r'(?<![.\w$])(sha256|digest|deepFreeze)\(')
 DEF_BEFORE = re.compile(r'(?:function\s+|export\s+function\s+)$')
+PARAM_TYPE = r'(?:string|Uint8Array|Buffer)(?: \| (?:string|Uint8Array|Buffer))*'
+BODY = r"createHash\('sha256'\)\.update\((?P=p)(?:, 'utf8')?\)\.digest\('hex'\)"
 CANONICAL_DEF = [
-    re.compile(r"^(?:export )?const (?P<n>sha256|digest) = \((?P<p>\w+): (?:string|string \| Uint8Array)\)(?:: string)? =>\s*createHash\('sha256'\)\.update\((?P=p)\)\.digest\('hex'\);$", re.M),
-    re.compile(r"^(?:export )?function (?P<n>sha256)\((?P<p>\w+): (?:string|string \| Uint8Array)\): string \{\n  return createHash\('sha256'\)\.update\((?P=p)\)\.digest\('hex'\);\n\}$", re.M),
+    re.compile(r"^(?:export )?const (?P<n>sha256|digest) = \((?P<p>\w+): " + PARAM_TYPE + r"\)(?:: string)? =>\s*" + BODY + r";$", re.M),
+    re.compile(r"^(?:export )?function (?P<n>sha256)\((?P<p>\w+): " + PARAM_TYPE + r"\)(?:: string)? \{\n  return " + BODY + r";\n\}$", re.M),
 ]
+ANY_LOCAL_DEF = re.compile(r'^(?:export )?(?:function (?:sha256|digest)\b|const (?:sha256|digest)\s*[=:])', re.M)
 
 
 def blob(repo, commit, path):
@@ -97,6 +100,20 @@ def population_changes(repo, base, head):
     return sorted(n for n in names if n and sweep.POPULATION.match(n) and not sweep.TEST_FILE.search(n))
 
 
+def strip_freeze_defs(text):
+    """The text with each `function deepFreeze<T>(value: T): T { ... }` body blanked, so its recursion is not a call."""
+    out, pos = [], 0
+    for m in re.finditer(r'(?:export )?function deepFreeze<T>\(value: T\): T \{', text):
+        if m.start() < pos:
+            continue
+        open_at = m.end() - 1
+        close = sweep.skip_balanced(text, open_at, '{', '}')
+        out.append(text[pos:m.start()])
+        pos = close
+    out.append(text[pos:])
+    return ''.join(out)
+
+
 def freeze_defs(text):
     return [m.start() for m in re.finditer(r'(?:export )?function deepFreeze<T>\(value: T\): T \{', text)]
 
@@ -118,10 +135,11 @@ def compare(repo, base, head):
             continue
         base_sites, defs = base_hash_sites(before)
         head_sites = head_hash_sites(after)
-        for d in defs:
-            if not any(rx.match(d) for rx in CANONICAL_DEF):
-                noncanonical.append({'file': path, 'def': d})
-        base_freeze, head_freeze = call_args(before, {'deepFreeze'}), call_args(after, {'deepFreeze'})
+        canonical_starts = {m.start() for rx in CANONICAL_DEF for m in rx.finditer(before)}
+        for m in ANY_LOCAL_DEF.finditer(before):
+            if m.start() not in canonical_starts:
+                noncanonical.append({'file': path, 'at': before.count('\n', 0, m.start()) + 1, 'text': before[m.start():m.start() + 100]})
+        base_freeze, head_freeze = call_args(strip_freeze_defs(before), {'deepFreeze'}), call_args(strip_freeze_defs(after), {'deepFreeze'})
         if freeze_defs(before):
             freeze_bodies[path] = normalised_freeze_body(before)
         for k, v in tally(base_sites).items():
@@ -184,6 +202,10 @@ def selftest():
     check('local function definition dropped, call kept', sites == [('sha256', 'b')] and len(defs) == 1)
     check('canonical regex rejects a transforming helper', not any(rx.match("const sha256 = (value: string): string => createHash('sha256').update(value.trim()).digest('hex');") for rx in CANONICAL_DEF))
     check('tally', tally([1, 1, 2]) == {1: 2, 2: 1})
+    check('utf8 update form is canonical', any(rx.match("const sha256 = (text: string): string => createHash('sha256').update(text, 'utf8').digest('hex');") for rx in CANONICAL_DEF))
+    check('union parameter type is canonical', any(rx.match("function sha256(bytes: Uint8Array | string): string {\n  return createHash('sha256').update(bytes).digest('hex');\n}") for rx in CANONICAL_DEF))
+    check('recursion inside a freeze body is not a call', call_args(strip_freeze_defs('function deepFreeze<T>(value: T): T { for (const c of v) deepFreeze(c); return value; }\nconst a = deepFreeze(x);'), {'deepFreeze'}) == [('deepFreeze', 'x')])
+    check('a lowercasing helper is reported as non-canonical', ANY_LOCAL_DEF.search("const sha256 = (value: string) => createHash('sha256').update(value.toLowerCase()).digest('hex');") is not None and not any(rx.match("const sha256 = (value: string) => createHash('sha256').update(value.toLowerCase()).digest('hex');") for rx in CANONICAL_DEF))
     return {'cases': len(cases), 'failures': [label for label, ok in cases if not ok]}
 
 
