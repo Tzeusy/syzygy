@@ -20,6 +20,9 @@ import {
   type OperatorReportedTestArtifactRecord,
 } from './test-artifact-verification.js';
 
+/** CPU milliseconds since `from`: the work done, which load on the host does not stretch the way it stretches wall time. */
+const cpuMsSince = (from: NodeJS.CpuUsage): number => { const { user, system } = process.cpuUsage(from); return (user + system) / 1000; };
+
 const cleanups: string[] = [];
 afterEach(() => {
   for (const directory of cleanups.splice(0)) {
@@ -91,16 +94,16 @@ describe('parseJUnitRootTotals', () => {
     ['near-miss tag names', '<testsuitex '],
   ])('scans %s at the ceiling in linear time', (_label, unit) => {
     const crafted = unit.repeat(Math.floor(MAX_JUNIT_ARTIFACT_BYTES / unit.length));
-    const started = performance.now();
+    const cpu = process.cpuUsage();
     expect(parseJUnitRootTotals(crafted)).toBeNull();
-    expect(performance.now() - started).toBeLessThan(2_000);
+    expect(cpuMsSince(cpu)).toBeLessThan(2_000);
   });
 
   it('scans one tag body that is a single word run at the ceiling in linear time', () => {
     const crafted = `<testsuite ${'a'.repeat(MAX_JUNIT_ARTIFACT_BYTES - 32)} tests="1">`;
-    const started = performance.now();
+    const cpu = process.cpuUsage();
     expect(parseJUnitRootTotals(crafted)).toEqual({ tests: 1, failures: 0, errors: 0, skipped: 0, time: null });
-    expect(performance.now() - started).toBeLessThan(2_000);
+    expect(cpuMsSince(cpu)).toBeLessThan(2_000);
   });
 
   // Round-2 note 6: last-wins let `failures="1" … failures="0"` read as 0.
