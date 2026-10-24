@@ -4,7 +4,10 @@
 usage: python3 -I daemon_entry_probe.py TREE OUT.json [TEST-FILE-SOURCE-COMMIT]
 
 For each mutant of apps/syzygy/src/main.ts, of a module it imports, or of the test file (and a control with none) it applies the fragment; a
-mutant whose `old` does not occur exactly once is recorded as skipped (the H- mutants exist only in the new test). It rebuilds apps/syzygy with `tsc -b`, runs packages/cap1-system/src/daemon-entry-unchanged.system.test.ts
+mutant whose `old` does not occur exactly once is recorded as skipped (the H- mutants exist only in the new test). Each
+mutant carries a kind: `defect` (something on the daemon path loads the POC app: the new test must fail), `equivalent`
+(nothing on any daemon path loads it: the old text pin fails these, and the new test should not) or `hook` (the new row's
+own hook is broken: it must fail). It rebuilds apps/syzygy with `tsc -b`, runs packages/cap1-system/src/daemon-entry-unchanged.system.test.ts
 under the system-tier config with the JSON reporter, records every row's status, restores main.ts and rebuilds. With
 TEST-FILE-SOURCE-COMMIT, the test file is first replaced by that commit's copy (and restored afterwards), so one tree
 can be probed with the old and the new test. Each run is its own session; one that outlives LIMIT_S is SIGKILLed as
@@ -19,22 +22,50 @@ TEST = 'packages/cap1-system/src/daemon-entry-unchanged.system.test.ts'
 LIMIT_S = 600
 ANCHOR = "import { resolvePathIntent } from '@syzygy/polaris-dossier/state-directory';\n"
 DAEMON = "  let parsed = parseCli(process.argv.slice(2), process.env);\n"
+LOAD = "await import('@syzygy/three-surface-poc-app/dossier-site');"
+POLARIS = ("    const { runPolarisCli } = await import('@syzygy/polaris-dossier');\n"
+           "    const { renderLocalDossier } = await import('@syzygy/three-surface-poc-app/dossier-site');\n"
+           "    return runPolarisCli(argv.slice(1), { renderer: renderLocalDossier });\n")
+def after(anchor, line, mid, file=MAIN, kind='defect', note=''):
+    return {'id': mid, 'kind': kind, 'file': file, 'note': note, 'old': anchor, 'new': anchor + line}
+# kind `defect`: the daemon path loads the POC app (on some argv or event), so the new test must fail; `equivalent`: nothing
+# on the daemon path loads it, so the new test should pass (the old text pin fails these); `hook`: a mutant of the new row's
+# own hook, which must fail it (absent from the old test, so skipped there).
 MUTANTS = [
     None,
-    {'id': 'P-static', 'file': MAIN, 'note': 'a static side-effect import of the POC app at module top',
-     'old': ANCHOR, 'new': ANCHOR + "import '@syzygy/three-surface-poc-app/dossier-site';\n"},
-    {'id': 'P-daemon-dynamic', 'file': MAIN, 'note': 'a dynamic import of the POC app on the daemon path, before parseCli',
-     'old': DAEMON, 'new': "  await import('@syzygy/three-surface-poc-app/dossier-site');\n" + DAEMON},
-    {'id': 'P-transitive', 'file': 'packages/polaris-dossier/src/state-directory.ts',
-     'note': 'a module main.ts imports statically (polaris-dossier state-directory) imports the POC app; main.ts itself is unchanged',
-     'old': "import * as path from 'node:path';\n", 'new': "import * as path from 'node:path';\nimport '@syzygy/three-surface-poc-app/dossier-site';\n"},
-    {'id': 'H-hook-blind', 'file': TEST, 'note': "the hook's POC-app prefix points at a directory nothing loads from (the new row only)",
+    after(ANCHOR, "import '@syzygy/three-surface-poc-app/dossier-site';\n", 'P-static', note='a static side-effect import at module top'),
+    after("  const argv = process.argv.slice(2);\n", f"  {LOAD}\n", 'P-before-branches', note='a dynamic load before both branches, so every argv runs it'),
+    {'id': 'P-daemon-dynamic', 'kind': 'defect', 'file': MAIN, 'note': 'a dynamic load where the daemon path begins',
+     'old': DAEMON, 'new': f"  {LOAD}\n" + DAEMON},
+    after("  if (parsed.kind === 'help') {\n", f"    {LOAD}\n", 'P-help-branch', note='a load in the usage branch'),
+    after("  if (parsed.kind === 'invalid') {\n", f"    {LOAD}\n", 'P-invalid-branch', note='a load in the refusal branch'),
+    after("  if (!start.started) {\n", f"    {LOAD}\n", 'P-start-failure', note='a load in the branch a daemon that fails to start takes'),
+    after("    const { readFile } = await import('node:fs/promises');\n", f"    {LOAD}\n", 'P-entry-read', note='a load at request time, in the entry reader'),
+    after("      if (closing) return;\n", "      void import('@syzygy/three-surface-poc-app/dossier-site');\n", 'P-shutdown', note='a load in the shutdown handler'),
+    after("      void daemon.close().then(resolve, (cause: unknown) => {\n", "        void import('@syzygy/three-surface-poc-app/dossier-site');\n",
+          'P-close-failure', note='a load in the branch a failed close takes'),
+    after("import * as path from 'node:path';\n", "import '@syzygy/three-surface-poc-app/dossier-site';\n", 'P-transitive',
+          file='packages/polaris-dossier/src/state-directory.ts', note='a module main.ts imports statically (polaris-dossier state-directory) imports the POC app; main.ts is unchanged'),
+    after(ANCHOR, "import type * as PocSite from '@syzygy/three-surface-poc-app/dossier-site';\n", 'E-type-only-import', kind='equivalent',
+          note='a type-only import at module top: erased by tsc, so nothing loads'),
+    after("  if (argv[0] === 'dossier') {\n", "    // renders through @syzygy/three-surface-poc-app/dossier-site\n", 'E-comment-in-branch', kind='equivalent',
+          note='a comment naming the POC app inside the dossier branch'),
+    {'id': 'E-renamed-binding', 'kind': 'equivalent', 'file': MAIN, 'note': "the polaris branch binds the renderer under another name",
+     'old': POLARIS, 'new': POLARIS.replace('const { renderLocalDossier }', 'const { renderLocalDossier: render }').replace('renderer: renderLocalDossier', 'renderer: render')},
+    {'id': 'H-hook-blind', 'kind': 'hook', 'file': TEST, 'note': "the hook's POC-app prefix points at a directory nothing loads from",
      'old': "    const app = `${pathToFileURL(realpathSync(path.join(REPO_ROOT, 'apps', 'three-surface-poc'))).href}/`;\n",
      'new': "    const app = `${pathToFileURL(realpathSync(path.join(REPO_ROOT, 'apps', 'three-surface-poc'))).href}/no-such-dir/`;\n"},
-    {'id': 'H-no-preload', 'file': TEST, 'note': 'NODE_OPTIONS carries no --import, so no hook runs (the new row only)',
+    {'id': 'H-no-preload', 'kind': 'hook', 'file': TEST, 'note': 'NODE_OPTIONS carries no --import, so no hook runs',
      'old': "    const hooked = { NODE_OPTIONS: `--import=${pathToFileURL(hook).href}`, POC_APP_URL: app, POC_LOAD_LOG: log };\n",
      'new': "    const hooked = { NODE_OPTIONS: '', POC_APP_URL: app, POC_LOAD_LOG: log };\n"},
 ]
+def branch_swap():
+    """The polaris branch moved above the dossier branch, its fragments cut from main.ts as it stands."""
+    text = open(os.path.join(tree, MAIN), encoding='utf8').read()
+    i, j, k = text.index("  if (argv[0] === 'dossier') {\n"), text.index("  // `syzygy polaris <url>`"), text.index(DAEMON)
+    return {'id': 'E-branch-swap', 'kind': 'equivalent', 'file': MAIN, 'note': 'the polaris branch moved above the dossier branch',
+            'old': text[i:k], 'new': text[j:k] + text[i:j]}
+MUTANTS.insert(-2, branch_swap())
 git = lambda *a: subprocess.run(['git', *a], cwd=tree, capture_output=True, text=True, check=True).stdout
 sha = lambda path: hashlib.sha256(open(path, 'rb').read()).hexdigest()
 
@@ -79,7 +110,7 @@ def run(mutant):
 results = []
 for m in MUTANTS:
     results.append(run(m)); r = results[-1]
-    print(json.dumps({'mutant': m['id'] if m else 'control', 'exit': r['exit'], 'passed': r['passed'], 'failed': r['failed']}), flush=True)
+    print(json.dumps({'mutant': m['id'] if m else 'control', 'kind': m['kind'] if m else None, 'exit': r['exit'], 'passed': r['passed'], 'failed': r['failed']}), flush=True)
 build()
 if subprocess.run(['git', 'diff', '--quiet'], cwd=tree).returncode != 0: sys.exit('tree not restored')
 json.dump({'tool': {'name': os.path.basename(__file__), 'sha256': sha(os.path.abspath(__file__))}, 'commit': git('rev-parse', 'HEAD').strip(),

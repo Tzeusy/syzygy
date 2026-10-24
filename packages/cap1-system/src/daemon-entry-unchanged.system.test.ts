@@ -210,9 +210,10 @@ describe('daemon entry: the one changed input, `dossier` as the first argument',
     expect(sweep(dir)).toEqual(before);
   });
 
-  // A load hook preloaded into the built entry logs every module it loads from the POC app. The daemon, served and shut
-  // down, logs none; `dossier render`, which injects the renderer, logs the renderer's module, so the hook does see the
-  // POC app when it loads. This pins behavior, not where main.ts spells its imports (syzygy-bpyt.4.5).
+  // A load hook preloaded into the built entry logs every module it loads from the POC app. The daemon path, served and
+  // shut down, asked for its usage and refused an argument, logs none; `dossier render`, which injects the renderer, logs
+  // the renderer's module, so the hook does see the POC app when it loads. This pins behavior, not where main.ts spells
+  // its imports (syzygy-bpyt.4.5).
   it('the daemon path never loads the POC app, and the `dossier render` branch does', async () => {
     const { base: dir, root } = base();
     const stateDir = path.join(dir, 'state'), log = path.join(dir, 'poc-loads.txt'), hook = path.join(dir, 'poc-load-hook.mjs');
@@ -229,9 +230,25 @@ describe('daemon entry: the one changed input, `dossier` as the first argument',
     const hooked = { NODE_OPTIONS: `--import=${pathToFileURL(hook).href}`, POC_APP_URL: app, POC_LOAD_LOG: log };
     const served = await runDaemon(['--root', root, '--state-dir', stateDir, '--port', '0'], dir, hooked, stateDir);
     expect(served).toMatchObject({ exit: 0, rootStatus: 200, stderr: '' });
+    expect(runSync(['--help'], dir, { SYZYGY_PORT: '0', ...hooked })).toMatchObject({ status: 0, stderr: '' });
+    expect(runSync(['--bogus'], dir, { SYZYGY_PORT: '0', ...hooked })).toMatchObject({ status: 1 });
     expect(readFileSync(log, 'utf8')).toBe('');
     const rendered = runSync(['dossier', 'render', path.join(dir, 'absent'), '--json'], dir, { SYZYGY_PORT: '0', ...hooked });
     expect(JSON.parse(rendered.stdout)).toMatchObject({ command: 'render', outcome: 'refused', stage: 'run' });
     expect(readFileSync(log, 'utf8').split('\n')).toContain(`${app}dist/polaris-generation/dossier-site.js`);
+  });
+
+  // The kept part of the old text pin. A load on a daemon branch the row above never reaches (a start or close failure, a
+  // request-time entry read) shows only in the text, so every line naming the POC app must sit between the first of the
+  // `dossier` and `polaris` branches and the start of the daemon path, where only those two commands run it.
+  it('every line of main.ts naming the POC app sits in the `dossier` and `polaris` branches, before the daemon path', () => {
+    const lines = readFileSync(path.join(REPO_ROOT, 'apps/syzygy/src/main.ts'), 'utf8').split('\n');
+    const branches = [lines.indexOf("  if (argv[0] === 'dossier') {"), lines.indexOf("  if (argv[0] === 'polaris') {")];
+    const daemon = lines.indexOf('  let parsed = parseCli(process.argv.slice(2), process.env);');
+    expect(Math.min(...branches)).toBeGreaterThan(-1);
+    expect(daemon).toBeGreaterThan(Math.max(...branches));
+    const naming = lines.flatMap((text, index) => (text.includes('three-surface-poc-app') ? [index] : []));
+    expect(naming.length).toBeGreaterThan(0);
+    expect(naming.filter((index) => index < Math.min(...branches) || index > daemon).map((index) => lines[index])).toEqual([]);
   });
 });
