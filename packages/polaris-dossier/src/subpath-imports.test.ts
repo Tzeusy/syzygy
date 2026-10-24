@@ -87,7 +87,7 @@ describe('the subpaths the daemon entry imports', () => {
     ["const lazy = await import('typescript');", 'typescript'],
     ["const fs = require('fs');", 'fs'],
     ["import { createRequire } from 'node:module';", 'node:module'],
-  ])('the check sees the import in %s (its own mutant)', (line, specifier) => {
+  ])('the check sees a forbidden import in %s (its own mutant)', (line, specifier) => {
     expect(importsOf(`import * as path from 'node:path';\n${line}\n`)).toEqual(['node:path', specifier]);
   });
 
