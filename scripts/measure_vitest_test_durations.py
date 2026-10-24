@@ -11,20 +11,28 @@ minimum and maximum over 5 s samples, and every test of FILE with its status and
 
 With `--profile`, each run first applies the instrumentation below: the recorder testkit's `spawnSync` is wrapped to add up its wall
 time and calls, and FILE gets a `beforeEach`/`afterEach` pair that prints, per test, the test's wall time between the hooks and the
-render time and calls inside it. Both anchors are checked before either file is written, and whichever file was written is restored
-from git when the run ends, however it ends short of SIGKILL: normally, by an exception, or by SIGINT, SIGTERM or SIGHUP (SIGTERM and
-SIGHUP exit 128 + the signal number once restored). The instrumentation's `old` and `new` fragments are in OUT.json.
+render time and calls inside it. Both anchors are checked before either file is written. The instrumentation's `old` and `new`
+fragments are in OUT.json.
 
-vitest runs in a session of its own. When a run ends, or the script is stopped, that process group gets SIGTERM, and SIGKILL after
-GRACE_SECONDS, so no descendant outlives the run.
+Stopping: SIGINT, SIGTERM and SIGHUP only record that they arrived. No handler raises, so no stop signal, however many and however
+timed, can interrupt starting vitest or the cleanup. A stop signal the script inherits ignored, as under `nohup`, stays ignored. A
+stop takes effect at the next check: before instrumenting, before starting vitest, or within 0.05 s while vitest runs. The run in
+progress then gets the cleanup below and is not recorded, and the script exits 128 + the first signal's number. Runs already
+finished stay in OUT.json.
+
+Cleanup, after every run however it ends short of a SIGKILL of the script: vitest runs in a session of its own, and its process
+group gets SIGTERM, then SIGKILL after GRACE_SECONDS; a group found empty at any step is already gone. Then, even if ending the group
+raised, each instrumented file that was written is restored with `git checkout`, itself run in a session of its own so that a
+signal to the script's group cannot cut it short. A process that has left vitest's process group is out of the cleanup's reach.
 
 It writes OUT.json and, only while a profiled run is in progress, the two instrumented files. A SIGKILL of the script itself can
 leave them written and vitest running; the next run then refuses, since the tracked files are not clean."""
 import datetime, hashlib, json, os, signal, subprocess, sys, tempfile, threading, time
 
 GRACE_SECONDS = 10
-STOP_SIGNALS = (signal.SIGINT, signal.SIGTERM, signal.SIGHUP)
-for _signal in (signal.SIGTERM, signal.SIGHUP): signal.signal(_signal, lambda number, _frame: sys.exit(128 + number))
+stopped_by = []   # the stop signals received, in order
+for _signal in (signal.SIGINT, signal.SIGTERM, signal.SIGHUP):
+    if signal.getsignal(_signal) is not signal.SIG_IGN: signal.signal(_signal, lambda number, _frame: stopped_by.append(number))
 
 SCRIPT = 'scripts/measure_vitest_test_durations.py'
 TESTKIT = 'packages/polaris-generation-consent/src/recorder-fixtures.testkit.ts'
@@ -63,20 +71,28 @@ def instrument(written):
         written.append(path)
         open(os.path.join(tree, path), 'w', encoding='utf8').write(text)
 
+def leave_if_stopped():
+    if stopped_by:
+        print(f'stopped by {signal.Signals(stopped_by[0]).name}: the run in progress, if any, was ended and restored and is not recorded',
+              file=sys.stderr, flush=True)
+        sys.exit(128 + stopped_by[0])
+
 def end_group(proc):
-    """SIGTERM to the run's process group, then SIGKILL to whatever of it is left after GRACE_SECONDS."""
+    """SIGTERM to the run's process group, then SIGKILL to whatever of it is left after GRACE_SECONDS. A group found empty at any
+    step, including between a probe and the signal after it, is already gone, never an error."""
     def alive():
         proc.poll()
         try: os.killpg(proc.pid, 0)
         except ProcessLookupError: return False
         return True
-    if not alive(): return
-    os.killpg(proc.pid, signal.SIGTERM)
-    deadline = time.monotonic() + GRACE_SECONDS
-    while alive() and time.monotonic() < deadline: time.sleep(0.2)
-    if alive():
-        try: os.killpg(proc.pid, signal.SIGKILL)
+    def signal_group(number):
+        try: os.killpg(proc.pid, number)
         except ProcessLookupError: pass
+    if alive():
+        signal_group(signal.SIGTERM)
+        deadline = time.monotonic() + GRACE_SECONDS
+        while alive() and time.monotonic() < deadline: time.sleep(0.2)
+        if alive(): signal_group(signal.SIGKILL)
     proc.wait()
 
 def one_run(index):
@@ -90,22 +106,25 @@ def one_run(index):
         sampler = threading.Thread(target=sample, daemon=True)
         started_at = datetime.datetime.now(datetime.timezone.utc).isoformat(timespec='seconds')
         load_start, t0 = os.getloadavg()[0], time.monotonic()
-        written, proc = [], None
+        written, proc, output = [], None, []
         sampler.start()
         try:
-            if profile: instrument(written)
-            proc = subprocess.Popen(command, cwd=tree, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, start_new_session=True)
-            stdout, _ = proc.communicate()
+            if profile and not stopped_by: instrument(written)
+            if not stopped_by:
+                proc = subprocess.Popen(command, cwd=tree, stdout=subprocess.PIPE, stderr=subprocess.DEVNULL, text=True, start_new_session=True)
+                reader = threading.Thread(target=lambda: output.append(proc.stdout.read()), daemon=True)
+                reader.start()
+                while (proc.poll() is None or reader.is_alive()) and not stopped_by: time.sleep(0.05)
         finally:
-            ignored = {s: signal.signal(s, signal.SIG_IGN) for s in STOP_SIGNALS}   # a second stop signal cannot cut the cleanup short
+            stop.set(); sampler.join()
             try:
-                stop.set(); sampler.join()
                 if proc is not None: end_group(proc)
-                if written: subprocess.run(['git', 'checkout', '--', *written], cwd=tree, check=True)
             finally:
-                for s, handler in ignored.items(): signal.signal(s, handler)
+                if written: subprocess.run(['git', 'checkout', '--', *written], cwd=tree, check=True, start_new_session=True)
+        leave_if_stopped()
         wall, load_end = round(time.monotonic() - t0, 1), os.getloadavg()[0]
         data = json.load(open(report, encoding='utf8')) if os.path.exists(report) else {}
+    stdout = output[0] if output else ''
     suites = [s for s in data.get('testResults', []) if os.path.relpath(s['name'], tree) == test_file]
     tests = [{'name': a['fullName'], 'status': a['status'], 'durationMs': None if a.get('duration') is None else round(a['duration'])}
              for s in suites for a in s.get('assertionResults', [])]
@@ -132,4 +151,5 @@ out = {
 for i in range(1, runs + 1):
     out['runs'].append(one_run(i))
     with open(out_path, 'w', encoding='utf8') as f: f.write(json.dumps(out, indent=1) + '\n')
+leave_if_stopped()
 if git('status', '--porcelain', '--untracked-files=no'): sys.exit('tree not restored')
