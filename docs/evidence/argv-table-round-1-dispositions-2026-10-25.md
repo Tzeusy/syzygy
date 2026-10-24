@@ -159,6 +159,13 @@ CI job exists.
 `syzygy-bpyt.4.25` (P3). It waits for `syzygy-bpyt.8.33`, which changes
 `launched.test.ts`.
 
+**Stale as of 2026-10-25, at the #523 landing:** the two sentences above no
+longer hold. `syzygy-bpyt.4.25` now covers only the
+`state-dir.system.test.ts:364` row and no longer waits for
+`syzygy-bpyt.8.33`; the `launched.test.ts:66` row's root skip moved to
+`syzygy-bpyt.8.35`, which edits that file under one class-4 review (see
+`docs/evidence/launch-form-target-ctime-round-1-dispositions-2026-10-25.md`).
+
 ## N8: the class
 
 **Disposition:** recorded above as class 6, not class 1.
