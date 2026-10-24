@@ -189,6 +189,11 @@ sweep lessons added 2026-09-23; the raw-head digest lesson the same day.
   After a merge that adds a workspace package, run `npm ci` in every checkout
   that builds or serves from it: until the `node_modules/@syzygy/` link
   exists, the package does not resolve.
+- Two key-sorted JSON encoders are kept apart on purpose: `canonicalJson`
+  (PWB identities) drops `undefined` members and flattens any object;
+  `encodeCanonicalJson` (Polaris generation digests) refuses what it cannot
+  spell and sorts every key by code unit. Merging them changes digests;
+  `canonical-json-divergence.test.ts` pins both.
 - Three-Surface POC: `packages/three-surface-poc-core/` (one shared
   `PocModel`) and `apps/three-surface-poc/` read the same instance — never
   split surface truth stores. `build:poc` keeps `tsc -b --force`: ignored

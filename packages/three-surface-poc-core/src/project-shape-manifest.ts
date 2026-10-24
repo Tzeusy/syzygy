@@ -329,7 +329,7 @@ function canonicalize(value: unknown): unknown {
 }
 
 // Key-sorted JSON with `undefined` members dropped; the one canonical form
-// every PWB sha256 identity (manifest, resource limits, observation) uses.
+// every PWB sha256 identity (manifest, resource limits, observation) uses. Not the Polaris generation encoder: the two differ on purpose (docs/evidence/syzygy-bpyt-6-3/dc3-decode-and-canonical-json-2026-10-25.json).
 export function canonicalJson(value: unknown): string {
   return JSON.stringify(canonicalize(value));
 }
