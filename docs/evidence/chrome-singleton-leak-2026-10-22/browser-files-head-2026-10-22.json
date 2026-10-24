@@ -1,6 +1,12 @@
 {
  "tool": "browser_files_run.py",
  "treeCommit": "dccd484f4749b55f981f2e5211de4112ab7951de",
+ "sha256AtCommit": {
+  "apps/three-surface-poc/src/cdp-browser.ts": "c6c0ac6cc626b76155d870502c5549aa430d7cee35a058b0001d849586842033",
+  "apps/three-surface-poc/src/cdp-browser.test.ts": "a655dd3f2c20612700096c6951778ac8910ededb84fedf215efa61dbe31e265e",
+  "apps/three-surface-poc/src/cdp-browser.browser.test.ts": "2f659ee95d45b3b834cff94b893bd7f17eab8a1292316c89345b63a2de699a1e",
+  "apps/three-surface-poc/src/polaris-generation/draft-preview.browser.test.ts": "70102033956c5597667ab3fca4bc145fcb2f7787227b1cb82849878c8a73856f"
+ },
  "label": "head",
  "browserExecutable": "google-chrome",
  "browserVersion": "Google Chrome 120.0.6099.224",

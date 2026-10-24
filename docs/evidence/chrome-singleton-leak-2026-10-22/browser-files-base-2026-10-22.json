@@ -1,6 +1,12 @@
 {
  "tool": "browser_files_run.py",
  "treeCommit": "9a30237ed700e6579f3fcc1c6292e6c759861c3f",
+ "sha256AtCommit": {
+  "apps/three-surface-poc/src/cdp-browser.ts": "ce446ae668a0488279d0b9c9738c317002639647f09a2422203eaef83da2e3d0",
+  "apps/three-surface-poc/src/cdp-browser.test.ts": "d3c8dbea200cbd9ba8805c36f3fc674d4c141a889f2c6ecac7a75e98ea93a909",
+  "apps/three-surface-poc/src/cdp-browser.browser.test.ts": "45f95c40a52aef7098a338c648bd667c3494f4ae7ed2d15b632f89e606a8458f",
+  "apps/three-surface-poc/src/polaris-generation/draft-preview.browser.test.ts": "933ce88d78cd226755e9f19320b059b0087c00455a88334e020dbb5482879bc5"
+ },
  "label": "base",
  "project": "@syzygy/three-surface-poc-app",
  "attemptsPerFile": 3,
