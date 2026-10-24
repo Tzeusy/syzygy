@@ -7,6 +7,7 @@ import {
   readRecord, sessionDirectory, sessionsRoot, sessionsRootViolation, type Declared, type LaunchForm, type OpenedRun,
 } from './inventory.js';
 import { SYZYGY_LAUNCHED, launchedMarkerState } from './launched.js';
+import type { Outcome } from './outcome.js';
 import type { ReverifyOptions, ReverifyRefusal } from './reverify.js';
 import {
   PACKET_DIGEST_FILE, PACKET_FILE, buildFidelityPacket, buildStoredDesignPacket, isReviewKind, latestReviewSession, reviewLaunchRecordName, reviewPromptRecordName,
@@ -166,7 +167,7 @@ export interface SessionPromptReport {
   readonly disclosures: readonly string[];
 }
 
-export type SessionPromptResult = { readonly ok: true; readonly report: SessionPromptReport } | { readonly ok: false; readonly refusal: HandoverRefusal };
+export type SessionPromptResult = Outcome<SessionPromptReport, HandoverRefusal>;
 
 const PROMPT_DISCLOSURES = [
   RECORDS_WITHIN_REACH,
@@ -390,7 +391,7 @@ const START_DISCLOSURES = [
 /** `syzygy dossier session-prompt <run> all`: at the start of a run, make the inventory, fidelity-review and design-review sessions'
  * directories, write the inventory brief into the inventory one, and print a command per session, each pre-approving only that role's
  * tools; record each prompt, marked waiting. The review sessions wait for their packets with `syzygy dossier await`. */
-export async function startSessions(runDir: string, request: Omit<SessionPromptRequest, 'role' | 'kind'>, deps: HandoverDeps): Promise<{ readonly ok: true; readonly report: StartSessionsReport } | { readonly ok: false; readonly refusal: HandoverRefusal }> {
+export async function startSessions(runDir: string, request: Omit<SessionPromptRequest, 'role' | 'kind'>, deps: HandoverDeps): Promise<Outcome<StartSessionsReport, HandoverRefusal>> {
   const now = deps.now();
   const refuse = (stage: string, reason: string, reasons?: readonly string[], refusals?: readonly ReverifyRefusal[]) =>
     ({ ok: false as const, refusal: { command: 'session-prompt' as const, outcome: 'refused' as const, stage, reason, ...(reasons ? { reasons } : {}), ...(refusals ? { refusals } : {}), disclosures: START_DISCLOSURES } });
@@ -451,7 +452,7 @@ export async function startSessions(runDir: string, request: Omit<SessionPromptR
  * when one is waiting and `fresh` is not asked; otherwise hand over one session at once, as signed in v1.1. */
 export async function handOver(
   runDir: string, request: Omit<SessionPromptRequest, 'role'> & { readonly role: 'inventory' | 'review' | 'all'; readonly fresh?: boolean }, deps: HandoverDeps,
-): Promise<{ readonly ok: true; readonly report: SessionPromptReport | StartSessionsReport | DeliveryReport } | { readonly ok: false; readonly refusal: HandoverRefusal }> {
+): Promise<Outcome<SessionPromptReport | StartSessionsReport | DeliveryReport, HandoverRefusal>> {
   const { role, fresh, ...rest } = request;
   if (role === 'all') {
     if (rest.kind !== undefined || fresh === true) return { ok: false, refusal: { command: 'session-prompt', outcome: 'refused', stage: 'role', reason: '--kind and --fresh apply to a review session only', disclosures: START_DISCLOSURES } };
@@ -469,7 +470,7 @@ export async function handOver(
  * the provider statement must cover, as when it was started; a delivery takes no new tool, version or model. */
 async function deliverReview(
   run: string, kind: ReviewKind, request: Omit<SessionPromptRequest, 'role'>, deps: HandoverDeps,
-): Promise<{ readonly ok: true; readonly report: DeliveryReport } | { readonly ok: false; readonly refusal: HandoverRefusal }> {
+): Promise<Outcome<DeliveryReport, HandoverRefusal>> {
   const now = deps.now();
   const refuse = (stage: string, reason: string, reasons?: readonly string[], refusals?: readonly ReverifyRefusal[]) =>
     ({ ok: false as const, refusal: { command: 'session-prompt' as const, outcome: 'refused' as const, stage, reason, ...(reasons ? { reasons } : {}), ...(refusals ? { refusals } : {}), disclosures: DELIVERY_DISCLOSURES } });
@@ -525,7 +526,7 @@ export interface LaunchFormReport {
   readonly disclosures: readonly string[];
 }
 
-export type LaunchFormResult = { readonly ok: true; readonly report: LaunchFormReport } | { readonly ok: false; readonly refusal: HandoverRefusal };
+export type LaunchFormResult = Outcome<LaunchFormReport, HandoverRefusal>;
 
 const LAUNCH_DISCLOSURES = [
   RECORDS_WITHIN_REACH,

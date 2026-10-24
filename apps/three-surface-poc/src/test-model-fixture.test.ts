@@ -1,11 +1,21 @@
 import { execFileSync } from 'node:child_process';
-import { existsSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdirSync, mkdtempSync, readdirSync, readlinkSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
-import { describe, expect, it } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 import type { PocModel } from '@syzygy/three-surface-poc-core';
 
+import { FIXTURE_PREFIX } from './fixture-directories.js';
 import { fixtureRepoWithGit, frozenFixture, sharedFixtureModels } from './test-model-fixture.js';
+
+/** The inode of this process's PID namespace, read independently of the helper under test; `0` without /proc. */
+function ownNamespace(): string {
+  try {
+    return /\[(\d+)\]$/.exec(readlinkSync('/proc/self/ns/pid'))?.[1] ?? '0';
+  } catch {
+    return '0';
+  }
+}
 
 describe('fixture repositories (syzygy-jsyi)', () => {
   const git = (root: string, args: readonly string[]): string => execFileSync('git', ['-C', root, ...args], { encoding: 'utf8' }).trim();
@@ -78,4 +88,45 @@ describe('shared fixture models (syzygy-k66p)', () => {
     expect(existsSync(directory)).toBe(false);
     expect(() => shared.get('only')).toThrow('shared fixture models used before prepare');
   });
+});
+
+describe('fixture directory names (syzygy-bpyt.4.10)', () => {
+  const privateTmp: string[] = [];
+  afterEach(() => {
+    vi.unstubAllEnvs();
+    vi.resetModules();
+    for (const directory of privateTmp.splice(0)) rmSync(directory, { recursive: true, force: true });
+  });
+
+  /** A fresh copy of the helper module that sees only this test's own TMPDIR, so the
+   * directories it makes can be counted without another test file's. */
+  async function freshHelper(): Promise<{ readonly helper: typeof import('./test-model-fixture.js'); readonly tmp: string }> {
+    const tmp = mkdtempSync(join(tmpdir(), 'syzygy-fixture-names-'));
+    privateTmp.push(tmp);
+    vi.stubEnv('TMPDIR', tmp);
+    vi.resetModules();
+    return { helper: await import('./test-model-fixture.js'), tmp };
+  }
+
+  it('names the template and each copy with the pid and PID namespace of the process that made them', async () => {
+    const { helper, tmp } = await freshHelper();
+    const copies = [helper.fixtureRepoWithGit([]), helper.fixtureRepoWithGit([])];
+    const names = readdirSync(tmp).sort();
+    const owner = `p${process.pid}-n${ownNamespace()}`;
+    expect(names.filter((name) => new RegExp(`^${FIXTURE_PREFIX}template-${owner}-[A-Za-z0-9]{6}$`).test(name))).toHaveLength(1);
+    expect(names.filter((name) => new RegExp(`^${FIXTURE_PREFIX}${owner}-[A-Za-z0-9]{6}$`).test(name))).toHaveLength(2);
+    expect(names).toHaveLength(3);
+    expect(copies.map((copy) => copy.repoRoot.startsWith(join(tmp, `${FIXTURE_PREFIX}${owner}-`)))).toEqual([true, true]);
+  }, 30_000);
+
+  it('does not sweep when a file makes its template: the sweep is the global setup\'s, once per run', async () => {
+    const { helper, tmp } = await freshHelper();
+    const deadPid = 4_194_305; // above the largest pid Linux hands out, so never alive
+    expect(() => process.kill(deadPid, 0)).toThrow(expect.objectContaining({ code: 'ESRCH' }));
+    const leftover = `${FIXTURE_PREFIX}p${deadPid}-n${ownNamespace()}-AbCdEf`;
+    mkdirSync(join(tmp, leftover));
+    helper.fixtureRepoWithGit([]);
+    expect(existsSync(join(tmp, leftover))).toBe(true);
+    expect(readdirSync(tmp)).toHaveLength(3);
+  }, 30_000);
 });

@@ -31,6 +31,20 @@ const fifoHoldingTheMarker = (dir: string): void => {
   fs.writeSync(writer, TYPED);
   fs.closeSync(writer);
 };
+/** What the test sees of a run's marker without asking the reader: its lstat (mode, inode, size, change time), a link's target, and the
+ * bytes of a regular file the test can read, followed through a link. It opens no FIFO or device, so it drains no pipe. Times are left
+ * out except the change time: a read moves the access time, and nothing that leaves the marker as it was moves the change time. */
+const markerSnapshot = (dir: string): Readonly<Record<string, unknown>> | null => {
+  const stat = fs.lstatSync(marker(dir), { bigint: true, throwIfNoEntry: false });
+  if (stat === undefined) return null;
+  let bytes: string | null = null;
+  if (fs.statSync(marker(dir), { throwIfNoEntry: false })?.isFile()) {
+    try { bytes = fs.readFileSync(marker(dir)).toString('base64'); } catch { bytes = null; }
+  }
+  return {
+    mode: stat.mode, ino: stat.ino, size: stat.size, ctimeNs: stat.ctimeNs, link: stat.isSymbolicLink() ? fs.readlinkSync(marker(dir)) : null, bytes,
+  };
+};
 
 const PRESENT_BUT_NOT_THE_MARKER: readonly [string, (dir: string) => void][] = [
   ['an empty file', (dir) => fs.writeFileSync(marker(dir), '')],
@@ -117,10 +131,14 @@ describe('launch forms in a run whose marker is unreadable', () => {
   it.each(PRESENT_BUT_NOT_THE_MARKER)('count neither a declared form nor a syzygy-launched one: %s', (_name, plant) => {
     // Each form is asked of a run planted afresh, so a reader that drains a FIFO on one form cannot leave the next an empty pipe.
     const planted = (): string => { const dir = runDir(); plant(dir); return dir; };
-    // Each ask must leave its run as it found it, so a reader that alters an unreadable marker cannot pass here.
+    // Each ask must leave the marker as the test saw it before the ask, by a snapshot that asks no reader, and the run unreadable. So a
+    // reader that removes, replaces or truncates an unreadable marker cannot pass here, whatever it remembers. The snapshot reads no
+    // FIFO's bytes and cannot read an unreadable file's, so a reader that only drains a pipe still passes.
     const asked = (form: Readonly<Record<string, unknown>>): string | null => {
       const dir = planted();
+      const before = markerSnapshot(dir);
       const reason = launchFormRefusal(dir, form);
+      expect(markerSnapshot(dir)).toEqual(before);
       expect(launchedMarkerState(dir)).toBe('unreadable');
       return reason;
     };
