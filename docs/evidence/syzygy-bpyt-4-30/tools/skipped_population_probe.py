@@ -18,14 +18,18 @@ check without the mutated test running. No build is needed: collection runs noth
 - guard-narrowed: the fresh-clone guard made `skipIf(false)`, so that row is no longer skipped. The check must fail, its message
   naming that row as expected but not skipped.
 - import-fails: a tier file that throws while it loads. The check must fail with the thrown message.
+- collection-hangs: the check's own collection waits 600 s before it prints. The check must fail at its 45 s timeout (its row
+  takes at least 45 s), which kills the collection's process group, and no process of it may survive.
 - root-shim, root-shim-with-skip, with-skip: NODE_OPTIONS imports a shim that makes process.getuid() return 0 in every node process,
   the check's and the collection's. root-shim runs at BASE_COMMIT's bytes, where the row has no root skip: the check must fail,
-  naming that row as expected but not skipped, as that row itself fails under root. root-shim-with-skip runs with state-dir.system.test.ts as at
-  ROOT_SKIP_COMMIT: the check must pass. with-skip is the same file without the shim: the check must pass. The shim checks the
-  uid condition only; the processes are not root.
+  naming that row as expected but not skipped, as that row itself fails under root. root-shim-with-skip runs with
+  state-dir.system.test.ts as at ROOT_SKIP_COMMIT: the check must pass. with-skip is the same file without the shim: the check
+  must pass. The shim checks the uid condition only; the processes are not root.
 
-Every case must leave no process of its session running 3 s after vitest exits. Each case writes back the files it changed,
-however it ends short of a SIGKILL of the tool. The record stores every edit as old and new fragments, each found exactly once."""
+While a case runs, its descendants are found every 0.25 s by /proc parent links, which also reach the collection's own session.
+Every case must leave none of them, and no process of vitest's session, running 3 s after vitest exits. Each case writes back the
+files it changed, however it ends short of a SIGKILL of the tool. The record stores every edit as old and new fragments, each
+found exactly once."""
 import hashlib, json, os, signal, subprocess, sys, tempfile, time
 
 tree, base_commit, skip_commit, out_path = os.path.realpath(sys.argv[1]), sys.argv[2], sys.argv[3], sys.argv[4]
@@ -34,6 +38,7 @@ CHECK = f'{SRC}/skipped-population.system.test.ts'
 STATE_TEST = f'{SRC}/state-dir.system.test.ts'
 STATE_ROW = 'rejects an unreadable state-dir path as named invalid before writes or a listener'
 DEADLINE_S = 180
+MIN_CHECK_MS = {'collection-hangs': 45_000}
 git = lambda *a: subprocess.run(['git', *a], cwd=tree, capture_output=True, text=True, check=True).stdout
 status = lambda: git('status', '--porcelain', '--untracked-files=no')
 sha = lambda data: hashlib.sha256(data).hexdigest()
@@ -61,23 +66,37 @@ CASES = [
     ('import-fails', [edit('degradation.system.test.ts', "describe('RT6 — honest degradation over real disk state'",
                            "throw new Error('census mutant: this file fails to load');\ndescribe('RT6 — honest degradation over real disk state'")],
      [], False, {}, False, 'census mutant: this file fails to load'),
+    ('collection-hangs', [{'file': CHECK, 'old': "await vitest.close();\nconsole.log('CENSUS '",
+                           'new': "await new Promise((resolve) => setTimeout(resolve, 600_000));\nconsole.log('CENSUS '"}], [], False, {}, False,
+     'with no census; it is killed at 45000 ms'),
     ('root-shim', [], [], True, {}, False, 'expected but not skipped: ["src/state-dir.system.test.ts > RTF-1'),
     ('root-shim-with-skip', [], [STATE_TEST], True, {}, True, None),
     ('with-skip', [], [STATE_TEST], False, {}, True, None),
 ]
 
+def stat(pid):
+    try: text = open(f'/proc/{pid}/stat').read()
+    except OSError: return None
+    f = text[text.rindex(')') + 2:].split()
+    return {'ppid': int(f[1]), 'sid': int(f[3]), 'start': int(f[19])}
 def procs():
     found = {}
     for p in os.listdir('/proc'):
-        if not p.isdigit(): continue
-        try: text = open(f'/proc/{p}/stat').read()
-        except OSError: continue
-        f = text[text.rindex(')') + 2:].split()
-        found[int(p)] = int(f[3])
+        if p.isdigit() and (s := stat(int(p))) is not None: found[int(p)] = s
     return found
 def cmdline(pid):
     try: return open(f'/proc/{pid}/cmdline', 'rb').read().replace(b'\0', b' ').decode(errors='replace').strip()[:120]
     except OSError: return None
+def walk(root, seen):
+    """Adds every current descendant of root to seen, by /proc parent links."""
+    ps = procs()
+    children = {}
+    for pid, s in ps.items(): children.setdefault(s['ppid'], []).append(pid)
+    todo = [root]
+    while todo:
+        for child in children.get(todo.pop(), []):
+            if child not in seen: seen[child] = {**ps[child], 'cmdline': cmdline(child)}
+            todo.append(child)
 
 def vitest(name, env_extra):
     with tempfile.TemporaryDirectory(prefix='laneb-430-') as tmp:
@@ -87,20 +106,26 @@ def vitest(name, env_extra):
         env = {**{k: v for k, v in os.environ.items() if k != 'SYZYGY_FRESH_CLONE'}, 'TMPDIR': tmp, **env_extra}
         t0 = time.monotonic()
         proc = subprocess.Popen(command, cwd=tree, start_new_session=True, env=env, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-        try: proc.wait(timeout=DEADLINE_S); killed = False
-        except subprocess.TimeoutExpired:
-            os.killpg(proc.pid, signal.SIGKILL); proc.wait(); killed = True
+        seen, killed = {}, False
+        while proc.poll() is None:
+            if time.monotonic() - t0 > DEADLINE_S:
+                os.killpg(proc.pid, signal.SIGKILL); killed = True; proc.wait(); break
+            walk(proc.pid, seen)
+            time.sleep(0.25)
         wall = round(time.monotonic() - t0, 1)
         time.sleep(3)
-        survivors = {str(pid): cmdline(pid) for pid, sid in procs().items() if sid == proc.pid}
+        survivors = {str(pid): cmdline(pid) for pid, s in procs().items()
+                     if (pid in seen and seen[pid]['start'] == s['start']) or s['sid'] == proc.pid}
         for pid in survivors:
             try: os.kill(int(pid), signal.SIGKILL)
             except ProcessLookupError: pass
         data = json.load(open(report)) if os.path.exists(report) else {}
-    tests = [{'name': a['fullName'], 'status': a['status'], 'failure': (a.get('failureMessages') or [''])[0][:1500] or None}
+    tests = [{'name': a['fullName'], 'status': a['status'], 'durationMs': None if a.get('duration') is None else round(a['duration']),
+              'failure': (a.get('failureMessages') or [''])[0][:1500] or None}
              for s in data.get('testResults', []) for a in s.get('assertionResults', [])]
     return {'case': name, 'command': ' '.join(command).replace(tmp, '<tmp>'), 'exitCode': proc.returncode, 'wallSeconds': wall,
-            'killedAtDeadline': killed, 'survivors': survivors, 'tests': tests}
+            'killedAtDeadline': killed, 'processesSeen': len(seen),
+            'sessionsSeen': len({s['sid'] for s in seen.values()}), 'survivors': survivors, 'tests': tests}
 
 def with_files(contents, body):
     """Writes {path: bytes} into TREE, runs body, writes the original bytes back."""
@@ -128,7 +153,7 @@ with tempfile.TemporaryDirectory(prefix='laneb-430-shim-') as shim_dir:
         clean = not run['killedAtDeadline'] and not run['survivors']
         if must_pass: passes = clean and run['exitCode'] == 0 and row is not None and row['status'] == 'passed'
         else: passes = (clean and run['exitCode'] not in (0, None) and row is not None and row['status'] == 'failed'
-                        and needle in (row['failure'] or ''))
+                        and needle in (row['failure'] or '') and (row['durationMs'] or 0) >= MIN_CHECK_MS.get(name, 0))
         run.update({'edits': edits, 'filesFrom': {path: {'commit': skip, 'sha256': sha(contents[path])} for path in swapped},
                     'env': {**env_extra, **({'NODE_OPTIONS': '--import=file://<tmp>/getuid-zero.mjs'} if shimmed else {})},
                     'mustPass': must_pass, 'failureMustCarry': needle, 'checkRow': row, 'passes': passes})
