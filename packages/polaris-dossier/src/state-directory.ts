@@ -35,10 +35,11 @@ export const RUN_ID = /^run-[0-9a-f]{32}$/;
 
 type PathIntent =
   | { readonly resolved: true; readonly realPath: string }
-  | { readonly resolved: false; readonly detail: string };
+  | { readonly resolved: false; readonly reason: 'symlink-loop' | 'path-unreadable'; readonly detail: string };
 
 /** Resolve symbolic links component by component without requiring the target to exist, so a
- * dangling link is judged by where it would land. Loops and unreadable components are refusals. */
+ * dangling link is judged by where it would land. Loops and unreadable components are refusals.
+ * The one copy: the daemon judges its state directory with it too (RTF-1). */
 export function resolvePathIntent(absolutePath: string): PathIntent {
   let candidate = path.resolve(absolutePath);
   const visited = new Set<string>();
@@ -55,16 +56,16 @@ export function resolvePathIntent(absolutePath: string): PathIntent {
       } catch (cause) {
         const code = (cause as NodeJS.ErrnoException).code ?? 'unknown-error';
         if (code === 'ENOENT') return { resolved: true, realPath: candidate };
-        return { resolved: false, detail: `filesystem inspection failed at ${current} (${code})` };
+        return { resolved: false, reason: 'path-unreadable', detail: `filesystem inspection failed at ${current} (${code})` };
       }
       if (!stats.isSymbolicLink()) continue;
-      if (visited.has(current)) return { resolved: false, detail: `symbolic link cycle revisits ${current}` };
+      if (visited.has(current)) return { resolved: false, reason: 'symlink-loop', detail: `symbolic link cycle revisits ${current}` };
       visited.add(current);
       let target: string;
       try {
         target = fs.readlinkSync(current);
       } catch (cause) {
-        return { resolved: false, detail: `symbolic link target could not be read at ${current} (${(cause as NodeJS.ErrnoException).code ?? 'unknown-error'})` };
+        return { resolved: false, reason: 'path-unreadable', detail: `symbolic link target could not be read at ${current} (${(cause as NodeJS.ErrnoException).code ?? 'unknown-error'})` };
       }
       candidate = path.resolve(path.isAbsolute(target) ? target : path.resolve(path.dirname(current), target),
         ...components.slice(index + 1));

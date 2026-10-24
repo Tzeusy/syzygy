@@ -8,6 +8,16 @@
       "types": "./dist/index.d.ts",
       "import": "./dist/index.js",
       "default": "./dist/index.js"
+    },
+    "./argv": {
+      "types": "./dist/argv.d.ts",
+      "import": "./dist/argv.js",
+      "default": "./dist/argv.js"
+    },
+    "./state-directory": {
+      "types": "./dist/state-directory.d.ts",
+      "import": "./dist/state-directory.js",
+      "default": "./dist/state-directory.js"
     }
   },
   "dependencies": {

@@ -9,6 +9,7 @@ import { RECORDS_WITHIN_REACH, type GateSources } from './gate-sources.js';
 import { GitObjectReadRefusal, openPinnedObjectReader, type PinnedObjectReader, type PinnedObjectReaderOptions, type TreeEntry } from './git-object-reader.js';
 import { INVENTORY_INFERRED, authoringSessionIds, errno, inventoryOfRecord, logStep, openRun, readRecord, sessionsRoot, type OpenedRun } from './inventory.js';
 import { buildDesignPacket, designBlocking, readLatestSite, validateDesignVerdict, type DesignPacketBuild } from './design-review.js';
+import type { Outcome } from './outcome.js';
 import type { ReverifyRefusal } from './reverify.js';
 import { recheckSessionStatement, type SessionStatementOfRecord } from './session-statement.js';
 import { CLASS_NOT_CONSENTED, unconsentedClass } from './class-gate.js';
@@ -297,10 +298,11 @@ export function buildStoredDesignPacket(opened: Extract<OpenedRun, { ok: true }>
   return built.ok ? { ...built, site: site.number } : built;
 }
 
+type ReviewPacketRefusal = { readonly command: 'review-packet'; readonly outcome: 'refused'; readonly stage: string; readonly reason: string; readonly reasons?: readonly string[]; readonly refusals?: readonly ReverifyRefusal[]; readonly disclosures: readonly string[] };
+/** One outcome per packet kind: two `ok: true` variants, as before Outcome; one variant with a union report is wider (syzygy-bpyt.8.32). */
 export type ReviewPacketResult =
-  | { readonly ok: true; readonly report: { readonly command: 'review-packet'; readonly outcome: 'built'; readonly run: string; readonly kind: 'fidelity'; readonly packetSha256: string; readonly directory: string; readonly draftRevision: number; readonly inventoryRevision: number; readonly spans: { readonly admitted: number; readonly excluded: number }; readonly label: 'Observed'; readonly disclosures: readonly string[] } }
-  | { readonly ok: true; readonly report: { readonly command: 'review-packet'; readonly outcome: 'built'; readonly run: string; readonly kind: 'design'; readonly packetSha256: string; readonly directory: string; readonly site: number; readonly pages: number; readonly label: 'Observed'; readonly disclosures: readonly string[] } }
-  | { readonly ok: false; readonly refusal: { readonly command: 'review-packet'; readonly outcome: 'refused'; readonly stage: string; readonly reason: string; readonly reasons?: readonly string[]; readonly refusals?: readonly ReverifyRefusal[]; readonly disclosures: readonly string[] } };
+  | Outcome<{ readonly command: 'review-packet'; readonly outcome: 'built'; readonly run: string; readonly kind: 'fidelity'; readonly packetSha256: string; readonly directory: string; readonly draftRevision: number; readonly inventoryRevision: number; readonly spans: { readonly admitted: number; readonly excluded: number }; readonly label: 'Observed'; readonly disclosures: readonly string[] }, ReviewPacketRefusal>
+  | Outcome<{ readonly command: 'review-packet'; readonly outcome: 'built'; readonly run: string; readonly kind: 'design'; readonly packetSha256: string; readonly directory: string; readonly site: number; readonly pages: number; readonly label: 'Observed'; readonly disclosures: readonly string[] }, ReviewPacketRefusal>;
 
 /** `syzygy dossier review-packet <run> --kind fidelity|design`. */
 export async function reviewPacket(runDir: string, request: { readonly kind: string }, deps: ReviewDeps): Promise<ReviewPacketResult> {
@@ -364,9 +366,10 @@ export interface ReviewCheckRecord {
   readonly label: 'Inferred';
 }
 
-export type ReviewCheckResult =
-  | { readonly ok: true; readonly report: ReviewCheckRecord & { readonly command: 'review-check'; readonly run: string; readonly checkFile: string; readonly observed: ReviewObserved; readonly inferred: ReviewInferred; readonly disclosures: readonly string[] } }
-  | { readonly ok: false; readonly refusal: { readonly command: 'review-check'; readonly outcome: 'refused'; readonly stage: string; readonly reason: string; readonly reasons?: readonly string[]; readonly refusals?: readonly ReverifyRefusal[]; readonly disclosures: readonly string[] } };
+export type ReviewCheckResult = Outcome<
+  ReviewCheckRecord & { readonly command: 'review-check'; readonly run: string; readonly checkFile: string; readonly observed: ReviewObserved; readonly inferred: ReviewInferred; readonly disclosures: readonly string[] },
+  { readonly command: 'review-check'; readonly outcome: 'refused'; readonly stage: string; readonly reason: string; readonly reasons?: readonly string[]; readonly refusals?: readonly ReverifyRefusal[]; readonly disclosures: readonly string[] }
+>;
 
 /** What this step observed: the packet Syzygy rebuilt, its digest and whether the verdict names it. */
 export interface ReviewObserved { readonly packetSha256: string; readonly verdictNamesPacket: boolean; readonly label: 'Observed' }
