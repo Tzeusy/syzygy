@@ -480,6 +480,41 @@ coverage = {'filesWithAStaticSite': len(static_files), 'sitesInThem': static['si
             'neverSeenByTree': dict(sorted(collections.Counter(f.split('/')[0] for f in uncovered).items())),
             'neverSeen': {f: sorted({s['literal'] for s in static['files'][f] if s['literal']}) + (['(a prefix passed as a variable)'] if any(s['literal'] is None for s in static['files'][f]) else []) for f in uncovered}}
 
+by_rule_classes = lambda rule: [r['class'] for r in table if r['rule'] == rule]
+fresh_killed = {fl: sweep_effect[fl] for fl in fresh_labels}
+finding = [
+    '[Observed] A SIGKILL of the full run leaves %s entries in the private temp directory (%s MB) at %s s into the run, in %d classes in all; %s Chrome processes survive the kill of the process group, found by the --user-data-dir marker and stopped by pid.'
+    % (' / '.join(str(len(records[l]['listingAtEnd'])) for l in kill_labels), ' / '.join(str(round(sum(e['bytes'] for e in records[l]['listingAtEnd']) / 1e6, 1)) for l in kill_labels),
+       ' / '.join(str(records[l]['killAfterSeconds']) for l in kill_labels), len(left_after_kill), ' / '.join(str(records[l]['processesCarryingTheMarker']['count']) for l in kill_labels)),
+    '[Observed] One fresh full run started in each kill\'s leftovers removed %s of %s entries, all of them of the two classes PR 509 sweeps (%s); the other %s stayed, in %s classes.'
+    % (' / '.join(str(v['removedByTheFreshRun']) for v in fresh_killed.values()), ' / '.join(str(v['seededEntries']) for v in fresh_killed.values()),
+       ', '.join(by_rule_classes('R1-fixture-sweep-landed')), ' / '.join(str(v['stillThere']) for v in fresh_killed.values()),
+       len({c for v in fresh_killed.values() for c in v['stillThereByClass']})),
+    '[Observed] The seven runs together put %d classes of entries directly in the temp directory (%d by mkdtemp): %d by test files, %d by non-test modules, %d by cdp-browser.ts (the browser profile), %d by Chrome, vitest and npm themselves, and %d lock file made by restart.ts.'
+    % (len(table), sum(1 for r in table if r['family'] == 'mkdtemp'), len(by_rule_classes('R9-test-file')), len(by_rule_classes('R6-non-test-module')), len(by_rule_classes('R3-browser-profile')),
+       len(by_rule_classes('R2-chrome-singleton')) + len(by_rule_classes('R4-vitest-project-directory')) + len(by_rule_classes('R5-npm-compile-cache')), len(by_rule_classes('R7-stale-lock-by-design'))),
+    '[Observed] The clean run itself leaves %s entries (%s); this tree has no PR 515, so a clean run leaves Chrome singleton directories (%s in the fresh runs).'
+    % (len(records[exposure_label]['listingAtEnd']), ', '.join(sorted(classify(e['name'], indexes[exposure_label])[1] for e in records[exposure_label]['listingAtEnd'])),
+       ' / '.join(str(row['leftByTheFreshRunItself'].get(fl, {}).get('entries', 0)) for fl in fresh_labels for row in table if row['family'] == 'chrome-singleton')),
+    '[Inferred] Which classes a given SIGKILL catches depends on what is alive at that moment. The expected number of directories of a class present at a random moment of the clean run is in exposureInTheCleanRun; the prefixes the bead observation names that none of these three kills left (%s) have an upper bound of %s or less, so a kill misses them most of the time and catches them sometimes.'
+    % (', '.join(sorted(k for k, v in named.items() if v.get('leftInAnyOfTheKills') == 'none of the three')),
+       max(v['exposureInTheCleanRun']['expectedNamesPresentAtARandomMoment']['upperBound'] for v in named.values() if v.get('leftInAnyOfTheKills') == 'none of the three')),
+]
+FOLLOW_UPS = [
+    {'id': 'F1', 'title': 'Name the browser profile for its owner and sweep it with its Chrome directory and its orphan processes', 'size': 'small in code (one creating file, cdp-browser.ts), not trivially safe',
+     'covers': by_rule_classes('R3-browser-profile') + by_rule_classes('R2-chrome-singleton'),
+     'what': 'Extend the PR 509 pattern to the syzygy-poc-browser- profile: the owner pid and namespace in its name; a sweep that removes it only when the owner is dead in this namespace, reads the profile\'s SingletonSocket link to remove the Chrome singleton directory under PR 515\'s guard, and first stops processes whose arguments carry --user-data-dir=<that profile>/ (SIGTERM, then SIGKILL after a wait: a stopped process ignores SIGTERM, seen once in an earlier set of these runs at a discarded commit, not retained).',
+     'whyNotTriviallySafe': 'It deletes recursively and signals processes by argument match; it needs an independent review and shares cdp-browser.ts with PR 515 (open).',
+     'measure': 'census_run.py kill run then --seed-tmp-from fresh run: classes syzygy-poc-browser- and chrome-singleton-directory must read stillThere 0 and the marker count 0.'},
+    {'id': 'F2', 'title': 'Add a census acceptance criterion to syzygy-bpyt.4.4 (test-kit temp root)', 'size': 'a comment on an existing bead, no new bead',
+     'covers': by_rule_classes('R9-test-file') + by_rule_classes('R6-non-test-module'),
+     'what': 'After a SIGKILLed full run and one fresh run in the same private TMPDIR, no entry remains except the classes of rules R2, R4, R5 and R7. A mechanism that reaches non-test modules too: the worker setup file assigns process.env.TMPDIR to an owner-pid root, because os.tmpdir() reads TMPDIR at each call. Budget: Chrome\'s socket path limits TMPDIR to 65 bytes (PR 515); the root adds about 40.',
+     'measure': 'the same runs: assemble_census.py leftBySIGKILL lists only R2, R4, R5, R7 classes after the fresh run.'},
+    {'id': 'F3', 'title': 'Option, not proposed as small: a run wrapper that gives the whole vitest run an owner-pid TMPDIR', 'size': 'medium; changes how npm test is run (root manifest)',
+     'covers': by_rule_classes('R2-chrome-singleton') + by_rule_classes('R4-vitest-project-directory') + by_rule_classes('R5-npm-compile-cache') + by_rule_classes('R7-stale-lock-by-design'),
+     'what': 'Children inherit TMPDIR, so vitest\'s project directories, npm\'s compile cache, Chrome\'s singleton directories and the restart lock would all land in one root swept by one rule. Costs: npm\'s compile cache stops being shared between runs; the 65-byte Chrome budget; the restart lock\'s by-design stale-lock behaviour is then moot only for killed runs. An owner or coordinator choice.'},
+    {'id': 'none', 'title': 'No sweep is proposed for the restart lock', 'what': 'restart.ts says "A stale lock requires operator inspection; the script never guesses that it is safe to remove one." The lock is named for the uid and the port, not a pid.'},
+]
 record = {
     'subject': {'what': 'every entry a full vitest run creates directly in its temp directory, and which of them a SIGKILLed run, and one fresh run after it, leave behind',
                 'treeCommit': COMMIT, 'command': 'npx vitest run (the root configuration: every project, maxWorkers 50%)',
@@ -509,6 +544,8 @@ record = {
     'exposureRanking': {'run': exposure_label, 'meaning': 'expected number of directories of the class present at a uniformly random moment of the clean run (sampler interval %s s); the upper bound counts every name once for a whole sampler interval more than it was seen' % exposure_interval,
                         'top': [{'class': r['class'], 'upperBound': r['exposureInTheCleanRun']['expectedNamesPresentAtARandomMoment']['upperBound'], 'lowerBound': r['exposureInTheCleanRun']['expectedNamesPresentAtARandomMoment']['lowerBound']}
                                 for r in sorted((r for r in table if r['exposureInTheCleanRun']), key=lambda r: -r['exposureInTheCleanRun']['expectedNamesPresentAtARandomMoment']['upperBound'])[:15]]},
+    'finding': finding,
+    'followUps': FOLLOW_UPS,
     'limits': [
         'The tracer wraps mkdtemp, mkdir, writeFile and symlink only (sync, callback and promise forms). A name made by open/openSync, copyFile, rename, link, cp, a stream, or by a process that is not Node has no trace line: it is classed by shape, or by the static stem and labelled inferred.',
         'The sampler lists the temp directory every %s s. A directory that lives less than that can be missed; the exposure bounds say so.' % exposure_interval,
