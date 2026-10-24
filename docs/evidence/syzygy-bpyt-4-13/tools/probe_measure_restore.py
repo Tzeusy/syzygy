@@ -8,7 +8,8 @@ Runs each probe against two versions of the script: OLD_COMMIT's, copied to a te
 files must be clean. Each probe passes only when, 3 s after the script exits, `git status --porcelain --untracked-files=no` is empty
 and no descendant survives. A descendant is any process found by walking /proc parent links from the script's PID while it ran
 (the last walk before the signal, and every walk after it until the script exited), or any process in one of their process groups;
-a process counts as surviving only if its PID still has the start time recorded. The script runs in a session of its own.
+a process counts as surviving only if its PID still has the start time recorded. The script runs in a session of its own, with
+SIGINT's disposition reset to the default: a shell's background job inherits SIGINT ignored, and Python then keeps it ignored.
 
 - P0: a profiled run of package-reader.test.ts to the end (TREE's script only: the control that the fix keeps the normal path).
   It must also exit 0 and write a record of 299 tests with a profile row for each.
@@ -59,7 +60,8 @@ def probe(version, script, pid_name, args, signal_number=None):
     with tempfile.TemporaryDirectory(prefix='laneb-413-probe-') as tmp:
         out = os.path.join(tmp, 'measure-out.json')
         command = ['python3', '-I', script, '.', '--project', PROJECT, '--mode', 'alone', '--runs', '1', '--out', out, '--profile', *args]
-        proc = subprocess.Popen(command, cwd=tree, start_new_session=True, env={**os.environ, 'TMPDIR': tmp}, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
+        proc = subprocess.Popen(command, cwd=tree, start_new_session=True, env={**os.environ, 'TMPDIR': tmp}, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True,
+                                preexec_fn=lambda: signal.signal(signal.SIGINT, signal.SIG_DFL))
         seen, t0, sent_at, instrumented = {}, time.monotonic(), None, None
         if signal_number is not None:
             while time.monotonic() - t0 < 90 and proc.poll() is None and KIT not in status(): time.sleep(0.2)
