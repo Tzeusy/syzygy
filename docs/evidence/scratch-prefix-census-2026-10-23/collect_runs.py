@@ -3,10 +3,12 @@
 
 Usage: collect_runs.py <destination> <label>=<run-record.json> [<label>=<run-record.json> ...]
 
-For each label writes <destination>/<label>.json (the run record), <destination>/<label>.trace.jsonl (the tracer's log) and
+For each label writes <destination>/<label>.json (the run record), <destination>/<label>.trace.jsonl.gz (the tracer's log, gzip with
+a zero timestamp so the bytes are reproducible; the digest in the run record is of the uncompressed log) and
 <destination>/<label>.samples.json (the sampler's record), after checking that the trace's sha256 and line count equal the ones in
 the run record. It refuses a label it has already written. It reads and copies; nothing is removed.
 """
+import gzip
 import hashlib
 import json
 import pathlib
@@ -24,8 +26,10 @@ for pair in sys.argv[2:]:
     digest = hashlib.sha256(trace.read_bytes()).hexdigest()
     lines = len(trace.read_text().splitlines())
     assert digest == record['trace']['sha256'] and lines == record['trace']['lines'], (label, 'the trace is not the one the record names')
-    targets = [destination / f'{label}.json', destination / f'{label}.trace.jsonl', destination / f'{label}.samples.json']
+    targets = [destination / f'{label}.json', destination / f'{label}.trace.jsonl.gz', destination / f'{label}.samples.json']
     assert not any(t.exists() for t in targets), (label, 'already collected')
-    for source, target in zip((record_file, trace, samples), targets):
-        shutil.copyfile(source, target)
+    shutil.copyfile(record_file, targets[0])
+    with open(targets[1], 'wb') as raw, gzip.GzipFile(filename='', mode='wb', fileobj=raw, mtime=0, compresslevel=9) as packed:
+        packed.write(trace.read_bytes())
+    shutil.copyfile(samples, targets[2])
     print(label, digest, lines)
