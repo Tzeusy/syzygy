@@ -77,8 +77,9 @@ RESIDUALS = [
     "dossier-evaluation's INDEX and DEEP fixtures are ASCII, so a module that counted string length instead of UTF-8 bytes would pass every byte assertion there, at the base (literals) and at the head (counts) alike.",
     'A FIFO capture with the lstat refusal removed blocks in a synchronous open at both sides: the row fails by the test timeout or the run is killed, never by a fast refusal (fifo-blocking-open).',
     'Explicit timeouts are harness bounds, not assertions, and stay; most carry no one-line reason (unreasonedTimeouts).',
-    "Under parallel load the full suite was not green on this host at the base or the head: every failure was a 5 s default timeout or a 10 s hook timeout in a file this change does not touch (fullSuite).",
+    'Two concurrent full-suite runs were not green on this host at the base or the head alike (attempts 1 to 3): every failure was a 5 s default timeout or a 10 s hook timeout in a file this change does not touch. One run at a time, twice in sequence, was green (attempt 4).',
 ]
+row_delta = subprocess.run([sys.executable, '-I', os.path.join(here, 'tools', 'row_delta.py'), tree, base, ev], capture_output=True, text=True, check=True).stdout.splitlines()
 suites = []
 for attempt in sorted(glob.glob(os.path.join(here, 'full-suite', 'attempt-*.json'))):
     suites.append(load(os.path.relpath(attempt, here)))
@@ -102,7 +103,8 @@ record = {
     'sites': SITES, 'controls': controls, 'residuals': RESIDUALS,
     'mutantTotals': {'cases': len(cases), 'sides': sum(len(c['sides']) for c in cases.values()), 'asExpected': sum(s['asExpected'] for c in cases.values() for s in c['sides'])},
     'daemonEntry': {'newRow': {i: row_failed(de_head, i) for i in de_ids}, 'oldTextPin': {i: row_failed(de_base, i) for i in de_ids}},
+    'rowDelta': {'tool': 'row_delta.py', 'base': base, 'head': ev, 'lines': row_delta},
     'cpuMargins': cpu['worst'], 'fullSuite': suites,
 }
 open(os.path.join(here, 'bounds-and-pins.json'), 'w', encoding='utf8').write(json.dumps(record, indent=1, ensure_ascii=False) + '\n')
-print(json.dumps({'testFiles': len(tests), 'productFilesChanged': record['productFilesChanged'], 'mutantTotals': record['mutantTotals'], 'ac1': record['ac1Sweep']['elapsedFirstMethod']}))
+print(json.dumps({'rowDelta': row_delta[-1], 'testFiles': len(tests), 'productFilesChanged': record['productFilesChanged'], 'mutantTotals': record['mutantTotals'], 'ac1': record['ac1Sweep']['elapsedFirstMethod']}))
