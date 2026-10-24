@@ -7,6 +7,7 @@ import { dirname, join } from 'node:path';
 
 import { BUTLERS_POC_SEEDS, buildPocModel, type PocEvaluationEvidence, type PocModel, type ProjectShapeModelInput, type WalkthroughJudgmentInputs } from '@syzygy/three-surface-poc-core';
 
+import { ownedCopyPrefix, ownedTemplatePrefix } from './fixture-directories.js';
 import { pwbReadinessTraversal } from './walkthrough-inputs.js';
 
 function git(root: string, args: readonly string[]): string {
@@ -42,7 +43,7 @@ interface FixtureRepo {
  */
 export function fixtureRepoWithGit(cleanups: string[]): FixtureRepo {
   template ??= committedFixtureRepo();
-  const root = mkdtempSync(join(tmpdir(), 'syzygy-poc-surface-fixture-'));
+  const root = mkdtempSync(join(tmpdir(), ownedCopyPrefix()));
   cleanups.push(root);
   cpSync(template.repoRoot, root, { recursive: true });
   return { repoRoot: root, revision: template.revision };
@@ -64,7 +65,7 @@ function removeAtEndOfFile(root: string): void {
 }
 
 function committedFixtureRepo(): FixtureRepo {
-  const root = mkdtempSync(join(tmpdir(), 'syzygy-poc-surface-fixture-template-'));
+  const root = mkdtempSync(join(tmpdir(), ownedTemplatePrefix()));
   removeAtEndOfFile(root);
   const files: Readonly<Record<string, string>> = {
     'docs/superpowers/specs/2026-08-24-whatsapp-identity-reconciliation-design.md':
