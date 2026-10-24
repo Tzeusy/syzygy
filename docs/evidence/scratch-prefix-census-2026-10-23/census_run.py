@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Run a test command in a private TMPDIR and record what it leaves there, after a clean exit or after a SIGKILL.
 
-Usage: census_run.py <worktree> <commit> <out.json> <private-directory> <mode> <kill-after-seconds> -- <command> [<args>...]
+Usage: census_run.py [--seed-tmp-from <earlier-private-directory>] <worktree> <commit> <out.json> <private-directory> <mode> <kill-after-seconds> -- <command> [<args>...]
 
 <mode> is `clean` (wait for the command to exit) or `kill` (SIGKILL the command's process group <kill-after-seconds> after it
 starts, unless it finished first, which the record says). The command runs from <worktree> as the leader of a new process group, with
@@ -14,6 +14,11 @@ After a kill the run is watched for 80 s. Then the processes still alive are cou
 process of this user whose arguments carry the exact `--user-data-dir=<private-directory>/tmp/` marker (a killed browser's zygote and
 renderers have no readable environment, so an environment test cannot see them). Those are stopped with SIGTERM by pid, repeated up to
 three times, and the directory is listed again. Nothing is matched by name, and nothing outside <private-directory> is touched.
+
+--seed-tmp-from starts the run in the leftovers of an earlier run: every entry directly in <earlier-private-directory>/tmp is renamed
+into this run's temp directory before the command starts (same file system, nothing copied, so sockets, modes and modification times
+are kept), and the entries are listed in the record. It refuses an earlier directory that is not a sibling of <private-directory> or
+whose marker still matches a live process. This is how "a killed run, then one fresh run" is measured.
 
 <commit> must be the full 40-hex HEAD of <worktree> and the tracked implementation files must be unmodified. <private-directory> must
 not exist or must be empty, must be a short absolute path (at most 30 bytes, so a Chrome socket path fits), and may not be the system
@@ -32,6 +37,9 @@ import time
 
 HERE = pathlib.Path(__file__).resolve().parent
 argv = sys.argv[1:]
+SEED = None
+if argv[0] == '--seed-tmp-from':
+    SEED, argv = pathlib.Path(argv[1]).resolve(), argv[2:]
 cut = argv.index('--')
 WT, COMMIT, OUT, PRIVATE, MODE, KILL_AFTER = pathlib.Path(argv[0]).resolve(), argv[1], pathlib.Path(argv[2]).resolve(), pathlib.Path(argv[3]), argv[4], float(argv[5])
 COMMAND = argv[cut + 1:]
@@ -112,12 +120,25 @@ def orphans() -> list:
     return [p for p in processes() if MARKER in p['args']]
 
 
+def seed_entries() -> list:
+    """Rename every entry of the earlier run's temp directory into this one; return the names."""
+    earlier = SEED / 'tmp'
+    assert SEED.parent == PRIVATE.parent and earlier.is_dir(), f'refusing {SEED}: it is not a sibling private directory with a tmp directory'
+    assert not any(f'--user-data-dir={earlier}/' in p['args'] for p in processes()), f'refusing {SEED}: a live process still carries its marker'
+    names = sorted(os.listdir(earlier))
+    for name in names:
+        os.rename(earlier / name, TMP / name)
+    return names
+
+
 env = {**os.environ, 'TMPDIR': str(TMP), 'SCRATCH_TRACE_LOG': str(TRACE), 'SCRATCH_TRACE_ROOT': str(WT),
        'NODE_OPTIONS': (os.environ.get('NODE_OPTIONS', '') + f' --require {HERE / "scratch_trace.cjs"}').strip()}
 record: dict = {'tool': 'census_run.py', 'treeCommit': COMMIT, 'mode': MODE, 'command': COMMAND, 'privateDirectory': str(PRIVATE), 'tmpdir': str(TMP),
                 'sha256': {name: hashlib.sha256((HERE / name).read_bytes()).hexdigest() for name in ('census_run.py', 'scratch_trace.cjs', 'tmp_sampler.py')},
                 'loadAverageAtStart': os.getloadavg(), 'killAfterSeconds': KILL_AFTER if MODE == 'kill' else None}
-sampler = subprocess.Popen([sys.executable, '-I', str(HERE / 'tmp_sampler.py'), str(TMP), str(SAMPLES), '0.5', str(STOP)], start_new_session=True)
+if SEED:
+    record['seededFrom'] = {'privateDirectory': str(SEED), 'entriesMovedIn': seed_entries()}
+sampler =subprocess.Popen([sys.executable, '-I', str(HERE / 'tmp_sampler.py'), str(TMP), str(SAMPLES), '0.5', str(STOP)], start_new_session=True)
 started = time.time()
 log = open(LOG, 'w')
 leader = subprocess.Popen(COMMAND, cwd=WT, env=env, stdout=log, stderr=subprocess.STDOUT, start_new_session=True)
