@@ -2,7 +2,7 @@ import { createHash } from 'node:crypto';
 import { readFile as nodeReadFile, readdir as nodeReaddir } from 'node:fs/promises';
 import path from 'node:path';
 import { AdmissionRecordError, COMMIT_OBJECT_ID, type AdmissionRecord, type AdmissionRecordReader } from './admission-record.js';
-import { inForceRecords, notInForceRecords, type NotInForce } from './consent-ports.js';
+import { inForceRecords, notInForceRecords, type NotInForce } from './in-force.js';
 import { CITATION_ALLOWLIST } from './citation-allowlist.js';
 import { SLOT, recorderTemplate, templateFields, type RecorderTemplate } from './recorder-template.js';
 
