@@ -26,7 +26,7 @@
 // and bytes; the observer for index depth; later extraction/rendering for
 // parse time and rendered bytes), so a breach is always the same shape.
 
-import { sha256 } from '@syzygy/support';
+import { decodeUtf8, sha256 } from '@syzygy/support';
 
 import { type GitTreeEntry, type GitTreeIndex, normalizeRepositoryPath, posixBasename } from './git-tree.js';
 import { type MalformedCodeContext, maskMarkdownCodeContexts } from './markdown-code-context.js';
@@ -272,16 +272,6 @@ export interface ExactObjectReaderInput {
   // ledger still holds is reused rather than taken from Git again. A reader
   // without one keeps a private ledger over `resourceLimits`.
   readonly ledger?: ResourceLedger;
-}
-
-const STRICT_UTF8 = new TextDecoder('utf-8', { fatal: true });
-
-function decodeUtf8(bytes: Uint8Array): string | undefined {
-  try {
-    return STRICT_UTF8.decode(bytes);
-  } catch {
-    return undefined;
-  }
 }
 
 export function contentDigestOf(bytes: Uint8Array): string {

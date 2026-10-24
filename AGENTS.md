@@ -181,10 +181,11 @@ sweep lessons added 2026-09-23; the raw-head digest lesson the same day.
   the barrel; conformance fixtures build through
   `packages/cap1-conformance/src/fixtures/` (inputs only, expected values
   stay literals).
-- `packages/support/` (`@syzygy/support`): the one `sha256` and the one
-  `deepFreeze`, a leaf with no workspace dependency, imported by the PWB
-  core, the Polaris generation packages, the dossier and the POC app. The
-  cap1 packages never import it (`cap1-system` is an independent oracle).
+- `packages/support/` (`@syzygy/support`): the one `sha256`, the one
+  `deepFreeze` and the one strict `decodeUtf8`, a leaf with no workspace
+  dependency, imported by the PWB core, the Polaris generation packages,
+  the dossier and the POC app. The cap1 packages never import it
+  (`cap1-system` is an independent oracle).
   After a merge that adds a workspace package, run `npm ci` in every checkout
   that builds or serves from it: until the `node_modules/@syzygy/` link
   exists, the package does not resolve.
