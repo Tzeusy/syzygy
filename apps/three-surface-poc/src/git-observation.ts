@@ -181,6 +181,7 @@ export function pocObserverInputsAreClean(
     'apps/three-surface-poc/',
     'packages/three-surface-poc-core/',
     'packages/cap1-daemon/',
+    'packages/http-host/',
     'packages/cap1-core/',
   ];
   return observation.changedPaths.every(
