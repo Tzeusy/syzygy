@@ -17,7 +17,11 @@ After the per-file runs, ALL files run once together in one fresh TMPDIR, as a s
 recorded as it ended, passing or not.
 
 <label> (`base` or `head`) only names the record; the worktree decides which sources run. The sources are not edited.
+The record carries `sha256AtCommit`, the digest of each of the four code files of syzygy-bpyt.4.11 as <tree-commit> holds
+it (`git show <tree-commit>:<path>`), so a rebase or squash that re-hashes the commit does not cut the record from the
+bytes it ran (rule 11).
 """
+import hashlib
 import json
 import os
 import pathlib
@@ -31,6 +35,9 @@ WT, COMMIT, OUT, PARENT, LABEL = pathlib.Path(sys.argv[1]).resolve(), sys.argv[2
 ATTEMPTS = 3
 PROJECT = '@syzygy/three-surface-poc-app'
 git = lambda *a: subprocess.run(['git', *a], cwd=WT, capture_output=True, text=True, check=True).stdout.strip()
+CODE_FILES = ['apps/three-surface-poc/src/cdp-browser.ts', 'apps/three-surface-poc/src/cdp-browser.test.ts', 'apps/three-surface-poc/src/cdp-browser.browser.test.ts',
+              'apps/three-surface-poc/src/polaris-generation/draft-preview.browser.test.ts']
+digest_at = lambda path: hashlib.sha256(subprocess.run(['git', 'show', f'{COMMIT}:{path}'], cwd=WT, capture_output=True, check=True).stdout).hexdigest()
 assert git('rev-parse', 'HEAD') == git('rev-parse', COMMIT), 'the worktree must be at <tree-commit>'
 assert git('status', '--porcelain', '--', 'apps', 'packages', 'vitest.config.ts') == '', 'the tree must be committed'
 
@@ -94,7 +101,7 @@ summary['everyFilePassedAloneAndLeftNone'] = (summary['filesWithAPassingAttempt'
                                              and summary['draftPreviewDirectoriesLeftOnPassingAttempts'] == 0)
 executable = os.environ.get('SYZYGY_POC_BROWSER') or 'google-chrome'  # what findBrowserExecutable finds: the variable, else the first on PATH
 version = subprocess.run([executable, '--version'], capture_output=True, text=True).stdout.strip()
-record = {'tool': 'browser_files_run.py', 'treeCommit': COMMIT, 'label': LABEL, 'browserExecutable': executable, 'browserVersion': version, 'project': PROJECT, 'attemptsPerFile': ATTEMPTS, 'listA': list_a, 'listB': list_b,
+record = {'tool': 'browser_files_run.py', 'treeCommit': COMMIT, 'sha256AtCommit': {path: digest_at(path) for path in CODE_FILES}, 'label': LABEL, 'browserExecutable': executable, 'browserVersion': version, 'project': PROJECT, 'attemptsPerFile': ATTEMPTS, 'listA': list_a, 'listB': list_b,
           'perFile': per_file, 'combinedRun': combined, 'summary': summary}
 OUT.write_text(json.dumps(record, indent=1) + '\n')
 print(json.dumps(summary, indent=1))
