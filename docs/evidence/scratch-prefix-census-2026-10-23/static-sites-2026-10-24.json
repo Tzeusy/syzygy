@@ -3,6 +3,7 @@
  "treeCommit": "a864e999645a071dda40325b2235976590e02973",
  "patterns": {
   "js-mkdtemp": "\\bmkdtemp(?:Sync)?\\(",
+  "js-mkdtemp-disposable": "\\bmkdtempDisposable(?:Sync)?\\(",
   "js-tmpdir": "\\btmpdir\\(\\)",
   "py-tempfile": "\\btempfile\\.(?:mkdtemp|TemporaryDirectory|NamedTemporaryFile|mkstemp|gettempdir)\\(",
   "sh-mktemp": "\\bmktemp\\b",
@@ -25,6 +26,7 @@
  "sites": 591,
  "sitesByKind": {
   "js-mkdtemp": 191,
+  "js-mkdtemp-disposable": 0,
   "js-tmpdir": 176,
   "py-tempfile": 353,
   "sh-mktemp": 1,
@@ -60,7 +62,7 @@
      "js-mkdtemp",
      "py-tempfile"
     ],
-    "literal": null
+    "literal": "manifest-selftest-"
    }
   ],
   ".syzygy/governance/contracts/candidates/scripts/build_budget_report.py": [
@@ -79,7 +81,7 @@
      "js-mkdtemp",
      "py-tempfile"
     ],
-    "literal": null
+    "literal": "index-selftest-"
    }
   ],
   ".syzygy/governance/contracts/candidates/scripts/build_dependency_index.py": [
@@ -89,7 +91,7 @@
      "js-mkdtemp",
      "py-tempfile"
     ],
-    "literal": null
+    "literal": "depindex-selftest-"
    }
   ],
   ".syzygy/governance/contracts/candidates/scripts/verify_final_prespec.py": [
@@ -99,7 +101,7 @@
      "js-mkdtemp",
      "py-tempfile"
     ],
-    "literal": null
+    "literal": "prespec-selftest-"
    }
   ],
   "apps/three-surface-poc/src/build-output.test.ts": [
@@ -109,7 +111,7 @@
      "js-mkdtemp",
      "js-tmpdir"
     ],
-    "literal": null
+    "literal": "syzygy-build-output-"
    }
   ],
   "apps/three-surface-poc/src/capture-test-artifact-main.test.ts": [
@@ -119,7 +121,7 @@
      "js-mkdtemp",
      "js-tmpdir"
     ],
-    "literal": null
+    "literal": "syzygy-capture-cli-"
    }
   ],
   "apps/three-surface-poc/src/capture-test-artifact.test.ts": [
@@ -252,7 +254,7 @@
      "js-mkdtemp",
      "js-tmpdir"
     ],
-    "literal": null
+    "literal": "syzygy-poc-browser-"
    }
   ],
   "apps/three-surface-poc/src/cli.test.ts": [
@@ -278,7 +280,7 @@
      "js-mkdtemp",
      "js-tmpdir"
     ],
-    "literal": null
+    "literal": "syzygy-fixture-sweep-"
    }
   ],
   "apps/three-surface-poc/src/fixture-directories.ts": [
@@ -297,7 +299,7 @@
      "js-mkdtemp",
      "js-tmpdir"
     ],
-    "literal": null
+    "literal": "syzygy-poc-fresh-"
    }
   ],
   "apps/three-surface-poc/src/git-blob-batch.test.ts": [
@@ -307,7 +309,7 @@
      "js-mkdtemp",
      "js-tmpdir"
     ],
-    "literal": null
+    "literal": "syzygy-svoj-gitlink-"
    }
   ],
   "apps/three-surface-poc/src/git-observation.test.ts": [
@@ -317,7 +319,7 @@
      "js-mkdtemp",
      "js-tmpdir"
     ],
-    "literal": null
+    "literal": "syzygy-poc-git-"
    }
   ],
   "apps/three-surface-poc/src/governance-inputs.test.ts": [
@@ -327,7 +329,7 @@
      "js-mkdtemp",
      "js-tmpdir"
     ],
-    "literal": null
+    "literal": "syzygy-pwb-governance-"
    }
   ],
   "apps/three-surface-poc/src/keyboard-sweep-record.test.ts": [
@@ -346,7 +348,7 @@
      "js-mkdtemp",
      "js-tmpdir"
     ],
-    "literal": null
+    "literal": "poc-main-test-"
    },
    {
     "line": 386,
@@ -380,7 +382,7 @@
      "js-mkdtemp",
      "js-tmpdir"
     ],
-    "literal": null
+    "literal": "syzygy-orrery-geometry-"
    }
   ],
   "apps/three-surface-poc/src/poc-main.ts": [
@@ -399,7 +401,7 @@
      "js-mkdtemp",
      "js-tmpdir"
     ],
-    "literal": null
+    "literal": "syzygy-poc-a11y-"
    }
   ],
   "apps/three-surface-poc/src/polaris-accessibility.browser.test.ts": [
@@ -409,7 +411,7 @@
      "js-mkdtemp",
      "js-tmpdir"
     ],
-    "literal": null
+    "literal": "syzygy-poc-a11y-"
    },
    {
     "line": 299,
@@ -417,7 +419,7 @@
      "js-mkdtemp",
      "js-tmpdir"
     ],
-    "literal": null
+    "literal": "syzygy-poc-a11y-budget-"
    }
   ],
   "apps/three-surface-poc/src/polaris-accessible-names.browser.test.ts": [
@@ -427,7 +429,7 @@
      "js-mkdtemp",
      "js-tmpdir"
     ],
-    "literal": null
+    "literal": "syzygy-poc-names-"
    },
    {
     "line": 198,
@@ -435,7 +437,7 @@
      "js-mkdtemp",
      "js-tmpdir"
     ],
-    "literal": null
+    "literal": "syzygy-poc-names-daemon-"
    }
   ],
   "apps/three-surface-poc/src/polaris-generation/dossier-cap-measure.test.ts": [
@@ -445,7 +447,7 @@
      "js-mkdtemp",
      "js-tmpdir"
     ],
-    "literal": null
+    "literal": "syzygy-dossier-cap-"
    }
   ],
   "apps/three-surface-poc/src/polaris-generation/dossier-evaluation-main.test.ts": [
@@ -455,7 +457,7 @@
      "js-mkdtemp",
      "js-tmpdir"
     ],
-    "literal": null
+    "literal": "syzygy-dossier-eval-"
    }
   ],
   "apps/three-surface-poc/src/polaris-generation/dossier-render-main.ts": [
@@ -474,7 +476,7 @@
      "js-mkdtemp",
      "js-tmpdir"
     ],
-    "literal": null
+    "literal": "syzygy-dossier-run-"
    },
    {
     "line": 290,
@@ -482,7 +484,7 @@
      "js-mkdtemp",
      "js-tmpdir"
     ],
-    "literal": null
+    "literal": "syzygy-dossier-run-"
    },
    {
     "line": 297,
@@ -490,7 +492,7 @@
      "js-mkdtemp",
      "js-tmpdir"
     ],
-    "literal": null
+    "literal": "syzygy-dossier-link-"
    },
    {
     "line": 311,
@@ -498,7 +500,7 @@
      "js-mkdtemp",
      "js-tmpdir"
     ],
-    "literal": null
+    "literal": "syzygy-dossier-gitdir-"
    },
    {
     "line": 325,
@@ -506,7 +508,7 @@
      "js-mkdtemp",
      "js-tmpdir"
     ],
-    "literal": null
+    "literal": "syzygy-dossier-dotgit-"
    },
    {
     "line": 333,
@@ -514,7 +516,7 @@
      "js-mkdtemp",
      "js-tmpdir"
     ],
-    "literal": null
+    "literal": "syzygy-dossier-real-"
    },
    {
     "line": 343,
@@ -522,7 +524,7 @@
      "js-mkdtemp",
      "js-tmpdir"
     ],
-    "literal": null
+    "literal": "syzygy-dossier-nogit-"
    },
    {
     "line": 350,
@@ -530,7 +532,7 @@
      "js-mkdtemp",
      "js-tmpdir"
     ],
-    "literal": null
+    "literal": "syzygy-dossier-partial-"
    },
    {
     "line": 359,
@@ -538,7 +540,7 @@
      "js-mkdtemp",
      "js-tmpdir"
     ],
-    "literal": null
+    "literal": "syzygy-dossier-git-"
    }
   ],
   "apps/three-surface-poc/src/polaris-generation/dossier-trigger-isolation.test.ts": [
@@ -548,7 +550,7 @@
      "js-mkdtemp",
      "js-tmpdir"
     ],
-    "literal": null
+    "literal": "syzygy-trigger-iso-"
    },
    {
     "line": 33,
@@ -556,7 +558,7 @@
      "js-mkdtemp",
      "js-tmpdir"
     ],
-    "literal": null
+    "literal": "syzygy-trigger-iso-dst-"
    }
   ],
   "apps/three-surface-poc/src/polaris-generation/dossier-trigger.test.ts": [
@@ -566,7 +568,7 @@
      "js-mkdtemp",
      "js-tmpdir"
     ],
-    "literal": null
+    "literal": "syzygy-trigger-"
    },
    {
     "line": 88,
@@ -574,7 +576,7 @@
      "js-mkdtemp",
      "js-tmpdir"
     ],
-    "literal": null
+    "literal": "syzygy-trigger-repo-"
    },
    {
     "line": 318,
@@ -582,7 +584,7 @@
      "js-mkdtemp",
      "js-tmpdir"
     ],
-    "literal": null
+    "literal": "syzygy-trigger-other-"
    },
    {
     "line": 362,
@@ -590,7 +592,7 @@
      "js-mkdtemp",
      "js-tmpdir"
     ],
-    "literal": null
+    "literal": "syzygy-trigger-cmd-"
    }
   ],
   "apps/three-surface-poc/src/polaris-generation/dossier-trigger.ts": [
@@ -600,7 +602,7 @@
      "js-mkdtemp",
      "js-tmpdir"
     ],
-    "literal": null
+    "literal": "syzygy-lsremote-"
    },
    {
     "line": 143,
@@ -608,7 +610,7 @@
      "js-mkdtemp",
      "js-tmpdir"
     ],
-    "literal": null
+    "literal": "syzygy-dossier-"
    },
    {
     "line": 145,
@@ -616,7 +618,7 @@
      "js-mkdtemp",
      "js-tmpdir"
     ],
-    "literal": null
+    "literal": "syzygy-dossier-src-"
    },
    {
     "line": 210,
@@ -624,7 +626,7 @@
      "js-mkdtemp",
      "js-tmpdir"
     ],
-    "literal": null
+    "literal": "syzygy-materialize-home-"
    }
   ],
   "apps/three-surface-poc/src/polaris-generation/draft-preview.browser.test.ts": [
@@ -634,7 +636,7 @@
      "js-mkdtemp",
      "js-tmpdir"
     ],
-    "literal": null
+    "literal": "polaris-draft-browser-"
    }
   ],
   "apps/three-surface-poc/src/polaris-generation/durable-lifecycle-generate.test.ts": [
@@ -644,7 +646,7 @@
      "js-mkdtemp",
      "js-tmpdir"
     ],
-    "literal": null
+    "literal": "syzygy-lifecycle-generate-"
    }
   ],
   "apps/three-surface-poc/src/polaris-generation/durable-lifecycle.test.ts": [
@@ -654,7 +656,7 @@
      "js-mkdtemp",
      "js-tmpdir"
     ],
-    "literal": null
+    "literal": "syzygy-generator-lifecycle-"
    }
   ],
   "apps/three-surface-poc/src/polaris-generation/generation-mutation-run-main.ts": [
@@ -664,7 +666,7 @@
      "js-mkdtemp",
      "js-tmpdir"
     ],
-    "literal": null
+    "literal": "generation-mutation-"
    }
   ],
   "apps/three-surface-poc/src/polaris-generation/pipeline-demo.test.ts": [
@@ -674,7 +676,7 @@
      "js-mkdtemp",
      "js-tmpdir"
     ],
-    "literal": null
+    "literal": "syzygy-generator-onramp-"
    }
   ],
   "apps/three-surface-poc/src/polaris-generation/public-source-screening.test.ts": [
@@ -684,7 +686,7 @@
      "js-mkdtemp",
      "js-tmpdir"
     ],
-    "literal": null
+    "literal": "syzygy-public-screen-"
    }
   ],
   "apps/three-surface-poc/src/polaris-generation/redis-shaped-discovery.test.ts": [
@@ -694,7 +696,7 @@
      "js-mkdtemp",
      "js-tmpdir"
     ],
-    "literal": null
+    "literal": "syzygy-redis-shaped-test-"
    }
   ],
   "apps/three-surface-poc/src/polaris-generation/redis-shaped-measure-main.ts": [
@@ -704,7 +706,7 @@
      "js-mkdtemp",
      "js-tmpdir"
     ],
-    "literal": null
+    "literal": "syzygy-redis-shaped-"
    }
   ],
   "apps/three-surface-poc/src/polaris-generation/repo-corpus-isolation.test.ts": [
@@ -714,7 +716,7 @@
      "js-mkdtemp",
      "js-tmpdir"
     ],
-    "literal": null
+    "literal": "syzygy-iso-"
    },
    {
     "line": 85,
@@ -722,7 +724,7 @@
      "js-mkdtemp",
      "js-tmpdir"
     ],
-    "literal": null
+    "literal": "syzygy-iso-empty-"
    }
   ],
   "apps/three-surface-poc/src/polaris-generation/repo-corpus.test.ts": [
@@ -732,14 +734,14 @@
      "js-mkdtemp",
      "js-tmpdir"
     ],
-    "literal": null
+    "literal": "syzygy-repo-corpus-"
    },
    {
     "line": 50,
     "kinds": [
      "js-tmpdir"
     ],
-    "literal": null
+    "literal": "syzygy-fsmonitor-sentinel-"
    },
    {
     "line": 52,
@@ -747,7 +749,7 @@
      "js-mkdtemp",
      "js-tmpdir"
     ],
-    "literal": null
+    "literal": "syzygy-repo-hostile-"
    },
    {
     "line": 247,
@@ -755,7 +757,7 @@
      "js-mkdtemp",
      "js-tmpdir"
     ],
-    "literal": null
+    "literal": "syzygy-repo-cli-"
    }
   ],
   "apps/three-surface-poc/src/polaris-generation/self-corpus.test.ts": [
@@ -765,7 +767,7 @@
      "js-mkdtemp",
      "js-tmpdir"
     ],
-    "literal": null
+    "literal": "syzygy-self-corpus-fixture-"
    }
   ],
   "apps/three-surface-poc/src/polaris-generation/self-corpus.ts": [
@@ -775,7 +777,7 @@
      "js-mkdtemp",
      "js-tmpdir"
     ],
-    "literal": null
+    "literal": "syzygy-self-corpus-run-"
    }
   ],
   "apps/three-surface-poc/src/polaris-keyboard-sweep-main.ts": [
@@ -785,7 +787,7 @@
      "js-mkdtemp",
      "js-tmpdir"
     ],
-    "literal": null
+    "literal": "syzygy-poc-keyboard-sweep-"
    }
   ],
   "apps/three-surface-poc/src/polaris-opening-index.browser.test.ts": [
@@ -795,7 +797,7 @@
      "js-mkdtemp",
      "js-tmpdir"
     ],
-    "literal": null
+    "literal": "syzygy-poc-opening-index-"
    }
   ],
   "apps/three-surface-poc/src/polaris-presentation-route.test.ts": [
@@ -805,7 +807,7 @@
      "js-mkdtemp",
      "js-tmpdir"
     ],
-    "literal": null
+    "literal": "syzygy-poc-presentation-"
    }
   ],
   "apps/three-surface-poc/src/polaris-source-route.test.ts": [
@@ -815,7 +817,7 @@
      "js-mkdtemp",
      "js-tmpdir"
     ],
-    "literal": null
+    "literal": "syzygy-poc-source-route-"
    }
   ],
   "apps/three-surface-poc/src/production-reobserve.test.ts": [
@@ -825,7 +827,7 @@
      "js-mkdtemp",
      "js-tmpdir"
     ],
-    "literal": null
+    "literal": "syzygy-production-reobserve-state-"
    },
    {
     "line": 103,
@@ -833,7 +835,7 @@
      "js-mkdtemp",
      "js-tmpdir"
     ],
-    "literal": null
+    "literal": "syzygy-production-reobserve-state-"
    },
    {
     "line": 136,
@@ -841,7 +843,7 @@
      "js-mkdtemp",
      "js-tmpdir"
     ],
-    "literal": null
+    "literal": "syzygy-production-reobserve-state-"
    },
    {
     "line": 164,
@@ -849,7 +851,7 @@
      "js-mkdtemp",
      "js-tmpdir"
     ],
-    "literal": null
+    "literal": "syzygy-production-reobserve-state-"
    }
   ],
   "apps/three-surface-poc/src/proposal-disclosure.test.ts": [
@@ -859,7 +861,7 @@
      "js-mkdtemp",
      "js-tmpdir"
     ],
-    "literal": null
+    "literal": "syzygy-dov32-proposal-"
    }
   ],
   "apps/three-surface-poc/src/pwb-mutation-run-main.ts": [
@@ -869,7 +871,7 @@
      "js-mkdtemp",
      "js-tmpdir"
     ],
-    "literal": null
+    "literal": "pwb-mutation-"
    }
   ],
   "apps/three-surface-poc/src/pwb-mutation-sweep-main.ts": [
@@ -879,7 +881,7 @@
      "js-mkdtemp",
      "js-tmpdir"
     ],
-    "literal": null
+    "literal": "pwb-mutation-sweep-"
    }
   ],
   "apps/three-surface-poc/src/response-limits.test.ts": [
@@ -889,7 +891,7 @@
      "js-mkdtemp",
      "js-tmpdir"
     ],
-    "literal": null
+    "literal": "syzygy-poc-limit-socket-"
    }
   ],
   "apps/three-surface-poc/src/restart.test.ts": [
@@ -899,7 +901,7 @@
      "js-mkdtemp",
      "js-tmpdir"
     ],
-    "literal": null
+    "literal": "syzygy-private-restart-"
    },
    {
     "line": 492,
@@ -915,7 +917,7 @@
     "kinds": [
      "js-tmpdir"
     ],
-    "literal": null
+    "literal": "syzygy-poc-restart-"
    }
   ],
   "apps/three-surface-poc/src/routes.test.ts": [
@@ -943,7 +945,7 @@
      "js-mkdtemp",
      "js-tmpdir"
     ],
-    "literal": null
+    "literal": "syzygy-cross-links-state-"
    },
    {
     "line": 309,
@@ -951,7 +953,7 @@
      "js-mkdtemp",
      "js-tmpdir"
     ],
-    "literal": null
+    "literal": "syzygy-cross-links-pages-"
    }
   ],
   "apps/three-surface-poc/src/test-model-fixture.test.ts": [
@@ -961,7 +963,7 @@
      "js-mkdtemp",
      "js-tmpdir"
     ],
-    "literal": null
+    "literal": "syzygy-k66p-shared-"
    },
    {
     "line": 104,
@@ -969,7 +971,7 @@
      "js-mkdtemp",
      "js-tmpdir"
     ],
-    "literal": null
+    "literal": "syzygy-fixture-names-"
    }
   ],
   "apps/three-surface-poc/src/test-model-fixture.ts": [
@@ -997,7 +999,7 @@
      "js-mkdtemp",
      "js-tmpdir"
     ],
-    "literal": null
+    "literal": "syzygy-trajectory-narrowing-"
    },
    {
     "line": 77,
@@ -1005,7 +1007,7 @@
      "js-mkdtemp",
      "js-tmpdir"
     ],
-    "literal": null
+    "literal": "syzygy-trajectory-narrowing-"
    }
   ],
   "apps/three-surface-poc/src/tuple-encoding.test.ts": [
@@ -1294,7 +1296,7 @@
      "js-mkdtemp",
      "js-tmpdir"
     ],
-    "literal": null
+    "literal": "r516-probe-"
    }
   ],
   "docs/evidence/non-human-principal-pins-2026-10-22/mutate_non_human_principal.py": [
@@ -1349,7 +1351,7 @@
      "js-mkdtemp",
      "js-tmpdir"
     ],
-    "literal": null
+    "literal": "zz-route-capture-"
    }
   ],
   "docs/evidence/poc-core-hygiene-2026-10-22/route_capture_leak_check.py": [
@@ -1359,7 +1361,7 @@
      "js-mkdtemp",
      "py-tempfile"
     ],
-    "literal": null
+    "literal": "zz-leak-check-"
    }
   ],
   "docs/evidence/poc-fixture-leak-2026-10-22/cli_sweep_probe.py": [
@@ -1403,7 +1405,7 @@
      "js-mkdtemp",
      "py-tempfile"
     ],
-    "literal": null
+    "literal": "zz-kill-fresh-"
    }
   ],
   "docs/evidence/poc-fixture-leak-2026-10-22/mutate_sweep.py": [
@@ -1435,7 +1437,7 @@
      "js-mkdtemp",
      "py-tempfile"
     ],
-    "literal": null
+    "literal": "zz-mutate-sweep-"
    }
   ],
   "docs/evidence/poc-fixture-leak-2026-10-22/ns_holder.mjs": [
@@ -1463,7 +1465,7 @@
      "js-mkdtemp",
      "py-tempfile"
     ],
-    "literal": null
+    "literal": "zz-assemble-census-"
    }
   ],
   "docs/evidence/poc-hygiene-2026-10-22/invocation_forms.py": [
@@ -1473,7 +1475,7 @@
      "js-mkdtemp",
      "py-tempfile"
     ],
-    "literal": null
+    "literal": "zz-invocation-forms-"
    }
   ],
   "docs/evidence/poc-hygiene-2026-10-22/limb_isolation.py": [
@@ -1483,7 +1485,7 @@
      "js-mkdtemp",
      "py-tempfile"
     ],
-    "literal": null
+    "literal": "zz-limb-isolation-"
    }
   ],
   "docs/evidence/poc-hygiene-2026-10-22/mutate_main.py": [
@@ -1493,7 +1495,7 @@
      "js-mkdtemp",
      "py-tempfile"
     ],
-    "literal": null
+    "literal": "zz-mutate-main-"
    }
   ],
   "docs/evidence/poc-hygiene-2026-10-22/route-capture.mjs": [
@@ -1503,7 +1505,7 @@
      "js-mkdtemp",
      "js-tmpdir"
     ],
-    "literal": null
+    "literal": "zz-route-capture-"
    }
   ],
   "docs/evidence/poc-hygiene-2026-10-22/run_differential.py": [
@@ -1513,7 +1515,7 @@
      "js-mkdtemp",
      "py-tempfile"
     ],
-    "literal": null
+    "literal": "zz-differential-"
    }
   ],
   "docs/evidence/poc-main-wiring-2026-10-22/mutate_comparators.py": [
@@ -1522,7 +1524,7 @@
     "kinds": [
      "py-tempfile"
     ],
-    "literal": null
+    "literal": "zz-mutate-comparators-"
    }
   ],
   "docs/evidence/poc-main-wiring-2026-10-22/mutate_dist_compare.py": [
@@ -1531,7 +1533,7 @@
     "kinds": [
      "py-tempfile"
     ],
-    "literal": null
+    "literal": "zz-mutate-dist-"
    }
   ],
   "docs/evidence/poc-main-wiring-2026-10-22/mutate_sweep_waits.py": [
@@ -1540,7 +1542,7 @@
     "kinds": [
      "py-tempfile"
     ],
-    "literal": null
+    "literal": "zz-sweep-waits-"
    }
   ],
   "docs/evidence/poc-main-wiring-2026-10-22/mutate_wiring.py": [
@@ -1550,7 +1552,7 @@
      "js-mkdtemp",
      "py-tempfile"
     ],
-    "literal": null
+    "literal": "zz-mutate-wiring-"
    }
   ],
   "docs/evidence/poc-main-wiring-2026-10-22/run_differential_fixed_roots.py": [
@@ -1560,7 +1562,7 @@
      "js-mkdtemp",
      "js-tmpdir"
     ],
-    "literal": null
+    "literal": "zz-main-repo-"
    },
    {
     "line": 68,
@@ -1568,7 +1570,7 @@
      "js-mkdtemp",
      "py-tempfile"
     ],
-    "literal": null
+    "literal": "zz-differential-"
    }
   ],
   "docs/evidence/scratch-prefix-census-2026-10-23/census_run.py": [
@@ -1627,7 +1629,7 @@
      "js-mkdtemp",
      "js-tmpdir"
     ],
-    "literal": null
+    "literal": "st-sync-"
    },
    {
     "line": 10,
@@ -1635,7 +1637,7 @@
      "js-mkdtemp",
      "js-tmpdir"
     ],
-    "literal": null
+    "literal": "st-promise-"
    },
    {
     "line": 11,
@@ -1643,7 +1645,7 @@
      "js-mkdtemp",
      "js-tmpdir"
     ],
-    "literal": null
+    "literal": "st-callback-"
    },
    {
     "line": 12,
@@ -1693,7 +1695,7 @@
      "js-mkdtemp",
      "js-tmpdir"
     ],
-    "literal": null
+    "literal": "st-nested-"
    },
    {
     "line": 21,
@@ -1701,7 +1703,7 @@
      "js-mkdtemp",
      "js-tmpdir"
     ],
-    "literal": null
+    "literal": "st-child-"
    }
   ],
   "docs/evidence/scratch-prefix-census-2026-10-23/trace_selftest.py": [
@@ -1734,7 +1736,7 @@
      "js-mkdtemp",
      "js-tmpdir"
     ],
-    "literal": null
+    "literal": "zz-rd-"
    }
   ],
   "docs/evidence/syzygy-bpyt-8-1/mutate.py": [
@@ -1762,7 +1764,7 @@
      "js-mkdtemp",
      "js-tmpdir"
     ],
-    "literal": null
+    "literal": "syzygy-a08-consent-convention-"
    }
   ],
   "packages/cap1-daemon/src/consent-loading.test.ts": [
@@ -1772,7 +1774,7 @@
      "js-mkdtemp",
      "js-tmpdir"
     ],
-    "literal": null
+    "literal": "syzygy-rt2-consent-"
    }
   ],
   "packages/cap1-daemon/src/credentials.test.ts": [
@@ -1782,7 +1784,7 @@
      "js-mkdtemp",
      "js-tmpdir"
     ],
-    "literal": null
+    "literal": "rt3-cred-"
    }
   ],
   "packages/cap1-daemon/src/observation.test.ts": [
@@ -1799,7 +1801,7 @@
      "js-mkdtemp",
      "js-tmpdir"
     ],
-    "literal": null
+    "literal": "syzygy-rt1-"
    }
   ],
   "packages/cap1-daemon/src/pipeline.test.ts": [
@@ -1849,7 +1851,7 @@
      "js-mkdtemp",
      "js-tmpdir"
     ],
-    "literal": null
+    "literal": "syz-entry-"
    }
   ],
   "packages/cap1-system/src/effect-observer.ts": [
@@ -1859,7 +1861,7 @@
      "js-mkdtemp",
      "js-tmpdir"
     ],
-    "literal": null
+    "literal": "syz-effect-trace-"
    }
   ],
   "packages/cap1-system/src/harness.ts": [
@@ -1879,7 +1881,7 @@
      "js-mkdtemp",
      "js-tmpdir"
     ],
-    "literal": null
+    "literal": "dossier-brief-"
    },
    {
     "line": 295,
@@ -1887,7 +1889,7 @@
      "js-mkdtemp",
      "js-tmpdir"
     ],
-    "literal": null
+    "literal": "dossier-records-"
    }
   ],
   "packages/polaris-dossier/src/check.test.ts": [
@@ -1897,7 +1899,7 @@
      "js-mkdtemp",
      "js-tmpdir"
     ],
-    "literal": null
+    "literal": "dossier-check-origin-"
    },
    {
     "line": 84,
@@ -1936,7 +1938,7 @@
      "js-mkdtemp",
      "js-tmpdir"
     ],
-    "literal": null
+    "literal": "dossier-cli-"
    }
   ],
   "packages/polaris-dossier/src/close.test.ts": [
@@ -1963,7 +1965,7 @@
      "js-mkdtemp",
      "js-tmpdir"
     ],
-    "literal": null
+    "literal": "dossier-cred-"
    }
   ],
   "packages/polaris-dossier/src/design-review.test.ts": [
@@ -1973,7 +1975,7 @@
      "js-mkdtemp",
      "js-tmpdir"
     ],
-    "literal": null
+    "literal": "dossier-design-site-"
    }
   ],
   "packages/polaris-dossier/src/doctrine-quote.test.ts": [
@@ -1983,7 +1985,7 @@
      "js-mkdtemp",
      "js-tmpdir"
     ],
-    "literal": null
+    "literal": "dossier-doctrine-"
    }
   ],
   "packages/polaris-dossier/src/execution-choice.test.ts": [
@@ -2022,7 +2024,7 @@
      "js-mkdtemp",
      "js-tmpdir"
     ],
-    "literal": null
+    "literal": "dossier-gate-acts-"
    }
   ],
   "packages/polaris-dossier/src/gate-parts.test.ts": [
@@ -2042,7 +2044,7 @@
      "js-mkdtemp",
      "js-tmpdir"
     ],
-    "literal": null
+    "literal": "git-object-reader-"
    }
   ],
   "packages/polaris-dossier/src/inventory.test.ts": [
@@ -2052,7 +2054,7 @@
      "js-mkdtemp",
      "js-tmpdir"
     ],
-    "literal": null
+    "literal": "dossier-inventory-origin-"
    },
    {
     "line": 67,
@@ -2070,7 +2072,7 @@
      "js-mkdtemp",
      "js-tmpdir"
     ],
-    "literal": null
+    "literal": "polaris-marker-"
    }
   ],
   "packages/polaris-dossier/src/no-egress.test.ts": [
@@ -2080,7 +2082,7 @@
      "js-mkdtemp",
      "js-tmpdir"
     ],
-    "literal": null
+    "literal": "dossier-no-egress-"
    }
   ],
   "packages/polaris-dossier/src/polaris.ts": [
@@ -2100,7 +2102,7 @@
      "js-mkdtemp",
      "js-tmpdir"
     ],
-    "literal": null
+    "literal": "dossier-render-origin-"
    },
    {
     "line": 78,
@@ -2118,7 +2120,7 @@
      "js-mkdtemp",
      "js-tmpdir"
     ],
-    "literal": null
+    "literal": "dossier-review-origin-"
    },
    {
     "line": 79,
@@ -2146,7 +2148,7 @@
      "js-mkdtemp",
      "js-tmpdir"
     ],
-    "literal": null
+    "literal": "dossier-screen-"
    }
   ],
   "packages/polaris-dossier/src/session-view.test.ts": [
@@ -2156,7 +2158,7 @@
      "js-mkdtemp",
      "js-tmpdir"
     ],
-    "literal": null
+    "literal": "polaris-view-"
    },
    {
     "line": 99,
@@ -2164,7 +2166,7 @@
      "js-mkdtemp",
      "js-tmpdir"
     ],
-    "literal": null
+    "literal": "polaris-launched-"
    },
    {
     "line": 119,
@@ -2172,7 +2174,7 @@
      "js-mkdtemp",
      "js-tmpdir"
     ],
-    "literal": null
+    "literal": "polaris-why-"
    }
   ],
   "packages/polaris-dossier/src/session-view.ts": [
@@ -2182,7 +2184,7 @@
      "js-mkdtemp",
      "js-tmpdir"
     ],
-    "literal": null
+    "literal": "polaris-view-probe-"
    }
   ],
   "packages/polaris-dossier/src/start-gates.test.ts": [
@@ -2200,7 +2202,7 @@
      "js-mkdtemp",
      "js-tmpdir"
     ],
-    "literal": null
+    "literal": "dossier-origin-"
    }
   ],
   "packages/polaris-dossier/src/state-directory.test.ts": [
@@ -2210,7 +2212,7 @@
      "js-mkdtemp",
      "js-tmpdir"
     ],
-    "literal": null
+    "literal": "dossier-state-"
    }
   ],
   "packages/polaris-dossier/src/status.test.ts": [
@@ -2220,7 +2222,7 @@
      "js-mkdtemp",
      "js-tmpdir"
     ],
-    "literal": null
+    "literal": "dossier-status-"
    }
   ],
   "packages/polaris-dossier/src/waiting-sessions.test.ts": [
@@ -2240,7 +2242,7 @@
      "js-mkdtemp",
      "js-tmpdir"
     ],
-    "literal": null
+    "literal": "syzygy-poc-code-structure-"
    },
    {
     "line": 80,
@@ -2255,7 +2257,7 @@
      "js-mkdtemp",
      "js-tmpdir"
     ],
-    "literal": null
+    "literal": "syzygy-poc-fake-git-"
    }
   ],
   "packages/three-surface-poc-core/src/materialization.test.ts": [
@@ -2265,7 +2267,7 @@
      "js-mkdtemp",
      "js-tmpdir"
     ],
-    "literal": null
+    "literal": "syzygy-poc-materialize-state-"
    }
   ],
   "packages/three-surface-poc-core/src/model-observations.test.ts": [
@@ -2275,7 +2277,7 @@
      "js-mkdtemp",
      "js-tmpdir"
     ],
-    "literal": null
+    "literal": "syzygy-poc-model-obs-"
    }
   ],
   "packages/three-surface-poc-core/src/model.test.ts": [
@@ -2285,7 +2287,7 @@
      "js-mkdtemp",
      "js-tmpdir"
     ],
-    "literal": null
+    "literal": "syzygy-poc-butlers-"
    },
    {
     "line": 95,
@@ -2293,7 +2295,7 @@
      "js-mkdtemp",
      "js-tmpdir"
     ],
-    "literal": null
+    "literal": "syzygy-poc-butlers-git-"
    },
    {
     "line": 107,
@@ -2301,7 +2303,7 @@
      "js-mkdtemp",
      "js-tmpdir"
     ],
-    "literal": null
+    "literal": "syzygy-poc-butlers-git-template-"
    },
    {
     "line": 731,
@@ -2309,7 +2311,7 @@
      "js-mkdtemp",
      "js-tmpdir"
     ],
-    "literal": null
+    "literal": "syzygy-poc-empty-seeds-"
    }
   ],
   "packages/three-surface-poc-core/src/test-artifact-verification-live-source.test.ts": [
@@ -2335,7 +2337,7 @@
      "js-mkdtemp",
      "js-tmpdir"
     ],
-    "literal": null
+    "literal": "syzygy-poc-test-artifact-"
    },
    {
     "line": 431,
@@ -2389,7 +2391,7 @@
      "js-mkdtemp",
      "js-tmpdir"
     ],
-    "literal": null
+    "literal": "syzygy-poc-worker-change-"
    },
    {
     "line": 76,
@@ -2397,7 +2399,7 @@
      "js-mkdtemp",
      "js-tmpdir"
     ],
-    "literal": null
+    "literal": "syzygy-poc-worker-change-noorigin-"
    }
   ],
   "scripts/build_cap1_trusted_bootstrap_consent_adoption.py": [
@@ -2505,7 +2507,7 @@
     "kinds": [
      "py-tempfile"
     ],
-    "literal": null
+    "literal": "general-bootstrap-impact-"
    }
   ],
   "scripts/build_general_trusted_bootstrap_transaction.py": [
@@ -2514,7 +2516,7 @@
     "kinds": [
      "py-tempfile"
     ],
-    "literal": null
+    "literal": "general-bootstrap-tx-"
    }
   ],
   "scripts/build_polaris_dependency_unions.py": [
@@ -2532,7 +2534,7 @@
     "kinds": [
      "py-tempfile"
     ],
-    "literal": null
+    "literal": "dossier-recount-"
    },
    {
     "line": 368,
@@ -2625,21 +2627,21 @@
     "kinds": [
      "py-tempfile"
     ],
-    "literal": null
+    "literal": "dossier-v11-"
    },
    {
     "line": 210,
     "kinds": [
      "py-tempfile"
     ],
-    "literal": null
+    "literal": "dossier-v11-"
    },
    {
     "line": 356,
     "kinds": [
      "py-tempfile"
     ],
-    "literal": null
+    "literal": "dossier-v11-"
    },
    {
     "line": 473,
@@ -2655,7 +2657,7 @@
     "kinds": [
      "py-tempfile"
     ],
-    "literal": null
+    "literal": "dossier-v12-"
    },
    {
     "line": 304,
@@ -2671,14 +2673,14 @@
     "kinds": [
      "py-tempfile"
     ],
-    "literal": null
+    "literal": "polaris-edit-repair-deletion-"
    },
    {
     "line": 362,
     "kinds": [
      "py-tempfile"
     ],
-    "literal": null
+    "literal": "polaris-edit-repair-deletion-selftest-"
    }
   ],
   "scripts/build_provider_route_messages_api_entry.py": [
@@ -2817,7 +2819,7 @@
      "js-mkdtemp",
      "py-tempfile"
     ],
-    "literal": null
+    "literal": "reader-mutant-"
    }
   ],
   "scripts/build_public_source_screening_scope_v2.py": [
@@ -3526,7 +3528,7 @@
     "kinds": [
      "py-tempfile"
     ],
-    "literal": null
+    "literal": "review-partition-selftest-"
    }
   ],
   "scripts/check_evidence_currency.py": [
@@ -3535,7 +3537,7 @@
     "kinds": [
      "py-tempfile"
     ],
-    "literal": null
+    "literal": "check-evidence-currency-selftest-"
    }
   ],
   "scripts/check_governance.py": [
@@ -3566,7 +3568,7 @@
      "js-mkdtemp",
      "py-tempfile"
     ],
-    "literal": null
+    "literal": "cg1g-selftest-"
    },
    {
     "line": 9138,
@@ -3574,7 +3576,7 @@
      "js-mkdtemp",
      "py-tempfile"
     ],
-    "literal": null
+    "literal": "cg1a-selftest-"
    },
    {
     "line": 9169,
@@ -3582,7 +3584,7 @@
      "js-mkdtemp",
      "py-tempfile"
     ],
-    "literal": null
+    "literal": "cg1i-selftest-"
    },
    {
     "line": 9209,
@@ -3590,7 +3592,7 @@
      "js-mkdtemp",
      "py-tempfile"
     ],
-    "literal": null
+    "literal": "cg7d-selftest-"
    },
    {
     "line": 9295,
@@ -3598,21 +3600,21 @@
      "js-mkdtemp",
      "py-tempfile"
     ],
-    "literal": null
+    "literal": "cg7e-history-selftest-"
    },
    {
     "line": 9361,
     "kinds": [
      "py-tempfile"
     ],
-    "literal": null
+    "literal": "cg7-restyle-packet-"
    },
    {
     "line": 9379,
     "kinds": [
      "py-tempfile"
     ],
-    "literal": null
+    "literal": "cg7-edit-repair-candidate-"
    },
    {
     "line": 9412,
@@ -3620,7 +3622,7 @@
      "js-mkdtemp",
      "py-tempfile"
     ],
-    "literal": null
+    "literal": "cg7e-pwb-absent-selftest-"
    },
    {
     "line": 9447,
@@ -3628,7 +3630,7 @@
      "js-mkdtemp",
      "py-tempfile"
     ],
-    "literal": null
+    "literal": "cg7e-pwb-act-selftest-"
    },
    {
     "line": 9542,
@@ -3636,7 +3638,7 @@
      "js-mkdtemp",
      "py-tempfile"
     ],
-    "literal": null
+    "literal": "cg7e-bare-manifest-selftest-"
    },
    {
     "line": 9666,
@@ -3644,7 +3646,7 @@
      "js-mkdtemp",
      "py-tempfile"
     ],
-    "literal": null
+    "literal": "cg7e-near-miss-selftest-"
    },
    {
     "line": 9783,
@@ -3652,7 +3654,7 @@
      "js-mkdtemp",
      "py-tempfile"
     ],
-    "literal": null
+    "literal": "cg7e-pinned-copy-selftest-"
    },
    {
     "line": 9859,
@@ -3660,7 +3662,7 @@
      "js-mkdtemp",
      "py-tempfile"
     ],
-    "literal": null
+    "literal": "cg7e-pwb-effect-act-selftest-"
    },
    {
     "line": 9925,
@@ -3668,7 +3670,7 @@
      "js-mkdtemp",
      "py-tempfile"
     ],
-    "literal": null
+    "literal": "cg7e-pwb-effect-amendment-selftest-"
    },
    {
     "line": 10579,
@@ -3676,7 +3678,7 @@
      "js-mkdtemp",
      "py-tempfile"
     ],
-    "literal": null
+    "literal": "cg7-selftest-"
    },
    {
     "line": 10674,
@@ -3740,14 +3742,14 @@
     "kinds": [
      "py-tempfile"
     ],
-    "literal": null
+    "literal": "polaris-scenario-recount-"
    },
    {
     "line": 678,
     "kinds": [
      "py-tempfile"
     ],
-    "literal": null
+    "literal": "polaris-scenario-count-selftest-"
    }
   ],
   "scripts/install_redis_local_agent_sitting.py": [
@@ -3947,7 +3949,7 @@
      "js-mkdtemp",
      "py-tempfile"
     ],
-    "literal": null
+    "literal": "probe-superseded-policy-acts-"
    }
   ],
   "scripts/pwb_requirement_amendment.py": [
@@ -4599,7 +4601,7 @@
      "js-mkdtemp",
      "js-tmpdir"
     ],
-    "literal": null
+    "literal": "redis-remeasure-root-"
    },
    {
     "line": 276,
@@ -4614,7 +4616,7 @@
      "js-mkdtemp",
      "js-tmpdir"
     ],
-    "literal": null
+    "literal": "redis-remeasure-mutants-"
    },
    {
     "line": 451,
@@ -4622,7 +4624,7 @@
      "js-mkdtemp",
      "js-tmpdir"
     ],
-    "literal": null
+    "literal": "redis-remeasure-view-"
    }
   ],
   "scripts/render_launch_administration.py": [
@@ -4754,7 +4756,7 @@
      "js-mkdtemp",
      "js-tmpdir"
     ],
-    "literal": null
+    "literal": "syzygy-m13-mutation-"
    }
   ],
   "scripts/run_m7_literal_mutations.mjs": [
@@ -4764,7 +4766,7 @@
      "js-mkdtemp",
      "js-tmpdir"
     ],
-    "literal": null
+    "literal": "syzygy-m7-mutation-"
    }
   ],
   "scripts/run_m9_literal_mutations.mjs": [
@@ -4774,7 +4776,7 @@
      "js-mkdtemp",
      "js-tmpdir"
     ],
-    "literal": null
+    "literal": "syzygy-m9-mutation-"
    }
   ],
   "scripts/simulate_public_source_screening_scope_act.py": [
@@ -4784,7 +4786,7 @@
      "js-mkdtemp",
      "py-tempfile"
     ],
-    "literal": null
+    "literal": "screening-scope-sim-"
    }
   ],
   "scripts/simulate_redis_local_agent_sitting.py": [
@@ -4794,7 +4796,7 @@
      "js-mkdtemp",
      "py-tempfile"
     ],
-    "literal": null
+    "literal": "local-agent-sitting-"
    }
   ],
   "scripts/simulate_redis_sitting.py": [
@@ -4804,7 +4806,7 @@
      "js-mkdtemp",
      "py-tempfile"
     ],
-    "literal": null
+    "literal": "sitting-sim-"
    },
    {
     "line": 892,

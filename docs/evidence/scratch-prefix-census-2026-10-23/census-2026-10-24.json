@@ -3,16 +3,27 @@
   "what": "every entry a full vitest run creates directly in its temp directory, and which of them a SIGKILLed run, and one fresh run after it, leave behind",
   "treeCommit": "a864e999645a071dda40325b2235976590e02973",
   "command": "npx vitest run (the root configuration: every project, maxWorkers 50%)",
-  "notRun": "test:system (packages/cap1-system) and the Python and shell scripts under scripts/, which the root run does not start; they appear only in the static census below",
+  "notRun": "test:system (packages/cap1-system) and the shell scripts under scripts/, which the root run does not start. The Python scripts under scripts/ are not run as such either, but some root-run tests start python3 -c children (a Python process is never a traced Node frame); the scripts appear in the static census below",
+  "revision": "Regenerated on 2026-10-25 from the stored runs (none was repeated) after round 1 of the review: the exposure upper bound counts two sampler gaps for each sampled name and one for each name never sampled; the partition sentence is generated from every rule count and checked to sum to the class count; the static census reads multi-segment prefix literals; the sampler records are bound by sampler-digests.json; the rule and limit texts name what they depend on.",
   "toolSha256": {
-   "assemble_census.py": "6c651b650fef0baea1768dc862410d8998bfc1e3d4bce0cb21c417baf538fdfb",
+   "assemble_census.py": "32f2e9449b540ef5d387b10097afa4fd296461aab8fc61cf0879a743a1144fec",
    "census_run.py": "6039545e993610ef67dff1fc60103ade0fe197ab55638c1f9cdec7504b16fe8d",
-   "collect_runs.py": "548b7643ce57318f8b826891592c441bacf2e97c38b2e5220ea3b715b783829e",
+   "collect_runs.py": "79ff2c4602eea9aaa45f5713354c7b99c562c41f409b1a424a563e61759a7765",
    "scratch_trace.cjs": "c9ff0cbbd2c9162c8483082f24202e18fa52f414c9c18a648723285de2ec2688",
-   "static_sites.py": "5f06a9f0811ddc1ec8d35d7019c0e71a435127f1ad190fb6fd60c1ae3bda14e4",
+   "static_sites.py": "9e03dc1e6f79180d32b709b59110160a3b202da2c05870ec79d0f1c7795b46bf",
    "tmp_sampler.py": "3e34f06abe672f405ae7107b9e55472e22299dddef2634b167c9373008c2125d"
   },
-  "staticSitesSha256": "09dfb9d602d15f149c2f8ef0acf6c8fd0c2036c0f0351d543f1f9c805b245d7a"
+  "staticSitesSha256": "f5ad2571ddf5b9caab1aafb5c9de3a70d94fdf6a9992af2faa789672b24a2a69",
+  "samplerRecordSha256": {
+   "c0-clean": "40dd6a1c1f64bf7aa6a3ee11d673e69c57ce4d998f9a3424c278bf1b0ad6a258",
+   "f1-fresh-after-k1": "f75026bcd451ed46464a0a2aea7e04fb8de373ba892b382f45aced4a25c47a1d",
+   "f2-fresh-after-k2": "a1f86f2d1189113cd46b90b9b2e1e6286bbb2fbab0c6909a75238acbd4f5c65f",
+   "f3-fresh-after-k3": "b8148a14fc3cc5231a358dd942008f877689968a5c7eafd012ea0e410f89e9b0",
+   "k1-kill-40s": "29a492a98acc0f0bc133099a0b2162c20287faedf972213e8a75adb3469db27d",
+   "k2-kill-75s": "a0c1894f84018f71d374f9604121f9904d5a12b58f88c3232c49f4a22703ced0",
+   "k3-kill-115s": "fd02d8576854a3d231cd2271cfc9e9859e0a47df3226c192dd51a223b48f667c"
+  },
+  "carriedObservationsSha256": "9cc913450afc04168a73de85b8df97210eb90cef62e89c3ab6e823353adb2bd2"
  },
  "runs": {
   "c0-clean": {
@@ -523,7 +534,7 @@
     "namesNeverSampled": 259,
     "expectedNamesPresentAtARandomMoment": {
      "lowerBound": 1.313,
-     "upperBound": 2.624
+     "upperBound": 3.472
     }
    }
   },
@@ -540,7 +551,7 @@
     "namesNeverSampled": 0,
     "expectedNamesPresentAtARandomMoment": {
      "lowerBound": 0.116,
-     "upperBound": 0.156
+     "upperBound": 0.213
     }
    }
   },
@@ -557,7 +568,7 @@
     "namesNeverSampled": 0,
     "expectedNamesPresentAtARandomMoment": {
      "lowerBound": 0.01,
-     "upperBound": 0.013
+     "upperBound": 0.018
     }
    }
   },
@@ -576,7 +587,7 @@
     "namesNeverSampled": 0,
     "expectedNamesPresentAtARandomMoment": {
      "lowerBound": 0.294,
-     "upperBound": 0.297
+     "upperBound": 0.302
     }
    }
   },
@@ -593,7 +604,7 @@
     "namesNeverSampled": 30,
     "expectedNamesPresentAtARandomMoment": {
      "lowerBound": 0.0,
-     "upperBound": 0.109
+     "upperBound": 0.145
     }
    }
   },
@@ -610,7 +621,7 @@
     "namesNeverSampled": 4,
     "expectedNamesPresentAtARandomMoment": {
      "lowerBound": 0.0,
-     "upperBound": 0.013
+     "upperBound": 0.016
     }
    }
   },
@@ -627,7 +638,7 @@
     "namesNeverSampled": 31,
     "expectedNamesPresentAtARandomMoment": {
      "lowerBound": 0.0,
-     "upperBound": 0.115
+     "upperBound": 0.157
     }
    }
   },
@@ -648,7 +659,7 @@
     "namesNeverSampled": 0,
     "expectedNamesPresentAtARandomMoment": {
      "lowerBound": 1.12,
-     "upperBound": 1.159
+     "upperBound": 1.216
     }
    }
   },
@@ -667,7 +678,7 @@
     "namesNeverSampled": 0,
     "expectedNamesPresentAtARandomMoment": {
      "lowerBound": 1.373,
-     "upperBound": 1.438
+     "upperBound": 1.533
     }
    }
   }
@@ -1462,7 +1473,7 @@
     "namesNeverSampled": 0,
     "expectedNamesPresentAtARandomMoment": {
      "lowerBound": 1.373,
-     "upperBound": 1.438
+     "upperBound": 1.533
     }
    },
    "rule": "R2-chrome-singleton",
@@ -1527,7 +1538,7 @@
     "namesNeverSampled": 30,
     "expectedNamesPresentAtARandomMoment": {
      "lowerBound": 0.007,
-     "upperBound": 0.191
+     "upperBound": 0.336
     }
    },
    "rule": "R9-test-file",
@@ -1580,7 +1591,7 @@
     "namesNeverSampled": 0,
     "expectedNamesPresentAtARandomMoment": {
      "lowerBound": 0.091,
-     "upperBound": 0.095
+     "upperBound": 0.099
     }
    },
    "rule": "R9-test-file",
@@ -1633,7 +1644,7 @@
     "namesNeverSampled": 40,
     "expectedNamesPresentAtARandomMoment": {
      "lowerBound": 0.007,
-     "upperBound": 0.191
+     "upperBound": 0.296
     }
    },
    "rule": "R9-test-file",
@@ -1687,7 +1698,7 @@
     "namesNeverSampled": 66,
     "expectedNamesPresentAtARandomMoment": {
      "lowerBound": 0.203,
-     "upperBound": 0.677
+     "upperBound": 1.095
     }
    },
    "rule": "R9-test-file",
@@ -1741,7 +1752,7 @@
     "namesNeverSampled": 85,
     "expectedNamesPresentAtARandomMoment": {
      "lowerBound": 0.053,
-     "upperBound": 0.525
+     "upperBound": 0.862
     }
    },
    "rule": "R9-test-file",
@@ -1795,7 +1806,7 @@
     "namesNeverSampled": 0,
     "expectedNamesPresentAtARandomMoment": {
      "lowerBound": 0.244,
-     "upperBound": 0.247
+     "upperBound": 0.252
     }
    },
    "rule": "R9-test-file",
@@ -1855,7 +1866,7 @@
     "namesNeverSampled": 100,
     "expectedNamesPresentAtARandomMoment": {
      "lowerBound": 0.169,
-     "upperBound": 0.71
+     "upperBound": 1.086
     }
    },
    "rule": "R9-test-file",
@@ -1912,7 +1923,7 @@
     "namesNeverSampled": 103,
     "expectedNamesPresentAtARandomMoment": {
      "lowerBound": 0.166,
-     "upperBound": 0.683
+     "upperBound": 1.014
     }
    },
    "rule": "R9-test-file",
@@ -1966,7 +1977,7 @@
     "namesNeverSampled": 18,
     "expectedNamesPresentAtARandomMoment": {
      "lowerBound": 0.05,
-     "upperBound": 0.347
+     "upperBound": 0.702
     }
    },
    "rule": "R9-test-file",
@@ -2020,7 +2031,7 @@
     "namesNeverSampled": 0,
     "expectedNamesPresentAtARandomMoment": {
      "lowerBound": 0.244,
-     "upperBound": 0.248
+     "upperBound": 0.252
     }
    },
    "rule": "R9-test-file",
@@ -2074,7 +2085,7 @@
     "namesNeverSampled": 0,
     "expectedNamesPresentAtARandomMoment": {
      "lowerBound": 0.294,
-     "upperBound": 0.297
+     "upperBound": 0.302
     }
    },
    "rule": "R9-test-file",
@@ -2127,7 +2138,7 @@
     "namesNeverSampled": 0,
     "expectedNamesPresentAtARandomMoment": {
      "lowerBound": 0.017,
-     "upperBound": 0.02
+     "upperBound": 0.025
     }
    },
    "rule": "R9-test-file",
@@ -2180,7 +2191,7 @@
     "namesNeverSampled": 0,
     "expectedNamesPresentAtARandomMoment": {
      "lowerBound": 0.017,
-     "upperBound": 0.02
+     "upperBound": 0.025
     }
    },
    "rule": "R9-test-file",
@@ -2259,7 +2270,7 @@
     "namesNeverSampled": 0,
     "expectedNamesPresentAtARandomMoment": {
      "lowerBound": 0.836,
-     "upperBound": 0.839
+     "upperBound": 0.844
     }
    },
    "rule": "R9-test-file",
@@ -2313,7 +2324,7 @@
     "namesNeverSampled": 0,
     "expectedNamesPresentAtARandomMoment": {
      "lowerBound": 0.154,
-     "upperBound": 0.157
+     "upperBound": 0.162
     }
    },
    "rule": "R9-test-file",
@@ -2400,7 +2411,7 @@
     "namesNeverSampled": 0,
     "expectedNamesPresentAtARandomMoment": {
      "lowerBound": 1.12,
-     "upperBound": 1.159
+     "upperBound": 1.216
     }
    },
    "rule": "R3-browser-profile",
@@ -2453,7 +2464,7 @@
     "namesNeverSampled": 0,
     "expectedNamesPresentAtARandomMoment": {
      "lowerBound": 0.131,
-     "upperBound": 0.134
+     "upperBound": 0.139
     }
    },
    "rule": "R9-test-file",
@@ -2506,7 +2517,7 @@
     "namesNeverSampled": 0,
     "expectedNamesPresentAtARandomMoment": {
      "lowerBound": 0.402,
-     "upperBound": 0.428
+     "upperBound": 0.466
     }
    },
    "rule": "R9-test-file",
@@ -2613,7 +2624,7 @@
     "namesNeverSampled": 259,
     "expectedNamesPresentAtARandomMoment": {
      "lowerBound": 1.313,
-     "upperBound": 2.624
+     "upperBound": 3.472
     }
    },
    "rule": "R1-fixture-sweep-landed",
@@ -2730,7 +2741,7 @@
     "namesNeverSampled": 5,
     "expectedNamesPresentAtARandomMoment": {
      "lowerBound": 1.273,
-     "upperBound": 1.418
+     "upperBound": 1.607
     }
    },
    "rule": "R1-fixture-sweep-landed",
@@ -2783,7 +2794,7 @@
     "namesNeverSampled": 1,
     "expectedNamesPresentAtARandomMoment": {
      "lowerBound": 0.045,
-     "upperBound": 0.091
+     "upperBound": 0.154
     }
    },
    "rule": "R9-test-file",
@@ -2835,7 +2846,7 @@
     "namesNeverSampled": 0,
     "expectedNamesPresentAtARandomMoment": {
      "lowerBound": 0.007,
-     "upperBound": 0.01
+     "upperBound": 0.015
     }
    },
    "rule": "R9-test-file",
@@ -2887,7 +2898,7 @@
     "namesNeverSampled": 0,
     "expectedNamesPresentAtARandomMoment": {
      "lowerBound": 0.007,
-     "upperBound": 0.01
+     "upperBound": 0.015
     }
    },
    "rule": "R9-test-file",
@@ -2958,7 +2969,7 @@
     "namesNeverSampled": 0,
     "expectedNamesPresentAtARandomMoment": {
      "lowerBound": 1.032,
-     "upperBound": 1.035
+     "upperBound": 1.04
     }
    },
    "rule": "R5-npm-compile-cache",
@@ -3000,7 +3011,7 @@
     "namesNeverSampled": 0,
     "expectedNamesPresentAtARandomMoment": {
      "lowerBound": 0.021,
-     "upperBound": 0.054
+     "upperBound": 0.101
     }
    },
    "rule": "R7-stale-lock-by-design",
@@ -3064,7 +3075,7 @@
     "namesNeverSampled": 0,
     "expectedNamesPresentAtARandomMoment": {
      "lowerBound": 3.589,
-     "upperBound": 3.612
+     "upperBound": 3.645
     }
    },
    "rule": "R4-vitest-project-directory",
@@ -3074,7 +3085,13 @@
    ],
    "topLevelChildrenOfOneObserved": [
     "ssr"
-   ]
+   ],
+   "topLevelChildrenCarriedFrom": {
+    "record": "docs/evidence/scratch-prefix-census-2026-10-23/census-2026-10-24.json",
+    "atCommit": "e2aae62efc5a4c7d346f03a2c581c852b5ea8802",
+    "path": "leftBySIGKILL[26].topLevelChildrenOfOneObserved (class nanoid-21)",
+    "blobSha256": "39e107b0594b5996277c0cf300bf15d460b9496dcfac1578cebad53ce0ef8bdb"
+   }
   }
  ],
  "neverLeftInTheseKills": [
@@ -5429,17 +5446,17 @@
   {
    "rule": "R2-chrome-singleton",
    "disposition": "stated residual",
-   "why": "Chrome makes this directory itself; its name carries no owner. PR 515 removes it when the launching process survives to run its cleanup; a SIGKILLed runner runs none. It can be removed only through the profile's SingletonSocket link (follow-up F1)."
+   "why": "Chrome makes this directory itself; its name carries no owner. PR 515 (merged as a088f1ca on main, after this run commit) removes it when the launching process survives to run its cleanup; a SIGKILLed runner runs none. Follow-up F1's sweep would reach it through the profile's SingletonSocket link; a run wrapper (F3) or F2's TMPDIR mechanism would also contain it."
   },
   {
    "rule": "R3-browser-profile",
    "disposition": "owner-pid name and sweep",
-   "why": "Proposed, not covered by PR 509 or 515: name the profile with the owner pid and extend the sweep to it, reading SingletonSocket and refusing while a process still carries the --user-data-dir marker (follow-up F1). Until then a residual."
+   "why": "Proposed, not covered by PR 509 or 515: name the profile with the owner pid and extend the sweep to it. The sweep must refuse while a process's arguments carry the exact element --user-data-dir=<profile> (no trailing slash: cdp-browser.ts launches Chrome with --user-data-dir=${profile}, line 462 at the run commit) and must carry the guards listed in follow-up F1. Until then a residual."
   },
   {
    "rule": "R4-vitest-project-directory",
    "disposition": "stated residual",
-   "why": "Created by vitest itself in its main process (TestProject.tmpDir = join(tmpdir(), nanoid())), before any test runs, so a test-kit root cannot contain it. A run wrapper that sets TMPDIR to an owner-pid root would (follow-up F3)."
+   "why": "Created by vitest itself in its main process (TestProject.tmpDir = join(tmpdir(), nanoid())), one per project as each project starts (vitestProjectDirectoriesInTheCleanRun gives the first sightings), so a test-kit root installed by a worker cannot contain it. A run wrapper that sets TMPDIR to an owner-pid root would (follow-up F3)."
   },
   {
    "rule": "R5-npm-compile-cache",
@@ -5449,7 +5466,7 @@
   {
    "rule": "R6-non-test-module",
    "disposition": "test-kit temp root",
-   "why": "Created by a non-test module under apps/ or packages/: operator code that a test runs (dossier-trigger.ts, self-corpus.ts) or test support (test-model-fixture.ts, cdp-browser.ts when no sweep applies). It calls os.tmpdir() at the point of use, which reads TMPDIR then, so a test-kit root installed as TMPDIR in the worker reaches it; the same code run by an operator keeps its directories in the operator's TMPDIR by design."
+   "why": "Created by a non-test module under apps/, packages/ or scripts/: operator code that a test runs (dossier-trigger.ts, self-corpus.ts, redis-shaped-measure-main.ts). It calls os.tmpdir() at the point of use, which reads TMPDIR then. Conditional on follow-up F2 being lodged on syzygy-bpyt.4.4: a root installed as process.env.TMPDIR in the worker would reach these modules, while a tempDir() helper alone cannot, because they call mkdtempSync(join(tmpdir(), ...)) themselves. The same code run by an operator keeps its directories in the operator's TMPDIR by design."
   },
   {
    "rule": "R7-stale-lock-by-design",
@@ -5464,7 +5481,7 @@
   {
    "rule": "R9-test-file",
    "disposition": "test-kit temp root",
-   "why": "Created by a test file. The kit's tempDir() (syzygy-bpyt.4.4) makes one owner-pid root per process and every test directory lives under it, so one sweep covers all of them."
+   "why": "Created by a test file (.test.ts, .browser.test.ts or .testkit.ts). Conditional on follow-up F2 being lodged on syzygy-bpyt.4.4: as written that bead describes a private tempDir() helper that test files adopt and says nothing of an owner-pid root, a sweep or an assigned TMPDIR. If F2 lands, one owner-pid root per worker process holds every test directory and one sweep covers all of them. Until then this disposition is a proposal, not a mechanism."
   }
  ],
  "namesTheSamplerSawThatNoTraceLineCarries": {
@@ -5579,6 +5596,19 @@
    }
   }
  },
+ "vitestProjectDirectoriesInTheCleanRun": {
+  "count": 7,
+  "firstSightingSeconds": [
+   1.51,
+   1.51,
+   36.93,
+   75.99,
+   126.24,
+   131.29,
+   138.85
+  ],
+  "runLastedSeconds": 151.7
+ },
  "samplerAgainstFinalListing": {
   "c0-clean": {
    "inListingNotInSampler": [],
@@ -5658,6 +5688,8 @@
     "sites": 326
    }
   },
+  "sitesWithAPrefixLiteral": 179,
+  "sitesWithoutOne": 412,
   "filesWithASiteThatWasTheInnermostCreatingFrameInSomeRun": 80,
   "filesWithASiteThatAppearedInSomeFrame": 81,
   "filesWithASiteNeverSeen": 180,
@@ -5670,635 +5702,676 @@
   },
   "neverSeen": {
    ".syzygy/governance/contracts/candidates/scripts/build_active_manifest.py": [
-    "(a prefix passed as a variable)"
+    "manifest-selftest-"
    ],
    ".syzygy/governance/contracts/candidates/scripts/build_budget_report.py": [
-    "(a prefix passed as a variable)"
+    "(a site with no prefix literal on its line: built some other way)"
    ],
    ".syzygy/governance/contracts/candidates/scripts/build_contract_index.py": [
-    "(a prefix passed as a variable)"
+    "index-selftest-"
    ],
    ".syzygy/governance/contracts/candidates/scripts/build_dependency_index.py": [
-    "(a prefix passed as a variable)"
+    "depindex-selftest-"
    ],
    ".syzygy/governance/contracts/candidates/scripts/verify_final_prespec.py": [
-    "(a prefix passed as a variable)"
+    "prespec-selftest-"
    ],
    "apps/three-surface-poc/src/capture-test-artifact.test.ts": [
-    "(a prefix passed as a variable)"
+    "(a site with no prefix literal on its line: built some other way)"
    ],
    "apps/three-surface-poc/src/cdp-browser.test.ts": [
-    "(a prefix passed as a variable)"
+    "(a site with no prefix literal on its line: built some other way)"
    ],
    "apps/three-surface-poc/src/cli.test.ts": [
-    "(a prefix passed as a variable)"
+    "(a site with no prefix literal on its line: built some other way)"
    ],
    "apps/three-surface-poc/src/fixture-directories.ts": [
-    "(a prefix passed as a variable)"
+    "(a site with no prefix literal on its line: built some other way)"
    ],
    "apps/three-surface-poc/src/fresh-checkout-demo-main.ts": [
-    "(a prefix passed as a variable)"
+    "syzygy-poc-fresh-"
    ],
    "apps/three-surface-poc/src/keyboard-sweep-record.test.ts": [
-    "(a prefix passed as a variable)"
+    "(a site with no prefix literal on its line: built some other way)"
    ],
    "apps/three-surface-poc/src/poc-main.ts": [
-    "(a prefix passed as a variable)"
+    "(a site with no prefix literal on its line: built some other way)"
    ],
    "apps/three-surface-poc/src/polaris-accessibility-main.ts": [
-    "(a prefix passed as a variable)"
+    "syzygy-poc-a11y-"
    ],
    "apps/three-surface-poc/src/polaris-generation/dossier-render-main.ts": [
-    "(a prefix passed as a variable)"
+    "(a site with no prefix literal on its line: built some other way)"
    ],
    "apps/three-surface-poc/src/polaris-generation/generation-mutation-run-main.ts": [
-    "(a prefix passed as a variable)"
+    "generation-mutation-"
    ],
    "apps/three-surface-poc/src/polaris-keyboard-sweep-main.ts": [
-    "(a prefix passed as a variable)"
+    "syzygy-poc-keyboard-sweep-"
    ],
    "apps/three-surface-poc/src/pwb-mutation-run-main.ts": [
-    "(a prefix passed as a variable)"
+    "pwb-mutation-"
    ],
    "apps/three-surface-poc/src/pwb-mutation-sweep-main.ts": [
-    "(a prefix passed as a variable)"
+    "pwb-mutation-sweep-"
    ],
    "apps/three-surface-poc/src/restart.ts": [
-    "(a prefix passed as a variable)"
+    "syzygy-poc-restart-"
    ],
    "docs/evidence/fixture-pid-sweep-review-2026-10-24/r1/count_sweeps.py": [
-    "(a prefix passed as a variable)"
+    "(a site with no prefix literal on its line: built some other way)"
    ],
    "docs/evidence/fixture-pid-sweep-review-2026-10-24/r1/inner_sweep.mjs": [
-    "(a prefix passed as a variable)"
+    "(a site with no prefix literal on its line: built some other way)"
    ],
    "docs/evidence/fixture-pid-sweep-review-2026-10-24/r1/my_kill_probe.py": [
-    "(a prefix passed as a variable)"
+    "(a site with no prefix literal on its line: built some other way)"
    ],
    "docs/evidence/fixture-pid-sweep-review-2026-10-24/r1/my_mutants.py": [
-    "(a prefix passed as a variable)"
+    "(a site with no prefix literal on its line: built some other way)"
    ],
    "docs/evidence/fixture-pid-sweep-review-2026-10-24/r1/ns_probe.mjs": [
-    "(a prefix passed as a variable)"
+    "(a site with no prefix literal on its line: built some other way)"
    ],
    "docs/evidence/fixture-pid-sweep-review-2026-10-24/r1/race_probe.mjs": [
-    "(a prefix passed as a variable)"
+    "(a site with no prefix literal on its line: built some other way)"
    ],
    "docs/evidence/fixture-pid-sweep-review-2026-10-24/r1/safety_probe.mjs": [
-    "(a prefix passed as a variable)"
+    "(a site with no prefix literal on its line: built some other way)"
    ],
    "docs/evidence/fixture-pid-sweep-review-2026-10-24/r1/term_probe.py": [
-    "(a prefix passed as a variable)"
+    "(a site with no prefix literal on its line: built some other way)"
    ],
    "docs/evidence/fixture-pid-sweep-review-2026-10-24/r2/cli_probe.py": [
-    "(a prefix passed as a variable)"
+    "(a site with no prefix literal on its line: built some other way)"
    ],
    "docs/evidence/fixture-pid-sweep-review-2026-10-24/r2/fixture-directories.built.mjs": [
-    "(a prefix passed as a variable)"
+    "(a site with no prefix literal on its line: built some other way)"
    ],
    "docs/evidence/fixture-pid-sweep-review-2026-10-24/r2/fixture-directories.uid-guard-dropped.mjs": [
-    "(a prefix passed as a variable)"
+    "(a site with no prefix literal on its line: built some other way)"
    ],
    "docs/evidence/fixture-pid-sweep-review-2026-10-24/r2/foreign_owner_probe.py": [
-    "(a prefix passed as a variable)"
+    "(a site with no prefix literal on its line: built some other way)"
    ],
    "docs/evidence/fixture-pid-sweep-review-2026-10-24/r2/holder.mjs": [
-    "(a prefix passed as a variable)"
+    "(a site with no prefix literal on its line: built some other way)"
    ],
    "docs/evidence/fixture-pid-sweep-review-2026-10-24/r2/kill_probe.py": [
-    "(a prefix passed as a variable)"
+    "(a site with no prefix literal on its line: built some other way)"
    ],
    "docs/evidence/fixture-pid-sweep-review-2026-10-24/r2/my_mutants.py": [
-    "(a prefix passed as a variable)"
+    "(a site with no prefix literal on its line: built some other way)"
    ],
    "docs/evidence/fixture-pid-sweep-review-2026-10-24/r2/race_probe.mjs": [
-    "(a prefix passed as a variable)"
+    "(a site with no prefix literal on its line: built some other way)"
    ],
    "docs/evidence/fixture-pid-sweep-review-2026-10-24/r3/cli_probe.py": [
-    "(a prefix passed as a variable)"
+    "(a site with no prefix literal on its line: built some other way)"
    ],
    "docs/evidence/fixture-pid-sweep-review-2026-10-24/r3/find_mine.py": [
-    "(a prefix passed as a variable)"
+    "(a site with no prefix literal on its line: built some other way)"
    ],
    "docs/evidence/fixture-pid-sweep-review-2026-10-24/r3/fixture-directories.head.mjs": [
-    "(a prefix passed as a variable)"
+    "(a site with no prefix literal on its line: built some other way)"
    ],
    "docs/evidence/fixture-pid-sweep-review-2026-10-24/r3/fixture-directories.reads-as-0.mjs": [
-    "(a prefix passed as a variable)"
+    "(a site with no prefix literal on its line: built some other way)"
    ],
    "docs/evidence/fixture-pid-sweep-review-2026-10-24/r3/holder.mjs": [
-    "(a prefix passed as a variable)"
+    "(a site with no prefix literal on its line: built some other way)"
    ],
    "docs/evidence/fixture-pid-sweep-review-2026-10-24/r3/kill_probe.py": [
-    "(a prefix passed as a variable)"
+    "(a site with no prefix literal on its line: built some other way)"
    ],
    "docs/evidence/fixture-pid-sweep-review-2026-10-24/r3/my_mutants.py": [
-    "(a prefix passed as a variable)"
+    "(a site with no prefix literal on its line: built some other way)"
    ],
    "docs/evidence/fixture-pid-sweep-review-2026-10-24/r3/ns_probe.py": [
-    "(a prefix passed as a variable)"
+    "(a site with no prefix literal on its line: built some other way)"
    ],
    "docs/evidence/island-decoupling-review-2026-10-22/tools/mutate.py": [
-    "(a prefix passed as a variable)"
+    "(a site with no prefix literal on its line: built some other way)"
    ],
    "docs/evidence/launch-form-postcondition-review-2026-10-22/tools/compare.py": [
-    "(a prefix passed as a variable)"
+    "(a site with no prefix literal on its line: built some other way)"
    ],
    "docs/evidence/launch-form-snapshot-review-2026-10-22/tools/fifo_probe.mjs": [
-    "(a prefix passed as a variable)"
+    "r516-probe-"
    ],
    "docs/evidence/non-human-principal-pins-2026-10-22/mutate_non_human_principal.py": [
-    "(a prefix passed as a variable)"
+    "(a site with no prefix literal on its line: built some other way)"
    ],
    "docs/evidence/poc-core-hygiene-2026-10-22/export_census.py": [
-    "(a prefix passed as a variable)"
+    "(a site with no prefix literal on its line: built some other way)"
    ],
    "docs/evidence/poc-core-hygiene-2026-10-22/mutate_census.py": [
-    "(a prefix passed as a variable)"
+    "(a site with no prefix literal on its line: built some other way)"
    ],
    "docs/evidence/poc-core-hygiene-2026-10-22/mutate_comment_only.py": [
-    "(a prefix passed as a variable)"
+    "(a site with no prefix literal on its line: built some other way)"
    ],
    "docs/evidence/poc-core-hygiene-2026-10-22/mutate_compare_captures.py": [
-    "(a prefix passed as a variable)"
+    "(a site with no prefix literal on its line: built some other way)"
    ],
    "docs/evidence/poc-core-hygiene-2026-10-22/route-capture.mjs": [
-    "(a prefix passed as a variable)"
+    "zz-route-capture-"
    ],
    "docs/evidence/poc-core-hygiene-2026-10-22/route_capture_leak_check.py": [
-    "(a prefix passed as a variable)"
+    "zz-leak-check-"
    ],
    "docs/evidence/poc-fixture-leak-2026-10-22/cli_sweep_probe.py": [
-    "(a prefix passed as a variable)"
+    "(a site with no prefix literal on its line: built some other way)"
    ],
    "docs/evidence/poc-fixture-leak-2026-10-22/guard_probe.py": [
-    "(a prefix passed as a variable)"
+    "(a site with no prefix literal on its line: built some other way)"
    ],
    "docs/evidence/poc-fixture-leak-2026-10-22/interrupt_probe.py": [
-    "(a prefix passed as a variable)"
+    "(a site with no prefix literal on its line: built some other way)"
    ],
    "docs/evidence/poc-fixture-leak-2026-10-22/kill_then_fresh_run.py": [
-    "(a prefix passed as a variable)"
+    "zz-kill-fresh-",
+    "(a site with no prefix literal on its line: built some other way)"
    ],
    "docs/evidence/poc-fixture-leak-2026-10-22/mutate_sweep.py": [
-    "(a prefix passed as a variable)"
+    "zz-mutate-sweep-",
+    "(a site with no prefix literal on its line: built some other way)"
    ],
    "docs/evidence/poc-fixture-leak-2026-10-22/ns_holder.mjs": [
-    "(a prefix passed as a variable)"
+    "(a site with no prefix literal on its line: built some other way)"
    ],
    "docs/evidence/poc-fixture-leak-2026-10-22/ns_sandbox_probe.py": [
-    "(a prefix passed as a variable)"
+    "(a site with no prefix literal on its line: built some other way)"
    ],
    "docs/evidence/poc-hygiene-2026-10-22/assemble_census.py": [
-    "(a prefix passed as a variable)"
+    "zz-assemble-census-"
    ],
    "docs/evidence/poc-hygiene-2026-10-22/invocation_forms.py": [
-    "(a prefix passed as a variable)"
+    "zz-invocation-forms-"
    ],
    "docs/evidence/poc-hygiene-2026-10-22/limb_isolation.py": [
-    "(a prefix passed as a variable)"
+    "zz-limb-isolation-"
    ],
    "docs/evidence/poc-hygiene-2026-10-22/mutate_main.py": [
-    "(a prefix passed as a variable)"
+    "zz-mutate-main-"
    ],
    "docs/evidence/poc-hygiene-2026-10-22/route-capture.mjs": [
-    "(a prefix passed as a variable)"
+    "zz-route-capture-"
    ],
    "docs/evidence/poc-hygiene-2026-10-22/run_differential.py": [
-    "(a prefix passed as a variable)"
+    "zz-differential-"
    ],
    "docs/evidence/poc-main-wiring-2026-10-22/mutate_comparators.py": [
-    "(a prefix passed as a variable)"
+    "zz-mutate-comparators-"
    ],
    "docs/evidence/poc-main-wiring-2026-10-22/mutate_dist_compare.py": [
-    "(a prefix passed as a variable)"
+    "zz-mutate-dist-"
    ],
    "docs/evidence/poc-main-wiring-2026-10-22/mutate_sweep_waits.py": [
-    "(a prefix passed as a variable)"
+    "zz-sweep-waits-"
    ],
    "docs/evidence/poc-main-wiring-2026-10-22/mutate_wiring.py": [
-    "(a prefix passed as a variable)"
+    "zz-mutate-wiring-"
    ],
    "docs/evidence/poc-main-wiring-2026-10-22/run_differential_fixed_roots.py": [
-    "(a prefix passed as a variable)"
+    "zz-differential-",
+    "zz-main-repo-"
    ],
    "docs/evidence/scratch-prefix-census-2026-10-23/census_run.py": [
-    "(a prefix passed as a variable)"
+    "(a site with no prefix literal on its line: built some other way)"
    ],
    "docs/evidence/scratch-prefix-census-2026-10-23/scratch_trace.cjs": [
-    "(a prefix passed as a variable)"
+    "(a site with no prefix literal on its line: built some other way)"
    ],
    "docs/evidence/scratch-prefix-census-2026-10-23/static_sites.py": [
-    "(a prefix passed as a variable)"
+    "(a site with no prefix literal on its line: built some other way)"
    ],
    "docs/evidence/scratch-prefix-census-2026-10-23/trace_fixture.mjs": [
-    "(a prefix passed as a variable)"
+    "st-callback-",
+    "st-child-",
+    "st-nested-",
+    "st-promise-",
+    "st-sync-",
+    "(a site with no prefix literal on its line: built some other way)"
    ],
    "docs/evidence/scratch-prefix-census-2026-10-23/trace_selftest.py": [
-    "(a prefix passed as a variable)"
+    "(a site with no prefix literal on its line: built some other way)"
    ],
    "docs/evidence/syzygy-bpyt-7-2/route-diff.mjs": [
-    "(a prefix passed as a variable)"
+    "zz-rd-"
    ],
    "docs/evidence/syzygy-bpyt-8-1/mutate.py": [
-    "(a prefix passed as a variable)"
+    "(a site with no prefix literal on its line: built some other way)"
    ],
    "docs/evidence/syzygy-bpyt-8-1/regen_check.py": [
-    "(a prefix passed as a variable)"
+    "(a site with no prefix literal on its line: built some other way)"
    ],
    "packages/cap1-system/src/daemon-entry-unchanged.system.test.ts": [
-    "(a prefix passed as a variable)"
+    "syz-entry-"
    ],
    "packages/cap1-system/src/effect-observer.ts": [
-    "(a prefix passed as a variable)"
+    "syz-effect-trace-"
    ],
    "packages/cap1-system/src/harness.ts": [
-    "(a prefix passed as a variable)"
+    "(a site with no prefix literal on its line: built some other way)"
    ],
    "packages/polaris-dossier/src/full-run.testkit.ts": [
-    "(a prefix passed as a variable)"
+    "(a site with no prefix literal on its line: built some other way)"
    ],
    "packages/polaris-dossier/src/polaris.ts": [
     "polaris-"
    ],
    "packages/polaris-dossier/src/session-view.ts": [
-    "(a prefix passed as a variable)"
+    "polaris-view-probe-"
    ],
    "packages/three-surface-poc-core/src/test-artifact-verification-live-source.test.ts": [
-    "(a prefix passed as a variable)"
+    "(a site with no prefix literal on its line: built some other way)"
    ],
    "packages/three-surface-poc-core/src/test-cleanup.test.ts": [
-    "(a prefix passed as a variable)"
+    "(a site with no prefix literal on its line: built some other way)"
    ],
    "scripts/build_cap1_trusted_bootstrap_consent_adoption.py": [
-    "(a prefix passed as a variable)"
+    "(a site with no prefix literal on its line: built some other way)"
    ],
    "scripts/build_contract_readability_restyle.py": [
-    "(a prefix passed as a variable)"
+    "(a site with no prefix literal on its line: built some other way)"
    ],
    "scripts/build_dossier_agent_provider_v2.py": [
-    "(a prefix passed as a variable)"
+    "(a site with no prefix literal on its line: built some other way)"
    ],
    "scripts/build_dossier_local_agent_acts.py": [
-    "(a prefix passed as a variable)"
+    "(a site with no prefix literal on its line: built some other way)"
    ],
    "scripts/build_general_trusted_bootstrap_impact_ledger.py": [
-    "(a prefix passed as a variable)"
+    "general-bootstrap-impact-"
    ],
    "scripts/build_general_trusted_bootstrap_transaction.py": [
-    "(a prefix passed as a variable)"
+    "general-bootstrap-tx-"
    ],
    "scripts/build_polaris_dependency_unions.py": [
-    "(a prefix passed as a variable)"
+    "(a site with no prefix literal on its line: built some other way)"
    ],
    "scripts/build_polaris_dossier_local_agent_mode.py": [
-    "(a prefix passed as a variable)"
+    "dossier-recount-",
+    "(a site with no prefix literal on its line: built some other way)"
    ],
    "scripts/build_polaris_dossier_local_agent_mode_v1_1.py": [
-    "(a prefix passed as a variable)"
+    "dossier-v11-",
+    "(a site with no prefix literal on its line: built some other way)"
    ],
    "scripts/build_polaris_dossier_local_agent_mode_v1_2.py": [
-    "(a prefix passed as a variable)"
+    "dossier-v12-",
+    "(a site with no prefix literal on its line: built some other way)"
    ],
    "scripts/build_polaris_edit_repair_deletion_scenario.py": [
-    "(a prefix passed as a variable)"
+    "polaris-edit-repair-deletion-",
+    "polaris-edit-repair-deletion-selftest-"
    ],
    "scripts/build_provider_route_messages_api_entry.py": [
-    "(a prefix passed as a variable)"
+    "(a site with no prefix literal on its line: built some other way)"
    ],
    "scripts/build_public_admission_registry_entries.py": [
-    "(a prefix passed as a variable)"
+    "(a site with no prefix literal on its line: built some other way)"
    ],
    "scripts/build_public_egress_v2.py": [
-    "(a prefix passed as a variable)"
+    "(a site with no prefix literal on its line: built some other way)"
    ],
    "scripts/build_public_git_source_acquisition_local_agent.py": [
-    "(a prefix passed as a variable)"
+    "(a site with no prefix literal on its line: built some other way)"
    ],
    "scripts/build_public_repo_admission.py": [
-    "(a prefix passed as a variable)"
+    "(a site with no prefix literal on its line: built some other way)"
    ],
    "scripts/build_public_source_screening_scope.py": [
-    "(a prefix passed as a variable)"
+    "reader-mutant-",
+    "(a site with no prefix literal on its line: built some other way)"
    ],
    "scripts/build_public_source_screening_scope_v2.py": [
-    "(a prefix passed as a variable)"
+    "(a site with no prefix literal on its line: built some other way)"
    ],
    "scripts/build_public_source_screening_scope_v3.py": [
-    "(a prefix passed as a variable)"
+    "(a site with no prefix literal on its line: built some other way)"
    ],
    "scripts/build_public_source_screening_scope_v4.py": [
-    "(a prefix passed as a variable)"
+    "(a site with no prefix literal on its line: built some other way)"
    ],
    "scripts/build_pwb_anchor_resolution_amendment.py": [
-    "(a prefix passed as a variable)"
+    "(a site with no prefix literal on its line: built some other way)"
    ],
    "scripts/build_pwb_behavior_contract_repin.py": [
-    "(a prefix passed as a variable)"
+    "(a site with no prefix literal on its line: built some other way)"
    ],
    "scripts/build_pwb_behavior_contract_repin_tree_framing.py": [
-    "(a prefix passed as a variable)"
+    "(a site with no prefix literal on its line: built some other way)"
    ],
    "scripts/build_pwb_class_granular_extraction_amendment.py": [
-    "(a prefix passed as a variable)"
+    "(a site with no prefix literal on its line: built some other way)"
    ],
    "scripts/build_pwb_container_shape_profile_amendment.py": [
-    "(a prefix passed as a variable)"
+    "(a site with no prefix literal on its line: built some other way)"
    ],
    "scripts/build_pwb_dismissal_expiry_amendment.py": [
-    "(a prefix passed as a variable)"
+    "(a site with no prefix literal on its line: built some other way)"
    ],
    "scripts/build_pwb_exact_source_render_mode_amendment.py": [
-    "(a prefix passed as a variable)"
+    "(a site with no prefix literal on its line: built some other way)"
    ],
    "scripts/build_pwb_item_depth_amendment.py": [
-    "(a prefix passed as a variable)"
+    "(a site with no prefix literal on its line: built some other way)"
    ],
    "scripts/build_pwb_machine_view_amendment.py": [
-    "(a prefix passed as a variable)"
+    "(a site with no prefix literal on its line: built some other way)"
    ],
    "scripts/build_pwb_missing_currency_disclosure_scenario.py": [
-    "(a prefix passed as a variable)"
+    "(a site with no prefix literal on its line: built some other way)"
    ],
    "scripts/build_pwb_opening_band_scenario.py": [
-    "(a prefix passed as a variable)"
+    "(a site with no prefix literal on its line: built some other way)"
    ],
    "scripts/build_pwb_readability_successor.py": [
-    "(a prefix passed as a variable)"
+    "(a site with no prefix literal on its line: built some other way)"
    ],
    "scripts/build_pwb_registry_currency_briefing_amendment.py": [
-    "(a prefix passed as a variable)"
+    "(a site with no prefix literal on its line: built some other way)"
    ],
    "scripts/build_pwb_registry_loaded_profile_amendment.py": [
-    "(a prefix passed as a variable)"
+    "(a site with no prefix literal on its line: built some other way)"
    ],
    "scripts/build_pwb_registry_machine_ceiling_amendment.py": [
-    "(a prefix passed as a variable)"
+    "(a site with no prefix literal on its line: built some other way)"
    ],
    "scripts/build_pwb_release_label_amendment.py": [
-    "(a prefix passed as a variable)"
+    "(a site with no prefix literal on its line: built some other way)"
    ],
    "scripts/build_pwb_scoped_attributes_amendment.py": [
-    "(a prefix passed as a variable)"
+    "(a site with no prefix literal on its line: built some other way)"
    ],
    "scripts/build_pwb_tree_framing_amendment.py": [
-    "(a prefix passed as a variable)"
+    "(a site with no prefix literal on its line: built some other way)"
    ],
    "scripts/build_pwb_truth_policy_amendment.py": [
-    "(a prefix passed as a variable)"
+    "(a site with no prefix literal on its line: built some other way)"
    ],
    "scripts/build_rfc5_project_documentation_class.py": [
-    "(a prefix passed as a variable)"
+    "(a site with no prefix literal on its line: built some other way)"
    ],
    "scripts/build_rfc7_scoped_values_successor.py": [
-    "(a prefix passed as a variable)"
+    "(a site with no prefix literal on its line: built some other way)"
    ],
    "scripts/build_spec_policy_readability_restyle.py": [
-    "(a prefix passed as a variable)"
+    "(a site with no prefix literal on its line: built some other way)"
    ],
    "scripts/build_three_surface_poc_identity_amendment.py": [
-    "(a prefix passed as a variable)"
+    "(a site with no prefix literal on its line: built some other way)"
    ],
    "scripts/build_three_surface_poc_readability_successor.py": [
-    "(a prefix passed as a variable)"
+    "(a site with no prefix literal on its line: built some other way)"
    ],
    "scripts/build_three_surface_poc_vocabulary_epistemic_amendment.py": [
-    "(a prefix passed as a variable)"
+    "(a site with no prefix literal on its line: built some other way)"
    ],
    "scripts/check_docs_review_campaign_partition.py": [
-    "(a prefix passed as a variable)"
+    "review-partition-selftest-"
    ],
    "scripts/check_evidence_currency.py": [
-    "(a prefix passed as a variable)"
+    "check-evidence-currency-selftest-"
    ],
    "scripts/check_governance.py": [
-    "(a prefix passed as a variable)"
+    "cg1a-selftest-",
+    "cg1g-selftest-",
+    "cg1i-selftest-",
+    "cg7-edit-repair-candidate-",
+    "cg7-restyle-packet-",
+    "cg7-selftest-",
+    "cg7d-selftest-",
+    "cg7e-bare-manifest-selftest-",
+    "cg7e-history-selftest-",
+    "cg7e-near-miss-selftest-",
+    "cg7e-pinned-copy-selftest-",
+    "cg7e-pwb-absent-selftest-",
+    "cg7e-pwb-act-selftest-",
+    "cg7e-pwb-effect-act-selftest-",
+    "cg7e-pwb-effect-amendment-selftest-",
+    "(a site with no prefix literal on its line: built some other way)"
    ],
    "scripts/check_polaris_response_ceiling_reading.py": [
-    "(a prefix passed as a variable)"
+    "(a site with no prefix literal on its line: built some other way)"
    ],
    "scripts/check_quotations.py": [
-    "(a prefix passed as a variable)"
+    "(a site with no prefix literal on its line: built some other way)"
    ],
    "scripts/check_spec_reconciliation.py": [
-    "(a prefix passed as a variable)"
+    "(a site with no prefix literal on its line: built some other way)"
    ],
    "scripts/count_polaris_effective_scenarios.py": [
-    "(a prefix passed as a variable)"
+    "polaris-scenario-count-selftest-",
+    "polaris-scenario-recount-"
    ],
    "scripts/install_redis_local_agent_sitting.py": [
-    "(a prefix passed as a variable)"
+    "(a site with no prefix literal on its line: built some other way)"
    ],
    "scripts/install_redis_sitting.py": [
-    "(a prefix passed as a variable)"
+    "(a site with no prefix literal on its line: built some other way)"
    ],
    "scripts/launch_gate_results.py": [
-    "(a prefix passed as a variable)"
+    "(a site with no prefix literal on its line: built some other way)"
    ],
    "scripts/polaris_generator_approval.py": [
-    "(a prefix passed as a variable)"
+    "(a site with no prefix literal on its line: built some other way)"
    ],
    "scripts/probe_superseded_policy_act_regeneration.py": [
-    "(a prefix passed as a variable)"
+    "probe-superseded-policy-acts-"
    ],
    "scripts/pwb_requirement_amendment.py": [
-    "(a prefix passed as a variable)"
+    "(a site with no prefix literal on its line: built some other way)"
    ],
    "scripts/pwb_signed_selftest.py": [
-    "(a prefix passed as a variable)"
+    "(a site with no prefix literal on its line: built some other way)"
    ],
    "scripts/readability_successor.py": [
-    "(a prefix passed as a variable)"
+    "(a site with no prefix literal on its line: built some other way)"
    ],
    "scripts/record_contract_readability_restyle.py": [
-    "(a prefix passed as a variable)"
+    "(a site with no prefix literal on its line: built some other way)"
    ],
    "scripts/record_dossier_agent_provider_v2_act.py": [
-    "(a prefix passed as a variable)"
+    "(a site with no prefix literal on its line: built some other way)"
    ],
    "scripts/record_dossier_local_agent_acts.py": [
-    "(a prefix passed as a variable)"
+    "(a site with no prefix literal on its line: built some other way)"
    ],
    "scripts/record_messages_api_route_registry_act.py": [
-    "(a prefix passed as a variable)"
+    "(a site with no prefix literal on its line: built some other way)"
    ],
    "scripts/record_narrative_profile_adoption.py": [
-    "(a prefix passed as a variable)"
+    "(a site with no prefix literal on its line: built some other way)"
    ],
    "scripts/record_polaris_understanding_adoption.py": [
-    "(a prefix passed as a variable)"
+    "(a site with no prefix literal on its line: built some other way)"
    ],
    "scripts/record_public_admission_registry_entries_acts.py": [
-    "(a prefix passed as a variable)"
+    "(a site with no prefix literal on its line: built some other way)"
    ],
    "scripts/record_public_egress_v2_act.py": [
-    "(a prefix passed as a variable)"
+    "(a site with no prefix literal on its line: built some other way)"
    ],
    "scripts/record_public_repo_admission_acts.py": [
-    "(a prefix passed as a variable)"
+    "(a site with no prefix literal on its line: built some other way)"
    ],
    "scripts/record_public_source_screening_scope_act.py": [
-    "(a prefix passed as a variable)"
+    "(a site with no prefix literal on its line: built some other way)"
    ],
    "scripts/record_public_source_screening_scope_v2_act.py": [
-    "(a prefix passed as a variable)"
+    "(a site with no prefix literal on its line: built some other way)"
    ],
    "scripts/record_public_source_screening_scope_v3_act.py": [
-    "(a prefix passed as a variable)"
+    "(a site with no prefix literal on its line: built some other way)"
    ],
    "scripts/record_public_source_screening_scope_v4_act.py": [
-    "(a prefix passed as a variable)"
+    "(a site with no prefix literal on its line: built some other way)"
    ],
    "scripts/record_pwb_behavior_amendment_acts.py": [
-    "(a prefix passed as a variable)"
+    "(a site with no prefix literal on its line: built some other way)"
    ],
    "scripts/record_pwb_behavior_contract_repin_acts.py": [
-    "(a prefix passed as a variable)"
+    "(a site with no prefix literal on its line: built some other way)"
    ],
    "scripts/record_pwb_registry_machine_ceiling_act.py": [
     ".p114-",
-    "(a prefix passed as a variable)"
+    "(a site with no prefix literal on its line: built some other way)"
    ],
    "scripts/record_rfc7_scoped_values_successor.py": [
-    "(a prefix passed as a variable)"
+    "(a site with no prefix literal on its line: built some other way)"
    ],
    "scripts/record_spec_policy_readability_restyle.py": [
-    "(a prefix passed as a variable)"
+    "(a site with no prefix literal on its line: built some other way)"
    ],
    "scripts/record_three_surface_poc_readability_successor.py": [
-    "(a prefix passed as a variable)"
+    "(a site with no prefix literal on its line: built some other way)"
    ],
    "scripts/record_versioned_signoff.py": [
-    "(a prefix passed as a variable)"
+    "(a site with no prefix literal on its line: built some other way)"
    ],
    "scripts/redis_screening_remeasure.mjs": [
-    "(a prefix passed as a variable)"
+    "redis-remeasure-mutants-",
+    "redis-remeasure-root-",
+    "redis-remeasure-view-",
+    "(a site with no prefix literal on its line: built some other way)"
    ],
    "scripts/render_launch_administration.py": [
-    "(a prefix passed as a variable)"
+    "(a site with no prefix literal on its line: built some other way)"
    ],
    "scripts/rerun_rule6_mutants_selected_tests.py": [
-    "(a prefix passed as a variable)"
+    "(a site with no prefix literal on its line: built some other way)"
    ],
    "scripts/rule6_mutation_runner.py": [
-    "(a prefix passed as a variable)"
+    "(a site with no prefix literal on its line: built some other way)"
    ],
    "scripts/rule6_timeout_rerun.py": [
-    "(a prefix passed as a variable)"
+    "(a site with no prefix literal on its line: built some other way)"
    ],
    "scripts/run_line_slot_rule6_mutants.py": [
-    "(a prefix passed as a variable)"
+    "(a site with no prefix literal on its line: built some other way)"
    ],
    "scripts/run_m13_literal_mutations.mjs": [
-    "(a prefix passed as a variable)"
+    "syzygy-m13-mutation-"
    ],
    "scripts/run_m7_literal_mutations.mjs": [
-    "(a prefix passed as a variable)"
+    "syzygy-m7-mutation-"
    ],
    "scripts/run_m9_literal_mutations.mjs": [
-    "(a prefix passed as a variable)"
+    "syzygy-m9-mutation-"
    ],
    "scripts/simulate_public_source_screening_scope_act.py": [
-    "(a prefix passed as a variable)"
+    "screening-scope-sim-"
    ],
    "scripts/simulate_redis_local_agent_sitting.py": [
-    "(a prefix passed as a variable)"
+    "local-agent-sitting-"
    ],
    "scripts/simulate_redis_sitting.py": [
-    "(a prefix passed as a variable)"
+    "sitting-sim-",
+    "(a site with no prefix literal on its line: built some other way)"
    ],
    "scripts/validate_launch_administration.py": [
-    "(a prefix passed as a variable)"
+    "(a site with no prefix literal on its line: built some other way)"
    ]
   }
  },
  "exposureRanking": {
   "run": "c0-clean",
-  "meaning": "expected number of directories of the class present at a uniformly random moment of the clean run (sampler interval 0.5 s); the upper bound counts every name once for a whole sampler interval more than it was seen",
+  "meaning": "expected number of directories of the class present at a uniformly random moment of the clean run (sampler interval 0.5 s). The lower bound counts each sampled name once, for the span between its first and last sighting. The upper bound adds, for each sampled name, the gap before its first sighting and the gap after its last (two gaps: it was absent at the sample before the first and at the sample after the last), and for each name the sampler never saw one gap. Every gap is taken as 0.61 s, the largest gap under two intervals between consecutive sighting instants in this run's sampler record (242 of the 254 gaps between its 255 sighting instants are that short; the other 12 are 1.0 s or more and cannot be told from a quiet stretch). The sampler record keeps each name's first and last sighting, not its sample times, so a sampler stall longer than that gap inside a quiet stretch is [Unknown] and would raise the bound.",
+  "samplerGap": {
+   "gapSeconds": 0.61,
+   "sightingInstants": 255,
+   "gapsBetweenSightings": 254,
+   "gapsUnderTwoIntervals": 242,
+   "gapsOfTwoIntervalsOrMore": 12,
+   "smallestGapOfTwoIntervalsOrMore": 1.0
+  },
   "top": [
    {
     "class": "nanoid-21",
-    "upperBound": 3.612,
+    "upperBound": 3.645,
     "lowerBound": 3.589
    },
    {
     "class": "syzygy-poc-surface-fixture-p<pid>-n<ns>-",
-    "upperBound": 2.624,
+    "upperBound": 3.472,
     "lowerBound": 1.313
    },
    {
-    "class": "chrome-singleton-directory",
-    "upperBound": 1.438,
-    "lowerBound": 1.373
-   },
-   {
     "class": "syzygy-poc-surface-fixture-template-p<pid>-n<ns>-",
-    "upperBound": 1.418,
+    "upperBound": 1.607,
     "lowerBound": 1.273
    },
    {
+    "class": "chrome-singleton-directory",
+    "upperBound": 1.533,
+    "lowerBound": 1.373
+   },
+   {
     "class": "syzygy-poc-browser-",
-    "upperBound": 1.159,
+    "upperBound": 1.216,
     "lowerBound": 1.12
    },
    {
-    "class": "node-compile-cache",
-    "upperBound": 1.035,
-    "lowerBound": 1.032
-   },
-   {
-    "class": "syzygy-poc-a11y-",
-    "upperBound": 0.839,
-    "lowerBound": 0.836
-   },
-   {
-    "class": "dossier-records-",
-    "upperBound": 0.71,
-    "lowerBound": 0.169
-   },
-   {
-    "class": "dossier-state-",
-    "upperBound": 0.683,
-    "lowerBound": 0.166
-   },
-   {
     "class": "dossier-clone-",
-    "upperBound": 0.677,
+    "upperBound": 1.095,
     "lowerBound": 0.203
    },
    {
+    "class": "dossier-records-",
+    "upperBound": 1.086,
+    "lowerBound": 0.169
+   },
+   {
+    "class": "node-compile-cache",
+    "upperBound": 1.04,
+    "lowerBound": 1.032
+   },
+   {
+    "class": "dossier-state-",
+    "upperBound": 1.014,
+    "lowerBound": 0.166
+   },
+   {
     "class": "dossier-gate-acts-",
-    "upperBound": 0.525,
+    "upperBound": 0.862,
     "lowerBound": 0.053
    },
    {
-    "class": "syzygy-poc-names-daemon-",
-    "upperBound": 0.428,
-    "lowerBound": 0.402
+    "class": "syzygy-poc-a11y-",
+    "upperBound": 0.844,
+    "lowerBound": 0.836
+   },
+   {
+    "class": "dossier-waiting-",
+    "upperBound": 0.702,
+    "lowerBound": 0.05
    },
    {
     "class": "dossier-review-clone-",
-    "upperBound": 0.372,
+    "upperBound": 0.676,
     "lowerBound": 0.105
    },
    {
     "class": "dossier-review-state-",
-    "upperBound": 0.366,
+    "upperBound": 0.662,
     "lowerBound": 0.099
    },
    {
-    "class": "dossier-waiting-",
-    "upperBound": 0.347,
-    "lowerBound": 0.05
+    "class": "syzygy-poc-names-daemon-",
+    "upperBound": 0.466,
+    "lowerBound": 0.402
    }
   ]
  },
  "finding": [
-  "[Observed] A SIGKILL of the full run leaves 16 / 34 / 15 entries in the private temp directory (192.3 / 141.7 / 65.4 MB) at 40.0 / 75.0 / 115.0 s into the run, in 27 classes in all; 10 / 26 / 8 Chrome processes survive the kill of the process group, found by the --user-data-dir marker and stopped by pid.",
+  "[Observed] A SIGKILL of the full run leaves 16 / 34 / 15 entries in the private temp directory (192.3 / 141.7 / 65.4 MB) at 40.0 / 75.0 / 115.0 s into the run, in 27 classes in all; at least 10 / 26 / 8 processes carrying the --user-data-dir marker in their arguments (Chrome's) survive the kill of the process group, and were stopped by pid. The process count is a lower bound: helpers that carry the private TMPDIR only in their environment (cat, chrome_crashpad_handler) are not matched by the marker.",
   "[Observed] One fresh full run started in each kill's leftovers removed 1 / 10 / 4 of 16 / 34 / 15 entries, all of them of the two classes PR 509 sweeps (syzygy-poc-surface-fixture-p<pid>-n<ns>-, syzygy-poc-surface-fixture-template-p<pid>-n<ns>-); the other 15 / 24 / 11 stayed, in 25 classes.",
-  "[Observed] The seven runs together put 176 classes of entries directly in the temp directory (170 by mkdtemp): 163 by test files, 6 by non-test modules, 1 by cdp-browser.ts (the browser profile), 3 by Chrome, vitest and npm themselves, and 1 lock file made by restart.ts.",
+  "[Observed] The seven runs together put 176 classes of entries directly in the temp directory (170 by mkdtemp): 2 by test-model-fixture.ts (PR 509 sweeps them); 1 by Chrome itself (its singleton directory); 1 by cdp-browser.ts (the browser profile); 1 by vitest itself (its project directory); 1 by npm itself (its compile cache); 6 by other non-test modules; 1 as a lock file (attributed to restart.ts by its name); 0 with no known creator; and 163 by test files.",
   "[Observed] The clean run itself leaves 2 entries (chrome-singleton-directory, node-compile-cache); this tree has no PR 515, so a clean run leaves Chrome singleton directories (3 / 1 / 3 in the fresh runs).",
-  "[Inferred] Which classes a given SIGKILL catches depends on what is alive at that moment. The expected number of directories of a class present at a random moment of the clean run is in exposureInTheCleanRun; the prefixes the bead observation names that none of these three kills left (syzygy-dossier-src-, syzygy-poc-surface-state-, syzygy-public-screen-, syzygy-trigger-, syzygy-trigger-repo-) have an upper bound of 0.156 or less, so a kill misses them most of the time and catches them sometimes."
+  "[Inferred] Which classes a given SIGKILL catches depends on what is alive at that moment. The expected number of directories of a class present at a random moment of the clean run is in exposureInTheCleanRun; the prefixes the bead observation names that none of these three kills left (syzygy-dossier-src-, syzygy-poc-surface-state-, syzygy-public-screen-, syzygy-trigger-, syzygy-trigger-repo-) have an upper bound of 0.213 or less (two sampler gaps of 0.61 s for each name the sampler saw, one for each it did not). By Markov's inequality one kill at a random moment catches such a class with probability at most that bound and misses it with probability at least 0.787, if the clean run's timing represents a kill run's."
  ],
  "followUps": [
   {
@@ -6309,9 +6382,19 @@
     "syzygy-poc-browser-",
     "chrome-singleton-directory"
    ],
-   "what": "Extend the PR 509 pattern to the syzygy-poc-browser- profile: the owner pid and namespace in its name; a sweep that removes it only when the owner is dead in this namespace, reads the profile's SingletonSocket link to remove the Chrome singleton directory under PR 515's guard, and first stops processes whose arguments carry --user-data-dir=<that profile>/ (SIGTERM, then SIGKILL after a wait: a stopped process ignores SIGTERM, seen once in an earlier set of these runs at a discarded commit, not retained).",
-   "whyNotTriviallySafe": "It deletes recursively and signals processes by argument match; it needs an independent review and shares cdp-browser.ts with PR 515 (open).",
-   "measure": "census_run.py kill run then --seed-tmp-from fresh run: classes syzygy-poc-browser- and chrome-singleton-directory must read stillThere 0 and the marker count 0."
+   "what": "Extend the PR 509 pattern to the syzygy-poc-browser- profile: the owner pid and namespace in its name; a sweep that removes it only when the owner is dead in this namespace, removes the Chrome singleton directory its SingletonSocket link names under PR 515's guard (merged as a088f1ca on main after the run commit), and stops the processes that still run on the profile (SIGTERM, then SIGKILL after a wait: a stopped process ignores SIGTERM, seen once in an earlier set of these runs at a discarded commit, not retained). The marker is the exact argument element --user-data-dir=<profile>, with no trailing slash (cdp-browser.ts launches Chrome with --user-data-dir=${profile}); an earlier draft of this proposal wrote a trailing slash, which matches no Chrome process. The guards below are the round-1 review's, copied from its raw review (R-GP-IMPL-SCRATCH-PREFIX-CENSUS-1-RAW.md, section 4, N3) as that review words them.",
+   "guards": [
+    "(1) Owner liveness exactly as PR 509: owner pid and pid-namespace inode in the name; refuse when the owner is alive or the namespace differs.",
+    "(2) Process match by exact argv element equality `--user-data-dir=<profile>` over `/proc/<pid>/cmdline` split on NUL, same uid, never a substring; plus the browser's session: read the browser pid from the profile's `SingletonLock` link, verify its uid, start time (field 22) later than the profile's creation and its argv element, then signal its session members, as `livePrivateBrowserMembers` does.",
+    "(3) Re-verify identity immediately before each signal (or use a pidfd) against pid reuse.",
+    "(4) SIGTERM, bounded wait, then SIGKILL; a stopped (`T`) process holds SIGTERM until SIGCONT, so SIGKILL it (the PR saw one).",
+    "(5) Delete only after a re-scan finds no matching process.",
+    "(6) Follow `SingletonSocket` with `lstat` only; accept its target only if the target's parent realpath equals the run's temp directory, the basename matches the Chrome singleton shape, it is a directory owned by the uid and not a link; never follow a link out of that directory (PR 515's guard).",
+    "(7) Normalize paths before any containment check (AGENTS.md: `authorizeWrite` uses raw `startsWith`).",
+    "(8) A rule-6 mutant per guard and an independent review; the PR states its CC-REV-1 classes."
+   ],
+   "whyNotTriviallySafe": "It deletes recursively and signals processes by argument match and by session. A sweep built on a marker that matches no process would find no live process and delete a profile under live orphans. It needs an independent review of its own, with its own CC-REV-1 classes.",
+   "measure": "census_run.py kill run then --seed-tmp-from fresh run: classes syzygy-poc-browser- and chrome-singleton-directory must read stillThere 0 and the marker count 0 (the marker count is a lower bound, see limits)."
   },
   {
    "id": "F2",
@@ -6488,8 +6571,8 @@
     "syzygy-redis-shaped-",
     "syzygy-self-corpus-run-"
    ],
-   "what": "After a SIGKILLed full run and one fresh run in the same private TMPDIR, no entry remains except the classes of rules R2, R4, R5 and R7. A mechanism that reaches non-test modules too: the worker setup file assigns process.env.TMPDIR to an owner-pid root, because os.tmpdir() reads TMPDIR at each call. Budget: Chrome's socket path limits TMPDIR to 65 bytes (PR 515); the root adds about 40.",
-   "measure": "the same runs: assemble_census.py leftBySIGKILL lists only R2, R4, R5, R7 classes after the fresh run."
+   "what": "To be lodged as a comment on syzygy-bpyt.4.4 when this record merges. The dispositions of rules R6 and R9 are conditional on it: until it is lodged, and then met by that bead's change, they are proposals. After a SIGKILLed full run and one fresh run in the same private TMPDIR, no entry remains except the classes of rules R2, R4, R5 and R7, and of R3 until follow-up F1 lands (or unless F1's guards cover the browser profile inside the root sweep). The kill must be non-vacuous: it must leave at least one R9 entry and one R6 entry, or synthetic dead-owner roots are seeded, as PR 509's tests do. A mechanism that reaches non-test modules too: the worker setup file assigns process.env.TMPDIR to an owner-pid root, because os.tmpdir() reads TMPDIR at each call. A child started with a constructed environment (packages/polaris-dossier/src/no-egress.test.ts, line 55 at the run commit: env: { PATH, HOME, [FULL_RUN_ROOT_ENV] }) inherits neither the root nor the private TMPDIR, so its entries go to the system temp directory, outside both the mechanism and this measurement: F2 must require such children to pass TMPDIR through, or name them as a residual. Budget: Chrome's socket path limits TMPDIR to 65 bytes (PR 515); the root adds about 40.",
+   "measure": "the same runs: assemble_census.py leftBySIGKILL lists only R2, R4, R5, R7 classes (and R3 until F1) after the fresh run, and the kill itself left at least one R9 and one R6 entry."
   },
   {
    "id": "F3",
@@ -6510,11 +6593,13 @@
   }
  ],
  "limits": [
-  "The tracer wraps mkdtemp, mkdir, writeFile and symlink only (sync, callback and promise forms). A name made by open/openSync, copyFile, rename, link, cp, a stream, or by a process that is not Node has no trace line: it is classed by shape, or by the static stem and labelled inferred.",
-  "The sampler lists the temp directory every 0.5 s. A directory that lives less than that can be missed; the exposure bounds say so.",
+  "The tracer wraps mkdtemp, mkdir, writeFile and symlink only (sync, callback and promise forms), and logs a call only when the directory name of the path is the temp directory. A name made by open/openSync, copyFile, rename, link, cp, a stream, mkdtempDisposableSync, a recursive mkdir whose new top-level parent is not the last element of the path (mkdirSync(join(tmpdir(), \"a\", \"b\"), { recursive: true }) creates \"a\" with no trace line), or by a process that is not Node has no trace line: it is classed by shape, or by the static stem and labelled inferred. [Observed 2026-10-25 in a probe with the preload: the recursive parent, mkdtempDisposableSync and openSync entries had no trace line.] The static census finds 0 mkdtempDisposable sites in the 818 blobs it read.",
+  "The sampler lists the temp directory every 0.5 s and keeps, for each name, its first and last sighting, not its sample times. A directory that lives less than one gap can be missed; the exposure bounds count it as one gap, and assume no sampler gap longer than 0.61 s (exposureRanking.meaning).",
   "Three SIGKILL points (about 25, 50 and 75 percent of a clean run of about 150 s) catch the directories alive at that moment. A class absent from every kill is not thereby safe; its disposition rests on its creating file, not on a leftover.",
-  "The root vitest run only. test:system (packages/cap1-system) and the Python and shell scripts are in the static census, not in any run.",
+  "The root vitest run only. test:system (packages/cap1-system) is in the static census, not in any run. Some root-run tests do start Python: python3 -c children in public-source-screening.test.ts (line 446 at the run commit), screen.test.ts (lines 261 and 345) and, through recorder-fixtures.testkit.ts (named at sync-child-process-guard.test.ts line 36), the consent recorder. A Python file can never be a Node frame, so \"never seen\" for the 93 scripts/ files with a static site is structural and measures no reach. The sampler's evidence is the classes of the names it saw without a trace line, over all seven runs: chrome-singleton: chrome-singleton-directory; npm-compile-cache: node-compile-cache; unattributed: syzygy-poc-restart-<n>-<n>.lock; vitest-project-directory: nanoid-21; and its names and each run's final listing agree both ways: yes. So [Inferred] no Python child left another entry that lived for a sample or more (one that lived less is invisible to the sampler).",
   "Runs shared the host with other work (load average at each start is recorded); one fresh run exited 1 on two 5000 ms test timeouts.",
-  "The fresh run after each kill starts in that kill's leftovers renamed into a new private temp directory; the process ids of the dead owners are not reused within the minutes between the runs [Inferred]."
+  "The fresh run after each kill starts in that kill's leftovers renamed into a new private temp directory; the process ids of the dead owners are not reused within the minutes between the runs [Inferred].",
+  "The surviving-process counts are lower bounds. census_run.py finds processes by the exact --user-data-dir=<private directory>/tmp/ marker in their arguments only. Helpers that carry the private TMPDIR only in their environment are not matched and not stopped by that match. Round 1 of the review found 8 of 26 survivors of its own 75 s kill were of that kind, among them two cat processes and a chrome_crashpad_handler, which runs in its own process group (observed by the reviewer; that run is not retained here). [Unknown] whether any such helper outlived the seven runs.",
+  "The top-level children of a vitest project directory (ssr) were read once, on 2026-10-24, from a private directory that has since been deleted. This record carries that value from runs/carried-observations.json and does not re-read it."
  ]
 }

@@ -29,7 +29,7 @@ record = {
     'gates': {'check_governance': {'command': 'python3 scripts/check_governance.py', 'exit': EXITS['check_governance'], 'summary': lines(GOV, r'\d+ OK, \d+ WARN, \d+ FAIL')},
               'check_quotations': {'command': 'python3 scripts/check_quotations.py', 'exit': EXITS['check_quotations'], 'summary': lines(QUOT, r'^(OK|FAIL)\s+QC-1\b')},
               'authoritySweep': {'command': 'TMPDIR=<short private> npx vitest run apps/three-surface-poc/src/polaris-authority-sweep.test.ts', 'exit': EXITS['authoritySweep'], 'summary': lines(SWEEP, r'^\s*(Test Files|Tests)\s')}},
-    'rule6': {name: json.loads((HERE / f).read_text())['holds'] for name, f in (('trace-selftest', 'trace-selftest-2026-10-23.json'), ('assemble-selftest', 'assemble-selftest-2026-10-24.json'), ('input-checks', 'input-checks-2026-10-24.json'))},
+    'rule6': {name: json.loads((HERE / f).read_text())['holds'] for name, f in (('trace-selftest', 'trace-selftest-2026-10-23.json'), ('assemble-selftest', 'assemble-selftest-2026-10-24.json'), ('static-selftest', 'static-selftest-2026-10-25.json'), ('input-checks', 'input-checks-2026-10-24.json'))},
     'fileSha256': {p.relative_to(HERE).as_posix(): hashlib.sha256(p.read_bytes()).hexdigest() for p in sorted(HERE.rglob('*')) if p.is_file() and p.name != 'verification-2026-10-24.json'},
 }
 OUT.write_text(json.dumps(record, indent=1) + '\n')
