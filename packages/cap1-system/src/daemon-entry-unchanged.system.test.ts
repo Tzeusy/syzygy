@@ -72,8 +72,16 @@ function sweep(dir: string, from = dir): string[] {
   });
 }
 
+// No invocation runSync makes may start a daemon. If one wrongly does, SYZYGY_PORT=0 keeps it off the default port 7477 and the
+// timeout ends it, so the row fails instead of blocking the worker: spawnSync is synchronous, so the suite's own timeout cannot
+// fire (syzygy-bpyt.4.22). SIGKILL, because the daemon handles SIGTERM as a graceful shutdown.
+const RUN_SYNC_TIMEOUT_MS = 20_000;
+
 function runSync(args: readonly string[], cwd: string): { status: number | null; stdout: string; stderr: string } {
-  const result = spawnSync(process.execPath, [ENTRY, ...args], { cwd, env: ENV, encoding: 'utf8' });
+  const result = spawnSync(process.execPath, [ENTRY, ...args], {
+    cwd, env: { ...ENV, SYZYGY_PORT: '0' }, encoding: 'utf8', timeout: RUN_SYNC_TIMEOUT_MS, killSignal: 'SIGKILL',
+  });
+  if (result.error) throw new Error(`${JSON.stringify(args)}: ${result.error.message} (timeout ${RUN_SYNC_TIMEOUT_MS} ms)`);
   const mask = (text: string): string => text.split(cwd).join('<BASE>');
   return { status: result.status, stdout: mask(result.stdout), stderr: mask(result.stderr) };
 }
