@@ -124,6 +124,8 @@ describe('discovery on a synthetic tree shaped like a large C key-value server',
 
   describe('under the dossier byte cap (400,000 bytes of quotable text)', () => {
     const CORE = Object.values(CORE_FILES).flat() as string[];
+    const inputBytes = (path: string): number => run.corpus.sources.filter(source => source.path === path && !source.exclusion.excluded)
+      .reduce((n, source) => n + source.spans.reduce((m, span) => m + Buffer.byteLength(span.text, 'utf8'), 0), 0);
     const keptPaths = (result: Awaited<ReturnType<typeof discoverAndSelect>>): Set<string> =>
       new Set(result.sources.filter(source => !source.exclusion.excluded && source.spans.length > 0).map(source => source.path));
     const coreMap = async (input: { items: readonly { blobId: string; path: string }[] }) =>
@@ -134,7 +136,12 @@ describe('discovery on a synthetic tree shaped like a large C key-value server',
       const { bytes, selected, deferred, population } = capped.report;
       expect(bytes.cap).toBe(400_000);
       expect(bytes.selected).toBeLessThanOrEqual(400_000);
-      expect(bytes.selected).toBeGreaterThan(390_000);
+      // The fill is greedy: every deferred file that is not split holds more quotable bytes, counted from the input,
+      // than the room the selection left, so none of them would have fit.
+      const room = 400_000 - bytes.selected;
+      const wholeDeferred = deferred.filter(({ path }) => run.corpus.sources.filter(source => source.path === path).length === 1);
+      expect(wholeDeferred.length).toBeGreaterThan(0);
+      for (const { path } of wholeDeferred) expect(inputBytes(path), path).toBeGreaterThan(room);
       expect([...keptPaths(capped)].filter(path => VENDORED.test(path))).toEqual([]);
       expect(selected.blobs + deferred.length).toBe(population.candidateBlobs);
       expect(bytes.selected + bytes.deferred).toBe(run.result.report.bytes.selected + run.result.report.bytes.deferred);
