@@ -8,6 +8,7 @@ import {
   INVENTORY_BRIEF_FILE, checkInventory, errno, latestInventorySession, logStep, openRun, promptRecordName, readRecord, sessionsRoot,
   type InventoryCheckResult,
 } from './inventory.js';
+import type { Outcome } from './outcome.js';
 import type { ReverifyOptions, ReverifyRefusal } from './reverify.js';
 import {
   PACKET_DIGEST_FILE, PACKET_FILE, REVIEW_CHECKS, isReviewKind, latestReviewSession, reviewCheck, reviewPromptRecordName, verdictFileName,
@@ -330,7 +331,7 @@ export interface AwaitRefusal {
   readonly reasons?: readonly string[]; readonly refusals?: readonly ReverifyRefusal[]; readonly disclosures: readonly string[];
 }
 
-export type AwaitResult = { readonly ok: true; readonly report: AwaitReport } | { readonly ok: false; readonly refusal: AwaitRefusal };
+export type AwaitResult = Outcome<AwaitReport, AwaitRefusal>;
 
 export const AWAIT_DISCLOSURES = [
   RECORDS_WITHIN_REACH,

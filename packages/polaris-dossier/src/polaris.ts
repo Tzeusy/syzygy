@@ -4,6 +4,7 @@ import * as fs from 'node:fs';
 import * as os from 'node:os';
 import * as path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { isArgvFault, readArgv } from './argv.js';
 import { authorRule, awaitRule, startBroker, type Broker, type BrokerResponse } from './broker.js';
 import { cliGateSources, runDossierCli, STATE_ROOT_ENV, type CliPorts } from './cli.js';
 import { inventoryOfRecord, launchRecordName } from './inventory.js';
@@ -124,22 +125,13 @@ function refuse(reason: string): number {
 }
 
 function parseArgs(argv: readonly string[]): Options | string {
-  const values = new Map<string, string>();
-  const flags = new Set<string>();
-  const positional: string[] = [];
-  const valued = ['--clone', '--revision', '--state-root', '--deadline', '--audience', '--model', '--repair-cycles', '--questions', '--token-budget',
-    '--turn-budget', '--operator', '--attach', '--stop', '--resume', '--tmux-session'];
-  const boolean = ['--author-skip-permissions', '--no-attach', '--supervise', '--help', '-h'];
-  for (let i = 0; i < argv.length; i++) {
-    const arg = argv[i]!;
-    if (valued.includes(arg)) {
-      const value = argv[i + 1];
-      if (value === undefined) return `${arg} requires a value`;
-      values.set(arg, value); i++;
-    } else if (boolean.includes(arg)) flags.add(arg);
-    else if (arg.startsWith('-')) return `unknown option ${arg}`;
-    else positional.push(arg);
-  }
+  const read = readArgv(argv, {
+    valued: ['--clone', '--revision', '--state-root', '--deadline', '--audience', '--model', '--repair-cycles', '--questions', '--token-budget',
+      '--turn-budget', '--operator', '--attach', '--stop', '--resume', '--tmux-session'],
+    booleans: ['--author-skip-permissions', '--no-attach', '--supervise', '--help', '-h'], dashValue: 'take', repeat: 'last', positionals: true,
+  });
+  if (isArgvFault(read)) return read.fault === 'missing-value' ? `${read.arg} requires a value` : `unknown option ${read.arg}`;
+  const { values, flags, positional } = read;
   if (flags.has('--help') || flags.has('-h')) { process.stdout.write(POLARIS_USAGE); process.exit(0); }
   const int = (name: string, fallback: number): number | string => {
     const raw = values.get(name);

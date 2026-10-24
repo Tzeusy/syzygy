@@ -1,10 +1,11 @@
 #!/usr/bin/env node
-// Old-versus-new differential of the consent gate's act-record readers (syzygy-bpyt.8.4; extended for syzygy-bpyt.8.20 and 8.22).
+// Old-versus-new differential of the consent gate's act-record readers (syzygy-bpyt.8.4; extended for syzygy-bpyt.8.20, 8.22 and 8.19).
 // Evidence tool, not a check and not authority.
 //
 //   (in each tree) npm ci && npx tsc -b packages/polaris-generation-consent packages/polaris-dossier
 //   node scripts/differential_consent_act_families.mjs --old <tree> --new <tree> --out <file.json> --bead <id>
 //     [--workers <n>] [--kinds <k,...>] [--count] [--expect-mismatches --control-note <text>]
+//   (TMPDIR names where the screen's worlds are materialized; it is emptied of them on exit)
 //
 // `--old` and `--new` are two Syzygy checkouts with those packages built: the base and the change. Every reader the gate composes over
 // owner-act records (the admission, policy-chain, class-act, in-force egress, digest-bound, sign-off and dossier sitting reads, each
@@ -12,6 +13,17 @@
 // each drawer and each repository's provider statements) runs from both trees' compiled packages over the same worlds, at the same
 // instants, and the two answers are compared as text: the answer's JSON, or the error the read throws. `--expect-mismatches` marks a
 // negative-control run (a `--new` tree carrying a known mutant): it succeeds only when some answer differs.
+//
+// Since syzygy-bpyt.8.19 it also runs the in-force rules on their own (`inForceRecords` and `notInForceRecords` over the admission
+// records), the parked consent ports (`createConsentPorts`, from the package root: identity, admit and dispatch for one probe source,
+// with the audit records they write), and the dossier screen (`loadDossierScreen` in `packages/polaris-dossier/dist/screen.js`, with
+// what it says of a fixed list of paths and bodies). A tree whose consent package exports `./live` has its readers loaded from that
+// subpath, as the dossier's gate sources and screen now load them; the root's values must be the same objects, or the run stops. The
+// screen takes no file-system port, so it reads a world materialized on disk: a directory under TMPDIR holding a symbolic link to
+// each entry of `--old` the world leaves alone, a real directory down each path the world overlays, and the overlaid files written
+// out. Two control readers, the policy chain and the class act read from that directory with no port, must give the answers the
+// ported reads give over the same world (`materialization` in the output), or the screen's answers measure nothing; a run where any
+// pair differs, or a materialized world is left behind, exits 1.
 //
 // A world is the files of `--old` (read through the readers' own file-system port, rooted there for both trees) with in-memory
 // overrides: an act record altered, added or deleted, an artifact altered or deleted, or a decisions file added. Nothing on disk is
@@ -89,12 +101,44 @@ function overlayFs(root, overlay) {
   };
 }
 
+/** `layer` (repository-relative path to text, or null for a deleted file) over `root`, written out at `dest`: a symbolic link to each
+ * entry of `root` the layer leaves alone, a real directory down each path it overlays, and its files. The same tree `overlayFs` reads. */
+function materialize(root, layer, dest) {
+  const dirs = new Map();
+  const dir = rel => { if (!dirs.has(rel)) dirs.set(rel, new Map()); return dirs.get(rel); };
+  for (const [rel, text] of Object.entries(layer)) {
+    const parts = rel.split('/');
+    for (let i = 0; i < parts.length - 1; i += 1) dir(parts.slice(0, i).join('/')).set(parts[i], 'dir');
+    dir(parts.slice(0, -1).join('/')).set(parts.at(-1), { text });
+  }
+  const build = rel => {
+    const target = path.join(dest, rel), own = dirs.get(rel) ?? new Map();
+    fs.mkdirSync(target, { recursive: true });
+    let names = [];
+    try { names = fs.readdirSync(path.join(root, rel)); } catch { names = []; }
+    for (const name of names) if (!own.has(name)) fs.symlinkSync(path.join(root, rel, name), path.join(target, name));
+    for (const [name, entry] of own) {
+      if (entry === 'dir') build(rel === '' ? name : `${rel}/${name}`);
+      else if (entry.text !== null) fs.writeFileSync(path.join(target, name), entry.text);
+    }
+  };
+  build('');
+  return dest;
+}
+
 const answer = async read => { try { return JSON.stringify(await read()) ?? 'undefined'; } catch (error) { return `throws ${error?.name}: ${error?.message}`; } };
 
-/** Each reader: its name, whether it takes an instant, and the read over one tree's modules. */
-function readers(consent, gate, probe) {
+/** Paths and bodies the screen is asked about (syzygy-bpyt.8.19): what it says of them is part of its answer. */
+const SCREEN_PATHS = ['README.md', 'docs/guide.md', 'openspec/specs/x/spec.md', 'src/main.ts', 'src/main.py', 'Makefile', 'package.json', '.env', 'config/secrets.yaml', 'id_rsa', 'image.png'];
+const SCREEN_BODIES = ['plain text\n', '<script>alert(1)</script>\n', `key = AKIA${'Q'.repeat(16)}\n`];
+
+/** Each reader: its name, whether it takes an instant, the read over one tree's modules, and whether it reads the world from disk
+ * (`disk`, the materialized world) rather than through the file-system port. `extra` carries the package root's consent module and the
+ * dossier screen module; `probe` the probe identities. */
+function readers(consent, gate, probe, extra) {
   const statementV1 = gate.STATEMENT_FORMS['redis-redis'][0].form;
   const digestBound = form => (fs, root, now) => consent.readDigestBoundActState({ root, fs, now, form });
+  const key = r => `${r.recordId}@${r.version}`;
   return [
     ['admission', false, (fs, root) => consent.createPackageAdmissionReader({ root, fs }).read()],
     ['policy-reader', false, (fs, root) => consent.createPackagePolicyReader({ root, fs }).read()],
@@ -127,35 +171,88 @@ function readers(consent, gate, probe) {
     ['gate-registry-entry', true, (fs, root, now) => sources(fs, root, now).registryEntry()],
     ...Object.keys(gate.DRAWER_FORMS).map(id => [`gate-drawer:${id}`, true, (fs, root, now) => sources(fs, root, now).projectInput.drawerFor(id)]),
     ...Object.keys(gate.STATEMENT_FORMS).map(id => [`gate-statements:${id}`, true, (fs, root, now) => sources(fs, root, now).providerStatements.statementsFor(id)]),
+    // The in-force rules moved by syzygy-bpyt.8.19, on their own over the admission records.
+    ['in-force', true, async (fs, root, now) => {
+      const records = await consent.createPackageAdmissionReader({ root, fs }).read();
+      return { live: consent.inForceRecords(records, now).map(key), notInForce: [...consent.notInForceRecords(records, now)].map(([r, why]) => [key(r), why]) };
+    }],
+    // The parked consent ports, which take the in-force rules from the moved module: one probe source, the provider and class of the
+    // egress record in force in the admission-acts base world.
+    ['consent-ports', true, async (fs, root, now) => {
+      const audits = [];
+      const source = { sourceId: 'probe-source', repositoryId: probe.redisId, revision: probe.redisRevision, path: 'README.md', body: 'probe body\n', spans: [], exclusion: { excluded: false } };
+      const ports = extra.root.createConsentPorts({
+        reader: extra.root.createPackageAdmissionReader({ root, fs }), now: () => now, consentingProject: 'project:syzygy',
+        routeProviders: probe.egress === null ? {} : { 'probe-route': probe.egress.providerId }, sources: [source],
+        contentClassOf: () => probe.egress?.contentClass ?? null, instructionClass: probe.egress?.contentClass ?? 'none',
+        reserve: async () => ({ kind: 'reserved', permit: { probe: true } }), audit: async record => { audits.push(record); },
+      });
+      const basis = { stage: 'draft', providerRoute: 'probe-route' };
+      const identity = await ports.permissionIdentity(basis);
+      const admitted = await ports.admit({ ...basis, permissionDigest: identity });
+      const permitted = await ports.permitted({ ...basis, permissionDigest: identity }, { probe: true });
+      return { identity, admitted, permitted, matches: ports.matches({ sources: [source] }), audits };
+    }],
+    // The dossier screen, read from the world on disk, and the two reads it composes, read the same way as controls.
+    ['screen', true, async (fs, root, now, disk) => {
+      const load = await extra.screen.loadDossierScreen(disk, now);
+      if (!load.ok) return load;
+      const { screen } = load;
+      return {
+        ...load,
+        paths: SCREEN_PATHS.map(p => [p, screen.screenPath(p) ?? null, screen.contentClass(p) ?? null]),
+        bodies: SCREEN_BODIES.flatMap(body => SCREEN_PATHS.slice(0, 4).map(p => [screen.screenBody(body, p) ?? null, screen.screenTargetBody(body, p)])),
+      };
+    }, true],
+    ['policy-chain-disk', true, (fs, root, now, disk) => consent.readPolicyActChain({ root: disk, now }), true],
+    ['class-act-disk', true, (fs, root, now, disk) => consent.readClassActState({ root: disk, now }), true],
   ];
   function sources(fs, root, now) { return gate.createPackageGateSources({ root, fs, now: () => now }); }
 }
 
+/** The consent module a tree's readers load: its `./live` subpath when the package exports one (syzygy-bpyt.8.19), else its root. */
+const CONSENT_ROOT = 'packages/polaris-generation-consent/dist/index.js';
+function consentEntry(tree) {
+  const manifest = JSON.parse(fs.readFileSync(path.join(tree, 'packages/polaris-generation-consent/package.json'), 'utf8'));
+  return Object.hasOwn(manifest.exports, './live') ? 'packages/polaris-generation-consent/dist/live.js' : CONSENT_ROOT;
+}
+
 if (!isMainThread) {
-  const { trees, root, probe, drops } = workerData;
+  const { trees, root, probe, drops, scratch } = workerData;
+  const module = (tree, rel) => import(pathToFileURL(path.join(tree, rel)).href);
   const loaded = await Promise.all(trees.map(async tree => readers(
-    await import(pathToFileURL(path.join(tree, 'packages/polaris-generation-consent/dist/index.js')).href),
-    await import(pathToFileURL(path.join(tree, 'packages/polaris-dossier/dist/gate-sources.js')).href),
+    await module(tree, consentEntry(tree)),
+    await module(tree, 'packages/polaris-dossier/dist/gate-sources.js'),
     probe,
+    { root: await module(tree, CONSENT_ROOT), screen: await module(tree, 'packages/polaris-dossier/dist/screen.js') },
   )));
   const dropped = Object.fromEntries(drops.map(rel => [rel, null]));
   // A world with `steps` is read once per step, in order, each step's overlay replacing the last: one process reading a file whose bytes
   // change between reads.
   parentPort.on('message', async ({ id, overlay, steps, names, instants, reduced }) => {
+    const layers = (steps ?? [overlay]).map(layer => (reduced ? { ...dropped, ...layer } : layer));
+    // Both trees read one materialized copy of each step, written before either reads and removed after both have.
+    const disks = loaded[0].some(([name, , , disk]) => disk && names.includes(name)) ? layers.map((layer, i) => materialize(root, layer, path.join(scratch, `w${id}-${i}`))) : [];
     const out = [];
-    for (const list of loaded) {
-      const answers = [];
-      for (const [step, layer] of (steps ?? [overlay]).entries()) {
-        const fs = overlayFs(root, reduced ? { ...dropped, ...layer } : layer);
-        for (const [name, timed, read] of list) {
-          if (!names.includes(name)) continue;
-          for (const [at, now] of timed ? INSTANTS.filter(([instant]) => instants.includes(instant)) : [[null, null]]) {
-            const text = await answer(() => read(fs, root, now));
-            answers.push([`${steps === undefined ? '' : `step${step + 1}:`}${at === null ? name : `${name}@${at}`}`, sha256(text), label(text)]);
+    try {
+      for (const list of loaded) {
+        const answers = [];
+        for (const [step, layer] of layers.entries()) {
+          const port = overlayFs(root, layer);
+          for (const [name, timed, read, disk] of list) {
+            if (!names.includes(name)) continue;
+            for (const [at, now] of timed ? INSTANTS.filter(([instant]) => instants.includes(instant)) : [[null, null]]) {
+              let text = await answer(() => read(port, root, now, disks[step]));
+              // A read from disk names the materialized directory where the ported read names the root.
+              if (disk) text = text.split(disks[step]).join(root);
+              answers.push([`${steps === undefined ? '' : `step${step + 1}:`}${at === null ? name : `${name}@${at}`}`, sha256(text), label(text)]);
+            }
           }
         }
+        out.push(answers);
       }
-      out.push(answers);
+    } finally {
+      for (const disk of disks) fs.rmSync(disk, { recursive: true, force: true });
     }
     parentPort.postMessage({ id, old: out[0], new: out[1] });
   });
@@ -308,10 +405,14 @@ async function corpus(root, consent, gate, allowlist, NAMED) {
   /** Each act record: its key, path, base world, how its form reads it, and its artifact. */
   // A subject world runs the readers that read the subject's record; the readers that read it only as another file in their sweep run
   // over the probes, which put each of their needles into a file of its own.
+  // The admission records' own readers (syzygy-bpyt.8.19 adds the in-force rules and the consent ports over them), and the screening
+  // policy's and the class act's (syzygy-bpyt.8.19 adds the screen and the materialization control for each).
+  const ADMISSION = ['admission', 'in-force', 'consent-ports'];
+  const POLICY = ['policy-reader', 'policy-chain', 'screen', 'policy-chain-disk'];
   const SUBJECTS = [
-    ...consent.ADMISSION_ACT_FORMS.map(f => ({ key: `admission:${f.file}`, path: at(f), base: 'admission-acts', model: 'field-parsed', artifact: f.artifact, readers: ['admission'] })),
-    ...consent.POLICY_ACT_FORMS.map(f => ({ key: `policy:${f.file}`, path: at(f), base: 'checkout', model: 'field-parsed', artifact: consent.POLICY_PATH, readers: ['policy-reader', 'policy-chain'] })),
-    { key: 'class:RFC5-PROJECT-DOCUMENTATION-CLASS-AMENDMENT-ACT.md', path: `${D}/RFC5-PROJECT-DOCUMENTATION-CLASS-AMENDMENT-ACT.md`, base: 'admission-acts', model: 'field-parsed', artifact: '.syzygy/governance/contracts/rfcs/RFC-0005/consent-egress-secrets.md', readers: ['class-act', 'admission'] },
+    ...consent.ADMISSION_ACT_FORMS.map(f => ({ key: `admission:${f.file}`, path: at(f), base: 'admission-acts', model: 'field-parsed', artifact: f.artifact, readers: ADMISSION })),
+    ...consent.POLICY_ACT_FORMS.map(f => ({ key: `policy:${f.file}`, path: at(f), base: 'checkout', model: 'field-parsed', artifact: consent.POLICY_PATH, readers: POLICY })),
+    { key: 'class:RFC5-PROJECT-DOCUMENTATION-CLASS-AMENDMENT-ACT.md', path: `${D}/RFC5-PROJECT-DOCUMENTATION-CLASS-AMENDMENT-ACT.md`, base: 'admission-acts', model: 'field-parsed', artifact: '.syzygy/governance/contracts/rfcs/RFC-0005/consent-egress-secrets.md', readers: ['class-act', ...ADMISSION, 'screen', 'class-act-disk'] },
     { key: `registry:${registry.file}`, path: at(registry), base: 'registry-act', model: 'field-parsed', artifact: registry.artifact, readers: ['registry-git-source'] },
     { key: `signoff:${consent.LOCAL_AGENT_GIT_SOURCE_SIGNOFF_FORM.file}`, path: at(consent.LOCAL_AGENT_GIT_SOURCE_SIGNOFF_FORM), base: 'checkout', model: 'byte-exact', artifact: consent.LOCAL_AGENT_GIT_SOURCE_SIGNOFF_FORM.installed, readers: ['local-agent-signoff'] },
     ...[[gate.D9_ACT_FORM, ['dossier-d9']], [gate.RFC7_20_RULING_ACT_FORM, ['dossier-rfc7-20']], [statementV1, ['dossier-statement-v1', 'dossier-provider-v2']], [gate.PROVIDER_V2_FORM, ['dossier-provider-v2', 'dossier-statement-v1']]]
@@ -353,7 +454,7 @@ async function corpus(root, consent, gate, allowlist, NAMED) {
   }
   const pins = [`${D}/PUBLIC-REPO-ADMISSION-OWNER-ANSWERS-2026-10-03.md`, ...['PWB-SECRET-CLASSIFICATION-POLICY-ACT.md', 'PWB-SECRET-CLASSIFICATION-POLICY-AMENDMENT-ACT.md', 'PWB-SECRET-CLASSIFICATION-POLICY-BEHAVIOR-CONTRACT-REPIN-ACT.md'].map(f => `${D}/${f}`)];
   for (const pin of pins) {
-    const names = pin.includes('PUBLIC-REPO-ADMISSION') ? ['admission'] : ['policy-reader', 'policy-chain'];
+    const names = pin.includes('PUBLIC-REPO-ADMISSION') ? ADMISSION : POLICY;
     add('pin', pin, 'byte-appended', 'admission-acts', { [pin]: `${read(pin)}\n` }, names);
     add('pin', pin, 'deleted', 'admission-acts', { [pin]: null }, names);
   }
@@ -407,7 +508,7 @@ async function corpus(root, consent, gate, allowlist, NAMED) {
     const commit = history.find(c => sha256(blob(c)) === bound);
     policyBytes.push({ act: f.file, fromCommit: commit ?? null });
     if (commit === undefined) continue;
-    add('policy-bytes', f.file, `policy-at:${commit}`, 'checkout', { [consent.POLICY_PATH]: blob(commit) }, ['policy-reader', 'policy-chain', 'port']);
+    add('policy-bytes', f.file, `policy-at:${commit}`, 'checkout', { [consent.POLICY_PATH]: blob(commit) }, [...POLICY, 'port']);
   }
   // The reduced tree: the decisions files any reader names (every form's record, its exempt records and its bound files, the pins, the
   // aggregate record, the allowlisted files and the README); every other decisions file is left out, so a read sweeps a few hundred
@@ -420,7 +521,7 @@ async function corpus(root, consent, gate, allowlist, NAMED) {
     `${D}/ACCEPTANCE-ACT-RECORD.md`, `${D}/README.md`, ...[...allowlist.keys()].map(rel => `${D}/${rel}`),
   ]);
   const drops = walk(path.join(root, D)).map(rel => `${D}/${rel}`).filter(rel => !keep.has(rel));
-  return { worlds, subjects: SUBJECTS, needles, drops, policyBytes, kept: [...keep].filter(exists).sort(), bases: Object.fromEntries(Object.entries(BASES).map(([k, v]) => [k, Object.keys(v)])) };
+  return { worlds, subjects: SUBJECTS, needles, drops, policyBytes, kept: [...keep].filter(exists).sort(), bases: Object.fromEntries(Object.entries(BASES).map(([k, v]) => [k, Object.keys(v)])), baseOverlays: BASES };
 }
 
 // ---------------------------------------------------------------------------------------------------------------------------------
@@ -455,16 +556,30 @@ async function main(argv) {
   const FILES = {
     packageReaderTs: 'packages/polaris-generation-consent/src/package-reader.ts', packageReaderJs: 'packages/polaris-generation-consent/dist/package-reader.js',
     gateSourcesTs: 'packages/polaris-dossier/src/gate-sources.ts', gateSourcesJs: 'packages/polaris-dossier/dist/gate-sources.js', testingJs: TESTING,
+    consentPortsTs: 'packages/polaris-generation-consent/src/consent-ports.ts', consentPortsJs: 'packages/polaris-generation-consent/dist/consent-ports.js',
+    inForceTs: 'packages/polaris-generation-consent/src/in-force.ts', inForceJs: 'packages/polaris-generation-consent/dist/in-force.js',
+    consentIndexJs: CONSENT_ROOT, consentLiveTs: 'packages/polaris-generation-consent/src/live.ts', consentLiveJs: 'packages/polaris-generation-consent/dist/live.js',
+    screenTs: 'packages/polaris-dossier/src/screen.ts', screenJs: 'packages/polaris-dossier/dist/screen.js',
   };
-  const binding = trees.map((tree, i) => ({
-    role: i === 0 ? 'old' : 'new',
-    commit: git(tree, 'rev-parse', 'HEAD'),
-    clean: git(tree, 'status', '--porcelain', '--untracked-files=no') === '',
-    sha256: Object.fromEntries(Object.entries(FILES).map(([key, rel]) => [key, fs.existsSync(path.join(tree, rel)) ? sha256(fs.readFileSync(path.join(tree, rel), 'utf8')) : null])),
-    dossierResolvesConsentInsideTree: fs.realpathSync(createRequire(path.join(tree, FILES.gateSourcesJs)).resolve('@syzygy/polaris-generation-consent'))
-      === fs.realpathSync(path.join(tree, 'packages/polaris-generation-consent/dist/index.js')),
+  const inTree = (tree, from, specifier, rel) => fs.realpathSync(createRequire(path.join(tree, from)).resolve(specifier)) === fs.realpathSync(path.join(tree, rel));
+  const binding = await Promise.all(trees.map(async (tree, i) => {
+    const entry = consentEntry(tree), live = entry !== CONSENT_ROOT;
+    const loadedEntry = await import(pathToFileURL(path.join(tree, entry)).href), loadedRoot = await import(pathToFileURL(path.join(tree, CONSENT_ROOT)).href);
+    return {
+      role: i === 0 ? 'old' : 'new',
+      commit: git(tree, 'rev-parse', 'HEAD'),
+      clean: git(tree, 'status', '--porcelain', '--untracked-files=no') === '',
+      sha256: Object.fromEntries(Object.entries(FILES).map(([key, rel]) => [key, fs.existsSync(path.join(tree, rel)) ? sha256(fs.readFileSync(path.join(tree, rel), 'utf8')) : null])),
+      dossierResolvesConsentInsideTree: inTree(tree, FILES.gateSourcesJs, '@syzygy/polaris-generation-consent', CONSENT_ROOT),
+      // The readers' consent module, and, where it is the `./live` subpath, whether the dossier's gate sources and screen resolve that
+      // subpath inside this tree and whether each value it exports is the root's own object (syzygy-bpyt.8.19).
+      consentEntry: entry,
+      liveResolvesInsideTree: live ? [FILES.gateSourcesJs, FILES.screenJs].every(from => inTree(tree, from, '@syzygy/polaris-generation-consent/live', entry)) : null,
+      liveValuesAreRootObjects: live ? Object.keys(loadedEntry).every(name => Object.hasOwn(loadedRoot, name) && loadedRoot[name] === loadedEntry[name]) : null,
+    };
   }));
-  if (!binding.every(b => b.dossierResolvesConsentInsideTree)) throw new Error('a dossier build resolves the consent package outside its own tree');
+  if (!binding.every(b => b.dossierResolvesConsentInsideTree && b.liveResolvesInsideTree !== false)) throw new Error('a dossier build resolves the consent package outside its own tree');
+  if (binding.some(b => b.liveValuesAreRootObjects === false)) throw new Error('a ./live value is not the consent root\'s own object');
   const testing = await import(pathToFileURL(path.join(trees[1], TESTING)).href);
   if (!Array.isArray(testing.PROSE_ALTERATIONS) || typeof testing.HEAD_FIELD_ALTERATION !== 'function') throw new Error(`${TESTING} in --new exports no PROSE_ALTERATIONS and HEAD_FIELD_ALTERATION`);
   const NAMED = namedAlterations(testing);
@@ -479,6 +594,11 @@ async function main(argv) {
   const { CITATION_ALLOWLIST } = await import(pathToFileURL(path.join(root, 'packages/polaris-generation-consent/dist/citation-allowlist.js')).href);
   const built = await corpus(root, consent, gate, CITATION_ALLOWLIST, NAMED), kinds = arg('--kinds')?.split(',');
   const { subjects, needles, bases, drops, kept, policyBytes } = built, worlds = kinds === undefined ? built.worlds : built.worlds.filter(w => kinds.includes(w.kind));
+  // The consent ports' probe provider and class: those of the first egress record in force in the admission-acts base world at the
+  // later instant (syzygy-bpyt.8.19).
+  const baseRecords = await consent.createPackageAdmissionReader({ root, fs: overlayFs(root, built.baseOverlays['admission-acts']) }).read();
+  const egress = consent.inForceRecords(baseRecords, Date.parse(INSTANT_LATE)).filter(r => r.class === 'egress').sort((a, b) => a.recordId.localeCompare(b.recordId))[0];
+  probe.egress = egress === undefined ? null : { providerId: egress.providerId, contentClass: egress.contentClasses[0] ?? null };
   // The corpus's digest: each world's kind, subject, operator, base, readers, instants and tree, and each overlaid file's path and the
   // sha256 of its text, with the reduced tree's dropped files.
   const layer = overlay => Object.entries(overlay).sort(([a], [b]) => a.localeCompare(b)).map(([rel, text]) => [rel, text === null ? null : sha256(text)]);
@@ -492,7 +612,8 @@ async function main(argv) {
     return 0;
   }
   const workers = Number(arg('--workers') ?? Math.max(1, Math.min(os.availableParallelism() - 2, 8)));
-  const started = Date.now(), runs = pool(workers, { trees, root, probe, drops });
+  const scratch = fs.mkdtempSync(path.join(os.tmpdir(), 'consent-differential-'));
+  const started = Date.now(), runs = pool(workers, { trees, root, probe, drops, scratch });
   let done = 0;
   const results = await Promise.all(worlds.map(async world => {
     const result = await runs.run(world);
@@ -501,6 +622,8 @@ async function main(argv) {
     return result;
   }));
   await runs.close();
+  const leftOver = fs.readdirSync(scratch).length;
+  fs.rmSync(scratch, { recursive: true, force: true });
 
   const rows = [], mismatches = [], vectors = new Map(), labelVectors = new Map(), perReader = new Map();
   for (const [k, world] of worlds.entries()) {
@@ -524,6 +647,22 @@ async function main(argv) {
     rows.push({ world: k, kind: world.kind, base: world.base, subject: world.subject, operator: world.operator, answers: vectorSha, labels: labelSha, same: before.every(([, sha], j) => after[j][1] === sha) });
   }
   const readerNames = [...new Set(results.flatMap(r => r.old.map(([name]) => name)))];
+  // The materialization control (syzygy-bpyt.8.19): in each tree, the policy chain and the class act read from the world on disk give
+  // the answers their ported reads give over the same world.
+  const materialization = { pairs: 0, differing: 0, differences: [], materializedLeftOver: leftOver };
+  for (const [k, world] of worlds.entries()) {
+    for (const role of ['old', 'new']) {
+      const answers = new Map(results[k][role].map(([name, sha, said]) => [name, { sha, said }]));
+      for (const [name, { sha, said }] of answers) {
+        const ported = name.replace(/(^|:)(policy-chain|class-act)-disk@/u, '$1$2@');
+        if (ported === name || !answers.has(ported)) continue;
+        materialization.pairs += 1;
+        if (answers.get(ported).sha === sha) continue;
+        materialization.differing += 1;
+        if (materialization.differences.length < 50) materialization.differences.push({ world: k, kind: world.kind, subject: world.subject, operator: world.operator, tree: role, reader: name, disk: said, ported: answers.get(ported).said });
+      }
+    }
+  }
   const document = {
     schema: 'consent-act-family-differential/2',
     bead,
@@ -537,6 +676,8 @@ async function main(argv) {
     instants: INSTANTS.map(([at]) => at),
     pool: { workers, node: process.version, wallSeconds: Math.round((Date.now() - started) / 1000) },
     readers: readerNames,
+    materialization,
+    consentPortsProbe: probe.egress,
     bases,
     reducedTree: { kept, dropped: drops.length },
     subjects: subjects.map(({ key, path: p, base, model, readers: names }) => ({ key, path: p, base, model, readers: names })),
@@ -558,8 +699,8 @@ async function main(argv) {
     worlds: rows,
   };
   fs.writeFileSync(out, `${JSON.stringify(document, null, 1)}\n`);
-  process.stderr.write(`${worlds.length} worlds, ${document.totals.answersCompared} answers compared, ${mismatches.length} mismatches, ${vectors.size} distinct answer vectors, ${labelVectors.size} distinct label vectors\n`);
-  return (mismatches.length === 0) !== control ? 0 : 1;
+  process.stderr.write(`${worlds.length} worlds, ${document.totals.answersCompared} answers compared, ${mismatches.length} mismatches, ${vectors.size} distinct answer vectors, ${labelVectors.size} distinct label vectors, materialization ${materialization.differing} of ${materialization.pairs} pairs differing\n`);
+  return (mismatches.length === 0) !== control && materialization.differing === 0 && leftOver === 0 ? 0 : 1;
 }
 
 if (isMainThread) process.exitCode = await main(process.argv.slice(2));
