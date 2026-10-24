@@ -3,8 +3,8 @@
 Evidence report, not authority. It records why the consent gate's recorder
 templates now read their `| "{label}" | "{description}" |` row in one pass,
 why no verdict and no captured value changes below the engine's
-backtrack-stack limit, and what was run to check that. CC-REV-1 class 4 (availability on the consent gate), under GP-Q0
-part 1 of
+backtrack-stack limit, and what was run to check that. CC-REV-1 class 4
+(availability on the consent gate), under GP-Q0 part 1 of
 `.syzygy/governance/decisions/OWNER-DIRECTION-GREENFIELD-PARITY-ANSWERS-2026-10-21.md`.
 It answers notes N1 and N2 of
 `docs/reviews/R-GP-IMPL-RECORDER-LINE-SLOT-1-RAW.md` (the syzygy-bpyt.8.17
@@ -45,7 +45,9 @@ The timing records find these 7 by rendering every exported template with
 marker values (`templates.withRowKeys`). The eighth template, the
 local-agent source-acquisition sign-off, has one slot per line, so none of
 its slots qualifies. `package-reader.ts` and `gate-sources.ts` are not
-touched. No rendered byte, wire format or verdict changes.
+touched. No rendered byte or wire format changes. Below the engine's
+backtrack-stack limit no verdict changes; at that limit the reads differ
+(see "Why the answers cannot change below the engine's limit").
 
 [Observed] Before the change, a sitting-form record that failed after a
 label holding `" | "` k times cost about k times its line. The 8.17
@@ -60,10 +62,10 @@ bytes as at main `9a30237e`.
 
 After the change, a failing read of that row at about 124 KB takes at
 most 7.34 ms of CPU time. That covers the last byte changed, the closing
-mark changed, or a CR in the description, over two runs at 1-minute load 55.8 to 93.0
-(acceptance 1, below). Its wall time is under 160 ms in all but one of
-126 samples at that load. The worst sample is 316 ms at load 57.4, with
-4.84 ms of CPU.
+mark changed, or a CR in the description, over two runs at 1-minute load
+55.8 to 93.0 (acceptance 1, below). Its wall time is under 160 ms in all
+but one of 126 samples at that load. The worst sample is 316 ms at load
+57.4, with 4.84 ms of CPU.
 
 [Inferred] So the old read costs about two thousand times the new one, or
 more: 16 to 17 s of wall time at load 23 to 29, against under 8 ms of CPU
@@ -113,11 +115,15 @@ measurement. The checks below test it.
 
 At that limit they differ, by the round-1 review's measurement
 (docs/reviews/R-GP-IMPL-RECORDER-LABEL-ROW-1-RAW.md §3.7, finding F1)
-[Observed, by the reviewer]. On Node v24.6.0, on every one of the 7 row
-templates, a well-formed record whose label is 8,388,232–8,388,442
-characters (D9, marker values) throws
-`RangeError: Maximum call stack size exceeded` from `RegExp.exec` in the
-old read, and reads in the new one. Through the gate,
+[Observed, by the reviewer]. In a band of label lengths at that limit, a
+well-formed record throws `RangeError: Maximum call stack size exceeded`
+from `RegExp.exec` in the old read, and reads in the new one. On Node
+v24.6.0, each of the 7 row templates has such a band, and its place
+depends on the template. With round 1's marker values it is
+8,388,232–8,388,442 characters of label on six of them, D9 among them,
+and 8,388,118–8,388,338 on the provider statement version 2 act
+(R-GP-IMPL-RECORDER-LABEL-ROW-2 §3.4) [Observed, by the round-2
+reviewer]. Through the gate,
 `readDigestBoundActState` over the real D9 record with an 8,388,100- or
 8,388,200-character label throws in `9a30237e` and returns `ok` in
 `8b143272`. That band is with the owner (the 2026-10-22 packet, the item
@@ -142,8 +148,8 @@ blank only in three places:
 So at most twice B's length plus TAIL's of the y's fail, and each scans at
 most the rest of the line.
 
-A B made only of spaces (`{a} {b}`) keeps the same answers, but without
-that bound. No recorder template has one.
+Below the engine's limit, a B made only of spaces (`{a} {b}`) keeps the
+same answers, but without that bound. No recorder template has one.
 
 ## What was run
 
@@ -311,7 +317,7 @@ from a cap.
   - New tree: `8c024867`, the PR head's code.
   - Old tree: main `9a30237e`.
 - **Run 1** (`docs/evidence/recorder-label-row-timing-2026-10-22.json`)
-  is the lowest-load run of the day.
+  is the lower-load of the two runs.
   - New tree: `433561f2`, with the same `recorder-template.ts`.
   - Old tree: `a0406967`, with the same old file.
   - It ran an earlier version of the tool, which judged on wall time, so
@@ -425,8 +431,8 @@ That leaves out the other 4 line slots and 8 variants: 210 slot worlds of
 the 258 slot inputs. Three reasons:
 
 - the label row is what changed;
-- each reader world cost about 90 s per tree, at 1-minute load between
-  about 60 and 111;
+- each reader world cost about 90 s per tree under load (1-minute load
+  about 60 to 111 by the lane's notes, which are not recorded);
 - the template answers above still cover every slot variant on every
   subject.
 
@@ -437,9 +443,10 @@ of them, are not cut.
 8 template answers, plus 93 × 24 reader answers), **0 mismatches**. That
 is 0 verdict changes and 0 captured-value changes. 209 of the 1,909
 template inputs are read by at least one template, and there are 262
-distinct answer vectors. The run took 4,336 s with 4 workers. The
-1-minute load was 92.6 at the start and 65.2 at the end, and between
-about 60 and 111 at the checks taken while it ran.
+distinct answer vectors. The run took 4,336 s with 4 workers. Its
+1-minute load is not in the record [Unknown: not recorded]; the lane's
+notes give 92.6 at the start, 65.2 at the end, and about 60 to 111 at
+the checks taken while it ran.
 
 ### The negative controls
 
@@ -465,8 +472,9 @@ differential see these two failures.
 ## Residuals
 
 1. [Inferred] Linearity is argued for a separator that holds a non-space.
-   A pair split by spaces only (`{a} {b}`) keeps the same answers, but it
-   is not shown to be linear. No recorder template has one.
+   Below the engine's limit, a pair split by spaces only (`{a} {b}`)
+   keeps the same answers, but it is not shown to be linear. No recorder
+   template has one.
 2. [Inferred] A line of three or more line slots qualifies at most one
    pair, and the slot before that pair can still end at many places. No
    recorder template has such a line.
@@ -501,11 +509,12 @@ differential see these two failures.
    package's testing renderers, then does the same.
 
    A first differential, `a0406967` against `433561f2`, is superseded. It
-   ran at 4 workers, and its reader worlds were taking about 2.4 times as
-   long as on the merged trees. At about 15:08 +08:00 its `timeout`
-   wrapper was SIGSTOPped, so that it could not kill the run at 9,000 s.
-   Once main moved, the run was stopped at 1,500 of its 2,002 inputs. No
-   verdict was taken from it, and its partial output is dropped.
+   ran at 4 workers. By the lane's notes, which are not recorded, its
+   reader worlds were taking about 2.4 times as long as on the merged
+   trees, and at about 15:08 +08:00 its `timeout` wrapper was SIGSTOPped,
+   so that it could not kill the run at 9,000 s. Once main moved, the run
+   was stopped at 1,500 of its 2,002 inputs. No verdict was taken from
+   it, and its partial output is dropped.
 6. [Inferred] The bound on the slot reader worlds rests on this: a reader
    that applies a template can answer differently only where the template
    does. That holds if the readers apply only the exported templates,
