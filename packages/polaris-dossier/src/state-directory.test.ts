@@ -16,6 +16,7 @@ beforeEach(() => {
   fs.writeFileSync(path.join(clone, 'README.md'), '# clone\n');
 });
 afterEach(() => fs.rmSync(base, { recursive: true, force: true }));
+const isRoot = process.getuid?.() === 0;
 
 /** Every path under `dir`, with its kind and mode: the harness's own record of what was written. */
 const sweep = (dir: string): string[] => fs.readdirSync(dir, { recursive: true, withFileTypes: true })
@@ -116,7 +117,8 @@ describe('symbolic-link intent, the one copy the daemon judges its state directo
     });
   });
 
-  it('refuses a component below a directory it may not search as unreadable', () => {
+  // Root may search a mode-000 directory, so under root the path reads as missing and no EACCES arises (syzygy-bpyt.8.32).
+  it.skipIf(isRoot)('refuses a component below a directory it may not search as unreadable', () => {
     fs.mkdirSync(at('blocked'));
     fs.chmodSync(at('blocked'), 0o000);
     try {

@@ -8,11 +8,12 @@ import { parseArgs } from 'node:util';
  * `--` are each one unrecognised argument, as no family has ever taken them. */
 
 export interface ArgvSpec {
-  /** Options that take the next argument as their value. */
+  /** Options that take the next argument as their value, each `--<name>`: parseArgs is told their long names, so a short one could
+   * never be read. */
   readonly valued: readonly string[];
-  /** Options that take no value, read where they stand. */
+  /** Options that take no value, read where they stand, each `--<name>` or `-<c>`. */
   readonly booleans?: readonly string[];
-  /** Options that end the reading where they stand, whatever follows (the daemon's `--help`). */
+  /** Options that end the reading where they stand, whatever follows (the daemon's `--help`), each `--<name>` or `-<c>`. */
   readonly stopAt?: readonly string[];
   /** A value that starts with `-`: taken as the value, or refused as a missing value. */
   readonly dashValue: 'take' | 'refuse';
@@ -38,7 +39,15 @@ export interface ArgvRead {
 
 export const isArgvFault = (read: ArgvRead | ArgvFault): read is ArgvFault => 'fault' in read;
 
+const LONG = /^--[^-=][^=]*$/u;
+const SHORT = /^-[^-]$/u;
+
+/** Reads `args` by `spec`. A spec naming an option the reader could never see is a programming error, and throws. */
 export function readArgv(args: readonly string[], spec: ArgvSpec): ArgvRead | ArgvFault {
+  for (const name of spec.valued) if (!LONG.test(name)) throw new Error(`argv: the valued option ${name} is not --<name>`);
+  for (const name of [...(spec.booleans ?? []), ...(spec.stopAt ?? [])]) {
+    if (!LONG.test(name) && !SHORT.test(name)) throw new Error(`argv: the option ${name} is neither --<name> nor -<c>`);
+  }
   const options = Object.fromEntries(spec.valued.map((name) => [name.slice(2), { type: 'string' as const }]));
   const { tokens } = parseArgs({ args: [...args], options, strict: false, allowPositionals: true, tokens: true });
   const values = new Map<string, string>();
