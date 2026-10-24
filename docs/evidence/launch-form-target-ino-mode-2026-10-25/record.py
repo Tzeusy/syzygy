@@ -2,8 +2,8 @@
 
 Inputs (all in this directory): mutants-{a,b,c}-{tmpfs,ext4}.json, written by the PR 523 reviewer's rev523_mutants.py (retained,
 unchanged, under docs/evidence/launch-form-target-ctime-review-2026-10-25/tools/); faithful-probe*.json, written by faithful_probe.mjs
-here; root-skip-{user,root}.json, vitest's JSON reporter over launched.test.ts as the user and with the getuid shim
-docs/evidence/syzygy-bpyt-8-32/as-root.mjs; list-{base,fix}.txt, `vitest list` of the test file at the base and at the fix.
+here; root-skip-{user,root}.json, vitest's JSON reporter over the whole of launched.test.ts, unfiltered, as the user and with the
+worker-only getuid shim as-root-worker.mjs beside this script; list-{base,fix}.txt, `vitest list` of the test file at the base and at the fix.
 The 8.33 record it compares with is read from the git object at the fix commit, never from the working tree.
 Usage: python3 -I record.py <tree> [--check | --selftest]
   --check: exit 1 unless summary.json equals what the inputs give and no check fails.
@@ -175,15 +175,25 @@ def probes():
 
 
 def root_skip():
-    out, problems = {}, []
+    out, problems, status = {}, [], {}
     for who in ('user', 'root'):
         d = load(f'root-skip-{who}.json')
-        not_passed = sorted(f'{a["status"]}: {a["fullName"]}' for t in d['testResults'] for a in t['assertionResults'] if a['status'] != 'passed')
+        status[who] = {a['fullName']: a['status'] for t in d['testResults'] for a in t['assertionResults']}
+        not_passed = sorted(f'{s}: {name}' for name, s in status[who].items() if s != 'passed')
         out[who] = {k: d[k] for k in ('numTotalTests', 'numPassedTests', 'numFailedTests', 'numPendingTests')} | {'notPassed': not_passed}
     if out['user']['numPassedTests'] != 43 or out['user']['notPassed']:
         problems.append('root-skip-user: not 43 passed')
     if out['root']['notPassed'] != sorted(f'skipped: {t}' for t in SKIPPED) or out['root']['numPassedTests'] != 41:
         problems.append('root-skip-root: not exactly the two mode-000 rows skipped')
+    # per title, over the whole unfiltered file: the same 43 titles, and only the two mode-000 rows change status (passed to skipped)
+    changed = sorted(f'{name}: {status["user"][name]} -> {status["root"].get(name)}' for name in status['user'] if status['user'][name] != status['root'].get(name))
+    out['perTitle'] = {'titles': len(status['user']), 'sameTitles': set(status['user']) == set(status['root']), 'changed': changed}
+    if len(status['user']) != 43 or set(status['user']) != set(status['root']) or changed != sorted(f'{t}: passed -> skipped' for t in SKIPPED):
+        problems.append('root-skip: per-title statuses differ other than on the two mode-000 rows')
+    shim = text('as-root-worker.mjs')
+    if "if (!(process.argv[1] ?? '').endsWith('apps/syzygy/dist/main.js')) process.getuid = () => 0;" not in shim.splitlines():
+        problems.append('as-root-worker.mjs: not the worker-only shim')
+    out['shimSha256'] = sha(shim)
     return out, problems
 
 
@@ -282,6 +292,8 @@ SELFTEST = {
     'a selftest arm that changes nothing': {'faithful-probe-selftest-rename-tmpfs.json': lambda d: ([p.update(roundsDifferingByField={}) for p in d['plants'].values()], d)[1]},
     'a probe helper that drops targetMode': {'faithful_probe.mjs': lambda s: s.replace("    targetMode: followed?.isFile() ? followed.mode : null,\n", '', 1)},
     'a third row skipped under root': {'root-skip-root.json': third_skip},
+    'a row that fails as the user and skips under root': {'root-skip-user.json': lambda d: (d['testResults'][0]['assertionResults'][-1].update(status='failed'), d)[1]},
+    'a shim that reaches every node process': {'as-root-worker.mjs': lambda s: s.replace("if (!(process.argv[1] ?? '').endsWith('apps/syzygy/dist/main.js')) ", '', 1)},
     'a title list out of order': {'list-fix.txt': lambda s: '\n'.join([s.splitlines()[1], s.splitlines()[0], *s.splitlines()[2:]]) + '\n'},
 }
 
