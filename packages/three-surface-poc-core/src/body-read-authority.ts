@@ -34,6 +34,7 @@
 // correlator; a failed, unavailable or indeterminate correlation is
 // invalid and never falls back to state (1).
 
+import { deepFreeze, sha256 } from '@syzygy/support';
 import {
   ACT_IDENTITY,
   ISO_DATE,
@@ -43,12 +44,10 @@ import {
   SHA256,
   SLUG,
   TAG,
-  deepFreeze,
   isGovernancePath,
   isHumanName,
   isIsoDate,
   provenanceFromLabel,
-  sha256,
   type ProvenanceLabel,
 } from './act-fields.js';
 import {

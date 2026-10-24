@@ -1,7 +1,7 @@
-import { createHash } from 'node:crypto';
 import { execFileSync } from 'node:child_process';
 import { realpathSync } from 'node:fs';
 import { join, resolve } from 'node:path';
+import { sha256 } from '@syzygy/support';
 
 // Test seam: exported for the tests; production code reaches it only inside this file.
 export const PWB_APPROVED_REPOSITORY_LOCATOR = '/home/tze/GitHub/butlers';
@@ -80,7 +80,7 @@ export function observeGitRepository(root: string): GitObservation {
   return {
     revision,
     committerInstant,
-    worktreeMetadataDigest: `sha256:${createHash('sha256').update(worktreeRecord).digest('hex')}`,
+    worktreeMetadataDigest: `sha256:${sha256(worktreeRecord)}`,
     clean: worktreeRecord.length === 0,
     changedPaths: [...new Set(changedPaths)].sort(),
   };

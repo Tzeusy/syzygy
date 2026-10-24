@@ -1,8 +1,8 @@
-import { createHash } from 'node:crypto';
 import * as fs from 'node:fs';
 import * as path from 'node:path';
 import { UNKNOWN_REASONS } from '@syzygy/cap1-core';
 import { parseBoundedJson } from '@syzygy/polaris-generation-core/live';
+import { sha256 } from '@syzygy/support';
 import { QUOTATION_RULE } from './brief.js';
 import {
   briefIssuedAt, checkSubject, declaredSessionId, type CheckDeps, type CheckFinding, type CheckRecord, type CheckRefusal, type CheckedRevision,
@@ -75,7 +75,6 @@ const DRAFT_JSON_LIMITS = Object.freeze({ maxBytes: 4 * 1024 * 1024, maxNodes: 5
 
 const isoOf = (instant: number): string => new Date(instant).toISOString();
 const isObj = (value: unknown): value is Readonly<Record<string, unknown>> => value !== null && typeof value === 'object' && !Array.isArray(value);
-const sha256 = (bytes: string | Uint8Array): string => createHash('sha256').update(bytes).digest('hex');
 export const errno = (cause: unknown): string => (cause as NodeJS.ErrnoException).code ?? 'unknown-error';
 
 /** A run step's common opening: the run directory, the pinned revision verified again, a brief issued and its deadline not passed.

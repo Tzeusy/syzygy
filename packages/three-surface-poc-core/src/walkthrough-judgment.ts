@@ -32,6 +32,7 @@
 // append-only: later correlation never rewrites the provenance under
 // which an earlier judgment took effect.
 
+import { deepFreeze, sha256 } from '@syzygy/support';
 import {
   ACT_IDENTITY,
   ISO_DATE,
@@ -43,12 +44,10 @@ import {
   STATE_1_LABEL,
   STATE_2_LABEL,
   TAG,
-  deepFreeze,
   isGovernancePath,
   isHumanName,
   isIsoDate,
   provenanceFromLabel,
-  sha256,
   type ProvenanceLabel,
 } from './act-fields.js';
 import {

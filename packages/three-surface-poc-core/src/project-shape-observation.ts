@@ -24,6 +24,7 @@
 
 import { execFileSync } from 'node:child_process';
 import { createHash } from 'node:crypto';
+import { deepFreeze, sha256 } from '@syzygy/support';
 
 import type { AuthorityKind, AuthorityState, BodyReadAuthorityEvaluation } from './body-read-authority.js';
 import type { PhaseAClassification } from './content-classification.js';
@@ -334,7 +335,7 @@ export function sourceIdentityOf(repositoryId: string, revision: string, source:
 }
 
 export function resourceLimitsDigest(limits: PwbResourceLimits): string {
-  return `sha256:${createHash('sha256').update(canonicalJson(limits)).digest('hex')}`;
+  return `sha256:${sha256(canonicalJson(limits))}`;
 }
 
 function authorityIdentity(state: AuthorityState): AuthorityInputIdentity {
@@ -352,14 +353,6 @@ function authorityInputs(evaluation: BodyReadAuthorityEvaluation | undefined): D
   if (evaluation === undefined) return { kind: 'not-evaluated' };
   const pick = (kind: AuthorityKind): AuthorityInputIdentity => authorityIdentity(evaluation[kind]);
   return { kind: 'evaluated', evaluationId: evaluation.evaluationId, consent: pick('consent'), policy: pick('policy'), registry: pick('registry') };
-}
-
-function deepFreeze<T>(value: T): T {
-  if (value !== null && typeof value === 'object' && !Object.isFrozen(value)) {
-    Object.freeze(value);
-    for (const member of Object.values(value as Record<string, unknown>)) deepFreeze(member);
-  }
-  return value;
 }
 
 function isIsoInstant(text: string): boolean {
@@ -640,7 +633,7 @@ export function observeProjectShapeSources(input: ObserveProjectShapeSourcesInpu
     deterministicInputs,
   };
   const { capturedAt: _capturedAt, ...stable } = body;
-  const observationDigest = `sha256:${createHash('sha256').update(canonicalJson(stripCaptureInstant(stable))).digest('hex')}`;
+  const observationDigest = `sha256:${sha256(canonicalJson(stripCaptureInstant(stable)))}`;
   return deepFreeze({ ...body, observationDigest });
 }
 

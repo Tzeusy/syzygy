@@ -14,5 +14,8 @@
       "import": "./dist/live.js",
       "default": "./dist/live.js"
     }
+  },
+  "dependencies": {
+    "@syzygy/support": "0.0.0"
   }
 }

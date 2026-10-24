@@ -1,9 +1,9 @@
-import { createHash } from 'node:crypto';
 import * as fs from 'node:fs';
 import * as path from 'node:path';
 import { POLICY_PATH, readClassActState, readPolicyActChain } from '@syzygy/polaris-generation-consent/live';
 import { codeContentExempt, compileEveryOffsetMatcher, publicSourceContentClass, readCodeContentExemption, readProjectDocumentationRule, readSecretRedaction, redactBody, type PublicSourceContentClass, type RedactionDetector } from '@syzygy/polaris-generation-core/live';
 import { compileDetectors, deniedPathReason, detectSecrets, scanActiveContent, type DeniedPathRules, type SecretDetector } from '@syzygy/three-surface-poc-core';
+import { sha256 } from '@syzygy/support';
 
 /** Classification and screening of every blob Syzygy reads for a check (REQ-polaris-generation-033: "every object SHALL be classified
  * and screened under the observing project's effective policies (REQ-polaris-generation-025) before its content is used in a check").
@@ -123,7 +123,7 @@ export function buildDossierScreen(policy: Uint8Array, classActInForce = false):
   return {
     ok: true,
     screen: {
-      policyId: doc['policyId'], policyVersion: doc['policyVersion'], policySha256: createHash('sha256').update(policy).digest('hex'),
+      policyId: doc['policyId'], policyVersion: doc['policyVersion'], policySha256: sha256(policy),
       projectDocumentation: documentation !== null,
       codeContentExemption: exemption !== null,
       screenPath,
@@ -148,7 +148,7 @@ export async function loadDossierScreen(root: string, now: number, readBytes: (f
   try { bytes = readBytes(path.join(root, POLICY_PATH)); } catch (cause) {
     return { ok: false, why: `the screening policy cannot be read (${(cause as NodeJS.ErrnoException).code ?? 'unknown-error'})` };
   }
-  if (createHash('sha256').update(bytes).digest('hex') !== chain.final.digest) return { ok: false, why: 'the screening policy changed after its act was checked; its bytes differ from the act\'s argument' };
+  if (sha256(bytes) !== chain.final.digest) return { ok: false, why: 'the screening policy changed after its act was checked; its bytes differ from the act\'s argument' };
   const classAct = await readClassActState({ root, now });
   return buildDossierScreen(new Uint8Array(bytes), classAct.state === 'ok');
 }

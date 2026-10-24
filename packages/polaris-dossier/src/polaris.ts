@@ -1,9 +1,9 @@
-import { createHash } from 'node:crypto';
 import { spawnSync } from 'node:child_process';
 import * as fs from 'node:fs';
 import * as os from 'node:os';
 import * as path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { sha256 } from '@syzygy/support';
 import { isArgvFault, readArgv } from './argv.js';
 import { authorRule, awaitRule, startBroker, type Broker, type BrokerResponse } from './broker.js';
 import { cliGateSources, runDossierCli, STATE_ROOT_ENV, type CliPorts } from './cli.js';
@@ -53,7 +53,6 @@ code, and a launched run executes nothing. Network is left to the agent tool.
 const CHECKOUT = fileURLToPath(new URL('../../..', import.meta.url));
 const BROKER_CLIENT = fileURLToPath(new URL('./broker-client.js', import.meta.url));
 const MAIN = path.join(CHECKOUT, 'apps/syzygy/dist/main.js');
-const sha256 = (text: string): string => createHash('sha256').update(text, 'utf8').digest('hex');
 const POLL_MS = 3000;
 
 interface Options {
