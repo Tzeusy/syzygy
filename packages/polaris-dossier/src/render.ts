@@ -16,6 +16,7 @@ import { RECORDS_WITHIN_REACH } from './gate-sources.js';
 import { GitObjectReadRefusal, openPinnedObjectReader } from './git-object-reader.js';
 import { errno, logStep, openRun, readRecord, type OpenedRun } from './inventory.js';
 import { buildDesignPacket } from './design-review.js';
+import type { Outcome } from './outcome.js';
 import { designReviewOfRecord, latestPassedDraft, reviewOfRecord, type DesignReviewOfRecord, type ReviewDeps, type ReviewOfRecord } from './review.js';
 import type { ReverifyRefusal } from './reverify.js';
 import { NO_WORK_ITEM_REASON } from './run-record.js';
@@ -108,7 +109,7 @@ export interface RenderReport {
   readonly disclosures: readonly string[];
 }
 
-export type RenderResult = { readonly ok: true; readonly report: RenderReport } | { readonly ok: false; readonly refusal: RenderRefusal };
+export type RenderResult = Outcome<RenderReport, RenderRefusal>;
 
 const DISCLOSURES = [
   RECORDS_WITHIN_REACH,

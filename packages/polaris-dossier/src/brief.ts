@@ -8,6 +8,7 @@ import { CLARIFICATION_ANSWER_KINDS, LOCAL_DRAFT_SCHEMA_VERSION, QUOTATION_FORM,
 import { PERMITTING_ARM_ENABLED, decideExecutionRule, executionRuleSection, type ExecutionRule, type PermittingArm } from './execution-rule.js';
 import { RECORDS_WITHIN_REACH, type GateSources } from './gate-sources.js';
 import { launchedMarkerState } from './launched.js';
+import type { Outcome } from './outcome.js';
 import { reverifyPinnedRevision, type ReverifyOptions, type ReverifyRefusal, type ReverifyResult } from './reverify.js';
 import type { RunConfig } from './run-config.js';
 import type { RunSubject } from './run-record.js';
@@ -180,7 +181,7 @@ export interface BriefReport {
   readonly disclosures: readonly string[];
 }
 
-export type BriefResult = { readonly ok: true; readonly report: BriefReport } | { readonly ok: false; readonly refusal: BriefRefusal };
+export type BriefResult = Outcome<BriefReport, BriefRefusal>;
 
 export interface BriefDeps {
   readonly sources: GateSources;
