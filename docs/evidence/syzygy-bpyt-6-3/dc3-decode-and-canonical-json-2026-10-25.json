@@ -52,6 +52,10 @@
     "sha256Head": "b57746bb67286dfbe3ed0deaaf844e11d8568936b94c79cc0262ea912b635bff"
    }
   ],
+  "registryBoundFilesChecked": [
+   "packages/polaris-dossier/src/git-object-reader.ts",
+   "packages/three-surface-poc-core/src/project-shape-observer.ts"
+  ],
   "registryBoundFilesTouched": []
  },
  "authority": "GP-Q0 (behavior-preserving only); .syzygy/governance/decisions/OWNER-DIRECTION-GREENFIELD-PARITY-ANSWERS-2026-10-21.md",
@@ -529,7 +533,28 @@
   },
   "addedTotal": 35,
   "existingTestFilesModified": 0,
-  "removed": 0
+  "removed": 0,
+  "fullSuite": {
+   "flags": "--testTimeout=60000 --hookTimeout=60000, a private TMPDIR, host load average about 18 to 19",
+   "base": {
+    "commit": "6cbb3186b031e396a8b2cd616be313ab2daa22fd",
+    "testFiles": 242,
+    "tests": 5315,
+    "passed": 5310,
+    "failed": 0,
+    "skipped": 5
+   },
+   "head": {
+    "commit": "ae6f97209437a0ca19fcb0f0fd68be4047814aff",
+    "laterCommits": "the commit that adds these full-suite figures changes only this record",
+    "testFiles": 246,
+    "tests": 5350,
+    "passed": 5345,
+    "failed": 0,
+    "skipped": 5
+   },
+   "identityComparison": "by (test file, full test name): 0 base tests missing at head, 35 tests only at head (the four new files), 0 tests whose status changed"
+  }
  },
  "everyChangedOutput": "none. The decoder returns the same text or the same refusal on all 12,841 differential rows, so nothing computed from the decoded text can differ [Inferred: from the row equality, not a separate digest run]; the existing response-identity, manifest and generation tests that pin digests and rendered bytes pass unchanged; canonicalJson and encodeCanonicalJson differ from the base only in two comment lines (comment-only emit equality).",
  "residuals": [
