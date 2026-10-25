@@ -1,10 +1,14 @@
 #!/usr/bin/env python3
 """Builds docs/evidence/syzygy-bpyt-4-5/bounds-and-pins.json from the retained results beside it (syzygy-bpyt.4.5). Evidence tool, not authority.
 
-usage: python3 -I build_record.py TREE BASE_COMMIT EVIDENCE_COMMIT
+usage: python3 -I build_record.py TREE BASE_COMMIT MAIN_COMMIT EVIDENCE_COMMIT
+
+BASE_COMMIT is where the branch began and where every base-side result ran; MAIN_COMMIT is the main the branch last merged.
+The change is `git diff MAIN_COMMIT EVIDENCE_COMMIT`, and each file it touches must be identical at BASE_COMMIT and MAIN_COMMIT,
+so the base-side results ran against the bytes the change replaced.
 
 Every digest and total is computed here from the files and git objects, never typed in: the subject (the test files the
-change touches, their sha256 at EVIDENCE_COMMIT, and the sha256 of `git diff BASE EVIDENCE -- <them>`), each tool and
+change touches, their sha256 at EVIDENCE_COMMIT, and the sha256 of `git diff MAIN EVIDENCE -- <them>`), each tool and
 result file's sha256, the census totals at both commits, the mutant outcomes, the CPU separations and the full-suite runs.
 
 What each result must have run against, checked here: the mutants and the head census at EVIDENCE_COMMIT itself; the
@@ -19,13 +23,17 @@ the new test also fails. The narrative fields (`sites`, `residuals`) are the lan
 """
 import glob, hashlib, json, math, os, re, subprocess, sys
 
-tree, base, ev = os.path.abspath(sys.argv[1]), sys.argv[2], sys.argv[3]
+tree, base, main, ev = os.path.abspath(sys.argv[1]), sys.argv[2], sys.argv[3], sys.argv[4]
 here = os.path.join(tree, 'docs/evidence/syzygy-bpyt-4-5')
 git = lambda *a: subprocess.run(['git', *a], cwd=tree, capture_output=True, check=True).stdout
 sha = lambda b: hashlib.sha256(b).hexdigest()
 load = lambda name: json.load(open(os.path.join(here, name), encoding='utf8'))
-base, ev = git('rev-parse', base).decode().strip(), git('rev-parse', ev).decode().strip()
-tests = sorted(p for p in git('diff', '--name-only', base, ev, '--', 'apps', 'packages').decode().split('\n') if p)
+base, main, ev = (git('rev-parse', c).decode().strip() for c in (base, main, ev))
+changed = sorted(p for p in git('diff', '--name-only', main, ev).decode().split('\n') if p)
+for p in changed:
+    if not p.startswith('docs/evidence/syzygy-bpyt-4-5/') and subprocess.run(['git', 'diff', '--quiet', base, main, '--', p], cwd=tree).returncode != 0:
+        sys.exit(f'{p} differs between {base} and {main}')
+tests = [p for p in changed if p.startswith(('apps/', 'packages/'))]
 MAIN, STATE, DE_TEST = 'apps/syzygy/src/main.ts', 'packages/polaris-dossier/src/state-directory.ts', 'packages/cap1-system/src/daemon-entry-unchanged.system.test.ts'
 
 mutants, census_base, census_head = load('bound-and-pin-mutants.json'), load('census-base.json'), load('census-head.json')
@@ -127,7 +135,7 @@ daemon_entry = {
 daemon_entry['pinKillsDropped'] = [m['id'] for m in daemon_entry['mutants'] if m['oldTextPin'] == 'fail' and m['newHookRow'] == 'pass' and m['newTextRow'] == 'pass']
 daemon_entry['pinMisses'] = [m['id'] for m in daemon_entry['mutants'] if m['kind'] == 'defect' and m['oldTextPin'] == 'pass']
 
-THIRD = r'hrtime|performance\.now\(\)|Date\.now\(\) *-|elapsed|getTime\(\) *-|cpuUsage'
+THIRD = r'hrtime|performance\.now\(\)|Date\.now\(\) *-|elapsed|getTime\(\) *-|[cC]puUsage'
 third = [l for l in git('grep', '-n', '-E', THIRD, ev, '--', 'apps/*.test.*', 'packages/*.test.*').decode().split('\n') if l]
 grep_n = lambda commit, pattern, path: [l for l in subprocess.run(['git', 'grep', '-n', '-F', pattern, commit, '--', path], cwd=tree, capture_output=True, text=True).stdout.split('\n') if l]
 READER = 'packages/polaris-dossier/src/git-object-reader.test.ts'
@@ -143,16 +151,16 @@ RESIDUALS = [
     'Explicit timeouts are harness bounds, not assertions, and are out of this bead (syzygy-bpyt.4.31); most carry no one-line reason (unreasonedTimeouts).',
     'Two concurrent full-suite runs were not green on this host at the base or the head alike (attempts 1 to 3): every failure was a 5 s default timeout or a 10 s hook timeout in a file this change does not touch. One run at a time, twice in sequence, was green (attempts 4 and 5).',
 ]
-row_delta = subprocess.run([sys.executable, '-I', os.path.join(here, 'tools', 'row_delta.py'), tree, base, ev], capture_output=True, text=True, check=True).stdout.splitlines()
+row_delta = subprocess.run([sys.executable, '-I', os.path.join(here, 'tools', 'row_delta.py'), tree, main, ev], capture_output=True, text=True, check=True).stdout.splitlines()
 suites = [load(os.path.relpath(p, here)) for p in sorted(glob.glob(os.path.join(here, 'full-suite', 'attempt-*.json')))]
 durations = [load(os.path.relpath(p, here)) for p in sorted(glob.glob(os.path.join(here, 'durations', '*.json')))]
 
 files = sorted(p for p in glob.glob(os.path.join(here, '**', '*'), recursive=True) if os.path.isfile(p) and not p.endswith('bounds-and-pins.json'))
 record = {
     'schema': 'syzygy-bpyt-4-5-bounds-and-pins/2', 'bead': 'syzygy-bpyt.4.5',
-    'subject': {'base': base, 'evidenceCommit': ev, 'testFiles': [{'path': p, 'sha256': sha(git('show', f'{ev}:{p}'))} for p in tests],
-                'testDiffSha256': sha(git('diff', base, ev, '--', *tests)), 'note': 'The test files are the subject; no product file differs between base and the evidence commit.'},
-    'productFilesChanged': sorted(p for p in git('diff', '--name-only', base, ev).decode().split('\n') if p and not p.startswith('docs/evidence/syzygy-bpyt-4-5/') and p not in tests),
+    'subject': {'base': base, 'main': main, 'evidenceCommit': ev, 'testFiles': [{'path': p, 'sha256': sha(git('show', f'{ev}:{p}'))} for p in tests],
+                'testDiffSha256': sha(git('diff', main, ev, '--', *tests)), 'note': 'The test files are the subject; no product file differs between base and the evidence commit.'},
+    'productFilesChanged': [p for p in changed if not p.startswith('docs/evidence/syzygy-bpyt-4-5/') and p not in tests],
     'resultsRanAt': {'mutants': mutants['tree'], 'censusHead': census_head['commit'], 'daemonEntryHead': de_head['commit'], 'daemonEntryOldTest': de_base['commit'], 'cpuSeparation': sep['tree']},
     'files': [{'path': os.path.relpath(p, tree), 'sha256': sha(open(p, 'rb').read())} for p in files],
     'ac1Sweep': {'population': {'base': census_base['population'], 'head': census_head['population']},
@@ -169,7 +177,7 @@ record = {
     'sites': SITES, 'controls': controls, 'residuals': RESIDUALS,
     'mutantTotals': {'cases': len(cases), 'sides': sum(len(c['sides']) for c in cases.values()), 'asExpected': sum(s['asExpected'] for c in cases.values() for s in c['sides'])},
     'daemonEntry': daemon_entry,
-    'rowDelta': {'tool': 'row_delta.py', 'base': base, 'head': ev, 'lines': row_delta},
+    'rowDelta': {'tool': 'row_delta.py', 'base': main, 'head': ev, 'lines': row_delta},
     'wallDurations': durations, 'fullSuite': suites,
 }
 open(os.path.join(here, 'bounds-and-pins.json'), 'w', encoding='utf8').write(json.dumps(record, indent=1, ensure_ascii=False) + '\n')

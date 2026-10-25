@@ -3,8 +3,8 @@
   "name": "timing_census.py",
   "sha256": "79aad9c52e1a11f8887d8fe5475a86e93bd742ac8aec436089a69cb098840f48"
  },
- "commit": "0a6645ae7d59230b261f27c3c05ef9a9f384ebd1",
- "population": 249,
+ "commit": "3fc3709fc73175e2e42ab12329caf28384da7645",
+ "population": 250,
  "summary": {
   "timeout-arg": {
    "lines": 134,
@@ -1693,15 +1693,15 @@
   },
   {
    "path": "packages/polaris-generation-core/src/dossier-profile.test.ts",
-   "line": 173,
+   "line": 176,
    "kind": "cpu-bound",
-   "text": "expect(cpuMsSince(cpu)).toBeLessThan(2000);"
+   "text": "expect(cpuMsSince(cpu)).toBeLessThan(EDGE_TRIM_CPU_MS);"
   },
   {
    "path": "packages/polaris-generation-core/src/excerpt.test.ts",
-   "line": 264,
+   "line": 267,
    "kind": "cpu-bound",
-   "text": "expect(cpuMsSince(cpu)).toBeLessThan(500);"
+   "text": "expect(cpuMsSince(cpu)).toBeLessThan(HOSTILE_LINE_CPU_MS);"
   },
   {
    "path": "packages/polaris-generation-core/src/pipeline.test.ts",
@@ -1742,15 +1742,15 @@
   },
   {
    "path": "packages/three-surface-poc-core/src/test-artifact-verification.test.ts",
-   "line": 99,
+   "line": 103,
    "kind": "cpu-bound",
-   "text": "expect(cpuMsSince(cpu)).toBeLessThan(2_000);"
+   "text": "expect(cpuMsSince(cpu)).toBeLessThan(TAG_SCAN_CPU_MS);"
   },
   {
    "path": "packages/three-surface-poc-core/src/test-artifact-verification.test.ts",
-   "line": 106,
+   "line": 110,
    "kind": "cpu-bound",
-   "text": "expect(cpuMsSince(cpu)).toBeLessThan(2_000);"
+   "text": "expect(cpuMsSince(cpu)).toBeLessThan(ATTRIBUTE_SCAN_CPU_MS);"
   }
  ],
  "secondMethod": [
