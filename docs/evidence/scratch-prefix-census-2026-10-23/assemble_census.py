@@ -21,6 +21,7 @@ The aggregation (classes, the rule table, the exposure bounds, the partition sen
 --selftest runs the same code over a synthetic two-run fixture whose expected answer is written as literals here, then over mutants of
 this file (one predicate changed in each), and requires every mutant to fail.
 """
+import bisect
 import collections
 import functools
 import gzip
@@ -251,6 +252,70 @@ def exposure_model(entries: dict, index: Index, interval: float, duration: float
     return gap, exposure_of
 
 
+def long_gap_trace(entries: dict, index: Index, interval: float, published: set) -> dict:
+    """What the trace says about the sighting gaps of two intervals or more, which exposure_gap leaves out of its assumed gap.
+
+    The trace clock is aligned to the sampler clock: a traced name the sampler also saw was created after the sighting instant that
+    precedes its first sighting and no later than that sighting, which bounds the offset between the clocks to a window, and the
+    middle of the window is used. The run's start (0 s) counts as a sighting instant. Per gap between consecutive instants: how many
+    traced names were created inside it and how many of those the sampler ever saw, for the gaps of two intervals or more and for the
+    shorter ones. Then, for each class in `published`, whether its bound rests on the long gaps being quiet: a name the sampler never
+    saw that was created inside a long gap, or a sampled name with a long gap on either side of its sightings."""
+    known = sorted({seen[edge] for seen in entries.values() for edge in ('first', 'last')} | {0.0})
+    first_row = {name: rows[0] for name, rows in index.seen.items()}
+    lower, upper = float('-inf'), float('inf')
+    for name, row in first_row.items():
+        if name in entries:
+            first = entries[name]['first']
+            before = known[max(bisect.bisect_left(known, first) - 1, 0)]
+            lower, upper = max(lower, row['t'] / 1000 - first), min(upper, row['t'] / 1000 - before)
+    assert lower > float('-inf'), 'no traced name was also sampled, so the two clocks cannot be aligned'
+    offset = (lower + upper) / 2
+    created = {name: row['t'] / 1000 - offset for name, row in first_row.items()}
+    is_long = lambda earlier, later: round(later - earlier, 2) >= 2 * interval
+    gaps = list(zip(known, known[1:]))
+    totals = {kind: {'gaps': 0, 'seconds': 0.0, 'namesCreatedInside': 0, 'ofThemEverSampled': 0} for kind in ('long', 'short')}
+    per_gap = []
+    for earlier, later in gaps:
+        inside = [name for name, made in created.items() if earlier < made <= later]
+        sampled = sum(1 for name in inside if name in entries)
+        total = totals['long' if is_long(earlier, later) else 'short']
+        total['gaps'] += 1
+        total['seconds'] += later - earlier
+        total['namesCreatedInside'] += len(inside)
+        total['ofThemEverSampled'] += sampled
+        if is_long(earlier, later):
+            per_gap.append({'from': earlier, 'to': later, 'seconds': round(later - earlier, 2), 'namesCreatedInside': len(inside), 'ofThemEverSampled': sampled})
+
+    def in_a_long_gap(made: float) -> bool:
+        return any(earlier < made <= later for earlier, later in gaps if is_long(earlier, later))
+
+    def long_gap_beside(name: str) -> bool:
+        first, last = entries[name]['first'], entries[name]['last']
+        before = known[max(bisect.bisect_left(known, first) - 1, 0)]
+        after = bisect.bisect_right(known, last)
+        return is_long(before, first) or (after < len(known) and is_long(last, known[after]))
+
+    by_class: dict = {}
+    for name in set(entries) | set(first_row):
+        cls = classify(name, index)[1]
+        if cls not in published:
+            continue
+        slot = by_class.setdefault(cls, {'names': 0, 'neverSampledCreatedInALongGap': 0, 'sampledWithALongGapBesideItsSightings': 0})
+        slot['names'] += 1
+        if name in entries:
+            slot['sampledWithALongGapBesideItsSightings'] += long_gap_beside(name)
+        elif in_a_long_gap(created[name]):
+            slot['neverSampledCreatedInALongGap'] += 1
+    dependent = {cls: slot for cls, slot in sorted(by_class.items()) if slot['neverSampledCreatedInALongGap'] or slot['sampledWithALongGapBesideItsSightings']}
+    rounded = lambda kind: {**totals[kind], 'seconds': round(totals[kind]['seconds'], 2)}
+    return {'clockOffsetSeconds': round(offset, 3), 'clockOffsetWindowSeconds': round(upper - lower, 3),
+            'tracedNames': len(first_row), 'tracedNamesTheSamplerSaw': sum(1 for name in first_row if name in entries),
+            'tracedNamesCreatedInNoGap': sum(1 for made in created.values() if not any(earlier < made <= later for earlier, later in gaps)),
+            'gapsOfTwoIntervalsOrMore': {**rounded('long'), 'perGap': per_gap}, 'shorterGaps': rounded('short'),
+            'publishedClasses': len(published), 'publishedClassesThatDependOnThem': dependent, 'publishedClassesThatDoNot': sorted(published - set(dependent))}
+
+
 def build_table(classes: dict, modes: tuple, seeded_from, naming, exposure_for, chrome_launchers: list) -> list:
     """One row per class, with its rule. A class whose creating files fit no rule stops the assembler."""
     kill_labels, fresh_labels, clean_labels = modes
@@ -385,6 +450,27 @@ AGG_MIXED_ROWS = [
     {'kind': 'mkdtemp', 'path': '/t/mix-AAAAAA', 'prefix': 'mix-', 'frames': ['packages/q/src/a.test.ts:1']},
     {'kind': 'mkdtemp', 'path': '/t/mix-BBBBBB', 'prefix': 'mix-', 'frames': ['packages/q/src/b.ts:2']},
 ]
+
+# A synthetic clean run for long_gap_trace: sampled every 0.5 s, sighting instants 0.5 1.0 3.0 3.5 4.0 6.0 and the start 0.0, so two gaps of
+# two intervals or more (1.0-3.0 and 4.0-6.0) and four shorter ones. The trace clock runs 0.1 s to 0.2 s ahead of the sampler's: the
+# three sampled traced names bound the offset to 0.0-0.4 s and the middle, 0.2 s, is used. Each trace time is the sampler time plus 0.2 s
+# (HHHHHH, made at 3.9 s, falls in a shorter gap only when the offset is subtracted; otherwise it reads 4.1 s, inside the second long gap).
+LG_SAMPLER = {'intervalSeconds': 0.5, 'entries': {
+    'p-AAAAAA': {'first': 0.5, 'last': 1.0},
+    'p-BBBBBB': {'first': 3.0, 'last': 3.5},
+    'q-CCCCCC': {'first': 4.0, 'last': 6.0},
+    '.com.google.Chrome.aBcDeF': {'first': 3.5, 'last': 4.0},
+}}
+LG_ROWS = [
+    {'kind': 'mkdtemp', 'path': '/t/p-AAAAAA', 'prefix': 'p-', 't': 400, 'frames': ['packages/q/src/a.ts:1']},
+    {'kind': 'mkdtemp', 'path': '/t/p-BBBBBB', 'prefix': 'p-', 't': 2100, 'frames': ['packages/q/src/a.ts:1']},
+    {'kind': 'mkdtemp', 'path': '/t/q-CCCCCC', 'prefix': 'q-', 't': 4000, 'frames': ['packages/q/src/a.ts:2']},
+    {'kind': 'mkdtemp', 'path': '/t/r-DDDDDD', 'prefix': 'r-', 't': 2200, 'frames': ['packages/q/src/a.ts:3']},
+    {'kind': 'mkdtemp', 'path': '/t/r-EEEEEE', 'prefix': 'r-', 't': 5200, 'frames': ['packages/q/src/a.ts:3']},
+    {'kind': 'mkdtemp', 'path': '/t/s-FFFFFF', 'prefix': 's-', 't': 3400, 'frames': ['packages/q/src/a.ts:4']},
+    {'kind': 'mkdtemp', 'path': '/t/r-HHHHHH', 'prefix': 'r-', 't': 4100, 'frames': ['packages/q/src/a.ts:3']},
+]
+LG_PUBLISHED = {'p-', 'q-', 'r-', 's-', 'chrome-singleton-directory'}
 EXPECTED_AGGREGATE = {
     'gap': {'gapSeconds': 0.6, 'sightingInstants': 9, 'gapsBetweenSightings': 8, 'gapsUnderTwoIntervals': 2, 'gapsOfTwoIntervalsOrMore': 6, 'smallestGapOfTwoIntervalsOrMore': 1.0},
     'byRule': {'R1-fixture-sweep-landed': 1, 'R2-chrome-singleton': 1, 'R3-browser-profile': 1, 'R6-non-test-module': 2, 'R9-test-file': 2},
@@ -400,6 +486,19 @@ EXPECTED_AGGREGATE = {
         'syzygy-poc-surface-fixture-p<pid>-n<ns>-': {'run': 'c', 'namesSampled': 1, 'namesNeverSampled': 0, 'expectedNamesPresentAtARandomMoment': {'lowerBound': 0.2, 'upperBound': 0.32}},
         'tk-': {'run': 'c', 'namesSampled': 0, 'namesNeverSampled': 1, 'expectedNamesPresentAtARandomMoment': {'lowerBound': 0.0, 'upperBound': 0.06}},
         'two-': {'run': 'c', 'namesSampled': 1, 'namesNeverSampled': 0, 'expectedNamesPresentAtARandomMoment': {'lowerBound': 0.0, 'upperBound': 0.12}},
+    },
+    'longGaps': {
+        'clockOffsetSeconds': 0.2, 'clockOffsetWindowSeconds': 0.4, 'tracedNames': 7, 'tracedNamesTheSamplerSaw': 3, 'tracedNamesCreatedInNoGap': 0,
+        'gapsOfTwoIntervalsOrMore': {'gaps': 2, 'seconds': 4.0, 'namesCreatedInside': 3, 'ofThemEverSampled': 1,
+                                     'perGap': [{'from': 1.0, 'to': 3.0, 'seconds': 2.0, 'namesCreatedInside': 2, 'ofThemEverSampled': 1},
+                                                {'from': 4.0, 'to': 6.0, 'seconds': 2.0, 'namesCreatedInside': 1, 'ofThemEverSampled': 0}]},
+        'shorterGaps': {'gaps': 4, 'seconds': 2.0, 'namesCreatedInside': 4, 'ofThemEverSampled': 2},
+        'publishedClasses': 5,
+        'publishedClassesThatDependOnThem': {
+            'chrome-singleton-directory': {'names': 1, 'neverSampledCreatedInALongGap': 0, 'sampledWithALongGapBesideItsSightings': 1},
+            'p-': {'names': 2, 'neverSampledCreatedInALongGap': 0, 'sampledWithALongGapBesideItsSightings': 2},
+            'r-': {'names': 3, 'neverSampledCreatedInALongGap': 2, 'sampledWithALongGapBesideItsSightings': 0}},
+        'publishedClassesThatDoNot': ['q-', 's-'],
     },
     'mixedClassStops': "no disposition rule for mkdtemp 'mix-' (files ['packages/q/src/a.test.ts', 'packages/q/src/b.ts'])",
     'partitionStopsOnARuleNobodyListed': "the parts of the partition sum to 0, the table has 1 classes (a rule that RULES does not list: ['R0-unlisted'])",
@@ -425,7 +524,8 @@ def aggregate_fixture() -> dict:
     return {'gap': gap, 'byRule': dict(sorted(collections.Counter(r['rule'] for r in table).items())),
             'creatingFilesOfTwoRows': next(r['creatingFiles'] for r in table if r['class'] == 'two-'),
             'partition': partition_sentence(table, len(AGG_RECORDS)),
-            'exposure': {r['class']: r['exposureInTheCleanRun'] for r in table if r['exposureInTheCleanRun']}, **stops}
+            'exposure': {r['class']: r['exposureInTheCleanRun'] for r in table if r['exposureInTheCleanRun']},
+            'longGaps': long_gap_trace(LG_SAMPLER['entries'], Index(LG_ROWS), LG_SAMPLER['intervalSeconds'], LG_PUBLISHED), **stops}
 
 
 def fixture_answer() -> dict:
@@ -473,6 +573,12 @@ def selftest(out: pathlib.Path) -> None:
         'partition-counts-the-wrong-rule': ("parts = [(rule_id, counts.get(rule_id, 0)) for rule_id, _, _, _ in RULES]", "parts = [(rule_id, counts.get('R6-non-test-module' if rule_id == 'R1-fixture-sweep-landed' else rule_id, 0)) for rule_id, _, _, _ in RULES]"),
         'partition-names-no-creating-file': ("PARTITION_PHRASE[rule_id].format(files=', '.join(creators) or 'the named file')", "PARTITION_PHRASE[rule_id].format(files='the named file')"),
         'partition-mkdtemp-count-from-the-wrong-family': ("sum(1 for r in table if r['family'] == 'mkdtemp')", "sum(1 for r in table if r['family'] == 'derived')"),
+        'long-gap-is-one-interval': ("is_long = lambda earlier, later: round(later - earlier, 2) >= 2 * interval", "is_long = lambda earlier, later: round(later - earlier, 2) >= interval"),
+        'trace-clock-not-aligned': ("offset = (lower + upper) / 2", "offset = 0.0"),
+        'sampled-traced-names-not-counted': ("total['ofThemEverSampled'] += sampled", "total['ofThemEverSampled'] += 0"),
+        'never-sampled-name-in-a-short-gap-counts-as-dependent': ("elif in_a_long_gap(created[name]):", "elif name in created:"),
+        'long-gap-after-the-last-sighting-ignored': ("return is_long(before, first) or (after < len(known) and is_long(last, known[after]))", "return is_long(before, first)"),
+        'long-gap-before-the-first-sighting-ignored': ("return is_long(before, first) or (after < len(known) and is_long(last, known[after]))", "return after < len(known) and is_long(last, known[after])"),
     }
     expected = {'classify': EXPECTED, 'aggregate': EXPECTED_AGGREGATE}
     record = {'tool': 'assemble_census.py --selftest', 'sha256': hashlib.sha256(source.encode()).hexdigest(), 'expected': expected}
@@ -676,6 +782,11 @@ by_rule_classes = lambda rule: [r['class'] for r in table if r['rule'] == rule]
 fresh_killed = {fl: sweep_effect[fl] for fl in fresh_labels}
 bound_of = lambda v: v['exposureInTheCleanRun']['expectedNamesPresentAtARandomMoment']['upperBound']
 never_left_named = [v for v in named.values() if v.get('leftInAnyOfTheKills') == 'none of the three']
+exposure_top = sorted((r for r in table if r['exposureInTheCleanRun']), key=lambda r: -r['exposureInTheCleanRun']['expectedNamesPresentAtARandomMoment']['upperBound'])[:15]
+published = ({r['class'] for r in left_after_kill if r['exposureInTheCleanRun']} | {k for k, v in named.items() if v.get('exposureInTheCleanRun')} | {r['class'] for r in exposure_top})
+long_gaps = long_gap_trace(samples[exposure_label]['entries'], indexes[exposure_label], exposure_interval, published)
+never_left_names = sorted(k for k, v in named.items() if v.get('leftInAnyOfTheKills') == 'none of the three')
+never_left_dependent = [c for c in never_left_names if c in long_gaps['publishedClassesThatDependOnThem']]
 finding = [
     '[Observed] A SIGKILL of the full run leaves %s entries in the private temp directory (%s MB) at %s s into the run, in %d classes in all; at least %s processes carrying the --user-data-dir marker in their arguments (Chrome\'s) survive the kill of the process group, and were stopped by pid. The process count is a lower bound: helpers that carry the private TMPDIR only in their environment (cat, chrome_crashpad_handler) are not matched by the marker.'
     % (' / '.join(str(len(records[l]['listingAtEnd'])) for l in kill_labels), ' / '.join(str(round(sum(e['bytes'] for e in records[l]['listingAtEnd']) / 1e6, 1)) for l in kill_labels),
@@ -690,7 +801,9 @@ finding = [
        ' / '.join(str(row['leftByTheFreshRunItself'].get(fl, {}).get('entries', 0)) for fl in fresh_labels for row in table if row['family'] == 'chrome-singleton')),
     '[Inferred] Which classes a given SIGKILL catches depends on what is alive at that moment. The expected number of directories of a class present at a random moment of the clean run is in exposureInTheCleanRun; the prefixes the bead observation names that none of these three kills left (%s) have an upper bound of %s or less (two sampler gaps of %s s for each name the sampler saw, one for each it did not). By Markov\'s inequality one kill at a random moment catches such a class with probability at most that bound and misses it with probability at least %s, if the clean run\'s timing represents a kill run\'s.'
     % (', '.join(sorted(k for k, v in named.items() if v.get('leftInAnyOfTheKills') == 'none of the three')), max(bound_of(v) for v in never_left_named), sampler_gap['gapSeconds'],
-       round(1 - max(bound_of(v) for v in never_left_named), 3)),
+       round(1 - max(bound_of(v) for v in never_left_named), 3)) + (
+        ' %d of these %d classes depend on the assumption that no sampler gap is longer than the gap above (a name of the class that the sampler never saw, created inside a gap of two intervals or more, or a sampled name with such a gap beside its sightings; exposureRanking.longGapsInTheTrace)%s.'
+        % (len(never_left_dependent), len(never_left_names), '' if not never_left_dependent else ': ' + ', '.join(never_left_dependent))),
 ]
 GUARDS = [
     '(1) Owner liveness exactly as PR 509: owner pid and pid-namespace inode in the name; refuse when the owner is alive or the namespace differs.',
@@ -702,17 +815,41 @@ GUARDS = [
     '(7) Normalize paths before any containment check (AGENTS.md: `authorizeWrite` uses raw `startsWith`).',
     '(8) A rule-6 mutant per guard and an independent review; the PR states its CC-REV-1 classes.',
 ]
+N12_PRECONDITION = ('Before this assembler is used as acceptance evidence for this follow-up, its aggregation fixture must gain a seeded run and literal leftAfterSIGKILL, '
+                    'afterTheNextFreshRun and leftByTheFreshRunItself values, and a derived name, with the four mutants that round 2 of the review found surviving '
+                    '(kill-leftover-count-doubled, kill-leftovers-not-reported, seed-entries-counted-as-the-runs-own, mkdtemp-count-includes-derived) killed (round 2, N12).')
+F1_MEASURE = ("census_run.py cannot measure this change as it stands: in kill mode it SIGTERMs every process carrying the marker before it writes its record, "
+              "--seed-tmp-from refuses while any process carries the earlier marker, and seeding renames the entries into a new TMPDIR, so the profile's SingletonSocket link "
+              "and every orphan's --user-data-dir argument name a directory that no longer exists and PR 515's dirname(link) === tmpdir() check refuses, correctly; "
+              "[Inferred, the harness was not run for this] under that harness a correct F1 still leaves the Chrome singleton directory in place. Measure F1 "
+              "(i) by unit tests over synthetic dead-owner profiles, one case and one rule-6 mutant per guard: a live decoy carrying the exact argv element, one carrying it only as "
+              "a substring, a stopped (T) process, a reused pid, a SingletonSocket link that leaves the temp directory; and "
+              "(ii) end to end only after a harness change, for a new set of runs: a mode that leaves the killed run's orphans running and starts the fresh run in the same TMPDIR, "
+              "then reads syzygy-poc-browser- and chrome-singleton-directory stillThere 0 and the killed run's marker count 0 after the fresh run's sweep (the marker count is a lower bound, see limits). "
+              + N12_PRECONDITION)
+F2_WHAT = ("To be lodged as a comment on syzygy-bpyt.4.4 when this record merges. The dispositions of rules R6 and R9 are conditional on it: until it is lodged, and then met by that bead\'s change, they are proposals. "
+           "After a SIGKILLed full run and a fresh run started in the killed run\'s leftovers, no entry remains except the classes of rules R2, R4, R5 and R7, and of R3 until follow-up F1 lands (or unless F1\'s guards cover the browser profile inside the root sweep). "
+           "The kill must be non-vacuous: either it left at least one dead-owner root holding an entry of an R9 class and one of an R6 class (read by listing each root\'s children, which census_run.py does not do today; "
+           "and assemble_census.py needs a disposition rule for the root\'s own class before it can measure F2, because a root made by the worker setup file has a creating file outside apps/, packages/ and scripts/ that is not a test file, "
+           "so rules R6 and R9 both refuse it and the assembler stops), or synthetic dead-owner roots are seeded, as PR 509\'s tests do. "
+           "A mechanism that reaches non-test modules too: the worker setup file assigns process.env.TMPDIR to an owner-pid root, because os.tmpdir() reads TMPDIR at each call. "
+           "A child started with a constructed environment (packages/polaris-dossier/src/no-egress.test.ts, line 55 at the run commit: env: { PATH, HOME, [FULL_RUN_ROOT_ENV] }) inherits neither the root nor the private TMPDIR, so its entries go to the system temp directory, "
+           "outside both the mechanism and this measurement: F2 must require such children to pass TMPDIR through, or name them as a residual. "
+           "Budget: Chrome\'s socket path limits TMPDIR to 65 bytes (PR 515); the root adds about 40.")
+F2_MEASURE = ("the same runs: assemble_census.py leftBySIGKILL lists only R2, R4, R5, R7 classes (and R3 until F1) after a fresh run started in the killed run's leftovers, "
+              "and the kill itself left at least one dead-owner root holding an R9-class entry and one holding an R6-class entry (or the seeded synthetic roots stand in for it, see what). "
+              + N12_PRECONDITION)
 FOLLOW_UPS = [
     {'id': 'F1', 'title': 'Name the browser profile for its owner and sweep it with its Chrome directory and its orphan processes', 'size': 'small in code (one creating file, cdp-browser.ts), not trivially safe',
      'covers': by_rule_classes('R3-browser-profile') + by_rule_classes('R2-chrome-singleton'),
      'what': 'Extend the PR 509 pattern to the syzygy-poc-browser- profile: the owner pid and namespace in its name; a sweep that removes it only when the owner is dead in this namespace, removes the Chrome singleton directory its SingletonSocket link names under PR 515\'s guard (merged as a088f1ca on main after the run commit), and stops the processes that still run on the profile (SIGTERM, then SIGKILL after a wait: a stopped process ignores SIGTERM, seen once in an earlier set of these runs at a discarded commit, not retained). The marker is the exact argument element --user-data-dir=<profile>, with no trailing slash (cdp-browser.ts launches Chrome with --user-data-dir=${profile}); an earlier draft of this proposal wrote a trailing slash, which matches no Chrome process. The guards below are the round-1 review\'s, copied from its raw review (R-GP-IMPL-SCRATCH-PREFIX-CENSUS-1-RAW.md, section 4, N3) as that review words them.',
      'guards': GUARDS,
      'whyNotTriviallySafe': 'It deletes recursively and signals processes by argument match and by session. A sweep built on a marker that matches no process would find no live process and delete a profile under live orphans. It needs an independent review of its own, with its own CC-REV-1 classes.',
-     'measure': 'census_run.py kill run then --seed-tmp-from fresh run: classes syzygy-poc-browser- and chrome-singleton-directory must read stillThere 0 and the marker count 0 (the marker count is a lower bound, see limits).'},
+     'measure': F1_MEASURE},
     {'id': 'F2', 'title': 'Add a census acceptance criterion to syzygy-bpyt.4.4 (test-kit temp root)', 'size': 'a comment on an existing bead, no new bead',
      'covers': by_rule_classes('R9-test-file') + by_rule_classes('R6-non-test-module'),
-     'what': 'To be lodged as a comment on syzygy-bpyt.4.4 when this record merges. The dispositions of rules R6 and R9 are conditional on it: until it is lodged, and then met by that bead\'s change, they are proposals. After a SIGKILLed full run and one fresh run in the same private TMPDIR, no entry remains except the classes of rules R2, R4, R5 and R7, and of R3 until follow-up F1 lands (or unless F1\'s guards cover the browser profile inside the root sweep). The kill must be non-vacuous: it must leave at least one R9 entry and one R6 entry, or synthetic dead-owner roots are seeded, as PR 509\'s tests do. A mechanism that reaches non-test modules too: the worker setup file assigns process.env.TMPDIR to an owner-pid root, because os.tmpdir() reads TMPDIR at each call. A child started with a constructed environment (packages/polaris-dossier/src/no-egress.test.ts, line 55 at the run commit: env: { PATH, HOME, [FULL_RUN_ROOT_ENV] }) inherits neither the root nor the private TMPDIR, so its entries go to the system temp directory, outside both the mechanism and this measurement: F2 must require such children to pass TMPDIR through, or name them as a residual. Budget: Chrome\'s socket path limits TMPDIR to 65 bytes (PR 515); the root adds about 40.',
-     'measure': 'the same runs: assemble_census.py leftBySIGKILL lists only R2, R4, R5, R7 classes (and R3 until F1) after the fresh run, and the kill itself left at least one R9 and one R6 entry.'},
+     'what': F2_WHAT,
+     'measure': F2_MEASURE},
     {'id': 'F3', 'title': 'Option, not proposed as small: a run wrapper that gives the whole vitest run an owner-pid TMPDIR', 'size': 'medium; changes how npm test is run (root manifest)',
      'covers': by_rule_classes('R2-chrome-singleton') + by_rule_classes('R4-vitest-project-directory') + by_rule_classes('R5-npm-compile-cache') + by_rule_classes('R7-stale-lock-by-design'),
      'what': 'Children inherit TMPDIR, so vitest\'s project directories, npm\'s compile cache, Chrome\'s singleton directories and the restart lock would all land in one root swept by one rule. Costs: npm\'s compile cache stops being shared between runs; the 65-byte Chrome budget; the restart lock\'s by-design stale-lock behaviour is then moot only for killed runs. An owner or coordinator choice.'},
@@ -722,7 +859,7 @@ record = {
     'subject': {'what': 'every entry a full vitest run creates directly in its temp directory, and which of them a SIGKILLed run, and one fresh run after it, leave behind',
                 'treeCommit': COMMIT, 'command': 'npx vitest run (the root configuration: every project, maxWorkers 50%)',
                 'notRun': 'test:system (packages/cap1-system) and the shell scripts under scripts/, which the root run does not start. The Python scripts under scripts/ are not run as such either, but some root-run tests start python3 -c children (a Python process is never a traced Node frame); the scripts appear in the static census below',
-                'revision': 'Regenerated on 2026-10-25 from the stored runs (none was repeated) after round 1 of the review: the exposure upper bound counts two sampler gaps for each sampled name and one for each name never sampled; the partition sentence is generated from every rule count and checked to sum to the class count; the static census reads multi-segment prefix literals; the sampler records are bound by sampler-digests.json; the rule and limit texts name what they depend on.',
+                'revision': 'Regenerated on 2026-10-25 from the stored runs (none was repeated) after round 1 of the review: the exposure upper bound counts two sampler gaps for each sampled name and one for each name never sampled; the partition sentence is generated from every rule count and checked to sum to the class count; the static census reads multi-segment prefix literals; the sampler records are bound by sampler-digests.json; the rule and limit texts name what they depend on. Regenerated again on 2026-10-25 after round 2, from the same stored runs (none repeated): F1\'s measure names what the harness cannot measure, the exposure ranking reads the long sampler gaps against the trace, and F2\'s non-vacuity branch and F1 and F2 carry the aggregation-fixture precondition.',
                 'toolSha256': {name: sha256(pathlib.Path(__file__).resolve().parent / name) for name in ('assemble_census.py', 'census_run.py', 'collect_runs.py', 'scratch_trace.cjs', 'static_sites.py', 'tmp_sampler.py')},
                 'staticSitesSha256': sha256(STATIC), 'samplerRecordSha256': sampler_digests, 'carriedObservationsSha256': sha256(RUNS / 'carried-observations.json')},
     'runs': {label: {'mode': r['mode'], 'seededFrom': seeded_from(label), 'entriesMovedIn': len(r['seededFrom']['entriesMovedIn']) if r.get('seededFrom') else 0, 'killAfterSeconds': r.get('killAfterSeconds'),
@@ -749,12 +886,22 @@ record = {
     'exposureRanking': {'run': exposure_label,
                         'meaning': ('expected number of directories of the class present at a uniformly random moment of the clean run (sampler interval %s s). The lower bound counts each sampled name once, for the span between its first and last sighting. '
                                     'The upper bound adds, for each sampled name, the gap before its first sighting and the gap after its last (two gaps: it was absent at the sample before the first and at the sample after the last), and for each name the sampler never saw one gap. '
-                                    'Every gap is taken as %s s, the largest gap under two intervals between consecutive sighting instants in this run\'s sampler record (%d of the %d gaps between its %d sighting instants are that short; the other %d are %s s or more and cannot be told from a quiet stretch). '
-                                    'The sampler record keeps each name\'s first and last sighting, not its sample times, so a sampler stall longer than that gap inside a quiet stretch is [Unknown] and would raise the bound.')
-                        % (exposure_interval, sampler_gap['gapSeconds'], sampler_gap['gapsUnderTwoIntervals'], sampler_gap['gapsBetweenSightings'], sampler_gap['sightingInstants'], sampler_gap['gapsOfTwoIntervalsOrMore'], sampler_gap['smallestGapOfTwoIntervalsOrMore']),
+                                    'Every gap is taken as %s s, the largest gap under two intervals between consecutive sighting instants in this run\'s sampler record (%d of the %d gaps between its %d sighting instants are that short; the other %d are %s s or more). '
+                                    'A gap under two intervals is taken as a single sample period, because the sampler sleeps a full interval between listings. '
+                                    'The other gaps are not shown to be quiet. With the trace aligned to the sampler clock (the %d traced names the sampler also saw bound the offset between the two clocks to a window of %s s, and the middle of it is used; a negative window means those bounds overlap by that much; exposureRanking.longGapsInTheTrace, which counts the run\'s start as a sighting instant), '
+                                    '%d of the %d traced names were created inside the %d gaps of two intervals or more (%s s together) and the sampler saw %d of them, against %d of %d created inside the %d shorter gaps (%d traced names fall in no gap). '
+                                    '[Inferred] Those stretches are busy, not quiet: the data fit a stalled or starved sampler, or names that all lived under one sample, and cannot separate the two. '
+                                    'The sampler record keeps each name\'s first and last sighting, not its sample times, so a sampler stall longer than the gap above is [Unknown] and would raise the bound. '
+                                    '%d of the %d classes whose upper bound this record publishes (leftBySIGKILL, namedInTheBeadObservation, exposureRanking.top) rest partly on that assumption: %s.')
+                        % (exposure_interval, sampler_gap['gapSeconds'], sampler_gap['gapsUnderTwoIntervals'], sampler_gap['gapsBetweenSightings'], sampler_gap['sightingInstants'], sampler_gap['gapsOfTwoIntervalsOrMore'], sampler_gap['smallestGapOfTwoIntervalsOrMore'],
+                           long_gaps['tracedNamesTheSamplerSaw'], long_gaps['clockOffsetWindowSeconds'],
+                           long_gaps['gapsOfTwoIntervalsOrMore']['namesCreatedInside'], long_gaps['tracedNames'], long_gaps['gapsOfTwoIntervalsOrMore']['gaps'], long_gaps['gapsOfTwoIntervalsOrMore']['seconds'], long_gaps['gapsOfTwoIntervalsOrMore']['ofThemEverSampled'],
+                           long_gaps['shorterGaps']['ofThemEverSampled'], long_gaps['shorterGaps']['namesCreatedInside'], long_gaps['shorterGaps']['gaps'], long_gaps['tracedNamesCreatedInNoGap'],
+                           len(long_gaps['publishedClassesThatDependOnThem']), long_gaps['publishedClasses'], ', '.join(long_gaps['publishedClassesThatDependOnThem'])),
                         'samplerGap': sampler_gap,
+                        'longGapsInTheTrace': long_gaps,
                         'top': [{'class': r['class'], 'upperBound': r['exposureInTheCleanRun']['expectedNamesPresentAtARandomMoment']['upperBound'], 'lowerBound': r['exposureInTheCleanRun']['expectedNamesPresentAtARandomMoment']['lowerBound']}
-                                for r in sorted((r for r in table if r['exposureInTheCleanRun']), key=lambda r: -r['exposureInTheCleanRun']['expectedNamesPresentAtARandomMoment']['upperBound'])[:15]]},
+                                for r in exposure_top]},
     'finding': finding,
     'followUps': FOLLOW_UPS,
     'limits': [

@@ -4,9 +4,9 @@
   "treeCommit": "a864e999645a071dda40325b2235976590e02973",
   "command": "npx vitest run (the root configuration: every project, maxWorkers 50%)",
   "notRun": "test:system (packages/cap1-system) and the shell scripts under scripts/, which the root run does not start. The Python scripts under scripts/ are not run as such either, but some root-run tests start python3 -c children (a Python process is never a traced Node frame); the scripts appear in the static census below",
-  "revision": "Regenerated on 2026-10-25 from the stored runs (none was repeated) after round 1 of the review: the exposure upper bound counts two sampler gaps for each sampled name and one for each name never sampled; the partition sentence is generated from every rule count and checked to sum to the class count; the static census reads multi-segment prefix literals; the sampler records are bound by sampler-digests.json; the rule and limit texts name what they depend on.",
+  "revision": "Regenerated on 2026-10-25 from the stored runs (none was repeated) after round 1 of the review: the exposure upper bound counts two sampler gaps for each sampled name and one for each name never sampled; the partition sentence is generated from every rule count and checked to sum to the class count; the static census reads multi-segment prefix literals; the sampler records are bound by sampler-digests.json; the rule and limit texts name what they depend on. Regenerated again on 2026-10-25 after round 2, from the same stored runs (none repeated): F1's measure names what the harness cannot measure, the exposure ranking reads the long sampler gaps against the trace, and F2's non-vacuity branch and F1 and F2 carry the aggregation-fixture precondition.",
   "toolSha256": {
-   "assemble_census.py": "32f2e9449b540ef5d387b10097afa4fd296461aab8fc61cf0879a743a1144fec",
+   "assemble_census.py": "ffbc0f974967a1899e4d1b4f18b580b04e088e1cf01d6489f42a9432c2d501f8",
    "census_run.py": "6039545e993610ef67dff1fc60103ade0fe197ab55638c1f9cdec7504b16fe8d",
    "collect_runs.py": "79ff2c4602eea9aaa45f5713354c7b99c562c41f409b1a424a563e61759a7765",
    "scratch_trace.cjs": "c9ff0cbbd2c9162c8483082f24202e18fa52f414c9c18a648723285de2ec2688",
@@ -6279,7 +6279,7 @@
  },
  "exposureRanking": {
   "run": "c0-clean",
-  "meaning": "expected number of directories of the class present at a uniformly random moment of the clean run (sampler interval 0.5 s). The lower bound counts each sampled name once, for the span between its first and last sighting. The upper bound adds, for each sampled name, the gap before its first sighting and the gap after its last (two gaps: it was absent at the sample before the first and at the sample after the last), and for each name the sampler never saw one gap. Every gap is taken as 0.61 s, the largest gap under two intervals between consecutive sighting instants in this run's sampler record (242 of the 254 gaps between its 255 sighting instants are that short; the other 12 are 1.0 s or more and cannot be told from a quiet stretch). The sampler record keeps each name's first and last sighting, not its sample times, so a sampler stall longer than that gap inside a quiet stretch is [Unknown] and would raise the bound.",
+  "meaning": "expected number of directories of the class present at a uniformly random moment of the clean run (sampler interval 0.5 s). The lower bound counts each sampled name once, for the span between its first and last sighting. The upper bound adds, for each sampled name, the gap before its first sighting and the gap after its last (two gaps: it was absent at the sample before the first and at the sample after the last), and for each name the sampler never saw one gap. Every gap is taken as 0.61 s, the largest gap under two intervals between consecutive sighting instants in this run's sampler record (242 of the 254 gaps between its 255 sighting instants are that short; the other 12 are 1.0 s or more). A gap under two intervals is taken as a single sample period, because the sampler sleeps a full interval between listings. The other gaps are not shown to be quiet. With the trace aligned to the sampler clock (the 895 traced names the sampler also saw bound the offset between the two clocks to a window of -0.003 s, and the middle of it is used; a negative window means those bounds overlap by that much; exposureRanking.longGapsInTheTrace, which counts the run's start as a sighting instant), 445 of the 2443 traced names were created inside the 12 gaps of two intervals or more (33.82 s together) and the sampler saw 15 of them, against 880 of 1998 created inside the 243 shorter gaps (0 traced names fall in no gap). [Inferred] Those stretches are busy, not quiet: the data fit a stalled or starved sampler, or names that all lived under one sample, and cannot separate the two. The sampler record keeps each name's first and last sighting, not its sample times, so a sampler stall longer than the gap above is [Unknown] and would raise the bound. 8 of the 34 classes whose upper bound this record publishes (leftBySIGKILL, namedInTheBeadObservation, exposureRanking.top) rest partly on that assumption: dossier-gate-acts-, dossier-origin-, dossier-records-, dossier-state-, nanoid-21, syzygy-poc-browser-, syzygy-poc-surface-fixture-p<pid>-n<ns>-, syzygy-poc-surface-fixture-template-p<pid>-n<ns>-.",
   "samplerGap": {
    "gapSeconds": 0.61,
    "sightingInstants": 255,
@@ -6287,6 +6287,182 @@
    "gapsUnderTwoIntervals": 242,
    "gapsOfTwoIntervalsOrMore": 12,
    "smallestGapOfTwoIntervalsOrMore": 1.0
+  },
+  "longGapsInTheTrace": {
+   "clockOffsetSeconds": 1792853789.243,
+   "clockOffsetWindowSeconds": -0.003,
+   "tracedNames": 2443,
+   "tracedNamesTheSamplerSaw": 895,
+   "tracedNamesCreatedInNoGap": 0,
+   "gapsOfTwoIntervalsOrMore": {
+    "gaps": 12,
+    "seconds": 33.82,
+    "namesCreatedInside": 445,
+    "ofThemEverSampled": 15,
+    "perGap": [
+     {
+      "from": 0.5,
+      "to": 1.51,
+      "seconds": 1.01,
+      "namesCreatedInside": 0,
+      "ofThemEverSampled": 0
+     },
+     {
+      "from": 2.01,
+      "to": 3.01,
+      "seconds": 1.0,
+      "namesCreatedInside": 2,
+      "ofThemEverSampled": 1
+     },
+     {
+      "from": 3.01,
+      "to": 5.55,
+      "seconds": 2.54,
+      "namesCreatedInside": 2,
+      "ofThemEverSampled": 2
+     },
+     {
+      "from": 92.92,
+      "to": 93.94,
+      "seconds": 1.02,
+      "namesCreatedInside": 1,
+      "ofThemEverSampled": 1
+     },
+     {
+      "from": 122.2,
+      "to": 123.21,
+      "seconds": 1.01,
+      "namesCreatedInside": 7,
+      "ofThemEverSampled": 1
+     },
+     {
+      "from": 127.75,
+      "to": 128.75,
+      "seconds": 1.0,
+      "namesCreatedInside": 5,
+      "ofThemEverSampled": 5
+     },
+     {
+      "from": 129.26,
+      "to": 130.78,
+      "seconds": 1.52,
+      "namesCreatedInside": 5,
+      "ofThemEverSampled": 2
+     },
+     {
+      "from": 131.79,
+      "to": 132.8,
+      "seconds": 1.01,
+      "namesCreatedInside": 33,
+      "ofThemEverSampled": 2
+     },
+     {
+      "from": 133.3,
+      "to": 136.82,
+      "seconds": 3.52,
+      "namesCreatedInside": 120,
+      "ofThemEverSampled": 1
+     },
+     {
+      "from": 136.82,
+      "to": 138.85,
+      "seconds": 2.03,
+      "namesCreatedInside": 61,
+      "ofThemEverSampled": 0
+     },
+     {
+      "from": 138.85,
+      "to": 150.97,
+      "seconds": 12.12,
+      "namesCreatedInside": 209,
+      "ofThemEverSampled": 0
+     },
+     {
+      "from": 150.97,
+      "to": 157.01,
+      "seconds": 6.04,
+      "namesCreatedInside": 0,
+      "ofThemEverSampled": 0
+     }
+    ]
+   },
+   "shorterGaps": {
+    "gaps": 243,
+    "seconds": 123.19,
+    "namesCreatedInside": 1998,
+    "ofThemEverSampled": 880
+   },
+   "publishedClasses": 34,
+   "publishedClassesThatDependOnThem": {
+    "dossier-gate-acts-": {
+     "names": 143,
+     "neverSampledCreatedInALongGap": 1,
+     "sampledWithALongGapBesideItsSightings": 0
+    },
+    "dossier-origin-": {
+     "names": 1,
+     "neverSampledCreatedInALongGap": 0,
+     "sampledWithALongGapBesideItsSightings": 1
+    },
+    "dossier-records-": {
+     "names": 164,
+     "neverSampledCreatedInALongGap": 2,
+     "sampledWithALongGapBesideItsSightings": 0
+    },
+    "dossier-state-": {
+     "names": 157,
+     "neverSampledCreatedInALongGap": 13,
+     "sampledWithALongGapBesideItsSightings": 0
+    },
+    "nanoid-21": {
+     "names": 7,
+     "neverSampledCreatedInALongGap": 0,
+     "sampledWithALongGapBesideItsSightings": 7
+    },
+    "syzygy-poc-browser-": {
+     "names": 12,
+     "neverSampledCreatedInALongGap": 0,
+     "sampledWithALongGapBesideItsSightings": 1
+    },
+    "syzygy-poc-surface-fixture-p<pid>-n<ns>-": {
+     "names": 398,
+     "neverSampledCreatedInALongGap": 5,
+     "sampledWithALongGapBesideItsSightings": 23
+    },
+    "syzygy-poc-surface-fixture-template-p<pid>-n<ns>-": {
+     "names": 44,
+     "neverSampledCreatedInALongGap": 0,
+     "sampledWithALongGapBesideItsSightings": 12
+    }
+   },
+   "publishedClassesThatDoNot": [
+    "chrome-singleton-directory",
+    "dossier-check-clone-",
+    "dossier-check-origin-",
+    "dossier-check-state-",
+    "dossier-clone-",
+    "dossier-review-clone-",
+    "dossier-review-state-",
+    "dossier-waiting-",
+    "git-object-reader-",
+    "node-compile-cache",
+    "syzygy-build-output-",
+    "syzygy-cross-links-pages-",
+    "syzygy-cross-links-state-",
+    "syzygy-dossier-src-",
+    "syzygy-poc-a11y-",
+    "syzygy-poc-a11y-budget-",
+    "syzygy-poc-names-",
+    "syzygy-poc-names-daemon-",
+    "syzygy-poc-restart-<n>-<n>.lock",
+    "syzygy-poc-surface-state-",
+    "syzygy-private-restart-",
+    "syzygy-public-screen-",
+    "syzygy-repo-corpus-",
+    "syzygy-repo-hostile-",
+    "syzygy-trigger-",
+    "syzygy-trigger-repo-"
+   ]
   },
   "top": [
    {
@@ -6371,7 +6547,7 @@
   "[Observed] One fresh full run started in each kill's leftovers removed 1 / 10 / 4 of 16 / 34 / 15 entries, all of them of the two classes PR 509 sweeps (syzygy-poc-surface-fixture-p<pid>-n<ns>-, syzygy-poc-surface-fixture-template-p<pid>-n<ns>-); the other 15 / 24 / 11 stayed, in 25 classes.",
   "[Observed] The seven runs together put 176 classes of entries directly in the temp directory (170 by mkdtemp): 2 by test-model-fixture.ts (PR 509 sweeps them); 1 by Chrome itself (its singleton directory); 1 by cdp-browser.ts (the browser profile); 1 by vitest itself (its project directory); 1 by npm itself (its compile cache); 6 by other non-test modules; 1 as a lock file (attributed to restart.ts by its name); 0 with no known creator; and 163 by test files.",
   "[Observed] The clean run itself leaves 2 entries (chrome-singleton-directory, node-compile-cache); this tree has no PR 515, so a clean run leaves Chrome singleton directories (3 / 1 / 3 in the fresh runs).",
-  "[Inferred] Which classes a given SIGKILL catches depends on what is alive at that moment. The expected number of directories of a class present at a random moment of the clean run is in exposureInTheCleanRun; the prefixes the bead observation names that none of these three kills left (syzygy-dossier-src-, syzygy-poc-surface-state-, syzygy-public-screen-, syzygy-trigger-, syzygy-trigger-repo-) have an upper bound of 0.213 or less (two sampler gaps of 0.61 s for each name the sampler saw, one for each it did not). By Markov's inequality one kill at a random moment catches such a class with probability at most that bound and misses it with probability at least 0.787, if the clean run's timing represents a kill run's."
+  "[Inferred] Which classes a given SIGKILL catches depends on what is alive at that moment. The expected number of directories of a class present at a random moment of the clean run is in exposureInTheCleanRun; the prefixes the bead observation names that none of these three kills left (syzygy-dossier-src-, syzygy-poc-surface-state-, syzygy-public-screen-, syzygy-trigger-, syzygy-trigger-repo-) have an upper bound of 0.213 or less (two sampler gaps of 0.61 s for each name the sampler saw, one for each it did not). By Markov's inequality one kill at a random moment catches such a class with probability at most that bound and misses it with probability at least 0.787, if the clean run's timing represents a kill run's. 0 of these 5 classes depend on the assumption that no sampler gap is longer than the gap above (a name of the class that the sampler never saw, created inside a gap of two intervals or more, or a sampled name with such a gap beside its sightings; exposureRanking.longGapsInTheTrace)."
  ],
  "followUps": [
   {
@@ -6394,7 +6570,7 @@
     "(8) A rule-6 mutant per guard and an independent review; the PR states its CC-REV-1 classes."
    ],
    "whyNotTriviallySafe": "It deletes recursively and signals processes by argument match and by session. A sweep built on a marker that matches no process would find no live process and delete a profile under live orphans. It needs an independent review of its own, with its own CC-REV-1 classes.",
-   "measure": "census_run.py kill run then --seed-tmp-from fresh run: classes syzygy-poc-browser- and chrome-singleton-directory must read stillThere 0 and the marker count 0 (the marker count is a lower bound, see limits)."
+   "measure": "census_run.py cannot measure this change as it stands: in kill mode it SIGTERMs every process carrying the marker before it writes its record, --seed-tmp-from refuses while any process carries the earlier marker, and seeding renames the entries into a new TMPDIR, so the profile's SingletonSocket link and every orphan's --user-data-dir argument name a directory that no longer exists and PR 515's dirname(link) === tmpdir() check refuses, correctly; [Inferred, the harness was not run for this] under that harness a correct F1 still leaves the Chrome singleton directory in place. Measure F1 (i) by unit tests over synthetic dead-owner profiles, one case and one rule-6 mutant per guard: a live decoy carrying the exact argv element, one carrying it only as a substring, a stopped (T) process, a reused pid, a SingletonSocket link that leaves the temp directory; and (ii) end to end only after a harness change, for a new set of runs: a mode that leaves the killed run's orphans running and starts the fresh run in the same TMPDIR, then reads syzygy-poc-browser- and chrome-singleton-directory stillThere 0 and the killed run's marker count 0 after the fresh run's sweep (the marker count is a lower bound, see limits). Before this assembler is used as acceptance evidence for this follow-up, its aggregation fixture must gain a seeded run and literal leftAfterSIGKILL, afterTheNextFreshRun and leftByTheFreshRunItself values, and a derived name, with the four mutants that round 2 of the review found surviving (kill-leftover-count-doubled, kill-leftovers-not-reported, seed-entries-counted-as-the-runs-own, mkdtemp-count-includes-derived) killed (round 2, N12)."
   },
   {
    "id": "F2",
@@ -6571,8 +6747,8 @@
     "syzygy-redis-shaped-",
     "syzygy-self-corpus-run-"
    ],
-   "what": "To be lodged as a comment on syzygy-bpyt.4.4 when this record merges. The dispositions of rules R6 and R9 are conditional on it: until it is lodged, and then met by that bead's change, they are proposals. After a SIGKILLed full run and one fresh run in the same private TMPDIR, no entry remains except the classes of rules R2, R4, R5 and R7, and of R3 until follow-up F1 lands (or unless F1's guards cover the browser profile inside the root sweep). The kill must be non-vacuous: it must leave at least one R9 entry and one R6 entry, or synthetic dead-owner roots are seeded, as PR 509's tests do. A mechanism that reaches non-test modules too: the worker setup file assigns process.env.TMPDIR to an owner-pid root, because os.tmpdir() reads TMPDIR at each call. A child started with a constructed environment (packages/polaris-dossier/src/no-egress.test.ts, line 55 at the run commit: env: { PATH, HOME, [FULL_RUN_ROOT_ENV] }) inherits neither the root nor the private TMPDIR, so its entries go to the system temp directory, outside both the mechanism and this measurement: F2 must require such children to pass TMPDIR through, or name them as a residual. Budget: Chrome's socket path limits TMPDIR to 65 bytes (PR 515); the root adds about 40.",
-   "measure": "the same runs: assemble_census.py leftBySIGKILL lists only R2, R4, R5, R7 classes (and R3 until F1) after the fresh run, and the kill itself left at least one R9 and one R6 entry."
+   "what": "To be lodged as a comment on syzygy-bpyt.4.4 when this record merges. The dispositions of rules R6 and R9 are conditional on it: until it is lodged, and then met by that bead's change, they are proposals. After a SIGKILLed full run and a fresh run started in the killed run's leftovers, no entry remains except the classes of rules R2, R4, R5 and R7, and of R3 until follow-up F1 lands (or unless F1's guards cover the browser profile inside the root sweep). The kill must be non-vacuous: either it left at least one dead-owner root holding an entry of an R9 class and one of an R6 class (read by listing each root's children, which census_run.py does not do today; and assemble_census.py needs a disposition rule for the root's own class before it can measure F2, because a root made by the worker setup file has a creating file outside apps/, packages/ and scripts/ that is not a test file, so rules R6 and R9 both refuse it and the assembler stops), or synthetic dead-owner roots are seeded, as PR 509's tests do. A mechanism that reaches non-test modules too: the worker setup file assigns process.env.TMPDIR to an owner-pid root, because os.tmpdir() reads TMPDIR at each call. A child started with a constructed environment (packages/polaris-dossier/src/no-egress.test.ts, line 55 at the run commit: env: { PATH, HOME, [FULL_RUN_ROOT_ENV] }) inherits neither the root nor the private TMPDIR, so its entries go to the system temp directory, outside both the mechanism and this measurement: F2 must require such children to pass TMPDIR through, or name them as a residual. Budget: Chrome's socket path limits TMPDIR to 65 bytes (PR 515); the root adds about 40.",
+   "measure": "the same runs: assemble_census.py leftBySIGKILL lists only R2, R4, R5, R7 classes (and R3 until F1) after a fresh run started in the killed run's leftovers, and the kill itself left at least one dead-owner root holding an R9-class entry and one holding an R6-class entry (or the seeded synthetic roots stand in for it, see what). Before this assembler is used as acceptance evidence for this follow-up, its aggregation fixture must gain a seeded run and literal leftAfterSIGKILL, afterTheNextFreshRun and leftByTheFreshRunItself values, and a derived name, with the four mutants that round 2 of the review found surviving (kill-leftover-count-doubled, kill-leftovers-not-reported, seed-entries-counted-as-the-runs-own, mkdtemp-count-includes-derived) killed (round 2, N12)."
   },
   {
    "id": "F3",

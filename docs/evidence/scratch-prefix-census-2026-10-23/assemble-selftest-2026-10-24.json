@@ -1,6 +1,6 @@
 {
  "tool": "assemble_census.py --selftest",
- "sha256": "32f2e9449b540ef5d387b10097afa4fd296461aab8fc61cf0879a743a1144fec",
+ "sha256": "ffbc0f974967a1899e4d1b4f18b580b04e088e1cf01d6489f42a9432c2d501f8",
  "expected": {
   "classify": {
    "dossier-records-AAAAAA": [
@@ -208,6 +208,63 @@
       "upperBound": 0.12
      }
     }
+   },
+   "longGaps": {
+    "clockOffsetSeconds": 0.2,
+    "clockOffsetWindowSeconds": 0.4,
+    "tracedNames": 7,
+    "tracedNamesTheSamplerSaw": 3,
+    "tracedNamesCreatedInNoGap": 0,
+    "gapsOfTwoIntervalsOrMore": {
+     "gaps": 2,
+     "seconds": 4.0,
+     "namesCreatedInside": 3,
+     "ofThemEverSampled": 1,
+     "perGap": [
+      {
+       "from": 1.0,
+       "to": 3.0,
+       "seconds": 2.0,
+       "namesCreatedInside": 2,
+       "ofThemEverSampled": 1
+      },
+      {
+       "from": 4.0,
+       "to": 6.0,
+       "seconds": 2.0,
+       "namesCreatedInside": 1,
+       "ofThemEverSampled": 0
+      }
+     ]
+    },
+    "shorterGaps": {
+     "gaps": 4,
+     "seconds": 2.0,
+     "namesCreatedInside": 4,
+     "ofThemEverSampled": 2
+    },
+    "publishedClasses": 5,
+    "publishedClassesThatDependOnThem": {
+     "chrome-singleton-directory": {
+      "names": 1,
+      "neverSampledCreatedInALongGap": 0,
+      "sampledWithALongGapBesideItsSightings": 1
+     },
+     "p-": {
+      "names": 2,
+      "neverSampledCreatedInALongGap": 0,
+      "sampledWithALongGapBesideItsSightings": 2
+     },
+     "r-": {
+      "names": 3,
+      "neverSampledCreatedInALongGap": 2,
+      "sampledWithALongGapBesideItsSightings": 0
+     }
+    },
+    "publishedClassesThatDoNot": [
+     "q-",
+     "s-"
+    ]
    },
    "mixedClassStops": "no disposition rule for mkdtemp 'mix-' (files ['packages/q/src/a.test.ts', 'packages/q/src/b.ts'])",
    "partitionStopsOnARuleNobodyListed": "the parts of the partition sum to 0, the table has 1 classes (a rule that RULES does not list: ['R0-unlisted'])"
@@ -421,6 +478,63 @@
        "upperBound": 0.12
       }
      }
+    },
+    "longGaps": {
+     "clockOffsetSeconds": 0.2,
+     "clockOffsetWindowSeconds": 0.4,
+     "tracedNames": 7,
+     "tracedNamesTheSamplerSaw": 3,
+     "tracedNamesCreatedInNoGap": 0,
+     "gapsOfTwoIntervalsOrMore": {
+      "gaps": 2,
+      "seconds": 4.0,
+      "namesCreatedInside": 3,
+      "ofThemEverSampled": 1,
+      "perGap": [
+       {
+        "from": 1.0,
+        "to": 3.0,
+        "seconds": 2.0,
+        "namesCreatedInside": 2,
+        "ofThemEverSampled": 1
+       },
+       {
+        "from": 4.0,
+        "to": 6.0,
+        "seconds": 2.0,
+        "namesCreatedInside": 1,
+        "ofThemEverSampled": 0
+       }
+      ]
+     },
+     "shorterGaps": {
+      "gaps": 4,
+      "seconds": 2.0,
+      "namesCreatedInside": 4,
+      "ofThemEverSampled": 2
+     },
+     "publishedClasses": 5,
+     "publishedClassesThatDependOnThem": {
+      "chrome-singleton-directory": {
+       "names": 1,
+       "neverSampledCreatedInALongGap": 0,
+       "sampledWithALongGapBesideItsSightings": 1
+      },
+      "p-": {
+       "names": 2,
+       "neverSampledCreatedInALongGap": 0,
+       "sampledWithALongGapBesideItsSightings": 2
+      },
+      "r-": {
+       "names": 3,
+       "neverSampledCreatedInALongGap": 2,
+       "sampledWithALongGapBesideItsSightings": 0
+      }
+     },
+     "publishedClassesThatDoNot": [
+      "q-",
+      "s-"
+     ]
     },
     "mixedClassStops": "no disposition rule for mkdtemp 'mix-' (files ['packages/q/src/a.test.ts', 'packages/q/src/b.ts'])",
     "partitionStopsOnARuleNobodyListed": "the parts of the partition sum to 0, the table has 1 classes (a rule that RULES does not list: ['R0-unlisted'])"
@@ -777,6 +891,60 @@
    "exit": 0,
    "diverges": [
     "aggregate: partition"
+   ]
+  },
+  "long-gap-is-one-interval": {
+   "old": "is_long = lambda earlier, later: round(later - earlier, 2) >= 2 * interval",
+   "new": "is_long = lambda earlier, later: round(later - earlier, 2) >= interval",
+   "killed": true,
+   "exit": 0,
+   "diverges": [
+    "aggregate: longGaps"
+   ]
+  },
+  "trace-clock-not-aligned": {
+   "old": "offset = (lower + upper) / 2",
+   "new": "offset = 0.0",
+   "killed": true,
+   "exit": 0,
+   "diverges": [
+    "aggregate: longGaps"
+   ]
+  },
+  "sampled-traced-names-not-counted": {
+   "old": "total['ofThemEverSampled'] += sampled",
+   "new": "total['ofThemEverSampled'] += 0",
+   "killed": true,
+   "exit": 0,
+   "diverges": [
+    "aggregate: longGaps"
+   ]
+  },
+  "never-sampled-name-in-a-short-gap-counts-as-dependent": {
+   "old": "elif in_a_long_gap(created[name]):",
+   "new": "elif name in created:",
+   "killed": true,
+   "exit": 0,
+   "diverges": [
+    "aggregate: longGaps"
+   ]
+  },
+  "long-gap-after-the-last-sighting-ignored": {
+   "old": "return is_long(before, first) or (after < len(known) and is_long(last, known[after]))",
+   "new": "return is_long(before, first)",
+   "killed": true,
+   "exit": 0,
+   "diverges": [
+    "aggregate: longGaps"
+   ]
+  },
+  "long-gap-before-the-first-sighting-ignored": {
+   "old": "return is_long(before, first) or (after < len(known) and is_long(last, known[after]))",
+   "new": "return after < len(known) and is_long(last, known[after])",
+   "killed": true,
+   "exit": 0,
+   "diverges": [
+    "aggregate: longGaps"
    ]
   }
  },
