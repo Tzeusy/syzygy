@@ -157,7 +157,7 @@
    "reason": "each handles refusal its own way (throw, typed Unknown, catch). The equivalence is of decoder options only; the failure handling at each of the 20 equivalent production sites was not audited [Unknown], so adopting decodeUtf8 there is a follow-up and not part of this change."
   },
   "differential": {
-   "what": "base build (6cbb3186) against the production head (e16126c7), the same 1,604-item corpus through 12 drivers: authority consent, policy and registry decoding, the object reader, the seed reader, observer rev-parse, show and ls-tree, and 9 code-structure repository cases",
+   "what": "base build (6cbb3186) against the production head (e16126c7), 9 drivers: eight each take the same 1,604-item corpus (authority consent, policy and registry decoding, the object reader, the seed reader, observer rev-parse, show and ls-tree: 8 x 1,604 = 12,832 rows) and the ninth runs 9 code-structure repository cases (9 rows); 12,841 rows in all",
    "corpus": {
     "items": 1604,
     "named": 41,
