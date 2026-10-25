@@ -1,6 +1,6 @@
 {
  "subject": "docs/evidence/scratch-prefix-census-2026-10-23/",
- "gatesRanAtCommit": "9e1e96abc6319b348fc6a2f6ffdc56313c4ec3a2",
+ "gatesRanAtCommit": "9c04ea82441b2605781d41d544989425aec99391",
  "censusRunCommit": "a864e999645a071dda40325b2235976590e02973",
  "gates": {
   "check_governance": {
@@ -33,12 +33,12 @@
   "input-checks": true
  },
  "fileSha256": {
-  "assemble-selftest-2026-10-24.json": "467b41d0779e70bebe27bf118caf83f7686cbc2406e90be252965323a933da3d",
-  "assemble_census.py": "32f2e9449b540ef5d387b10097afa4fd296461aab8fc61cf0879a743a1144fec",
-  "census-2026-10-24.json": "b1e0099f80cbc950e7eff1a6f9c64d30c6bb128ca1efce76e849d50138d36a22",
+  "assemble-selftest-2026-10-24.json": "919a913b862fe96e255962cd6e80cf258e98d4d9208f1497cb09016858f4be89",
+  "assemble_census.py": "ffbc0f974967a1899e4d1b4f18b580b04e088e1cf01d6489f42a9432c2d501f8",
+  "census-2026-10-24.json": "8bb12c8a5adb7522ba15293b9df16fc3ea4e39cbb2928661e386c974904f3002",
   "census_run.py": "6039545e993610ef67dff1fc60103ade0fe197ab55638c1f9cdec7504b16fe8d",
   "collect_runs.py": "79ff2c4602eea9aaa45f5713354c7b99c562c41f409b1a424a563e61759a7765",
-  "input-checks-2026-10-24.json": "aedfdc63391a35461d381e3bec10de577becf26baf08dac5d63c044d74f81830",
+  "input-checks-2026-10-24.json": "133eafe218b0b0ed27b1076986a438d0c4ab5f0a811c1d5fffc94187fb9daa6e",
   "input_checks.py": "3f06ff7aa8e9de882339e7eed9ff6b29da08149d262694921e7276f5e17eb633",
   "make_verification.py": "769381437c18025c860df4bbb4715ca793aa4de82b9b6c21e5f90abfe1550730",
   "runs/c0-clean.json": "85b705b681dbb1222ed4943c7bc589ddd1fb7b0113e291496d66bded3a58d9ad",
