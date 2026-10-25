@@ -108,6 +108,10 @@
    "sha256": "fac067008aec5567bfbb3af613bdfa72c1341194d018a651cd50e8074381908e"
   },
   {
+   "path": "docs/evidence/syzygy-bpyt-4-5/full-suite/attempt-5.json",
+   "sha256": "3195c9b1d286bc0b4978ef2f7cae4e002ace76bf5069d6d3b30e379d8c58c493"
+  },
+  {
    "path": "docs/evidence/syzygy-bpyt-4-5/tools/bound_and_pin_mutants.py",
    "sha256": "18de550b251dd8ba32044447362b6b7d820b895a6d1ac90f09a1ee415ed20f45"
   },
@@ -6867,6 +6871,61 @@
      "exit": 0,
      "end": "2026-10-25T07:09:08+08:00",
      "load1End": 27.59,
+     "success": true,
+     "totals": {
+      "numTotalTestSuites": 856,
+      "numFailedTestSuites": 0,
+      "numTotalTests": 5306,
+      "numPassedTests": 5301,
+      "numFailedTests": 0,
+      "numPendingTests": 5,
+      "numTodoTests": 0
+     },
+     "failedTests": [],
+     "failedFilesWithoutFailedTest": [],
+     "failuresInChangedFiles": 0
+    }
+   ]
+  },
+  {
+   "tool": "suite_summary.py",
+   "attempt": "attempt 5: the reworked head (threadCpuUsage bounds, load-hook and kept text rows), run twice in sequence",
+   "cpus": 12,
+   "changedFilesBetween": [
+    "8ff50172",
+    "d1dbac8dfe9209f42f0eeeb5e08b47e1665f7b7f"
+   ],
+   "runs": [
+    {
+     "name": "first",
+     "commit": "d1dbac8dfe9209f42f0eeeb5e08b47e1665f7b7f",
+     "start": "2026-10-25T08:07:46+08:00",
+     "load1Start": 11.53,
+     "exit": 0,
+     "end": "2026-10-25T08:10:07+08:00",
+     "load1End": 21.27,
+     "success": true,
+     "totals": {
+      "numTotalTestSuites": 856,
+      "numFailedTestSuites": 0,
+      "numTotalTests": 5306,
+      "numPassedTests": 5301,
+      "numFailedTests": 0,
+      "numPendingTests": 5,
+      "numTodoTests": 0
+     },
+     "failedTests": [],
+     "failedFilesWithoutFailedTest": [],
+     "failuresInChangedFiles": 0
+    },
+    {
+     "name": "second",
+     "commit": "d1dbac8dfe9209f42f0eeeb5e08b47e1665f7b7f",
+     "start": "2026-10-25T08:10:07+08:00",
+     "load1Start": 21.27,
+     "exit": 0,
+     "end": "2026-10-25T08:12:19+08:00",
+     "load1End": 27.73,
      "success": true,
      "totals": {
       "numTotalTestSuites": 856,
