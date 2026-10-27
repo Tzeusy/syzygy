@@ -99,7 +99,7 @@
   },
   {
    "path": "docs/evidence/syzygy-bpyt-4-5/build-record-mutants.json",
-   "sha256": "b12d6f8f843848264198e7281b51d262568f17158e0047d86c75038fac452d3a"
+   "sha256": "cbff8be469af1ba971afe4eb8c0ff3c601cce4811cb231b6e8e28852969cd203"
   },
   {
    "path": "docs/evidence/syzygy-bpyt-4-5/census-base.json",
@@ -174,6 +174,10 @@
    "sha256": "e45bde7f7297f3f38e4fb7ec86fb068e3227f4f8efb13469dade7f0a34d562a8"
   },
   {
+   "path": "docs/evidence/syzygy-bpyt-4-5/pin-identity-mutants.json",
+   "sha256": "c0893c1aae6dbd9978f8e1f8f3c3c1f8da285f0109b43ddfeb7b50115df2386c"
+  },
+  {
    "path": "docs/evidence/syzygy-bpyt-4-5/tools/bound_and_pin_mutants.py",
    "sha256": "c496ba4072b31347e2f7c3ac9d58efd750a4fa2f71cc3a188c8c05167980ff47"
   },
@@ -200,6 +204,10 @@
   {
    "path": "docs/evidence/syzygy-bpyt-4-5/tools/mutant-cases.json",
    "sha256": "80a34aae115f99b80d2cafdd0928aa5e93126d786fb729242b39bb1029745583"
+  },
+  {
+   "path": "docs/evidence/syzygy-bpyt-4-5/tools/pin_identity_mutants.py",
+   "sha256": "dc2054d02bd3bcad85109b5f462dfaa244b7aeaa77e17ded226400a00bdf25cb"
   },
   {
    "path": "docs/evidence/syzygy-bpyt-4-5/tools/row_delta.py",
