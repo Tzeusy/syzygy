@@ -1,0 +1,48 @@
+{
+ "commit": "dff82655bf288c92f119c63a98ed0147f6ee4d31",
+ "statusAfter": "",
+ "rows": [
+  {
+   "id": "R1-function-constructor-through-object-brackets",
+   "test": "packages/support/src/support-purity.test.ts",
+   "edits": [
+    {
+     "path": "packages/support/src/sha256.ts",
+     "old": "import { createHash } from 'node:crypto';\n",
+     "new": "import { createHash } from 'node:crypto';\nObject['constructor']['constructor'](\"return globalThis['proc' + 'ess']['env']['HOME']\")();\n"
+    }
+   ],
+   "expected": "survives",
+   "observed": "survives",
+   "exit": 0,
+   "passed": 29,
+   "failed": 0,
+   "pending": 0,
+   "total": 29,
+   "failedFiles": [],
+   "fileMessages": [],
+   "failedTests": []
+  },
+  {
+   "id": "R2-dynamic-import-with-a-space-of-an-allowed-name",
+   "test": "packages/support/src/support-purity.test.ts",
+   "edits": [
+    {
+     "path": "packages/support/src/sha256.ts",
+     "old": "import { createHash } from 'node:crypto';\n",
+     "new": "import { createHash } from 'node:crypto';\nconst value = 'node:f' + 's';\nvoid import (value);\n"
+    }
+   ],
+   "expected": "survives",
+   "observed": "survives",
+   "exit": 0,
+   "passed": 29,
+   "failed": 0,
+   "pending": 0,
+   "total": 29,
+   "failedFiles": [],
+   "fileMessages": [],
+   "failedTests": []
+  }
+ ]
+}
