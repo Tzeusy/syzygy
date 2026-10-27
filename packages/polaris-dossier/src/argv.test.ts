@@ -253,10 +253,14 @@ describe('each policy copy above, against the spec its caller passes', () => {
   });
 
   it('reads every module TypeScript compiles under src, .mts, .cts and .tsx among them, and no test module', () => {
-    const texts = Object.fromEntries(['main.ts', 'reader.mts', 'reader.cts', 'view.tsx', 'main.test.ts', 'reader.test.mts', 'reader.test.cts', 'view.test.tsx', 'notes.md', 'fixture.json']
+    const texts = Object.fromEntries(['latest.ts', 'main.ts', 'reader.mts', 'reader.cts', 'view.tsx', 'notes.ts.md', 'main.test.ts', 'reader.test.mts', 'reader.test.cts', 'view.test.tsx', 'notes.md', 'fixture.json']
       .map((file) => [`apps/app/src/${file}`, READER]));
-    expect(readArgvCallers(Object.keys(texts), read(texts)).calls).toEqual(['main.ts', 'reader.cts', 'reader.mts', 'view.tsx']
+    expect(readArgvCallers(Object.keys(texts), read(texts)).calls).toEqual(['latest.ts', 'main.ts', 'reader.cts', 'reader.mts', 'view.tsx']
       .map((file) => ({ module: `apps/app/src/${file}`, spec: { valued: ['--x'] } })));
+  });
+
+  it('reads every src directory to its depth', () => {
+    expect(treeFiles()).toContain('apps/three-surface-poc/src/polaris-generation/self-corpus.ts');
   });
 
   it("names allow-execution's options as the dossier options policy's", () => {
