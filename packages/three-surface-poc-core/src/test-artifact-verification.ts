@@ -1,3 +1,4 @@
+import { createHash } from 'node:crypto';
 import {
   closeSync,
   constants,
@@ -12,8 +13,6 @@ import {
   writeFileSync,
 } from 'node:fs';
 import { join } from 'node:path';
-
-import { sha256 } from '@syzygy/support';
 
 // A real, durable focused-pytest artifact, captured outside Syzygy by an
 // external operator (POC-REQ / syzygy-0r9 AC1). Only safe, structured
@@ -307,7 +306,7 @@ const UNPARSEABLE_REASON =
 /** The digest of the file's own bytes, so it equals `sha256sum` of the
  * handed-in file even when those bytes are not valid UTF-8. */
 function junitDigest(rawJUnit: Uint8Array): string {
-  return `sha256:${sha256(rawJUnit)}`;
+  return `sha256:${createHash('sha256').update(rawJUnit).digest('hex')}`;
 }
 
 export interface BuildOperatorReportedRecordInput {
