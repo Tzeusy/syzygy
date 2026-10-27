@@ -57,11 +57,11 @@ describe('@syzygy/support stays a pure leaf', () => {
   it('lists a module at any depth and with any extension, and skips only the tests and the testkit', () => {
     const dir = mkdtempSync(join(tmpdir(), 'support-sources-'));
     try {
-      for (const file of ['a.ts', 'io/b.ts', 'c.mts', 'd.cjs', 'e.test.ts', 'purity.testkit.ts', 'f.json']) {
+      for (const file of ['a.ts', 'io/b.ts', 'c.mts', 'd.cjs', 'e.test.ts', 'purity.testkit.ts', 'f.json', 'g.tsx', 'h.jsx', 'latest.ts', 'io/purity.testkit.ts']) {
         mkdirSync(dirname(join(dir, file)), { recursive: true });
         writeFileSync(join(dir, file), '');
       }
-      expect(sourcesUnder(pathToFileURL(`${dir}/`))).toEqual(['a.ts', 'c.mts', 'd.cjs', 'io/b.ts']);
+      expect(sourcesUnder(pathToFileURL(`${dir}/`))).toEqual(['a.ts', 'c.mts', 'd.cjs', 'g.tsx', 'h.jsx', 'io/b.ts', 'io/purity.testkit.ts', 'latest.ts']);
     } finally {
       rmSync(dir, { recursive: true, force: true });
     }

@@ -107,6 +107,11 @@ ROWS = [
         ('K4-shared-Date-token-weakened-plus-DK1', [PURITY, DRAFTER_TEST]),
         ('Y6-allowed-global-member-replaced', PURITY),
     ]],
+    # Round 2's F2: the scan's fixture row weakened three more ways, each alone; each must fail that row alone. Fragments copied
+    # by script from the round-2 review's tools/r2_mutants.py (sha256 3b954d84e97771016b6dcccf2d3e826a9225e46d02330d9c94b23831fb0a5a4f).
+    ('W5-filter-drops-the-x-forms', PURITY, [edit(PURITY, '/\\.[cm]?[jt]sx?$/u.test(name)', '/\\.[cm]?[jt]s$/u.test(name)')], None, 'killed', None),
+    ('W6-test-exclusion-broadened-to-any-test-substring', PURITY, [edit(PURITY, "!name.endsWith('.test.ts')", "!name.includes('test')")], None, 'killed', None),
+    ('W7-testkit-exclusion-broadened-to-any-depth', PURITY, [edit(PURITY, "name !== 'purity.testkit.ts'", "!name.endsWith('purity.testkit.ts')")], None, 'killed', None),
     # The owner-act drafter's purity test on the shared reader and list: the reviewer's D2 and D5 survive it (its own
     # guard stays a denylist, disclosed), while a forbidden token and a forbidden specifier each fail it.
     ('D0-drafter-unmutated', DRAFTER_TEST, [], [], 'pass', 'pass'),
