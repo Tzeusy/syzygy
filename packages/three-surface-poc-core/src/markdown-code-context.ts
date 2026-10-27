@@ -57,7 +57,7 @@ export type CodeContextMask =
       readonly line: number;
     };
 
-const FENCE_OPENER = /^ {0,3}(`{3,}|~{3,})(.*)$/;
+const FENCE_OPENER = /^ {0,3}(`{3,}|~{3,})(.*)$/; // the PWB-REQ-006 profile; one of five fence rules: docs/evidence/syzygy-bpyt-6-3/dc3-fence-rules-2026-10-25.json
 
 function fenceCloser(line: string, char: string, length: number): boolean {
   const match = /^ {0,3}(`{3,}|~{3,}) *$/.exec(line);

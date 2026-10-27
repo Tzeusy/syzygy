@@ -154,7 +154,7 @@ interface Heading {
 }
 
 const ATX = /^(#{1,6})[ \t]+(.*?)[ \t]*(?:[ \t]#+[ \t]*)?$/;
-const FENCE = /^(`{3,}|~{3,})/;
+const FENCE = /^(`{3,}|~{3,})/; // not the PWB-REQ-006 profile; one of five fence rules: docs/evidence/syzygy-bpyt-6-3/dc3-fence-rules-2026-10-25.json
 
 function parseDoc(text: string): Doc {
   const lines = text.split('\n').map((l) => (l.endsWith('\r') ? l.slice(0, -1) : l));
