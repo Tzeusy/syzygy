@@ -10,7 +10,7 @@ import {
   writeFileSync,
 } from 'node:fs';
 import { tmpdir } from 'node:os';
-import { join } from 'node:path';
+import { basename, join } from 'node:path';
 import { afterEach, describe, expect, it } from 'vitest';
 
 import {
@@ -284,6 +284,19 @@ describe('RT3 — state-write boundary', () => {
     }
   });
 
+  // syzygy-bpyt.7.14: containment compares whole path segments, so a
+  // sibling whose name only begins with the state dir's name is outside.
+  it('refuses a sibling directory whose name extends the state dir name, as traversal', () => {
+    const stateDir = tempDir();
+    mkdirSync(`${stateDir}-x`);
+    cleanups.push(`${stateDir}-x`);
+    const decision = authorizeStateWrite(stateDir, `../${basename(stateDir)}-x/f`);
+    expect(decision.authorized).toBe(false);
+    if (!decision.authorized) {
+      expect(decision.refusedBy).toBe('traversal');
+    }
+  });
+
   it('refuses empty and self-naming candidates, named', () => {
     const stateDir = tempDir();
     for (const candidate of ['', '.', '  ']) {
@@ -302,6 +315,21 @@ describe('RT3 — state-write boundary', () => {
     mkdirSync(stateDir, { recursive: true });
     mkdirSync(outside, { recursive: true });
     symlinkSync(outside, join(stateDir, 'link'));
+
+    const decision = authorizeStateWrite(stateDir, 'link/escape.txt');
+    expect(decision.authorized).toBe(false);
+    if (!decision.authorized) {
+      expect(decision.refusedBy).toBe('symlink-escape');
+    }
+  });
+
+  // syzygy-bpyt.7.14: the real-location check compares whole segments too.
+  it('refuses a symlink into a sibling whose name extends the state dir name, named', () => {
+    const base = tempDir();
+    const stateDir = join(base, 'state');
+    mkdirSync(stateDir, { recursive: true });
+    mkdirSync(join(base, 'state-x'));
+    symlinkSync(join(base, 'state-x'), join(stateDir, 'link'));
 
     const decision = authorizeStateWrite(stateDir, 'link/escape.txt');
     expect(decision.authorized).toBe(false);
@@ -339,6 +367,18 @@ describe('RT3 — credential verification through core admission', () => {
     for (const header of ['Basic dXNlcg==', 'Bearer', 'Bearer ', `bearer ${TOKEN}`, TOKEN]) {
       const credential = credentialFromAuthorizationHeader(header);
       expect(verifyCredential(TOKEN, credential)).toEqual({
+        admitted: false,
+        served: 'nothing',
+      });
+    }
+  });
+
+  // syzygy-bpyt.7.14: the scheme is followed by exactly one space and the
+  // token is every character after it, never trimmed.
+  it('the minted token behind any other whitespace refuses, named', () => {
+    for (const header of [`Bearer  ${TOKEN}`, `Bearer\t${TOKEN}`, `Bearer ${TOKEN} `, `Bearer ${TOKEN}\n`]) {
+      const credential = credentialFromAuthorizationHeader(header);
+      expect(verifyCredential(TOKEN, credential), JSON.stringify(header)).toEqual({
         admitted: false,
         served: 'nothing',
       });

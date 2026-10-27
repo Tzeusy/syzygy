@@ -8,7 +8,7 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest';
 
-import { createDaemon, type RouteContext, type RouteResponse } from '@syzygy/cap1-daemon';
+import { createDaemon, type RouteContext, type RouteResponse } from '@syzygy/http-host';
 import { PWB_RESOURCE_LIMITS, describeReevaluation, type PocModel, type PwbResourceLimits, type Reevaluation } from '@syzygy/three-surface-poc-core';
 
 import { TAILNET_HOST } from './browser-origin.js';
