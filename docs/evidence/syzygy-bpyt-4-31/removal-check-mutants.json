@@ -1,19 +1,19 @@
 {
  "tool": "check_removals_mutants.py",
- "commit": "7f7b26afb52a0a6a7518772e34044259610ac2c9",
+ "commit": "08e11a178c986ca002f1f1e907bf7dfb85125ccd",
  "subject": {
   "path": "docs/evidence/syzygy-bpyt-4-31/tools/check_removals.py",
   "sha256": "d770c349726da24e895fc1afd32fe0cf5e0a31069fd62d5da0b6cc5905eb7965"
  },
  "inputs": {
-  "decisions-546f1ff0.json": "455274f3032d08cb5d30fcc76343e9cd6d4ad6a576a8b9e520eb88fe863ecf33",
+  "decisions-546f1ff0.json": "b5d336d9bd9a50735867f77ce4b57ad563d5c455d08a372c61a4e1864f058939",
   "site-durations-head.json": "288c83e60402e5d5e354e95f6675abd3b999e723f4b9bfbe83e55de55632cfdb",
   "full-runs.json": "6853affccf9ea39dffaaf7de6f76500090a978ba5ee0f09378447f994bd5c91e"
  },
  "testSite": "apps/three-surface-poc/src/cdp-browser.test.ts:335",
  "hookSite": "apps/three-surface-poc/src/governing-intent-sweep.test.ts:168",
- "unmutatedHolding": 49,
- "unmutatedRows": 58,
+ "unmutatedHolding": 42,
+ "unmutatedRows": 56,
  "killed": 9,
  "controlsHeld": 2,
  "rows": [
@@ -70,7 +70,7 @@
     "input": "HEAD-SITE-DURATIONS",
     "path": "rows[38].worstMs",
     "old": 230,
-    "new": 5001
+    "new": 2501
    },
    "expectedHolds": false,
    "holds": false,
@@ -136,7 +136,7 @@
     "input": "FULL-RUNS",
     "path": "runs[0].files[17]",
     "old": 1025,
-    "new": 5001
+    "new": 2501
    },
    "expectedHolds": false,
    "holds": false,
@@ -181,7 +181,7 @@
     "input": "FULL-RUNS",
     "path": "runs[0].files[17]",
     "old": 1025,
-    "new": 5000
+    "new": 2500
    },
    "expectedHolds": true,
    "holds": true,
