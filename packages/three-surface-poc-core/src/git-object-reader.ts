@@ -26,7 +26,7 @@
 // and bytes; the observer for index depth; later extraction/rendering for
 // parse time and rendered bytes), so a breach is always the same shape.
 
-import { createHash } from 'node:crypto';
+import { sha256 } from '@syzygy/support';
 
 import { type GitTreeEntry, type GitTreeIndex, normalizeRepositoryPath, posixBasename } from './git-tree.js';
 import { type MalformedCodeContext, maskMarkdownCodeContexts } from './markdown-code-context.js';
@@ -285,7 +285,7 @@ function decodeUtf8(bytes: Uint8Array): string | undefined {
 }
 
 export function contentDigestOf(bytes: Uint8Array): string {
-  return `sha256:${createHash('sha256').update(bytes).digest('hex')}`;
+  return `sha256:${sha256(bytes)}`;
 }
 
 export function createExactObjectReader(input: ExactObjectReaderInput): ExactObjectReader {

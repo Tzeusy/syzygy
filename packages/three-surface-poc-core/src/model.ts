@@ -1,4 +1,3 @@
-import { createHash } from 'node:crypto';
 import { readFileSync, statSync } from 'node:fs';
 import { resolve } from 'node:path';
 
@@ -11,6 +10,7 @@ import { buildDispatchDisclosure, type DispatchDisclosure, type MaterializationR
 import type { BodyReadAuthorityEvaluation } from './body-read-authority.js';
 import { gitRunnerFor, type GitRunner, type PwbResourceLimits } from './project-shape-observation.js';
 import type { UnknownReason } from '@syzygy/cap1-core';
+import { deepFreeze, sha256 } from '@syzygy/support';
 
 import {
   buildProjectShape,
@@ -379,13 +379,6 @@ function duplicateValues(values: readonly string[], label: string, errors: strin
   }
 }
 
-function deepFreeze<T>(value: T): T {
-  if (typeof value !== 'object' || value === null || Object.isFrozen(value)) return value;
-  Object.freeze(value);
-  for (const child of Object.values(value as Record<string, unknown>)) deepFreeze(child);
-  return value;
-}
-
 function validateSeedGraph(seeds: PocSeedInput): void {
   const errors: string[] = [];
   const entityIds = new Set<string>();
@@ -468,10 +461,6 @@ function validateSeedGraph(seeds: PocSeedInput): void {
 interface ObservedArtifact {
   readonly path: string;
   readonly digest: string;
-}
-
-function sha256(bytes: Uint8Array | string): string {
-  return createHash('sha256').update(bytes).digest('hex');
 }
 
 function observeArtifact(
