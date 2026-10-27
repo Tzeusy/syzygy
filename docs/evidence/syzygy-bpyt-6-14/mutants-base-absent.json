@@ -1,5 +1,5 @@
 {
- "commit": "d621bfa267f24ff68f6f83ac7bfba44b81a32a34",
+ "commit": "f7ea858480b30ffc4407154a84d1d03f3fe4a549",
  "side": "base",
  "dist": "absent",
  "distDirs": [],
@@ -842,7 +842,7 @@
     "packages/polaris-dossier/src/no-egress.test.ts"
    ],
    "fileMessages": [
-    "Build failed with 32 errors:\napps/three-surface-poc/src/polaris-generation/dossier-site.ts:9:23: ERROR: Could not resolve \"@syzygy/support\"\napps/three-surface-poc/src/polaris-generation/draft-preview.ts:7:23: ERROR: Could not resolve \"@syzygy/support\"\npackages/polaris-dossier/src/brief.ts:5:23: ERROR: Could not resolve \"@syzygy/support\"\npackages/polaris-dossier/src/check.ts:5:23: ERROR: Could not resolve \"@syzygy/support\"\npackages/polaris-dossier/src/close.ts:4:23: ERROR: Could not resolve \"@syzygy/support\"\n..."
+    "Build failed with 34 errors:\napps/three-surface-poc/src/polaris-generation/dossier-site.ts:9:23: ERROR: Could not resolve \"@syzygy/support\"\napps/three-surface-poc/src/polaris-generation/draft-preview.ts:7:23: ERROR: Could not resolve \"@syzygy/support\"\npackages/polaris-dossier/src/brief.ts:5:23: ERROR: Could not resolve \"@syzygy/support\"\npackages/polaris-dossier/src/check.ts:5:23: ERROR: Could not resolve \"@syzygy/support\"\npackages/polaris-dossier/src/close.ts:4:23: ERROR: Could not resolve \"@syzygy/support\"\n..."
    ],
    "failedTests": []
   }

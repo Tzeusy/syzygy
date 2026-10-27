@@ -1,7 +1,7 @@
 {
  "bead": "syzygy-bpyt.6.14",
- "base": "d621bfa267f24ff68f6f83ac7bfba44b81a32a34",
- "head": "dff82655bf288c92f119c63a98ed0147f6ee4d31",
+ "base": "f7ea858480b30ffc4407154a84d1d03f3fe4a549",
+ "head": "3b04b1cd6a283fea7d269e01aaf4849289aa477f",
  "subject": [
   "packages/polaris-dossier/src/no-egress.test.ts",
   "packages/support/src/purity.testkit.ts",
@@ -9,9 +9,9 @@
   "packages/three-surface-poc-core/src/owner-act-drafter.test.ts"
  ],
  "subjectSha256": {
-  "packages/polaris-dossier/src/no-egress.test.ts": "5f8f10a647b80be353904ef46e1b74c40c9942ea07a1a5413fd548ca7dd9a94a",
+  "packages/polaris-dossier/src/no-egress.test.ts": "84b4cddbdb087b27cfd07fc1f5909303aeac2e8c766b210b16998e9d93df9c39",
   "packages/support/src/purity.testkit.ts": "0af24d0b46f9718b07b5e580da33b97b914ff59e35e43e08d68ade0df51c1439",
-  "packages/support/src/support-purity.test.ts": "c38d123b9cf60389942d74005c06ba6c5c3d8c5d43d4ffd2ef74ee3c2cfc709b",
+  "packages/support/src/support-purity.test.ts": "e0863168091d518fbe54a9e1483ed00cdb48c59a1c69df0949df13350cc965d2",
   "packages/three-surface-poc-core/src/owner-act-drafter.test.ts": "a4ac19c5de9dc7a107320bcaaed5547e37058a82761aa3c8f50a7fd7e8024120"
  },
  "required": [
@@ -375,7 +375,7 @@
   "M4-alias-for-support-dropped": {
    "head-absent": "killed",
    "killedAtHeadBy": [
-    "file: Build failed with 32 errors:"
+    "file: Build failed with 34 errors:"
    ],
    "head-present": "killed",
    "base-absent": "killed",
@@ -419,16 +419,16 @@
  },
  "bundle": [
   {
-   "commit": "d621bfa267f24ff68f6f83ac7bfba44b81a32a34",
+   "commit": "f7ea858480b30ffc4407154a84d1d03f3fe4a549",
    "distDirs": 12,
-   "bytes": 935841,
-   "sha256": "f3e1718aa7988df70768a3cd3a75962d5e399ba4e32e636a22ceacdf6c13ac85"
+   "bytes": 935757,
+   "sha256": "18172eb2e96de6bb703c3c7110d61d5896853d2c865c2a609e9703dca79b3340"
   },
   {
-   "commit": "dff82655bf288c92f119c63a98ed0147f6ee4d31",
+   "commit": "3b04b1cd6a283fea7d269e01aaf4849289aa477f",
    "distDirs": 12,
-   "bytes": 935841,
-   "sha256": "f3e1718aa7988df70768a3cd3a75962d5e399ba4e32e636a22ceacdf6c13ac85"
+   "bytes": 935757,
+   "sha256": "18172eb2e96de6bb703c3c7110d61d5896853d2c865c2a609e9703dca79b3340"
   }
  ],
  "titles": {
@@ -540,7 +540,7 @@
   ]
  },
  "suite": {
-  "commit": "dff82655bf288c92f119c63a98ed0147f6ee4d31",
+  "commit": "3b04b1cd6a283fea7d269e01aaf4849289aa477f",
   "distDirs": [
    "apps/syzygy/dist",
    "apps/three-surface-poc/dist",
@@ -555,9 +555,9 @@
    "packages/support/dist",
    "packages/three-surface-poc-core/dist"
   ],
-  "files": 249,
-  "total": 5480,
-  "passed": 5475,
+  "files": 253,
+  "total": 5523,
+  "passed": 5518,
   "failed": 0,
   "skipped": 5
  },
@@ -565,5 +565,25 @@
   "R1-function-constructor-through-object-brackets",
   "R2-dynamic-import-with-a-space-of-an-allowed-name"
  ],
+ "bundleTestMs": {
+  "runs": [
+   527,
+   1210,
+   343,
+   365,
+   430
+  ],
+  "load1Max": 32.82
+ },
+ "beforeAllMs": {
+  "runs": [
+   447,
+   530,
+   564,
+   654,
+   575
+  ],
+  "load1Max": 31.74
+ },
  "checksFailed": []
 }

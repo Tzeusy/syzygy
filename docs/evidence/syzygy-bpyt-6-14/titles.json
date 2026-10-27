@@ -4,8 +4,8 @@
   "packages/support/src/support-purity.test.ts",
   "packages/three-surface-poc-core/src/owner-act-drafter.test.ts"
  ],
- "baseCommit": "d621bfa267f24ff68f6f83ac7bfba44b81a32a34",
- "headCommit": "dff82655bf288c92f119c63a98ed0147f6ee4d31",
+ "baseCommit": "f7ea858480b30ffc4407154a84d1d03f3fe4a549",
+ "headCommit": "3b04b1cd6a283fea7d269e01aaf4849289aa477f",
  "base": 18,
  "head": 37,
  "added": [

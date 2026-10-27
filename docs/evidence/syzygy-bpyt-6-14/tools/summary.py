@@ -1,14 +1,18 @@
 #!/usr/bin/env python3
 """syzygy-bpyt.6.14: derive summary.json from the raw records beside it, checking each against the git objects of the tree given.
 
-The subject is HEAD (the code commit) over BASE (main at d621bfa2): the PR 530 round-2 review's N9 (the support-leaf purity test)
+The subject is HEAD (the code commit) over BASE (main at f7ea8584, after PRs 534, 537 and 542): the PR 530 round-2 review's N9 (the support-leaf purity test)
 and N10 (the S10 alias map). Inputs (all in docs/evidence/syzygy-bpyt-6-14/):
   mutants-{head,base}-{absent,present}.json  tools/mutants.py in a clean clone at each commit, with every dist/ absent and with
                          all twelve built; the reviewer's fragments are read from the committed round-2 records;
   shared-reader-identity.json  tools/shared_reader_identity.py: the testkit's reader and list against the two copies it replaces;
   bundle-differential.json     tools/bundle_differential.py: the S10 bundle at BASE and at HEAD, byte for byte;
   titles.json, suite-head.json tools/titles.py over the three changed test files, and tools/suite_run.py over the whole suite;
-  residuals-head.json          tools/residuals.py: the two forms the allowlist is known to pass (R1, R2), disclosed.
+  residuals-head.json          tools/residuals.py: the two forms the allowlist is known to pass (R1, R2), disclosed;
+  bundle-test-durations.json   scripts/measure_vitest_test_durations.py --mode alone --runs 5 over no-egress.test.ts: the bundle
+                               test runs under vitest's 5 s default, its explicit timeout removed (PR 537's rule);
+  no-egress-hook-durations.json  docs/evidence/syzygy-bpyt-4-31/tools/measure_vitest_hook_durations.py --runs 5: the file's
+                               beforeAll, which now derives the aliases and bundles under the guard, under the 10 s hook default.
 Usage: python3 -I summary.py <tree> [--check | --selftest]
   --check: exit 1 unless summary.json equals what the inputs give and no check fails.
   --selftest: mutate one input at a time in memory (rule 6) and exit 1 unless every mutation makes a check fail.
@@ -22,14 +26,15 @@ from pathlib import Path
 
 TREE = Path(sys.argv[1]).resolve()
 HERE = TREE / 'docs/evidence/syzygy-bpyt-6-14'
-BASE = 'd621bfa267f24ff68f6f83ac7bfba44b81a32a34'
-HEAD = 'dff82655bf288c92f119c63a98ed0147f6ee4d31'
+BASE = 'f7ea858480b30ffc4407154a84d1d03f3fe4a549'
+HEAD = '3b04b1cd6a283fea7d269e01aaf4849289aa477f'
 SUBJECT = sorted(['packages/polaris-dossier/src/no-egress.test.ts', 'packages/support/src/purity.testkit.ts',
                   'packages/support/src/support-purity.test.ts', 'packages/three-surface-poc-core/src/owner-act-drafter.test.ts'])
 RUNS = [('head', 'absent'), ('head', 'present'), ('base', 'absent'), ('base', 'present')]
 # What the bead requires to fail at HEAD, in both dist/ states: N9's named reviewer mutants and N10's two.
 REQUIRED = [f'RP{n}' for n in range(2, 17)] + ['E6', 'E7', 'E8', 'E9', 'M1', 'M2']
 ROUND2 = 'docs/evidence/support-leaf-review-2026-10-27/round-2'
+BUNDLE_TEST = 'the S10 bundle takes each workspace package from the source its entry names (syzygy-bpyt.6.14) bundles the driver with every @syzygy specifier inside packages/*/src or apps/*/src'
 
 
 def git(*args):
@@ -38,7 +43,7 @@ def git(*args):
 
 def load():
     inputs = {f'{side}-{dist}': json.load(open(HERE / f'mutants-{side}-{dist}.json')) for side, dist in RUNS}
-    for name in ['shared-reader-identity', 'bundle-differential', 'titles', 'suite-head', 'residuals-head']:
+    for name in ['shared-reader-identity', 'bundle-differential', 'titles', 'suite-head', 'residuals-head', 'bundle-test-durations', 'no-egress-hook-durations']:
         inputs[name] = json.load(open(HERE / f'{name}.json'))
     return inputs
 
@@ -93,7 +98,16 @@ def derive(inputs):
     residuals = inputs['residuals-head']
     check(residuals['commit'] == HEAD and residuals['statusAfter'] == '', 'residuals: commit or tree')
     check([(r['id'], r['observed']) for r in residuals['rows']] == [(r['id'], 'survives') for r in residuals['rows']] and len(residuals['rows']) == 2, 'residuals: a disclosed form no longer survives')
-    changed = sorted(git('diff', '--name-only', BASE, HEAD).split())
+    durations = inputs['bundle-test-durations']
+    bundle_ms = [t['durationMs'] for r in durations['runs'] for t in r['tests'] if t['name'] == BUNDLE_TEST and t['status'] == 'passed']
+    check(durations['subject']['commit'] == HEAD and durations['mode'] == 'alone' and len(durations['runs']) == 5 and all(r['exitCode'] == 0 for r in durations['runs']), 'durations: commit, mode or runs')
+    check(len(bundle_ms) == 5 and max(bundle_ms) <= 5000, f'durations: the bundle test {bundle_ms}')
+    hooks = inputs['no-egress-hook-durations']
+    before_ms = [s['beforeAllMs'] for r in hooks['runs'] for s in r['suites'] if s['suite'] == '(file)']
+    check(hooks['subject']['commit'] == HEAD and len(hooks['runs']) == 5 and all(r['exitCode'] == 0 for r in hooks['runs']), 'hooks: commit or runs')
+    check(len(before_ms) == 5 and max(before_ms) <= 10000, f'hooks: the file beforeAll {before_ms}')
+    # HEAD carries this directory's first records (at dff82655 over d621bfa2, before main was merged), so they are not the subject.
+    changed = sorted(p for p in git('diff', '--name-only', BASE, HEAD).split() if not p.startswith('docs/evidence/syzygy-bpyt-6-14/'))
     check(changed == SUBJECT, f'subject: {changed}')
     since = sorted(git('diff', '--name-only', HEAD, 'HEAD').split())
     check(all(p.startswith('docs/evidence/syzygy-bpyt-6-14/') for p in since), f'tree HEAD changes more than this evidence since {HEAD}: {since}')
@@ -109,6 +123,8 @@ def derive(inputs):
         'titles': {k: titles[k] for k in ['base', 'head', 'added', 'removed']},
         'suite': {k: suite[k] for k in ['commit', 'distDirs', 'files', 'total', 'passed', 'failed', 'skipped']},
         'residualsSurviving': [r['id'] for r in residuals['rows'] if r['observed'] == 'survives'],
+        'bundleTestMs': {'runs': bundle_ms, 'load1Max': max(r['load1']['max'] for r in durations['runs'])},
+        'beforeAllMs': {'runs': before_ms, 'load1Max': max(r['load1']['max'] for r in hooks['runs'])},
         'checksFailed': failures,
     }
     return summary
@@ -143,13 +159,17 @@ def main():
             i['suite-head']['failed'] = 1
         def residual(i):
             i['residuals-head']['rows'][0]['observed'] = 'killed'
+        def hook(i):
+            next(s for s in i['no-egress-hook-durations']['runs'][4]['suites'] if s['suite'] == '(file)')['beforeAllMs'] = 10001
+        def slow(i):
+            next(t for t in i['bundle-test-durations']['runs'][2]['tests'] if t['name'] == BUNDLE_TEST)['durationMs'] = 5001
         survivors = []
-        for mutate in [flip, commit, status, fragment, dropped, survived, dist, identity, bundle, suite, residual]:
+        for mutate in [flip, commit, status, fragment, dropped, survived, dist, identity, bundle, suite, residual, slow, hook]:
             mutated = copy.deepcopy(inputs)
             mutate(mutated)
             if not derive(mutated)['checksFailed']:
                 survivors.append(mutate.__name__)
-        print('selftest:', 'all 11 mutations caught' if not survivors else f'survived: {survivors}')
+        print('selftest:', 'all 13 mutations caught' if not survivors else f'survived: {survivors}')
         sys.exit(1 if survivors or summary['checksFailed'] else 0)
     if mode == '--check':
         stored = json.load(open(HERE / 'summary.json'))
