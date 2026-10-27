@@ -1,4 +1,7 @@
-import { readdirSync, readFileSync } from 'node:fs';
+import { mkdirSync, mkdtempSync, readdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { dirname, join } from 'node:path';
+import { pathToFileURL } from 'node:url';
 import ts from 'typescript';
 import { describe, expect, it } from 'vitest';
 import { FORBIDDEN, specifiersOf } from './purity.testkit.js';
@@ -9,8 +12,10 @@ import { FORBIDDEN, specifiersOf } from './purity.testkit.js';
 // read, at any depth and with any JavaScript or TypeScript extension; the test files and the one testkit are test
 // support (syzygy-bpyt.6.14, the PR 530 round-2 review's N9).
 const SRC = new URL('./', import.meta.url);
-const SOURCES = readdirSync(SRC, { recursive: true, encoding: 'utf8' })
+/** Every source module under `dir`, at any depth and with any JavaScript or TypeScript extension, but the tests and the testkit. */
+const sourcesUnder = (dir: URL): string[] => readdirSync(dir, { recursive: true, encoding: 'utf8' })
   .filter((name) => /\.[cm]?[jt]sx?$/u.test(name) && !name.endsWith('.test.ts') && name !== 'purity.testkit.ts').sort();
+const SOURCES = sourcesUnder(SRC);
 const read = (name: string): string => readFileSync(new URL(name, SRC), 'utf8');
 
 const ALLOWED_SPECIFIER = /^(?:node:crypto|\.\/[a-z0-9-]+\.js)$/u;
@@ -35,9 +40,31 @@ function identifiersOf(name: string, source: string): string[] {
   return [...names].sort();
 }
 
+/** Every import and re-export declaration of a module, by its specifier and as written. */
+function moduleDeclarationsOf(name: string, source: string): { specifier: string; text: string }[] {
+  const file = ts.createSourceFile(name, source, ts.ScriptTarget.Latest, false);
+  return file.statements.flatMap((statement) =>
+    (ts.isImportDeclaration(statement) || ts.isExportDeclaration(statement)) && statement.moduleSpecifier !== undefined && ts.isStringLiteral(statement.moduleSpecifier)
+      ? [{ specifier: statement.moduleSpecifier.text, text: statement.getText(file) }]
+      : []);
+}
+
 describe('@syzygy/support stays a pure leaf', () => {
   it('scans every source module under src, at any depth, not an empty list', () => {
     expect(SOURCES).toEqual(expect.arrayContaining(['decode-utf8.ts', 'deep-freeze.ts', 'index.ts', 'sha256.ts']));
+  });
+
+  it('lists a module at any depth and with any extension, and skips only the tests and the testkit', () => {
+    const dir = mkdtempSync(join(tmpdir(), 'support-sources-'));
+    try {
+      for (const file of ['a.ts', 'io/b.ts', 'c.mts', 'd.cjs', 'e.test.ts', 'purity.testkit.ts', 'f.json']) {
+        mkdirSync(dirname(join(dir, file)), { recursive: true });
+        writeFileSync(join(dir, file), '');
+      }
+      expect(sourcesUnder(pathToFileURL(`${dir}/`))).toEqual(['a.ts', 'c.mts', 'd.cjs', 'io/b.ts']);
+    } finally {
+      rmSync(dir, { recursive: true, force: true });
+    }
   });
 
   it('names no module but node:crypto and a module beside it in any literal specifier of any source', () => {
@@ -49,6 +76,27 @@ describe('@syzygy/support stays a pure leaf', () => {
 
   it('names no identifier outside its literal list in any source', () => {
     expect(SOURCES.flatMap((file) => identifiersOf(file, read(file)).filter((name) => !ALLOWED_IDENTIFIERS.has(name)).map((name) => `${file}: ${name}`))).toEqual([]);
+  });
+
+  it('takes only createHash from node:crypto, by its own name, and re-exports nothing from it', () => {
+    // An `export *`, a namespace binding or a string-named specifier names no identifier, so the allowlist cannot see it.
+    const external = SOURCES.flatMap((file) => moduleDeclarationsOf(file, read(file))
+      .filter(({ specifier }) => !specifier.startsWith('./')).map(({ text }) => `${file}: ${text}`));
+    expect(external).toEqual(["sha256.ts: import { createHash } from 'node:crypto';"]);
+  });
+
+  it('assigns to no property in any source, so no allowed global is rewritten', () => {
+    const writes: string[] = [];
+    for (const file of SOURCES) {
+      const source = ts.createSourceFile(file, read(file), ts.ScriptTarget.Latest, false);
+      const visit = (node: ts.Node): void => {
+        if (ts.isBinaryExpression(node) && node.operatorToken.kind >= ts.SyntaxKind.FirstAssignment && node.operatorToken.kind <= ts.SyntaxKind.LastAssignment
+          && (ts.isPropertyAccessExpression(node.left) || ts.isElementAccessExpression(node.left))) writes.push(`${file}: ${node.getText(source)}`);
+        ts.forEachChild(node, visit);
+      };
+      visit(source);
+    }
+    expect(writes).toEqual([]);
   });
 
   it('names none of the forbidden tokens it shares with the owner-act drafter in any source', () => {
@@ -90,6 +138,13 @@ describe('the specifier reader this guard stands on', () => {
 });
 
 describe('the forbidden-token list both guards stand on', () => {
+  it('is the literal list, so a narrowed token fails here', () => {
+    expect(FORBIDDEN.map(String)).toEqual([
+      '/\\brequire\\(/', '/\\bimport\\(/', '/\\bfetch\\(/', '/\\bwriteFile/', '/\\bappendFile/', '/\\bmkdir/', '/\\bprocess\\./', '/\\bDate\\b/',
+      "/\\b(?:node:)?(?:fs|net|http|https|child_process|os)['\"`]/",
+    ]);
+  });
+
   // One form per token, each matched by that token alone, so a token dropped from the shared list fails its row.
   const CASES: readonly string[] = [
     'const m = require(name);', 'const m = await import(name);', 'await fetch(url);', 'writeFileSync(p, d);', 'appendFileSync(p, d);',

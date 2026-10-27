@@ -63,12 +63,12 @@ function sourcesOnly(root: string): Plugin {
 }
 
 /** Bundles the driver into `outfile`, every `@syzygy/*` specifier by the derived aliases and inside the workspace sources. */
-async function bundleDriver(outfile: string): Promise<void> {
+async function bundleDriver(outfile: string, aliases: Record<string, string> = workspaceAliases()): Promise<void> {
   await build({
     entryPoints: [path.join(REAL_ROOT, 'packages/polaris-dossier/test-support/no-egress-driver.ts')],
     bundle: true, platform: 'node', format: 'esm', target: 'node22', outfile, logLevel: 'silent',
     banner: { js: 'import { createRequire as __createRequire } from \'node:module\'; const require = __createRequire(import.meta.url);' },
-    alias: workspaceAliases(),
+    alias: aliases,
     plugins: [sourcesOnly(SOURCE_ROOT)],
   });
 }
@@ -161,6 +161,17 @@ describe('the S10 bundle takes each workspace package from the source its entry 
     const out = fs.realpathSync(fs.mkdtempSync(path.join(tmpdir(), 'dossier-no-egress-bundle-')));
     try {
       await expect(bundleDriver(path.join(out, 'driver.mjs'))).resolves.toBeUndefined();
+    } finally {
+      fs.rmSync(out, { recursive: true, force: true });
+    }
+  });
+
+  it('bundles the driver only under the guard: an alias that leaves the sources fails it', async () => {
+    const out = fs.realpathSync(fs.mkdtempSync(path.join(tmpdir(), 'dossier-no-egress-bundle-')));
+    try {
+      const outside = { ...workspaceAliases(), '@syzygy/support': path.join(SOURCE_ROOT, 'packages/support/package.json') };
+      await expect(bundleDriver(path.join(out, 'driver.mjs'), outside))
+        .rejects.toThrow('@syzygy/support resolves outside packages/*/src and apps/*/src: packages/support/package.json');
     } finally {
       fs.rmSync(out, { recursive: true, force: true });
     }

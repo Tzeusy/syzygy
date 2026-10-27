@@ -7,7 +7,8 @@ The fourth argument is the dist/ state the run asserts before it starts: `absent
 `present` (all twelve built). Every row records its edits verbatim: {path, old, new} replaces `old`, which must occur exactly
 once, by `new`; old null creates the file `new` names (and any directory it needs); {path, link} creates that symbolic link.
 The reviewer's fragments are read from the round-2 records committed in the clone (by id; each record's sha256 is stored),
-never retyped. A row is `killed` when vitest exits non-zero with a failed test or a failed file, `survives` when it exits 0,
+never retyped; the PR 545 round-1 review's (R-GP-IMPL-SUPPORT-LEAF-GUARDS-1) are read the same way from reviewer-r1-fragments.json,
+which tools/reviewer_r1_fragments.py copied from that review's records. A row's test is one file or a list of files. A row is `killed` when vitest exits non-zero with a failed test or a failed file, `survives` when it exits 0,
 and `error` when it writes no JSON report. The expectation was written before the run. Restores every edit, removes every
 file, link and directory it created, and records `git status --porcelain` after (expected empty).
 """
@@ -18,6 +19,7 @@ import subprocess
 import sys
 
 ROUND2 = 'docs/evidence/support-leaf-review-2026-10-27/round-2'
+ROUND1_PR545 = 'docs/evidence/syzygy-bpyt-6-14/reviewer-r1-fragments.json'
 PURITY = 'packages/support/src/support-purity.test.ts'
 DRAFTER_TEST = 'packages/three-surface-poc-core/src/owner-act-drafter.test.ts'
 DRAFTER = 'packages/three-surface-poc-core/src/owner-act-drafter.ts'
@@ -44,7 +46,8 @@ def edit(path, old, new):
 
 
 # (id, test, head edits or None, base edits or None, expected at head, expected at base). A reviewer row's edits are the
-# string 'reviewer' and are read from its record; None means the row does not apply at that commit.
+# string 'reviewer' (round 2 of PR 530) or 'reviewer-r1' (round 1 of PR 545) and are read from its record; None means the row
+# does not apply at that commit.
 ROWS = [
     ('C0-purity-unmutated', PURITY, [], [], 'pass', 'pass'),
     *[(rid, PURITY, 'reviewer', 'reviewer', 'killed', base) for rid, base in [
@@ -87,10 +90,23 @@ ROWS = [
     ('K2-forbidden-list-drops-mkdir', PURITY, [edit(TESTKIT, ' /\\bmkdir/,', '')], None, 'killed', None),
     ('K3-identifier-reader-skips-private-names', PURITY,
      [edit(PURITY, 'if (ts.isIdentifier(node) || ts.isPrivateIdentifier(node))', 'if (ts.isIdentifier(node))')], None, 'killed', None),
-    # Attribution: with the scan made non-recursive again, L1 survives, so the recursion is what kills it.
+    # Attribution: with the scan made non-recursive again, only the scan's own fixture row fails (round 1's N1), so the
+    # recursion is what kills L1 and that row is what pins the recursion.
     ('T1-scan-without-recursion-plus-L1', PURITY,
-     [edit(PURITY, "readdirSync(SRC, { recursive: true, encoding: 'utf8' })", "readdirSync(SRC, { encoding: 'utf8' })"),
-      edit('packages/support/src/io/read.ts', None, READ_TS)], None, 'survives', None),
+     [edit(PURITY, "readdirSync(dir, { recursive: true, encoding: 'utf8' })", "readdirSync(dir, { encoding: 'utf8' })"),
+      edit('packages/support/src/io/read.ts', None, READ_TS)], None, 'killed', None),
+    # Round 1's F1: a module binding that names no identifier, each alone, and Y7 with the drafter taking randomness through
+    # the leaf; N2: a shared token narrowed; N3: an allowed global's member rewritten. Each must fail the row its fix added.
+    *[(rid, test, 'reviewer-r1', None, 'killed', None) for rid, test in [
+        ('Y7-export-star-from-node-crypto', PURITY),
+        ('Y9-export-star-as-allowed-name', PURITY),
+        ('Y10-string-named-re-export', PURITY),
+        ('Y11-string-named-import-called-at-import', PURITY),
+        ('Y12-namespace-import-re-exported', PURITY),
+        ('Y14-drafter-takes-randomness-through-support', [PURITY, DRAFTER_TEST]),
+        ('K4-shared-Date-token-weakened-plus-DK1', [PURITY, DRAFTER_TEST]),
+        ('Y6-allowed-global-member-replaced', PURITY),
+    ]],
     # The owner-act drafter's purity test on the shared reader and list: the reviewer's D2 and D5 survive it (its own
     # guard stays a denylist, disclosed), while a forbidden token and a forbidden specifier each fail it.
     ('D0-drafter-unmutated', DRAFTER_TEST, [], [], 'pass', 'pass'),
@@ -120,14 +136,25 @@ ROWS = [
     ('M4-alias-for-support-dropped', NO_EGRESS,
      [edit(NO_EGRESS, HEAD_ALIAS, "      if (specifier !== '@syzygy/support') aliases[specifier] = path.join(SOURCE_ROOT, module);\n")],
      [edit(NO_EGRESS, BASE_ALIAS, '')], 'killed', 'dist-dependent'),
-    # Attribution: without the guard plugin, M2 survives at head, so the guard is what kills it.
+    # Attribution: without the guard plugin, only round 1's N4 row fails (it bundles the driver with an alias outside the
+    # sources and expects the guard's refusal), so M2 itself passes every other row and the guard is what kills it. G0 is
+    # the plugin removed alone.
     ('M5-guard-removed-plus-M2', NO_EGRESS,
-     [edit(NO_EGRESS, '    plugins: [sourcesOnly(SOURCE_ROOT)],\n  });\n}\n', '    plugins: [],\n  });\n}\n'), *LEAK], None, 'survives', None),
+     [edit(NO_EGRESS, '    plugins: [sourcesOnly(SOURCE_ROOT)],\n  });\n}\n', '    plugins: [],\n  });\n}\n'), *LEAK], None, 'killed', None),
+    ('G0-guard-removed-alone', NO_EGRESS, 'reviewer-r1', None, 'killed', None),
 ]
 
 
 def sha256_file(path):
     return hashlib.sha256(open(path, 'rb').read()).hexdigest()
+
+
+def reviewer_r1_fragments(clone):
+    """Every PR 545 round-1 reviewer row by id, from the committed copy of that review's records, with the copy's digest."""
+    path = os.path.join(clone, ROUND1_PR545)
+    if not os.path.exists(path):
+        return {}, None
+    return {rid: f['edits'] for rid, f in json.load(open(path))['fragments'].items()}, sha256_file(path)
 
 
 def reviewer_fragments(clone):
@@ -189,7 +216,7 @@ def run(clone, test, tmpdir):
     out = os.path.join(tmpdir, 'vitest.json')
     if os.path.exists(out):
         os.remove(out)
-    proc = subprocess.run(['npx', 'vitest', 'run', test, '--reporter=json', f'--outputFile={out}'], cwd=clone,
+    proc = subprocess.run(['npx', 'vitest', 'run', *([test] if isinstance(test, str) else test), '--reporter=json', f'--outputFile={out}'], cwd=clone,
                           env=dict(os.environ, TMPDIR=tmpdir), capture_output=True, text=True, timeout=900)
     if not os.path.exists(out):
         return {'exit': proc.returncode, 'error': 'no json output', 'stderrTail': proc.stderr[-800:]}
@@ -219,6 +246,7 @@ def main():
     assert (dist == 'absent' and present == []) or (dist == 'present' and len(present) == 12), (dist, present)
     side = 'head' if os.path.exists(os.path.join(clone, TESTKIT)) else 'base'
     fragments, records = reviewer_fragments(clone)
+    fragments_r1, record_r1 = reviewer_r1_fragments(clone)
     drafter_first = open(os.path.join(clone, DRAFTER)).read().split('\n')[0] + '\n'
     rows = []
     for rid, test, head_edits, base_edits, head_expect, base_expect in ROWS:
@@ -227,6 +255,8 @@ def main():
             continue
         if edits == 'reviewer':
             edits = fragments[rid]
+        elif edits == 'reviewer-r1':
+            edits = fragments_r1[rid]
         elif isinstance(edits, str):
             edits = [edit(DRAFTER, drafter_first, drafter_first + edits.removeprefix('drafter:'))]
         if expected == 'dist-dependent':
@@ -248,7 +278,7 @@ def main():
                  if os.path.lexists(os.path.join(clone, p))]
     summary = {'rows': len(rows), 'asExpected': sum(r['observed'] == r['expected'] for r in rows),
                'unexpected': [r['id'] for r in rows if r['observed'] != r['expected']]}
-    json.dump({'commit': commit, 'side': side, 'dist': dist, 'distDirs': present, 'reviewerRecords': records,
+    json.dump({'commit': commit, 'side': side, 'dist': dist, 'distDirs': present, 'reviewerRecords': records, 'reviewerR1Record': record_r1,
                'node': subprocess.run(['node', '--version'], capture_output=True, text=True).stdout.strip(),
                'summary': summary, 'statusAfter': status, 'leftovers': leftovers, 'rows': rows}, open(out_path, 'w'), indent=1)
     print('summary', summary, 'status after', repr(status), 'leftovers', leftovers)
