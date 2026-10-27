@@ -30,11 +30,15 @@ const DOSSIER_DECISION = /^POLARIS-DOSSIER-(?:LOCAL-AGENT-[A-Z0-9]+(?:-[A-Z0-9]+
 /** Owner directions on the dossier's local agent CLI runner (P-111); each must be declared by a `Decision ID:` line under decisions/. */
 const DOSSIER_RUNNER_DECISION = /^DOSSIER-(?:LOCAL-CLI-SUBPROCESS|CLI-RUNNER-[A-Z0-9]+(?:-[A-Z0-9]+)*)-\d{4}-\d{2}-\d{2}$/;
 
+/** P-115's drafting direction; its owning Decision ID must also be declared. */
+const MACHINE_CEILING_DECISION = /^OWNER-DIRECTION-MACHINE-CEILING-2026-10-15$/;
+
 /** Hand-typed warrant id families (a new family must be added here). */
 const WARRANT_FAMILIES = [
   GENERATOR_REQUIREMENT,
   DOSSIER_DECISION,
   DOSSIER_RUNNER_DECISION,
+  MACHINE_CEILING_DECISION,
   /^(VIS|SEC|SDR|RFC\d+|CC-[A-Z]+|POC-REQ|PWB-REQ|CAP1-REQ)-\d+[a-z]?(\([a-z]\))?$/,
   /^(POC|POLARIS|PWB-STATE1-AMENDMENT)-DIR-\d{4}-\d{2}-\d{2}$/,
   // Redis local-agent owner directions: `Decision ID:` in decisions/REDIS-LOCAL-AGENT-SITTING-DIRECTION.md.
@@ -135,7 +139,7 @@ describe('Zero downstream citations of Polaris as authority (PWB-REQ-014)', () =
     for (const file of walk(decisionsDirectory, isSpec)) {
       for (const match of readFileSync(file, 'utf8').matchAll(/^Decision ID: `([A-Z0-9-]+)`(?:$| )/gm)) declaredDecisions.add(match[1] as string);
     }
-    for (const entry of entries.filter((candidate) => DOSSIER_RUNNER_DECISION.test(candidate.value))) {
+    for (const entry of entries.filter((candidate) => DOSSIER_RUNNER_DECISION.test(candidate.value) || MACHINE_CEILING_DECISION.test(candidate.value))) {
       expect(entry.key).toBe('decisions');
       expect(declaredDecisions.has(entry.value), `${entry.value} must have an owning Decision ID declaration`).toBe(true);
     }

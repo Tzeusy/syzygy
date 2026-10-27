@@ -266,7 +266,7 @@
     },
     "POC": {
       "requirements": 26,
-      "scenarios": 28,
+      "scenarios": 34,
       "members": {
         "POC-REQ-001": {
           "name": "Code-structure observation is bound to an exact revision",
@@ -320,6 +320,12 @@
           "name": "Every work item's governing intent renders as a counted Unknown",
           "scenarios": [
             "Every item's governing intent is Unknown",
+            "One value, separate item claims",
+            "Invalid references fail explicitly",
+            "Observations cannot lend values to each other",
+            "Only identical complete values are shareable",
+            "Observed empty is distinct from an Unknown observation",
+            "Repetition preserves effective facts",
             "A title names a requirement"
           ]
         },

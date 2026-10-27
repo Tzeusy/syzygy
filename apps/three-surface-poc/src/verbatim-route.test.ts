@@ -7,7 +7,7 @@
 import { rmSync } from 'node:fs';
 import { afterEach, describe, expect, it } from 'vitest';
 
-import type { Route, RouteContext, RouteResponse } from '@syzygy/cap1-daemon';
+import type { Route, RouteContext, RouteResponse } from '@syzygy/http-host';
 import { PWB_RESOURCE_LIMITS, type PocModel } from '@syzygy/three-surface-poc-core';
 
 import { selectRequirementSections, type VerbatimLeaf, type VerbatimRefusal } from './capability-detail.js';
