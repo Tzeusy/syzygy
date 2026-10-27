@@ -5,7 +5,20 @@
  "subject": {
   "baseCommit": "fe3855a1b4f2164da3274e02d868399236c45c9c",
   "codeCommit": "7e58cd1f9e1be0c4d79ebff298cc97261a79f6ce",
-  "note": "evidence commits after codeCommit add files under docs/evidence/syzygy-bpyt-6-3 and change no code"
+  "note": "evidence commits after codeCommit add files under docs/evidence/syzygy-bpyt-6-3 and change no code",
+  "reviewedHead": "9d9c98a6f265393fcb46dae6e1484eea097aad20",
+  "mergeOfMain": {
+   "commit": "af534d6eae36554b21fb386f6da8525fd8b3026b",
+   "parents": [
+    "9d9c98a6f265393fcb46dae6e1484eea097aad20",
+    "f7477f52c49ee347f96b92703887c31f6be49e07"
+   ],
+   "mainCommitMerged": "f7477f52c49ee347f96b92703887c31f6be49e07",
+   "resolution": "none: a clean merge with no conflicts; merge-resolution-check.py found 5,462 of 5,462 paths equal to what git computes and 0 conflicts",
+   "mainMovedTo": "bb05df7ea409039c5a6465e7179f9d0c66931ad3 (PRs 535 and 536) while this repair ran; it is not merged here, so git diff f7477f52 <head> stays this PR alone"
+  },
+  "testedCommit": "ba7fce369ebfbd605be4a8da76dbdb4351ab9f25",
+  "testedCommitNote": "the commit every repair run below ran at; the evidence commits after it add files under docs/evidence/syzygy-bpyt-6-3 and the PR body, and change no code"
  },
  "changedProductionFiles": {
   "commentOnly": {
@@ -63,7 +76,84 @@
      "emitSha256Head": "d4b1ba58de41ac3fa7d665f7a25ac93b77e2d640a08fedb4e42fa9b676ccff30",
      "commentOnly": true
     }
-   ]
+   ],
+   "claimName": "emit-equal (runtime-equal)",
+   "ranAt": "round 1, base fe3855a1 against code commit 7e58cd1f"
+  },
+  "claim": "\"comment-only\" in this record means two things, named apart. emit-equal (runtime-equal): comment-only.mjs compares the JavaScript that ts.transpileModule emits with comments removed, so an edit that changes only a type passes it. Line-level: line-level-check.mjs reads the TypeScript, and requires the printer output with comments removed (types kept) to be equal and every changed line to be a comment by the parser's comment ranges. Round 1 of this record ran only the first, and called the result comment-only.",
+  "roundOneRepairRun": {
+   "base": "f7477f52c49ee347f96b92703887c31f6be49e07",
+   "head": "ba7fce369ebfbd605be4a8da76dbdb4351ab9f25",
+   "whyThisBase": "the merge brought main to f7477f52; the PR's whole delta over it is the 5 production edits of round 1, and the repair itself changed no production file",
+   "productionBytesUnchangedByTheRepair": "the 5 production files have the same blob at 9d9c98a6, af534d6e and ba7fce36 (git rev-parse <commit>:<path>, 15 of 15 equal)",
+   "emitEqual": {
+    "tool": "docs/evidence/syzygy-bpyt-6-3/comment-only.mjs",
+    "output": "docs/evidence/syzygy-bpyt-6-3/repair1-comment-only-f7477f52-ba7fce36.json",
+    "outputSha256": "355dcb60db64b5b88e7d7c68e66d69f5744c574c10301a22bb111cbfeaeac024",
+    "changedProductionFiles": 5,
+    "commentOnly": 5,
+    "notCommentOnly": []
+   },
+   "lineLevel": {
+    "tool": "docs/evidence/syzygy-bpyt-6-3/line-level-check.mjs",
+    "toolSha256": "43ed6091355824ec8d7b089d1c4ef426f8bc8c1c84193070f13a08c0e8b73953",
+    "output": "docs/evidence/syzygy-bpyt-6-3/repair1-line-level-f7477f52-ba7fce36.json",
+    "outputSha256": "41f1ea885f4fb064ab134f279710e4e9ce2481dcc80dd84feab9e4cbdd50ed3d",
+    "changedProductionFiles": 5,
+    "commentOnly": 5,
+    "notCommentOnly": [],
+    "changedLinesByKind": {
+     "trailing-line-comment": 4,
+     "comment-edited": 1
+    },
+    "selftest": {
+     "output": "docs/evidence/syzygy-bpyt-6-3/repair1-line-level-selftest.json",
+     "cases": 12,
+     "pass": true,
+     "note": "comment edits pass; a code edit, a type-only edit, a whitespace-only edit, text appended inside a string and code moved into a comment each fail"
+    }
+   },
+   "negativeControls": {
+    "typeOnlyMutant": {
+     "what": "function stripFences(text: string, stripInlineCode = true): readonly string[] {  ->  function stripFences(text: string, stripInlineCode = true): string[] { in packages/three-surface-poc-core/src/project-shape-manifest.ts",
+     "mutantCommit": "a49a16f49c0cfb8684689f729e8bd59099dd9202",
+     "emitEqualTool": {
+      "exit": 0,
+      "stdout": "production files changed 5, comment-only 5, not 0"
+     },
+     "lineLevelTool": {
+      "exit": 1,
+      "stdout": "production files changed 5, comment-only (print and lines) 4, not 1"
+     },
+     "outputs": [
+      "docs/evidence/syzygy-bpyt-6-3/repair1-neg-typeonly-comment-only.json",
+      "docs/evidence/syzygy-bpyt-6-3/repair1-neg-typeonly-line-level.json"
+     ],
+     "reading": "the emit-equal check passes a type-only edit (5 of 5) and the line-level check refuses it (4 of 5): the reason the claim is renamed"
+    },
+    "codeMutant": {
+     "what": "const FENCE_OPENER = /^ {0,3}(`{3,}|~{3,})(.*)$/;  ->  const FENCE_OPENER = /^ {0,3}(`{3,}|~{3,})([^\\n]*)$/; in packages/three-surface-poc-core/src/markdown-code-context.ts",
+     "mutantCommit": "a363f695ef56ba4382ccbde55c22295e4b0fcc78",
+     "emitEqualTool": {
+      "exit": 1,
+      "stdout": "production files changed 5, comment-only 4, not 1"
+     },
+     "lineLevelTool": {
+      "exit": 1,
+      "stdout": "production files changed 5, comment-only (print and lines) 4, not 1"
+     },
+     "outputs": [
+      "docs/evidence/syzygy-bpyt-6-3/repair1-neg-code-comment-only.json",
+      "docs/evidence/syzygy-bpyt-6-3/repair1-neg-code-line-level.json"
+     ]
+    },
+    "codeChangingRange": {
+     "what": "the line-level check over a range that changes production code (a088f1ca..9029e1cf, the first PR of this stack)",
+     "output": "docs/evidence/syzygy-bpyt-6-3/repair1-neg-pr1-line-level.json",
+     "result": "59 production files changed, 0 comment-only"
+    },
+    "mutantCommitsNote": "each mutantCommit is a scratch commit in a throwaway clone, discarded with it and reachable from no ref; re-run from old, new and the base"
+   }
   }
  },
  "sweep": {
@@ -650,7 +740,7 @@
    },
    "governedBy": [],
    "verdict": "presentation-only",
-   "reading": "[Observed] No clause governs how the renderer finds a fence; it presents admitted text and gates nothing. It differs from the profile in the tab-closer case only (CommonMark allows it), on the cases tried."
+   "reading": "[Observed] No clause governs how the renderer finds a fence; it presents admitted text and gates nothing. On the 25 fence-only cases it differs from the profile in the tab-closer case only (1 of 25; CommonMark allows it). Over the 33 cases tried it also differs on all 4 span cases, and it reads a backtick opener whose info string holds a backtick (backtick-info-with-backtick) as an opener, which the profile does not."
   },
   {
    "id": 6,
@@ -782,35 +872,48 @@
    "id": "G2",
    "reader": "extraction",
    "severity": "owner decision on what \"fenced code\" means for the extractor",
-   "what": "Against the profile, on the cases that no inline span touches (25 LF cases the profile reads as well formed), the extraction reader differs in 7: backtick-indent1, backtick-indent2, backtick-indent3, tilde-indent3, closer-indent1, closer-indent3, closer-trailing-tab-then-closer.",
+   "what": "Against the profile, on the cases that no inline span touches (25 LF cases the profile reads as well formed), the extraction reader differs in 7: backtick-indent1, backtick-indent2, backtick-indent3, tilde-indent3, closer-indent1, closer-indent3, closer-trailing-tab-then-closer. The extractor does not fail closed on all of them: the two closer shapes can leave a source whose item denominator is known and counts only the items before the fence.",
    "directions": {
     "openerIndentedOneToThreeSpaces": "not an opener: headings, list items and table rows inside such a fence are read as structure (an item can be minted from fenced text)",
-    "closerIndentedOneToThreeSpaces": "does not close: everything after is hidden, which fails closed (missing heading, so the source is Unknown)",
-    "closerWithTrailingTab": "closes where the profile calls the source malformed"
+    "closerIndentedOneToThreeSpaces": "[Observed] does not close, and everything after it is hidden from the extractor (the closer test is line.trimEnd() === fence, project-shape-extraction.ts:173). The outcome depends on what the hidden text holds: a missing heading when a required heading follows (the source is Unknown, which fails closed), or, when the hidden text holds items, rows or H2s of a section headed before the fence, a silent partial item set under a known denominator. Example (fence-rules.test.ts, the GAP G2 rows): a vision.md with three principles and a closer indented one space, which the profile reads as well formed, extracts {principle: 1} (First.) against {principle: 3} with a column-0 closer. That contradicts the module's own invariant, \"A source never yields a partial item set\" (project-shape-extraction.ts:16-17); extractSource records denominators[cls] = result.items.length (:648). [Inferred] The model renders a known item denominator as an Observed claim (project-shape-model.ts:411).",
+    "closerWithTrailingTab": "[Observed] on the counted case closer-trailing-tab-then-closer the profile reads the text as well formed (its fence runs to the plain closer; vector VHHHHV). trimEnd() makes the tab line a closer for the extractor, which closes early and reads the lines after it as structure the profile keeps fenced (positions 3 and 4, a mint); the next plain closer then opens a fence that runs to the end of the text (position 5, a hide; vector VHHVVH). The same vision fixture with a tab-terminated closer-shaped line before the plain closer extracts {principle: 1}, the same partial-set outcome as the indented closer. The one-closer case closer-trailing-tab is malformed under the profile, and the gate excludes it before any extraction (git-object-reader.ts:368-369 returns active-content on the finding) [Inferred from the call order], so it never reaches the extractor."
    },
    "unknown": "whether any live source has one of these shapes (no repository body was read)",
-   "decision": "whether \"fenced code\" in the heading rule is the profile's fenced block. If it is, this reader departs; if the extractor may keep its own rule, P-112's candidate sentence says so. Not changed here."
+   "decision": "whether \"fenced code\" in the heading rule is the profile's fenced block. If it is, this reader departs, and the partial-set outcome above is a defect and not a refusal; if the extractor may keep its own rule, P-112's candidate sentence says so, and the owner should know the rule can under-report under a known denominator. Not changed here; a fix flips the GAP G2 rows.",
+   "pinnedBy": [
+    "apps/three-surface-poc/src/fence-rules.test.ts, describe 'GAP G2: the extractor keeps its own fence closer' (4 tests: a plain-closer control, a closer indented one space, one indented three spaces, and the tab-terminated closer-shaped line)",
+    "the vector rows backtick-indent1, backtick-indent2, backtick-indent3, tilde-indent3, closer-indent1, closer-indent3 and closer-trailing-tab-then-closer, column extraction"
+   ]
   },
   {
    "id": "G3",
    "reader": "links",
    "severity": "owner decision",
-   "what": "Against the profile, on the same 25 cases, the link reader differs in 4: closer-trailing-tab-then-closer, closer-with-info, closer-longer-with-info, closer-with-text. On the single-line span cases it differs in inside-double-span, double-span-with-inner-backtick-around-link.",
+   "what": "Against the profile, on the same 25 cases, the link reader differs in 4: closer-trailing-tab-then-closer, closer-with-info, closer-longer-with-info, closer-with-text. Of the 4 cases in which an inline span is in play it differs in 3 (backtick-indent4, two-backticks, blockquote), and on the single-line span rows in inside-double-span and double-span-with-inner-backtick-around-link.",
    "directions": {
-    "closerShapedLineWithInfoOrText": "closes the fence early (the profile: not a closer), so links after it are indexed",
-    "closerWithTrailingTab": "closes where the profile calls the source malformed",
-    "doubleBacktickSpan": "a link inside a span written with two backticks is indexed (the inline rule pairs single backticks and ignores run length)"
+    "closerShapedLineWithInfoOrText": "[Observed] closes the fence early (the profile: not a closer), so links after it are indexed (a mint); the real closer then opens a fence that runs to the end of the text, so every later link is hidden (see hidesLaterLinks).",
+    "closerWithTrailingTab": "[Observed] the counted case is closer-trailing-tab-then-closer, which the profile reads as well formed (its fence runs to the plain closer). The link reader closes at the tab line, indexes the links between it and the plain closer (a mint), and the plain closer then opens a fence to the end of the text that hides every later link (a hide); vector VHHVVH against the profile's VHHHHV. The one-closer case closer-trailing-tab is malformed under the profile and is excluded before any link is parsed: content-classification.ts:195 runs scanActiveContent on the transient text before link parsing [Inferred from the call order].",
+    "spanThatRunsAcrossLines": "[Observed] stripFences strips inline code one line at a time (project-shape-manifest.ts:190), so a link on a line inside a code span that opens on an earlier line and closes on a later one is indexed, though the profile hides it and the renderer shows it as code. This, not run length, is the cause in 3 of the 4 span cases (backtick-indent4, two-backticks and blockquote: only two-backticks uses two backticks, the other two use runs of three), and a run-length-correct per-line rule would still index it. The vector corpus cannot show the CommonMark-relevant form: its probe line is an ATX heading, which ends a CommonMark paragraph, so there it is never inside a span; the GAP G3 rows carry a link on a line of its own, in three shapes.",
+    "singleLineDoubleBacktickSpan": "[Observed] a link inside a span written with two backticks on one line is indexed (inside-double-span, double-span-with-inner-backtick-around-link): the per-line inline rule pairs single backticks and ignores run length. This is the cause of those two rows only.",
+    "hidesLaterLinks": "[Observed] an early close followed by a plain closer hides every later link: an index of three backticks, x, three backticks and js, y, three backticks, a blank line and [a](a.md) is read by the profile as well formed with the link outside every fence, and indexLinkTargets returns []. [Observed by reading] A pillar's named-file sources are minted only from the index's links (project-shape-manifest.ts:449-468: for each target of indexLinkTargets, namedPaths.add), so a hidden link removes the file it names from the manifest population. [Unknown] whether anything downstream then reports the file as missing."
    },
    "unknown": "whether any live index has one of these shapes (no repository body was read)",
-   "decision": "the plan sentence says links outside fenced blocks and code spans; no clause fixes the rule. Not changed here."
+   "decision": "the plan sentence says links outside fenced blocks and code spans; no clause fixes the rule. The owner should know that the departures add links (a mint) and remove links (a hide) and that a hidden link removes a named file from the manifest population. Not changed here; a fix flips the GAP G3 rows.",
+   "pinnedBy": [
+    "apps/three-surface-poc/src/fence-rules.test.ts, describe 'GAP G3: the link reader keeps its own fence and span rules' (6 tests: three spans that run across lines, a single-line span as the control, a closer-shaped line with an info string, and a tab-terminated closer-shaped line)",
+    "the vector rows closer-trailing-tab-then-closer, closer-with-info, closer-longer-with-info, closer-with-text and the inline-span rows, column links"
+   ]
   },
   {
    "id": "G4",
    "reader": "consent",
    "severity": "note",
    "what": "The dot in the opener pattern does not match CR, and the function does not normalize line terminators: on a CRLF act record it recognizes no fence in 28 of 33 cases that LF reads as fenced or unfenced differently.",
-   "reading": "[Inferred] A field quoted inside a fence of a CRLF act record is then counted as prose, so the field count differs from the fence-blind count and the reader refuses; fail-closed by the existing repeat check. Not tested on a CRLF act record.",
-   "decision": "none needed unless act records may be CRLF."
+   "reading": "[Observed] On CRLF, outsideFences recognizes no fence (its opener ends in (.*)$, . does not match CR, and the function does not normalize), so in one() the prose count equals the fence-blind count and a field wholly inside a fence passes it: with the rule all === 1 && prose === 1 applied to the function cut from the built module, a field only inside a fence is {all 1, prose 0, refused} on LF and {all 1, prose 1, accepted} on CRLF, and a field in prose and in a fence is refused on both ({2, 1} on LF, {2, 2} on CRLF, by the repeat check). [Observed] The whole record is nevertheless refused through the public reader (createPackageAdmissionReader), for a CRLF act record and for a CRLF instance bound by its own digest. [Inferred from the code] The refusals come from checks that compare whole lines against LF: for act records the title check (package-reader.ts:700, text.startsWith(`${form.title}\\n`)); for instances the table header and separator (:188-189) and the heading line (:153, line === heading); for the versioned sign-off the template equality. The fence guard does not fail closed on CRLF by itself: a change that made those checks CR-tolerant would open the field-inside-a-fence path. Pinned by package-reader.test.ts, describe \"fence reading of the act records\": the two CRLF refusals, a fence-shaped line indented four spaces, and a closed example fence.",
+   "decision": "none needed unless act records may be CRLF; if they may, the title, table and heading checks and the fence guard have to change together.",
+   "pinnedBy": [
+    "packages/polaris-generation-consent/src/package-reader.test.ts, describe 'fence reading of the act records' (4 tests, through createPackageAdmissionReader; outsideFences is not exported)"
+   ]
   }
  ],
  "probe": {
@@ -1077,12 +1180,34 @@
   "consentFunction": {
    "module": "packages/polaris-generation-consent/dist/package-reader.js",
    "cutSha256": "d43b89ad0ed3efae40304f469300c62b93ee02617c42f705a511d37bc9b9f47a"
+  },
+  "roundOneRepairRun": {
+   "output": "docs/evidence/syzygy-bpyt-6-3/repair1-probe-base-vs-head.json",
+   "outputSha256": "171683d8e34a86a696b5d642368e52605ce4ddf5630f643d678eccfbefc26cb1",
+   "casesCompared": 66,
+   "casesThatDiffer": 0,
+   "inlineCasesThatDiffer": [],
+   "consentFunctionTextDiffers": false
   }
  },
  "mutants": {
   "run": {
-   "head": "7e58cd1f",
-   "expectedProbeOutput": "/tmp/lc63pr/fence-head.json",
+   "head": "ba7fce369ebfbd605be4a8da76dbdb4351ab9f25",
+   "reviewedHead": "9d9c98a6f265393fcb46dae6e1484eea097aad20",
+   "node": "v24.6.0",
+   "buildCommand": "npm run build:poc",
+   "expectedProbeOutput": "docs/evidence/syzygy-bpyt-6-3/fence-probe-output.json",
+   "expectedProbeOutputSha256": "95ed7f664f202d723b151842acbb9906ed4978e20c1f70971a8bf07ac5c30902",
+   "commitNote": "each mutant commit is a scratch commit in a throwaway clone, discarded with it and reachable from no ref; re-run a row from old, new and head",
+   "oldFragmentOccursOnceAtHead": "each of the 26 old fragments occurs exactly once in its file at ba7fce36 (git show <head>:<file>, str.count, by script)",
+   "detectors": {
+    "test": "apps/three-surface-poc/src/fence-rules.test.ts whole file (57 tests); every failed test is stored with its first error line",
+    "newRows": "the rows added in this repair: the tests named GAP G2 and GAP G3 and the renderer tab pin (11 tests)",
+    "consentNew": "for a consent mutant, the describe \"fence reading of the act records\" of package-reader.test.ts (4 tests, through createPackageAdmissionReader)",
+    "probe": "npm run build:poc, fence-probe.mjs, compare-fence-probe.py against the tracked output; inlineCasesThatDiffer is recorded so a kill by an inline-span row alone is visible",
+    "existing": "the tests nearest the rule that were there before this change (for package-reader.test.ts, every test except the new describe)",
+    "prior": "the same test files as of the reviewed head 9d9c98a6 run against the mutant; a mutant they pass and a new test fails is one the repair newly kills"
+   },
    "mutants": [
     {
      "id": "PR1-profile-opener-indent4",
@@ -1090,7 +1215,7 @@
      "file": "packages/three-surface-poc-core/src/markdown-code-context.ts",
      "old": "const FENCE_OPENER = /^ {0,3}(",
      "new": "const FENCE_OPENER = /^ {0,4}(",
-     "commit": "71325c8103cb36fedc5969b25bb76687fe74472a",
+     "commit": "b9dcd74edd4643e46327074c9e62b2bfa6dde30d",
      "detectors": {
       "test": {
        "killed": true,
@@ -1098,9 +1223,10 @@
        "files": [
         "apps/three-surface-poc/src/fence-rules.test.ts"
        ],
+       "select": null,
        "summary": [
         "Test Files  1 failed (1)",
-        "Tests  2 failed | 44 passed (46)"
+        "Tests  2 failed | 55 passed (57)"
        ],
        "failed": [
         {
@@ -1114,10 +1240,25 @@
        ],
        "failedCount": 2
       },
+      "newRows": {
+       "killed": false,
+       "project": "@syzygy/three-surface-poc-app",
+       "files": [
+        "apps/three-surface-poc/src/fence-rules.test.ts"
+       ],
+       "select": "GAP G2|GAP G3|indented with a tab",
+       "summary": [
+        "Test Files  1 passed (1)",
+        "Tests  11 passed | 46 skipped (57)"
+       ],
+       "failed": [],
+       "failedCount": 0
+      },
       "probe": {
        "killed": true,
        "casesThatDiffer": 2,
        "casesCompared": 66,
+       "inlineCasesThatDiffer": [],
        "consentFunctionTextDiffers": false,
        "firstDifferingCases": [
         "backtick-indent4",
@@ -1130,6 +1271,7 @@
        "files": [
         "packages/three-surface-poc-core/src/markdown-code-context.test.ts"
        ],
+       "select": null,
        "summary": [
         "Test Files  1 failed (1)",
         "Tests  1 failed | 16 passed (17)"
@@ -1151,7 +1293,7 @@
      "file": "packages/three-surface-poc-core/src/markdown-code-context.ts",
      "old": "(`{3,}|~{3,}) *$/.exec(line)",
      "new": "(`{3,}|~{3,})\\s*$/.exec(line)",
-     "commit": "0d6e1ebb7741b939053f4ba80dd3e0817313a456",
+     "commit": "15051cfb11b6b531c8a7fe9844d6c4d917229e03",
      "detectors": {
       "test": {
        "killed": true,
@@ -1159,9 +1301,10 @@
        "files": [
         "apps/three-surface-poc/src/fence-rules.test.ts"
        ],
+       "select": null,
        "summary": [
         "Test Files  1 failed (1)",
-        "Tests  2 failed | 44 passed (46)"
+        "Tests  4 failed | 53 passed (57)"
        ],
        "failed": [
         {
@@ -1171,6 +1314,37 @@
         {
          "test": "Markdown fence recognizers: what each reader treats as inside a fence > 'closer-trailing-tab-then-closer'",
          "firstError": "\u2192 closer-trailing-tab-then-closer profile: expected 'MMMMMM' to be 'VHHHHV' // Object.is equality"
+        },
+        {
+         "test": "Markdown fence recognizers: what each reader treats as inside a fence > GAP G2: the extractor keeps its own fence closer > a closer-shaped l",
+         "firstError": "\u2192 expected 'malformed' to be 'masked' // Object.is equality"
+        },
+        {
+         "test": "Markdown fence recognizers: what each reader treats as inside a fence > GAP G3: the link reader keeps its own fence and span rules > a close",
+         "firstError": "\u2192 expected false to be true // Object.is equality"
+        }
+       ],
+       "failedCount": 4
+      },
+      "newRows": {
+       "killed": true,
+       "project": "@syzygy/three-surface-poc-app",
+       "files": [
+        "apps/three-surface-poc/src/fence-rules.test.ts"
+       ],
+       "select": "GAP G2|GAP G3|indented with a tab",
+       "summary": [
+        "Test Files  1 failed (1)",
+        "Tests  2 failed | 9 passed | 46 skipped (57)"
+       ],
+       "failed": [
+        {
+         "test": "Markdown fence recognizers: what each reader treats as inside a fence > GAP G2: the extractor keeps its own fence closer > a closer-shaped l",
+         "firstError": "\u2192 expected 'malformed' to be 'masked' // Object.is equality"
+        },
+        {
+         "test": "Markdown fence recognizers: what each reader treats as inside a fence > GAP G3: the link reader keeps its own fence and span rules > a close",
+         "firstError": "\u2192 expected false to be true // Object.is equality"
         }
        ],
        "failedCount": 2
@@ -1179,6 +1353,7 @@
        "killed": true,
        "casesThatDiffer": 2,
        "casesCompared": 66,
+       "inlineCasesThatDiffer": [],
        "consentFunctionTextDiffers": false,
        "firstDifferingCases": [
         "closer-trailing-tab",
@@ -1191,6 +1366,7 @@
        "files": [
         "packages/three-surface-poc-core/src/markdown-code-context.test.ts"
        ],
+       "select": null,
        "summary": [
         "Test Files  1 passed (1)",
         "Tests  17 passed (17)"
@@ -1199,7 +1375,7 @@
        "failedCount": 0
       }
      },
-     "verdict": "killed by test, probe"
+     "verdict": "killed by test, newRows, probe"
     },
     {
      "id": "PR3-profile-closer-strictly-longer",
@@ -1207,7 +1383,7 @@
      "file": "packages/three-surface-poc-core/src/markdown-code-context.ts",
      "old": "run.length >= length",
      "new": "run.length > length",
-     "commit": "2174bdaec016b9f75ac9d6289f6c6db9f02c96b7",
+     "commit": "1b11076917a991a7cb2e544cf1092a391578c971",
      "detectors": {
       "test": {
        "killed": true,
@@ -1215,9 +1391,10 @@
        "files": [
         "apps/three-surface-poc/src/fence-rules.test.ts"
        ],
+       "select": null,
        "summary": [
         "Test Files  1 failed (1)",
-        "Tests  23 failed | 23 passed (46)"
+        "Tests  29 failed | 28 passed (57)"
        ],
        "failed": [
         {
@@ -1243,14 +1420,146 @@
         {
          "test": "Markdown fence recognizers: what each reader treats as inside a fence > 'tilde-indent3'",
          "firstError": "\u2192 tilde-indent3 profile: expected 'MMMM' to be 'VHHV' // Object.is equality"
+        },
+        {
+         "test": "Markdown fence recognizers: what each reader treats as inside a fence > 'opener-four-closer-three'",
+         "firstError": "\u2192 opener-four-closer-three profile: expected 'MMMMMM' to be 'VHHHHV' // Object.is equality"
+        },
+        {
+         "test": "Markdown fence recognizers: what each reader treats as inside a fence > 'closer-indent1'",
+         "firstError": "\u2192 closer-indent1 profile: expected 'MMMMM' to be 'VHHVV' // Object.is equality"
+        },
+        {
+         "test": "Markdown fence recognizers: what each reader treats as inside a fence > 'closer-indent3'",
+         "firstError": "\u2192 closer-indent3 profile: expected 'MMMMM' to be 'VHHVV' // Object.is equality"
+        },
+        {
+         "test": "Markdown fence recognizers: what each reader treats as inside a fence > 'closer-indent4'",
+         "firstError": "\u2192 closer-indent4 profile: expected 'MMMMMM' to be 'VHHHHV' // Object.is equality"
+        },
+        {
+         "test": "Markdown fence recognizers: what each reader treats as inside a fence > 'closer-trailing-space'",
+         "firstError": "\u2192 closer-trailing-space profile: expected 'MMMM' to be 'VHHV' // Object.is equality"
+        },
+        {
+         "test": "Markdown fence recognizers: what each reader treats as inside a fence > 'closer-trailing-tab-then-closer'",
+         "firstError": "\u2192 closer-trailing-tab-then-closer profile: expected 'MMMMMM' to be 'VHHHHV' // Object.is equality"
+        },
+        {
+         "test": "Markdown fence recognizers: what each reader treats as inside a fence > 'closer-with-info'",
+         "firstError": "\u2192 closer-with-info profile: expected 'MMMMMM' to be 'VHHHHV' // Object.is equality"
+        },
+        {
+         "test": "Markdown fence recognizers: what each reader treats as inside a fence > 'closer-longer-with-info'",
+         "firstError": "\u2192 closer-longer-with-info profile: expected 'MMMMM' to be 'VHHHV' // Object.is equality"
+        },
+        {
+         "test": "Markdown fence recognizers: what each reader treats as inside a fence > 'closer-with-text'",
+         "firstError": "\u2192 closer-with-text profile: expected 'MMMMMM' to be 'VHHHHV' // Object.is equality"
+        },
+        {
+         "test": "Markdown fence recognizers: what each reader treats as inside a fence > 'closer-other-char'",
+         "firstError": "\u2192 closer-other-char profile: expected 'MMMMMM' to be 'VHHHHV' // Object.is equality"
+        },
+        {
+         "test": "Markdown fence recognizers: what each reader treats as inside a fence > 'tilde-fence-backtick-line'",
+         "firstError": "\u2192 tilde-fence-backtick-line profile: expected 'MMMMMM' to be 'VHHHHV' // Object.is equality"
+        },
+        {
+         "test": "Markdown fence recognizers: what each reader treats as inside a fence > 'tilde-opener-four-closer-three'",
+         "firstError": "\u2192 tilde-opener-four-closer-three profile: expected 'MMMMMM' to be 'VHHHHV' // Object.is equality"
+        },
+        {
+         "test": "Markdown fence recognizers: what each reader treats as inside a fence > 'info-string'",
+         "firstError": "\u2192 info-string profile: expected 'MMMM' to be 'VHHV' // Object.is equality"
+        },
+        {
+         "test": "Markdown fence recognizers: what each reader treats as inside a fence > 'info-string-space'",
+         "firstError": "\u2192 info-string-space profile: expected 'MMMM' to be 'VHHV' // Object.is equality"
+        },
+        {
+         "test": "Markdown fence recognizers: what each reader treats as inside a fence > 'tilde-info-with-backtick'",
+         "firstError": "\u2192 tilde-info-with-backtick profile: expected 'MMMM' to be 'VHHV' // Object.is equality"
+        },
+        {
+         "test": "Markdown fence recognizers: what each reader treats as inside a fence > 'empty-fence'",
+         "firstError": "\u2192 empty-fence profile: expected 'MMM' to be 'VHV' // Object.is equality"
+        },
+        {
+         "test": "Markdown fence recognizers: what each reader treats as inside a fence > 'two-fences'",
+         "firstError": "\u2192 two-fences profile: expected 'MMMMMMM' to be 'VHHVHHV' // Object.is equality"
+        },
+        {
+         "test": "Markdown fence recognizers: what each reader treats as inside a fence > GAP G2: the extractor keeps its own fence closer > a plain closer: t",
+         "firstError": "\u2192 expected 'malformed' to be 'masked' // Object.is equality"
+        },
+        {
+         "test": "Markdown fence recognizers: what each reader treats as inside a fence > GAP G2: the extractor keeps its own fence closer > a closer indented",
+         "firstError": "\u2192 expected 'malformed' to be 'masked' // Object.is equality"
+        },
+        {
+         "test": "Markdown fence recognizers: what each reader treats as inside a fence > GAP G2: the extractor keeps its own fence closer > a closer indented",
+         "firstError": "\u2192 expected 'malformed' to be 'masked' // Object.is equality"
+        },
+        {
+         "test": "Markdown fence recognizers: what each reader treats as inside a fence > GAP G2: the extractor keeps its own fence closer > a closer-shaped l",
+         "firstError": "\u2192 expected 'malformed' to be 'masked' // Object.is equality"
+        },
+        {
+         "test": "Markdown fence recognizers: what each reader treats as inside a fence > GAP G3: the link reader keeps its own fence and span rules > a close",
+         "firstError": "\u2192 expected false to be true // Object.is equality"
+        },
+        {
+         "test": "Markdown fence recognizers: what each reader treats as inside a fence > GAP G3: the link reader keeps its own fence and span rules > a close",
+         "firstError": "\u2192 expected false to be true // Object.is equality"
         }
        ],
-       "failedCount": 23
+       "failedCount": 29
+      },
+      "newRows": {
+       "killed": true,
+       "project": "@syzygy/three-surface-poc-app",
+       "files": [
+        "apps/three-surface-poc/src/fence-rules.test.ts"
+       ],
+       "select": "GAP G2|GAP G3|indented with a tab",
+       "summary": [
+        "Test Files  1 failed (1)",
+        "Tests  6 failed | 5 passed | 46 skipped (57)"
+       ],
+       "failed": [
+        {
+         "test": "Markdown fence recognizers: what each reader treats as inside a fence > GAP G2: the extractor keeps its own fence closer > a plain closer: t",
+         "firstError": "\u2192 expected 'malformed' to be 'masked' // Object.is equality"
+        },
+        {
+         "test": "Markdown fence recognizers: what each reader treats as inside a fence > GAP G2: the extractor keeps its own fence closer > a closer indented",
+         "firstError": "\u2192 expected 'malformed' to be 'masked' // Object.is equality"
+        },
+        {
+         "test": "Markdown fence recognizers: what each reader treats as inside a fence > GAP G2: the extractor keeps its own fence closer > a closer indented",
+         "firstError": "\u2192 expected 'malformed' to be 'masked' // Object.is equality"
+        },
+        {
+         "test": "Markdown fence recognizers: what each reader treats as inside a fence > GAP G2: the extractor keeps its own fence closer > a closer-shaped l",
+         "firstError": "\u2192 expected 'malformed' to be 'masked' // Object.is equality"
+        },
+        {
+         "test": "Markdown fence recognizers: what each reader treats as inside a fence > GAP G3: the link reader keeps its own fence and span rules > a close",
+         "firstError": "\u2192 expected false to be true // Object.is equality"
+        },
+        {
+         "test": "Markdown fence recognizers: what each reader treats as inside a fence > GAP G3: the link reader keeps its own fence and span rules > a close",
+         "firstError": "\u2192 expected false to be true // Object.is equality"
+        }
+       ],
+       "failedCount": 6
       },
       "probe": {
        "killed": true,
        "casesThatDiffer": 23,
        "casesCompared": 66,
+       "inlineCasesThatDiffer": [],
        "consentFunctionTextDiffers": false,
        "firstDifferingCases": [
         "backtick-col0",
@@ -1266,6 +1575,7 @@
        "files": [
         "packages/three-surface-poc-core/src/markdown-code-context.test.ts"
        ],
+       "select": null,
        "summary": [
         "Test Files  1 failed (1)",
         "Tests  6 failed | 11 passed (17)"
@@ -1299,7 +1609,7 @@
        "failedCount": 6
       }
      },
-     "verdict": "killed by test, probe, existing"
+     "verdict": "killed by test, newRows, probe, existing"
     },
     {
      "id": "PR4-profile-backtick-info-allowed",
@@ -1307,7 +1617,7 @@
      "file": "packages/three-surface-poc-core/src/markdown-code-context.ts",
      "old": "if (run[0] === '`' && info.includes('`')) {",
      "new": "if (false) {",
-     "commit": "3dbd47e2e3a4777d8452041bf32057ac04178a9e",
+     "commit": "954be79bb7b57eeae9fa2aeeae16bc01532e058d",
      "detectors": {
       "test": {
        "killed": true,
@@ -1315,9 +1625,10 @@
        "files": [
         "apps/three-surface-poc/src/fence-rules.test.ts"
        ],
+       "select": null,
        "summary": [
         "Test Files  1 failed (1)",
-        "Tests  2 failed | 44 passed (46)"
+        "Tests  2 failed | 55 passed (57)"
        ],
        "failed": [
         {
@@ -1331,10 +1642,25 @@
        ],
        "failedCount": 2
       },
+      "newRows": {
+       "killed": false,
+       "project": "@syzygy/three-surface-poc-app",
+       "files": [
+        "apps/three-surface-poc/src/fence-rules.test.ts"
+       ],
+       "select": "GAP G2|GAP G3|indented with a tab",
+       "summary": [
+        "Test Files  1 passed (1)",
+        "Tests  11 passed | 46 skipped (57)"
+       ],
+       "failed": [],
+       "failedCount": 0
+      },
       "probe": {
        "killed": true,
        "casesThatDiffer": 1,
        "casesCompared": 66,
+       "inlineCasesThatDiffer": [],
        "consentFunctionTextDiffers": false,
        "firstDifferingCases": [
         "backtick-info-with-backtick"
@@ -1346,6 +1672,7 @@
        "files": [
         "packages/three-surface-poc-core/src/markdown-code-context.test.ts"
        ],
+       "select": null,
        "summary": [
         "Test Files  1 failed (1)",
         "Tests  1 failed | 16 passed (17)"
@@ -1367,7 +1694,7 @@
      "file": "packages/three-surface-poc-core/src/markdown-code-context.ts",
      "old": "const FENCE_OPENER = /^ {0,3}(`{3,}|~{3,})(.*)$/;",
      "new": "const FENCE_OPENER = /^ {0,3}(`{3,}|~{3,})([^\\n]*)$/;",
-     "commit": "a27cd5bf5c3e35d87d2a577055f23d1bb6d60368",
+     "commit": "e9b0c9aabefd4ca98e4c0a5c8749d1138692130b",
      "detectors": {
       "test": {
        "killed": true,
@@ -1375,9 +1702,10 @@
        "files": [
         "apps/three-surface-poc/src/fence-rules.test.ts"
        ],
+       "select": null,
        "summary": [
         "Test Files  1 failed (1)",
-        "Tests  21 failed | 25 passed (46)"
+        "Tests  29 failed | 28 passed (57)"
        ],
        "failed": [
         {
@@ -1403,14 +1731,121 @@
         {
          "test": "Markdown fence recognizers: what each reader treats as inside a fence > 'tilde-indent3'",
          "firstError": "\u2192 tilde-indent3 profileCrlf: expected 'MMMM' to be 'VVVV' // Object.is equality"
+        },
+        {
+         "test": "Markdown fence recognizers: what each reader treats as inside a fence > 'opener-four-closer-three'",
+         "firstError": "\u2192 opener-four-closer-three profileCrlf: expected 'MMMMMM' to be 'VHHHHV' // Object.is equality"
+        },
+        {
+         "test": "Markdown fence recognizers: what each reader treats as inside a fence > 'closer-longer'",
+         "firstError": "\u2192 closer-longer wholeCrlf: expected 'malformed:unclosed-fence' to be 'malformed:unclosed-inline-span' // Object.is equality"
+        },
+        {
+         "test": "Markdown fence recognizers: what each reader treats as inside a fence > 'closer-indent1'",
+         "firstError": "\u2192 closer-indent1 profileCrlf: expected 'MMMMM' to be 'VHHVV' // Object.is equality"
+        },
+        {
+         "test": "Markdown fence recognizers: what each reader treats as inside a fence > 'closer-indent3'",
+         "firstError": "\u2192 closer-indent3 profileCrlf: expected 'MMMMM' to be 'VHHVV' // Object.is equality"
+        },
+        {
+         "test": "Markdown fence recognizers: what each reader treats as inside a fence > 'closer-indent4'",
+         "firstError": "\u2192 closer-indent4 wholeCrlf: expected 'malformed:unclosed-fence' to be 'malformed:unclosed-inline-span' // Object.is equality"
+        },
+        {
+         "test": "Markdown fence recognizers: what each reader treats as inside a fence > 'closer-trailing-space'",
+         "firstError": "\u2192 closer-trailing-space profileCrlf: expected 'MMMM' to be 'VHHV' // Object.is equality"
+        },
+        {
+         "test": "Markdown fence recognizers: what each reader treats as inside a fence > 'closer-trailing-tab'",
+         "firstError": "\u2192 closer-trailing-tab profileCrlf: expected 'MMMM' to be 'VHHV' // Object.is equality"
+        },
+        {
+         "test": "Markdown fence recognizers: what each reader treats as inside a fence > 'closer-trailing-tab-then-closer'",
+         "firstError": "\u2192 closer-trailing-tab-then-closer wholeCrlf: expected 'malformed:unclosed-fence' to be 'malformed:unclosed-inline-span' // Object.is equality"
+        },
+        {
+         "test": "Markdown fence recognizers: what each reader treats as inside a fence > 'closer-with-info'",
+         "firstError": "\u2192 closer-with-info wholeCrlf: expected 'malformed:unclosed-fence' to be 'malformed:unclosed-inline-span' // Object.is equality"
+        },
+        {
+         "test": "Markdown fence recognizers: what each reader treats as inside a fence > 'closer-longer-with-info'",
+         "firstError": "\u2192 closer-longer-with-info profileCrlf: expected 'MMMMM' to be 'VHHHV' // Object.is equality"
+        },
+        {
+         "test": "Markdown fence recognizers: what each reader treats as inside a fence > 'closer-with-text'",
+         "firstError": "\u2192 closer-with-text wholeCrlf: expected 'malformed:unclosed-fence' to be 'malformed:unclosed-inline-span' // Object.is equality"
+        },
+        {
+         "test": "Markdown fence recognizers: what each reader treats as inside a fence > 'closer-other-char'",
+         "firstError": "\u2192 closer-other-char profileCrlf: expected 'MMMMMM' to be 'VHHHHV' // Object.is equality"
+        },
+        {
+         "test": "Markdown fence recognizers: what each reader treats as inside a fence > 'tilde-fence-backtick-line'",
+         "firstError": "\u2192 tilde-fence-backtick-line wholeCrlf: expected 'malformed:unclosed-fence' to be 'malformed:unclosed-inline-span' // Object.is equality"
+        },
+        {
+         "test": "Markdown fence recognizers: what each reader treats as inside a fence > 'tilde-opener-four-closer-three'",
+         "firstError": "\u2192 tilde-opener-four-closer-three profileCrlf: expected 'MMMMMM' to be 'VVVVVV' // Object.is equality"
+        },
+        {
+         "test": "Markdown fence recognizers: what each reader treats as inside a fence > 'info-string'",
+         "firstError": "\u2192 info-string profileCrlf: expected 'MMMM' to be 'VHHV' // Object.is equality"
+        },
+        {
+         "test": "Markdown fence recognizers: what each reader treats as inside a fence > 'info-string-space'",
+         "firstError": "\u2192 info-string-space profileCrlf: expected 'MMMM' to be 'VHHV' // Object.is equality"
+        },
+        {
+         "test": "Markdown fence recognizers: what each reader treats as inside a fence > 'backtick-info-with-backtick'",
+         "firstError": "\u2192 backtick-info-with-backtick profileCrlf: expected 'MMMM' to be 'VHHV' // Object.is equality"
+        },
+        {
+         "test": "Markdown fence recognizers: what each reader treats as inside a fence > 'tilde-info-with-backtick'",
+         "firstError": "\u2192 tilde-info-with-backtick wholeCrlf: expected 'malformed:unclosed-fence' to be 'malformed:unclosed-inline-span' // Object.is equality"
+        },
+        {
+         "test": "Markdown fence recognizers: what each reader treats as inside a fence > 'unclosed'",
+         "firstError": "\u2192 unclosed wholeCrlf: expected 'malformed:unclosed-fence' to be 'malformed:unclosed-inline-span' // Object.is equality"
+        },
+        {
+         "test": "Markdown fence recognizers: what each reader treats as inside a fence > 'empty-fence'",
+         "firstError": "\u2192 empty-fence profileCrlf: expected 'MMM' to be 'VHV' // Object.is equality"
+        },
+        {
+         "test": "Markdown fence recognizers: what each reader treats as inside a fence > 'list-item'",
+         "firstError": "\u2192 list-item profileCrlf: expected 'MMMM' to be 'VHHV' // Object.is equality"
+        },
+        {
+         "test": "Markdown fence recognizers: what each reader treats as inside a fence > 'two-fences'",
+         "firstError": "\u2192 two-fences profileCrlf: expected 'MMMMMMM' to be 'VHHVVVV' // Object.is equality"
+        },
+        {
+         "test": "Markdown fence recognizers: what each reader treats as inside a fence > GAP: a CRLF source is admitted where the same LF source is excluded ",
+         "firstError": "\u2192 expected [ { \u2026(4) } ] to deeply equal []"
         }
        ],
-       "failedCount": 21
+       "failedCount": 29
+      },
+      "newRows": {
+       "killed": false,
+       "project": "@syzygy/three-surface-poc-app",
+       "files": [
+        "apps/three-surface-poc/src/fence-rules.test.ts"
+       ],
+       "select": "GAP G2|GAP G3|indented with a tab",
+       "summary": [
+        "Test Files  1 passed (1)",
+        "Tests  11 passed | 46 skipped (57)"
+       ],
+       "failed": [],
+       "failedCount": 0
       },
       "probe": {
        "killed": true,
        "casesThatDiffer": 28,
        "casesCompared": 66,
+       "inlineCasesThatDiffer": [],
        "consentFunctionTextDiffers": false,
        "firstDifferingCases": [
         "backtick-col0@crlf",
@@ -1426,6 +1861,7 @@
        "files": [
         "packages/three-surface-poc-core/src/markdown-code-context.test.ts"
        ],
+       "select": null,
        "summary": [
         "Test Files  1 passed (1)",
         "Tests  17 passed (17)"
@@ -1442,7 +1878,7 @@
      "file": "packages/three-surface-poc-core/src/project-shape-manifest.ts",
      "old": "/^\\s{0,3}(`{3,}|~{3,})/.exec(line)",
      "new": "/^ {0,3}(`{3,}|~{3,})/.exec(line)",
-     "commit": "f98b23a569e5f90e15f57ff2ad4f92cb8d1fd626",
+     "commit": "6860f3d9987a4ce42c2c224eeb13fea7512bb6c9",
      "detectors": {
       "test": {
        "killed": true,
@@ -1450,9 +1886,10 @@
        "files": [
         "apps/three-surface-poc/src/fence-rules.test.ts"
        ],
+       "select": null,
        "summary": [
         "Test Files  1 failed (1)",
-        "Tests  2 failed | 44 passed (46)"
+        "Tests  2 failed | 55 passed (57)"
        ],
        "failed": [
         {
@@ -1466,10 +1903,25 @@
        ],
        "failedCount": 2
       },
+      "newRows": {
+       "killed": false,
+       "project": "@syzygy/three-surface-poc-app",
+       "files": [
+        "apps/three-surface-poc/src/fence-rules.test.ts"
+       ],
+       "select": "GAP G2|GAP G3|indented with a tab",
+       "summary": [
+        "Test Files  1 passed (1)",
+        "Tests  11 passed | 46 skipped (57)"
+       ],
+       "failed": [],
+       "failedCount": 0
+      },
       "probe": {
        "killed": true,
        "casesThatDiffer": 2,
        "casesCompared": 66,
+       "inlineCasesThatDiffer": [],
        "consentFunctionTextDiffers": false,
        "firstDifferingCases": [
         "backtick-tab",
@@ -1482,6 +1934,7 @@
        "files": [
         "packages/three-surface-poc-core/src/project-shape-manifest.test.ts"
        ],
+       "select": null,
        "summary": [
         "Test Files  1 passed (1)",
         "Tests  24 passed (24)"
@@ -1498,7 +1951,7 @@
      "file": "packages/three-surface-poc-core/src/project-shape-manifest.ts",
      "old": " && (opener[1] ?? '').length >= fence.length",
      "new": "",
-     "commit": "24e196f49077eb70ef1358461b27def7dc9776b0",
+     "commit": "1e584bd1e39287c715b1b4e28c1f786a0f9f1c2f",
      "detectors": {
       "test": {
        "killed": true,
@@ -1506,9 +1959,10 @@
        "files": [
         "apps/three-surface-poc/src/fence-rules.test.ts"
        ],
+       "select": null,
        "summary": [
         "Test Files  1 failed (1)",
-        "Tests  3 failed | 43 passed (46)"
+        "Tests  3 failed | 54 passed (57)"
        ],
        "failed": [
         {
@@ -1526,10 +1980,25 @@
        ],
        "failedCount": 3
       },
+      "newRows": {
+       "killed": false,
+       "project": "@syzygy/three-surface-poc-app",
+       "files": [
+        "apps/three-surface-poc/src/fence-rules.test.ts"
+       ],
+       "select": "GAP G2|GAP G3|indented with a tab",
+       "summary": [
+        "Test Files  1 passed (1)",
+        "Tests  11 passed | 46 skipped (57)"
+       ],
+       "failed": [],
+       "failedCount": 0
+      },
       "probe": {
        "killed": true,
        "casesThatDiffer": 4,
        "casesCompared": 66,
+       "inlineCasesThatDiffer": [],
        "consentFunctionTextDiffers": false,
        "firstDifferingCases": [
         "opener-four-closer-three",
@@ -1544,6 +2013,7 @@
        "files": [
         "packages/three-surface-poc-core/src/project-shape-manifest.test.ts"
        ],
+       "select": null,
        "summary": [
         "Test Files  1 passed (1)",
         "Tests  24 passed (24)"
@@ -1560,7 +2030,7 @@
      "file": "packages/three-surface-poc-core/src/project-shape-manifest.ts",
      "old": ".startsWith(fence[0] ?? '')",
      "new": ".startsWith('`')",
-     "commit": "84c356da8b8e9aa68c24ce9f5df52c561781c60f",
+     "commit": "22b066ef17302fdcec791d243dc8ec8367aa189a",
      "detectors": {
       "test": {
        "killed": true,
@@ -1568,9 +2038,10 @@
        "files": [
         "apps/three-surface-poc/src/fence-rules.test.ts"
        ],
+       "select": null,
        "summary": [
         "Test Files  1 failed (1)",
-        "Tests  7 failed | 39 passed (46)"
+        "Tests  7 failed | 50 passed (57)"
        ],
        "failed": [
         {
@@ -1596,14 +2067,33 @@
         {
          "test": "Markdown fence recognizers: what each reader treats as inside a fence > 'two-fences'",
          "firstError": "\u2192 two-fences links: expected 'VHHVHHH' to be 'VHHVHHV' // Object.is equality"
+        },
+        {
+         "test": "Markdown fence recognizers: what each reader treats as inside a fence > links, extraction and the renderer read CRLF exactly as they read LF",
+         "firstError": "\u2192 tilde-col0 links: expected 'VHHH' to be 'VHHV' // Object.is equality"
         }
        ],
        "failedCount": 7
+      },
+      "newRows": {
+       "killed": false,
+       "project": "@syzygy/three-surface-poc-app",
+       "files": [
+        "apps/three-surface-poc/src/fence-rules.test.ts"
+       ],
+       "select": "GAP G2|GAP G3|indented with a tab",
+       "summary": [
+        "Test Files  1 passed (1)",
+        "Tests  11 passed | 46 skipped (57)"
+       ],
+       "failed": [],
+       "failedCount": 0
       },
       "probe": {
        "killed": true,
        "casesThatDiffer": 12,
        "casesCompared": 66,
+       "inlineCasesThatDiffer": [],
        "consentFunctionTextDiffers": false,
        "firstDifferingCases": [
         "tilde-col0",
@@ -1619,6 +2109,7 @@
        "files": [
         "packages/three-surface-poc-core/src/project-shape-manifest.test.ts"
        ],
+       "select": null,
        "summary": [
         "Test Files  1 passed (1)",
         "Tests  24 passed (24)"
@@ -1635,7 +2126,7 @@
      "file": "packages/three-surface-poc-core/src/project-shape-manifest.ts",
      "old": "line.replace(/`[^`]*`/g, '')",
      "new": "line.replace(/`[^`]+`/g, '')",
-     "commit": "5538a186ccee5e482f9086e4df16f566d0b87862",
+     "commit": "74c13ac08383ab0aa584ed9d7136e62ee864d128",
      "detectors": {
       "test": {
        "killed": true,
@@ -1643,9 +2134,10 @@
        "files": [
         "apps/three-surface-poc/src/fence-rules.test.ts"
        ],
+       "select": null,
        "summary": [
         "Test Files  1 failed (1)",
-        "Tests  2 failed | 44 passed (46)"
+        "Tests  2 failed | 55 passed (57)"
        ],
        "failed": [
         {
@@ -1659,10 +2151,28 @@
        ],
        "failedCount": 2
       },
+      "newRows": {
+       "killed": false,
+       "project": "@syzygy/three-surface-poc-app",
+       "files": [
+        "apps/three-surface-poc/src/fence-rules.test.ts"
+       ],
+       "select": "GAP G2|GAP G3|indented with a tab",
+       "summary": [
+        "Test Files  1 passed (1)",
+        "Tests  11 passed | 46 skipped (57)"
+       ],
+       "failed": [],
+       "failedCount": 0
+      },
       "probe": {
        "killed": true,
        "casesThatDiffer": 0,
        "casesCompared": 66,
+       "inlineCasesThatDiffer": [
+        "inside-double-span",
+        "double-span-with-inner-backtick-around-link"
+       ],
        "consentFunctionTextDiffers": false,
        "firstDifferingCases": []
       },
@@ -1672,6 +2182,7 @@
        "files": [
         "packages/three-surface-poc-core/src/project-shape-manifest.test.ts"
        ],
+       "select": null,
        "summary": [
         "Test Files  1 passed (1)",
         "Tests  24 passed (24)"
@@ -1688,7 +2199,7 @@
      "file": "packages/three-surface-poc-core/src/project-shape-extraction.ts",
      "old": "const FENCE = /^(`{3,}|~{3,})/;",
      "new": "const FENCE = /^ {0,3}(`{3,}|~{3,})/;",
-     "commit": "7cb3567eb81aea6076145c90110da4cd8aca2bd5",
+     "commit": "aa02c61054508d3bae9a45d978e2e3b85b5b5fc7",
      "detectors": {
       "test": {
        "killed": true,
@@ -1696,9 +2207,10 @@
        "files": [
         "apps/three-surface-poc/src/fence-rules.test.ts"
        ],
+       "select": null,
        "summary": [
         "Test Files  1 failed (1)",
-        "Tests  6 failed | 40 passed (46)"
+        "Tests  6 failed | 51 passed (57)"
        ],
        "failed": [
         {
@@ -1728,10 +2240,25 @@
        ],
        "failedCount": 6
       },
+      "newRows": {
+       "killed": false,
+       "project": "@syzygy/three-surface-poc-app",
+       "files": [
+        "apps/three-surface-poc/src/fence-rules.test.ts"
+       ],
+       "select": "GAP G2|GAP G3|indented with a tab",
+       "summary": [
+        "Test Files  1 passed (1)",
+        "Tests  11 passed | 46 skipped (57)"
+       ],
+       "failed": [],
+       "failedCount": 0
+      },
       "probe": {
        "killed": true,
        "casesThatDiffer": 10,
        "casesCompared": 66,
+       "inlineCasesThatDiffer": [],
        "consentFunctionTextDiffers": false,
        "firstDifferingCases": [
         "backtick-indent1",
@@ -1747,6 +2274,7 @@
        "files": [
         "packages/three-surface-poc-core/src/project-shape-extraction.test.ts"
        ],
+       "select": null,
        "summary": [
         "Test Files  1 passed (1)",
         "Tests  87 passed (87)"
@@ -1763,7 +2291,7 @@
      "file": "packages/three-surface-poc-core/src/project-shape-extraction.ts",
      "old": "line.trimEnd() === fence",
      "new": "line.trim() === fence",
-     "commit": "4a4bae3dc0ee1fdbcc7a5e6b36d0ab201e6a92f8",
+     "commit": "bfc807816d64b990a21b11f1ba1cb07b9794be21",
      "detectors": {
       "test": {
        "killed": true,
@@ -1771,9 +2299,10 @@
        "files": [
         "apps/three-surface-poc/src/fence-rules.test.ts"
        ],
+       "select": null,
        "summary": [
         "Test Files  1 failed (1)",
-        "Tests  4 failed | 42 passed (46)"
+        "Tests  6 failed | 51 passed (57)"
        ],
        "failed": [
         {
@@ -1791,14 +2320,46 @@
         {
          "test": "Markdown fence recognizers: what each reader treats as inside a fence > links, extraction and the renderer read CRLF exactly as they read LF",
          "firstError": "\u2192 closer-indent1 extraction: expected 'VHHVV' to be 'VHHHH' // Object.is equality"
+        },
+        {
+         "test": "Markdown fence recognizers: what each reader treats as inside a fence > GAP G2: the extractor keeps its own fence closer > a closer indented",
+         "firstError": "\u2192 expected { kind: 'extracted', \u2026(2) } to deeply equal { kind: 'extracted', \u2026(2) }"
+        },
+        {
+         "test": "Markdown fence recognizers: what each reader treats as inside a fence > GAP G2: the extractor keeps its own fence closer > a closer indented",
+         "firstError": "\u2192 expected { kind: 'extracted', \u2026(2) } to deeply equal { kind: 'extracted', \u2026(2) }"
         }
        ],
-       "failedCount": 4
+       "failedCount": 6
+      },
+      "newRows": {
+       "killed": true,
+       "project": "@syzygy/three-surface-poc-app",
+       "files": [
+        "apps/three-surface-poc/src/fence-rules.test.ts"
+       ],
+       "select": "GAP G2|GAP G3|indented with a tab",
+       "summary": [
+        "Test Files  1 failed (1)",
+        "Tests  2 failed | 9 passed | 46 skipped (57)"
+       ],
+       "failed": [
+        {
+         "test": "Markdown fence recognizers: what each reader treats as inside a fence > GAP G2: the extractor keeps its own fence closer > a closer indented",
+         "firstError": "\u2192 expected { kind: 'extracted', \u2026(2) } to deeply equal { kind: 'extracted', \u2026(2) }"
+        },
+        {
+         "test": "Markdown fence recognizers: what each reader treats as inside a fence > GAP G2: the extractor keeps its own fence closer > a closer indented",
+         "firstError": "\u2192 expected { kind: 'extracted', \u2026(2) } to deeply equal { kind: 'extracted', \u2026(2) }"
+        }
+       ],
+       "failedCount": 2
       },
       "probe": {
        "killed": true,
        "casesThatDiffer": 6,
        "casesCompared": 66,
+       "inlineCasesThatDiffer": [],
        "consentFunctionTextDiffers": false,
        "firstDifferingCases": [
         "closer-indent1",
@@ -1814,6 +2375,7 @@
        "files": [
         "packages/three-surface-poc-core/src/project-shape-extraction.test.ts"
        ],
+       "select": null,
        "summary": [
         "Test Files  1 passed (1)",
         "Tests  87 passed (87)"
@@ -1822,7 +2384,7 @@
        "failedCount": 0
       }
      },
-     "verdict": "killed by test, probe"
+     "verdict": "killed by test, newRows, probe"
     },
     {
      "id": "E3-extraction-closer-any-text",
@@ -1830,7 +2392,7 @@
      "file": "packages/three-surface-poc-core/src/project-shape-extraction.ts",
      "old": "(line.startsWith(fence) && line.trim().replace(/[`~]/g, '') === '')",
      "new": "line.startsWith(fence)",
-     "commit": "2725f513b7118fe88277272c55dc3bc611bea3a4",
+     "commit": "344342b55effc1a444eef692144bc3f633046e6f",
      "detectors": {
       "test": {
        "killed": true,
@@ -1838,9 +2400,10 @@
        "files": [
         "apps/three-surface-poc/src/fence-rules.test.ts"
        ],
+       "select": null,
        "summary": [
         "Test Files  1 failed (1)",
-        "Tests  4 failed | 42 passed (46)"
+        "Tests  4 failed | 53 passed (57)"
        ],
        "failed": [
         {
@@ -1862,10 +2425,25 @@
        ],
        "failedCount": 4
       },
+      "newRows": {
+       "killed": false,
+       "project": "@syzygy/three-surface-poc-app",
+       "files": [
+        "apps/three-surface-poc/src/fence-rules.test.ts"
+       ],
+       "select": "GAP G2|GAP G3|indented with a tab",
+       "summary": [
+        "Test Files  1 passed (1)",
+        "Tests  11 passed | 46 skipped (57)"
+       ],
+       "failed": [],
+       "failedCount": 0
+      },
       "probe": {
        "killed": true,
        "casesThatDiffer": 6,
        "casesCompared": 66,
+       "inlineCasesThatDiffer": [],
        "consentFunctionTextDiffers": false,
        "firstDifferingCases": [
         "closer-with-info",
@@ -1881,6 +2459,7 @@
        "files": [
         "packages/three-surface-poc-core/src/project-shape-extraction.test.ts"
        ],
+       "select": null,
        "summary": [
         "Test Files  1 passed (1)",
         "Tests  87 passed (87)"
@@ -1897,7 +2476,7 @@
      "file": "apps/three-surface-poc/src/polaris-markdown.ts",
      "old": "const fenceStart = /^ {0,3}(",
      "new": "const fenceStart = /^ {0,4}(",
-     "commit": "55efd6f20b43bf73955b52f8666b5c4a13615254",
+     "commit": "b69e08a506a0914280a69b1921e64e4d41041fa3",
      "detectors": {
       "test": {
        "killed": true,
@@ -1905,9 +2484,10 @@
        "files": [
         "apps/three-surface-poc/src/fence-rules.test.ts"
        ],
+       "select": null,
        "summary": [
         "Test Files  1 failed (1)",
-        "Tests  1 failed | 45 passed (46)"
+        "Tests  1 failed | 56 passed (57)"
        ],
        "failed": [
         {
@@ -1917,10 +2497,25 @@
        ],
        "failedCount": 1
       },
+      "newRows": {
+       "killed": false,
+       "project": "@syzygy/three-surface-poc-app",
+       "files": [
+        "apps/three-surface-poc/src/fence-rules.test.ts"
+       ],
+       "select": "GAP G2|GAP G3|indented with a tab",
+       "summary": [
+        "Test Files  1 passed (1)",
+        "Tests  11 passed | 46 skipped (57)"
+       ],
+       "failed": [],
+       "failedCount": 0
+      },
       "probe": {
        "killed": false,
        "casesThatDiffer": 0,
        "casesCompared": 66,
+       "inlineCasesThatDiffer": [],
        "consentFunctionTextDiffers": false,
        "firstDifferingCases": []
       },
@@ -1930,6 +2525,7 @@
        "files": [
         "apps/three-surface-poc/src/polaris-markdown.test.ts"
        ],
+       "select": null,
        "summary": [
         "Test Files  1 passed (1)",
         "Tests  20 passed (20)"
@@ -1946,7 +2542,7 @@
      "file": "apps/three-surface-poc/src/polaris-markdown.ts",
      "old": "${marker[0]}{${marker.length},}",
      "new": "${marker[0]}{${marker.length + 1},}",
-     "commit": "e043b9ac87192e93572fa5ac6964bbb57870d687",
+     "commit": "c04715ead0511efc78407a84a90aa02eff482b79",
      "detectors": {
       "test": {
        "killed": true,
@@ -1954,9 +2550,10 @@
        "files": [
         "apps/three-surface-poc/src/fence-rules.test.ts"
        ],
+       "select": null,
        "summary": [
         "Test Files  1 failed (1)",
-        "Tests  28 failed | 18 passed (46)"
+        "Tests  28 failed | 29 passed (57)"
        ],
        "failed": [
         {
@@ -1982,14 +2579,117 @@
         {
          "test": "Markdown fence recognizers: what each reader treats as inside a fence > 'tilde-indent3'",
          "firstError": "\u2192 tilde-indent3 renderer: expected 'VHHH' to be 'VHHV' // Object.is equality"
+        },
+        {
+         "test": "Markdown fence recognizers: what each reader treats as inside a fence > 'opener-four-closer-three'",
+         "firstError": "\u2192 opener-four-closer-three renderer: expected 'VHHHHH' to be 'VHHHHV' // Object.is equality"
+        },
+        {
+         "test": "Markdown fence recognizers: what each reader treats as inside a fence > 'closer-indent1'",
+         "firstError": "\u2192 closer-indent1 renderer: expected 'VHHHH' to be 'VHHVV' // Object.is equality"
+        },
+        {
+         "test": "Markdown fence recognizers: what each reader treats as inside a fence > 'closer-indent3'",
+         "firstError": "\u2192 closer-indent3 renderer: expected 'VHHHH' to be 'VHHVV' // Object.is equality"
+        },
+        {
+         "test": "Markdown fence recognizers: what each reader treats as inside a fence > 'closer-indent4'",
+         "firstError": "\u2192 closer-indent4 renderer: expected 'VHHHHH' to be 'VHHHHV' // Object.is equality"
+        },
+        {
+         "test": "Markdown fence recognizers: what each reader treats as inside a fence > 'closer-trailing-space'",
+         "firstError": "\u2192 closer-trailing-space renderer: expected 'VHHH' to be 'VHHV' // Object.is equality"
+        },
+        {
+         "test": "Markdown fence recognizers: what each reader treats as inside a fence > 'closer-trailing-tab'",
+         "firstError": "\u2192 closer-trailing-tab renderer: expected 'VHHH' to be 'VHHV' // Object.is equality"
+        },
+        {
+         "test": "Markdown fence recognizers: what each reader treats as inside a fence > 'closer-trailing-tab-then-closer'",
+         "firstError": "\u2192 closer-trailing-tab-then-closer renderer: expected 'VHHHHH' to be 'VHHVVH' // Object.is equality"
+        },
+        {
+         "test": "Markdown fence recognizers: what each reader treats as inside a fence > 'closer-with-info'",
+         "firstError": "\u2192 closer-with-info renderer: expected 'VHHHHH' to be 'VHHHHV' // Object.is equality"
+        },
+        {
+         "test": "Markdown fence recognizers: what each reader treats as inside a fence > 'closer-longer-with-info'",
+         "firstError": "\u2192 closer-longer-with-info renderer: expected 'VHHHH' to be 'VHHHV' // Object.is equality"
+        },
+        {
+         "test": "Markdown fence recognizers: what each reader treats as inside a fence > 'closer-with-text'",
+         "firstError": "\u2192 closer-with-text renderer: expected 'VHHHHH' to be 'VHHHHV' // Object.is equality"
+        },
+        {
+         "test": "Markdown fence recognizers: what each reader treats as inside a fence > 'closer-other-char'",
+         "firstError": "\u2192 closer-other-char renderer: expected 'VHHHHH' to be 'VHHHHV' // Object.is equality"
+        },
+        {
+         "test": "Markdown fence recognizers: what each reader treats as inside a fence > 'tilde-fence-backtick-line'",
+         "firstError": "\u2192 tilde-fence-backtick-line renderer: expected 'VHHHHH' to be 'VHHHHV' // Object.is equality"
+        },
+        {
+         "test": "Markdown fence recognizers: what each reader treats as inside a fence > 'tilde-opener-four-closer-three'",
+         "firstError": "\u2192 tilde-opener-four-closer-three renderer: expected 'VHHHHH' to be 'VHHHHV' // Object.is equality"
+        },
+        {
+         "test": "Markdown fence recognizers: what each reader treats as inside a fence > 'info-string'",
+         "firstError": "\u2192 info-string renderer: expected 'VHHH' to be 'VHHV' // Object.is equality"
+        },
+        {
+         "test": "Markdown fence recognizers: what each reader treats as inside a fence > 'info-string-space'",
+         "firstError": "\u2192 info-string-space renderer: expected 'VHHH' to be 'VHHV' // Object.is equality"
+        },
+        {
+         "test": "Markdown fence recognizers: what each reader treats as inside a fence > 'backtick-info-with-backtick'",
+         "firstError": "\u2192 backtick-info-with-backtick renderer: expected 'VHHH' to be 'VHHV' // Object.is equality"
+        },
+        {
+         "test": "Markdown fence recognizers: what each reader treats as inside a fence > 'tilde-info-with-backtick'",
+         "firstError": "\u2192 tilde-info-with-backtick renderer: expected 'VHHH' to be 'VHHV' // Object.is equality"
+        },
+        {
+         "test": "Markdown fence recognizers: what each reader treats as inside a fence > 'empty-fence'",
+         "firstError": "\u2192 empty-fence renderer: expected 'VHH' to be 'VHV' // Object.is equality"
+        },
+        {
+         "test": "Markdown fence recognizers: what each reader treats as inside a fence > 'two-fences'",
+         "firstError": "\u2192 two-fences renderer: expected 'VHHHHHH' to be 'VHHVHHV' // Object.is equality"
+        },
+        {
+         "test": "Markdown fence recognizers: what each reader treats as inside a fence > links, extraction and the renderer read CRLF exactly as they read LF",
+         "firstError": "\u2192 backtick-col0 renderer: expected 'VHHH' to be 'VHHV' // Object.is equality"
+        },
+        {
+         "test": "Markdown fence recognizers: what each reader treats as inside a fence > renderer: a fence line indented three spaces ends a paragraph, one i",
+         "firstError": "\u2192 expected '<p>text</p>\\n<pre><code>x\\n   ```</co\u2026' to be '<p>text</p>\\n<pre><code>x</code></pre>' // Object.is equality"
+        },
+        {
+         "test": "Markdown fence recognizers: what each reader treats as inside a fence > renderer: a closed fence does not hide the heading after it from the",
+         "firstError": "\u2192 expected '<h4>A</h4>\\n<pre><code>x\\n```\\n\\n# B<\u2026' to be '<h4>A</h4>\\n<pre><code>x</code></pre>\u2026' // Object.is equality"
         }
        ],
        "failedCount": 28
+      },
+      "newRows": {
+       "killed": false,
+       "project": "@syzygy/three-surface-poc-app",
+       "files": [
+        "apps/three-surface-poc/src/fence-rules.test.ts"
+       ],
+       "select": "GAP G2|GAP G3|indented with a tab",
+       "summary": [
+        "Test Files  1 passed (1)",
+        "Tests  11 passed | 46 skipped (57)"
+       ],
+       "failed": [],
+       "failedCount": 0
       },
       "probe": {
        "killed": true,
        "casesThatDiffer": 50,
        "casesCompared": 66,
+       "inlineCasesThatDiffer": [],
        "consentFunctionTextDiffers": false,
        "firstDifferingCases": [
         "backtick-col0",
@@ -2005,6 +2705,7 @@
        "files": [
         "apps/three-surface-poc/src/polaris-markdown.test.ts"
        ],
+       "select": null,
        "summary": [
         "Test Files  1 failed (1)",
         "Tests  5 failed | 15 passed (20)"
@@ -2042,7 +2743,7 @@
      "file": "apps/three-surface-poc/src/polaris-markdown.ts",
      "old": "${fence.marker}{${fence.length},}",
      "new": "${fence.marker}{${fence.length + 1},}",
-     "commit": "20ca4d270b96c3b0a6de12a2c314e6919fef262c",
+     "commit": "317bed4b52213284d2ffecc1a83d1aea475033b6",
      "detectors": {
       "test": {
        "killed": true,
@@ -2050,9 +2751,10 @@
        "files": [
         "apps/three-surface-poc/src/fence-rules.test.ts"
        ],
+       "select": null,
        "summary": [
         "Test Files  1 failed (1)",
-        "Tests  1 failed | 45 passed (46)"
+        "Tests  1 failed | 56 passed (57)"
        ],
        "failed": [
         {
@@ -2062,10 +2764,25 @@
        ],
        "failedCount": 1
       },
+      "newRows": {
+       "killed": false,
+       "project": "@syzygy/three-surface-poc-app",
+       "files": [
+        "apps/three-surface-poc/src/fence-rules.test.ts"
+       ],
+       "select": "GAP G2|GAP G3|indented with a tab",
+       "summary": [
+        "Test Files  1 passed (1)",
+        "Tests  11 passed | 46 skipped (57)"
+       ],
+       "failed": [],
+       "failedCount": 0
+      },
       "probe": {
        "killed": false,
        "casesThatDiffer": 0,
        "casesCompared": 66,
+       "inlineCasesThatDiffer": [],
        "consentFunctionTextDiffers": false,
        "firstDifferingCases": []
       },
@@ -2075,6 +2792,7 @@
        "files": [
         "apps/three-surface-poc/src/polaris-markdown.test.ts"
        ],
+       "select": null,
        "summary": [
         "Test Files  1 passed (1)",
         "Tests  20 passed (20)"
@@ -2091,7 +2809,7 @@
      "file": "packages/polaris-generation-consent/src/package-reader.ts",
      "old": "const m = /^ {0,3}(`{3,}|~{3,})(.*)$/.exec(line);",
      "new": "const m = /^ {0,4}(`{3,}|~{3,})(.*)$/.exec(line);",
-     "commit": "5eed8e007151d57a244ed2a6166199a5f34f4018",
+     "commit": "5e55352c0d8fa7cacdc68a6defbb269c5527dba9",
      "detectors": {
       "test": {
        "killed": false,
@@ -2099,17 +2817,38 @@
        "files": [
         "apps/three-surface-poc/src/fence-rules.test.ts"
        ],
+       "select": null,
        "summary": [
         "Test Files  1 passed (1)",
-        "Tests  46 passed (46)"
+        "Tests  57 passed (57)"
        ],
        "failed": [],
        "failedCount": 0
+      },
+      "consentNew": {
+       "killed": true,
+       "project": "@syzygy/polaris-generation-consent",
+       "files": [
+        "packages/polaris-generation-consent/src/package-reader.test.ts"
+       ],
+       "select": "fence reading of the act records",
+       "summary": [
+        "Test Files  1 failed (1)",
+        "Tests  1 failed | 3 passed | 299 skipped (303)"
+       ],
+       "failed": [
+        {
+         "test": "fence reading of the act records > a line indented four spaces is not a fence opener: the record stays in force",
+         "firstError": "\u2192 invalid-records"
+        }
+       ],
+       "failedCount": 1
       },
       "probe": {
        "killed": true,
        "casesThatDiffer": 3,
        "casesCompared": 66,
+       "inlineCasesThatDiffer": [],
        "consentFunctionTextDiffers": true,
        "firstDifferingCases": [
         "backtick-indent4",
@@ -2123,6 +2862,21 @@
        "files": [
         "packages/polaris-generation-consent/src/package-reader.test.ts"
        ],
+       "select": "^(?!fence reading of the act records)",
+       "summary": [
+        "Test Files  1 passed (1)",
+        "Tests  299 passed | 4 skipped (303)"
+       ],
+       "failed": [],
+       "failedCount": 0
+      },
+      "prior": {
+       "killed": false,
+       "project": "@syzygy/polaris-generation-consent",
+       "files": [
+        "packages/polaris-generation-consent/src/package-reader-r1.test.ts"
+       ],
+       "select": null,
        "summary": [
         "Test Files  1 passed (1)",
         "Tests  299 passed (299)"
@@ -2131,7 +2885,8 @@
        "failedCount": 0
       }
      },
-     "verdict": "killed by probe"
+     "verdict": "killed by consentNew, probe",
+     "repairEffect": "the tests at the reviewed head pass this mutant and consentNew kill it"
     },
     {
      "id": "K2-consent-closer-strictly-longer",
@@ -2139,7 +2894,7 @@
      "file": "packages/polaris-generation-consent/src/package-reader.ts",
      "old": "m[1]!.length >= open.length",
      "new": "m[1]!.length > open.length",
-     "commit": "539b40071d8eac743f88e4478a8be6aaf701c3a5",
+     "commit": "d1a4680c4bedd4bf0e6a5a32054947c834efa588",
      "detectors": {
       "test": {
        "killed": false,
@@ -2147,17 +2902,38 @@
        "files": [
         "apps/three-surface-poc/src/fence-rules.test.ts"
        ],
+       "select": null,
        "summary": [
         "Test Files  1 passed (1)",
-        "Tests  46 passed (46)"
+        "Tests  57 passed (57)"
        ],
        "failed": [],
        "failedCount": 0
+      },
+      "consentNew": {
+       "killed": true,
+       "project": "@syzygy/polaris-generation-consent",
+       "files": [
+        "packages/polaris-generation-consent/src/package-reader.test.ts"
+       ],
+       "select": "fence reading of the act records",
+       "summary": [
+        "Test Files  1 failed (1)",
+        "Tests  1 failed | 3 passed | 299 skipped (303)"
+       ],
+       "failed": [
+        {
+         "test": "fence reading of the act records > a closed example fence after the title is blanked, and its closer of the opener's length closes it: the r",
+         "firstError": "\u2192 invalid-records"
+        }
+       ],
+       "failedCount": 1
       },
       "probe": {
        "killed": true,
        "casesThatDiffer": 24,
        "casesCompared": 66,
+       "inlineCasesThatDiffer": [],
        "consentFunctionTextDiffers": true,
        "firstDifferingCases": [
         "backtick-col0",
@@ -2173,6 +2949,21 @@
        "files": [
         "packages/polaris-generation-consent/src/package-reader.test.ts"
        ],
+       "select": "^(?!fence reading of the act records)",
+       "summary": [
+        "Test Files  1 passed (1)",
+        "Tests  299 passed | 4 skipped (303)"
+       ],
+       "failed": [],
+       "failedCount": 0
+      },
+      "prior": {
+       "killed": false,
+       "project": "@syzygy/polaris-generation-consent",
+       "files": [
+        "packages/polaris-generation-consent/src/package-reader-r1.test.ts"
+       ],
+       "select": null,
        "summary": [
         "Test Files  1 passed (1)",
         "Tests  299 passed (299)"
@@ -2181,7 +2972,8 @@
        "failedCount": 0
       }
      },
-     "verdict": "killed by probe"
+     "verdict": "killed by consentNew, probe",
+     "repairEffect": "the tests at the reviewed head pass this mutant and consentNew kill it"
     },
     {
      "id": "K3-consent-closer-any-text",
@@ -2189,7 +2981,7 @@
      "file": "packages/polaris-generation-consent/src/package-reader.ts",
      "old": "&& m[2]!.trim() === '') open = null;",
      "new": ") open = null;",
-     "commit": "7060c2cdca5994488437ddefb185ad0bc3f2273f",
+     "commit": "f637498adceb31f28d35ff2355990aa537aed126",
      "detectors": {
       "test": {
        "killed": false,
@@ -2197,9 +2989,24 @@
        "files": [
         "apps/three-surface-poc/src/fence-rules.test.ts"
        ],
+       "select": null,
        "summary": [
         "Test Files  1 passed (1)",
-        "Tests  46 passed (46)"
+        "Tests  57 passed (57)"
+       ],
+       "failed": [],
+       "failedCount": 0
+      },
+      "consentNew": {
+       "killed": false,
+       "project": "@syzygy/polaris-generation-consent",
+       "files": [
+        "packages/polaris-generation-consent/src/package-reader.test.ts"
+       ],
+       "select": "fence reading of the act records",
+       "summary": [
+        "Test Files  1 passed (1)",
+        "Tests  4 passed | 299 skipped (303)"
        ],
        "failed": [],
        "failedCount": 0
@@ -2208,6 +3015,7 @@
        "killed": true,
        "casesThatDiffer": 3,
        "casesCompared": 66,
+       "inlineCasesThatDiffer": [],
        "consentFunctionTextDiffers": true,
        "firstDifferingCases": [
         "closer-with-info",
@@ -2221,9 +3029,10 @@
        "files": [
         "packages/polaris-generation-consent/src/package-reader.test.ts"
        ],
+       "select": "^(?!fence reading of the act records)",
        "summary": [
         "Test Files  1 failed (1)",
-        "Tests  1 failed | 298 passed (299)"
+        "Tests  1 failed | 298 passed | 4 skipped (303)"
        ],
        "failed": [
         {
@@ -2242,7 +3051,7 @@
      "file": "packages/polaris-generation-consent/src/package-reader.ts",
      "old": "!(m[1]![0] === '`' && m[2]!.includes('`'))",
      "new": "true",
-     "commit": "df14e0d496af37e387ef447d03964fb956f6f055",
+     "commit": "aa226cf5565691a668ae206ab4afa7841c06e5b4",
      "detectors": {
       "test": {
        "killed": false,
@@ -2250,9 +3059,24 @@
        "files": [
         "apps/three-surface-poc/src/fence-rules.test.ts"
        ],
+       "select": null,
        "summary": [
         "Test Files  1 passed (1)",
-        "Tests  46 passed (46)"
+        "Tests  57 passed (57)"
+       ],
+       "failed": [],
+       "failedCount": 0
+      },
+      "consentNew": {
+       "killed": false,
+       "project": "@syzygy/polaris-generation-consent",
+       "files": [
+        "packages/polaris-generation-consent/src/package-reader.test.ts"
+       ],
+       "select": "fence reading of the act records",
+       "summary": [
+        "Test Files  1 passed (1)",
+        "Tests  4 passed | 299 skipped (303)"
        ],
        "failed": [],
        "failedCount": 0
@@ -2261,6 +3085,7 @@
        "killed": true,
        "casesThatDiffer": 1,
        "casesCompared": 66,
+       "inlineCasesThatDiffer": [],
        "consentFunctionTextDiffers": true,
        "firstDifferingCases": [
         "backtick-info-with-backtick"
@@ -2272,9 +3097,10 @@
        "files": [
         "packages/polaris-generation-consent/src/package-reader.test.ts"
        ],
+       "select": "^(?!fence reading of the act records)",
        "summary": [
         "Test Files  1 failed (1)",
-        "Tests  1 failed | 298 passed (299)"
+        "Tests  1 failed | 298 passed | 4 skipped (303)"
        ],
        "failed": [
         {
@@ -2286,6 +3112,808 @@
       }
      },
      "verdict": "killed by probe, existing"
+    },
+    {
+     "id": "RV7-renderer-tab-indented-fence-ends-paragraph",
+     "kind": "rule",
+     "file": "apps/three-surface-poc/src/polaris-markdown.ts",
+     "old": "const fenceStart = /^ {0,3}(`{3,}|~{3,})(.*)$/;",
+     "new": "const fenceStart = /^[ \\t]{0,3}(`{3,}|~{3,})(.*)$/;",
+     "commit": "c9522dc78c413f24909bc22c89e178aba3292757",
+     "detectors": {
+      "test": {
+       "killed": true,
+       "project": "@syzygy/three-surface-poc-app",
+       "files": [
+        "apps/three-surface-poc/src/fence-rules.test.ts"
+       ],
+       "select": null,
+       "summary": [
+        "Test Files  1 failed (1)",
+        "Tests  1 failed | 56 passed (57)"
+       ],
+       "failed": [
+        {
+         "test": "Markdown fence recognizers: what each reader treats as inside a fence > renderer: a fence line indented with a tab does not end a paragraph",
+         "firstError": "\u2192 expected '<p>text</p>\\n<pre><code>```</code></p\u2026' to be '<p>text\\n\\t```\\nx</p>' // Object.is equality"
+        }
+       ],
+       "failedCount": 1
+      },
+      "newRows": {
+       "killed": true,
+       "project": "@syzygy/three-surface-poc-app",
+       "files": [
+        "apps/three-surface-poc/src/fence-rules.test.ts"
+       ],
+       "select": "GAP G2|GAP G3|indented with a tab",
+       "summary": [
+        "Test Files  1 failed (1)",
+        "Tests  1 failed | 10 passed | 46 skipped (57)"
+       ],
+       "failed": [
+        {
+         "test": "Markdown fence recognizers: what each reader treats as inside a fence > renderer: a fence line indented with a tab does not end a paragraph",
+         "firstError": "\u2192 expected '<p>text</p>\\n<pre><code>```</code></p\u2026' to be '<p>text\\n\\t```\\nx</p>' // Object.is equality"
+        }
+       ],
+       "failedCount": 1
+      },
+      "probe": {
+       "killed": false,
+       "casesThatDiffer": 0,
+       "casesCompared": 66,
+       "inlineCasesThatDiffer": [],
+       "consentFunctionTextDiffers": false,
+       "firstDifferingCases": []
+      },
+      "existing": {
+       "killed": false,
+       "project": "@syzygy/three-surface-poc-app",
+       "files": [
+        "apps/three-surface-poc/src/polaris-markdown.test.ts"
+       ],
+       "select": null,
+       "summary": [
+        "Test Files  1 passed (1)",
+        "Tests  20 passed (20)"
+       ],
+       "failed": [],
+       "failedCount": 0
+      },
+      "prior": {
+       "killed": false,
+       "project": "@syzygy/three-surface-poc-app",
+       "files": [
+        "apps/three-surface-poc/src/fence-rules-r1.test.ts"
+       ],
+       "select": null,
+       "summary": [
+        "Test Files  1 passed (1)",
+        "Tests  46 passed (46)"
+       ],
+       "failed": [],
+       "failedCount": 0
+      }
+     },
+     "verdict": "killed by test, newRows",
+     "repairEffect": "the tests at the reviewed head pass this mutant and test, newRows kill it"
+    },
+    {
+     "id": "RV11-profile-fence-opener-drops-open-span",
+     "kind": "rule",
+     "file": "packages/three-surface-poc-core/src/markdown-code-context.ts",
+     "old": "if (opener !== null) {\n      if (span !== undefined) return { kind: 'malformed', reason: 'unclosed-inline-span', line: span.line };",
+     "new": "if (opener !== null) {\n      if (span !== undefined) span = undefined;",
+     "commit": "76c233afbbf6a3b967ec860c6715afa94e1bff49",
+     "detectors": {
+      "test": {
+       "killed": true,
+       "project": "@syzygy/three-surface-poc-app",
+       "files": [
+        "apps/three-surface-poc/src/fence-rules.test.ts"
+       ],
+       "select": null,
+       "summary": [
+        "Test Files  1 failed (1)",
+        "Tests  1 failed | 56 passed (57)"
+       ],
+       "failed": [
+        {
+         "test": "Markdown fence recognizers: what each reader treats as inside a fence > 'list-item'",
+         "firstError": "\u2192 list-item whole: expected 'malformed:unclosed-fence' to be 'malformed:unclosed-inline-span' // Object.is equality"
+        }
+       ],
+       "failedCount": 1
+      },
+      "newRows": {
+       "killed": false,
+       "project": "@syzygy/three-surface-poc-app",
+       "files": [
+        "apps/three-surface-poc/src/fence-rules.test.ts"
+       ],
+       "select": "GAP G2|GAP G3|indented with a tab",
+       "summary": [
+        "Test Files  1 passed (1)",
+        "Tests  11 passed | 46 skipped (57)"
+       ],
+       "failed": [],
+       "failedCount": 0
+      },
+      "probe": {
+       "killed": true,
+       "casesThatDiffer": 1,
+       "casesCompared": 66,
+       "inlineCasesThatDiffer": [],
+       "consentFunctionTextDiffers": false,
+       "firstDifferingCases": [
+        "list-item"
+       ]
+      },
+      "existing": {
+       "killed": true,
+       "project": "@syzygy/three-surface-poc-core",
+       "files": [
+        "packages/three-surface-poc-core/src/markdown-code-context.test.ts"
+       ],
+       "select": null,
+       "summary": [
+        "Test Files  1 failed (1)",
+        "Tests  1 failed | 16 passed (17)"
+       ],
+       "failed": [
+        {
+         "test": "closed-pwb-code-context-v1 \u2014 inline code spans > a fence opener line is recognized before an open inline span, which then never closes",
+         "firstError": "\u2192 expected a malformed context"
+        }
+       ],
+       "failedCount": 1
+      },
+      "prior": {
+       "killed": false,
+       "project": "@syzygy/three-surface-poc-app",
+       "files": [
+        "apps/three-surface-poc/src/fence-rules-r1.test.ts"
+       ],
+       "select": null,
+       "summary": [
+        "Test Files  1 passed (1)",
+        "Tests  46 passed (46)"
+       ],
+       "failed": [],
+       "failedCount": 0
+      }
+     },
+     "verdict": "killed by test, probe, existing",
+     "repairEffect": "the tests at the reviewed head pass this mutant and test kill it"
+    },
+    {
+     "id": "E4-extraction-closer-is-the-profile-closer",
+     "kind": "closes-a-gap",
+     "file": "packages/three-surface-poc-core/src/project-shape-extraction.ts",
+     "old": "if (line.trimEnd() === fence || (line.startsWith(fence) && line.trim().replace(/[`~]/g, '') === '')) fence = undefined;",
+     "new": "if (/^ {0,3}(`{3,}|~{3,}) *$/.test(line) && line.trim()[0] === fence[0] && line.trim().length >= fence.length) fence = undefined;",
+     "commit": "a518cb58a2eaa3093a2d4a01f110dbc58208abee",
+     "detectors": {
+      "test": {
+       "killed": true,
+       "project": "@syzygy/three-surface-poc-app",
+       "files": [
+        "apps/three-surface-poc/src/fence-rules.test.ts"
+       ],
+       "select": null,
+       "summary": [
+        "Test Files  1 failed (1)",
+        "Tests  8 failed | 49 passed (57)"
+       ],
+       "failed": [
+        {
+         "test": "Markdown fence recognizers: what each reader treats as inside a fence > 'closer-indent1'",
+         "firstError": "\u2192 closer-indent1 extraction: expected 'VHHVV' to be 'VHHHH' // Object.is equality"
+        },
+        {
+         "test": "Markdown fence recognizers: what each reader treats as inside a fence > 'closer-indent3'",
+         "firstError": "\u2192 closer-indent3 extraction: expected 'VHHVV' to be 'VHHHH' // Object.is equality"
+        },
+        {
+         "test": "Markdown fence recognizers: what each reader treats as inside a fence > 'closer-trailing-tab'",
+         "firstError": "\u2192 closer-trailing-tab extraction: expected 'VHHH' to be 'VHHV' // Object.is equality"
+        },
+        {
+         "test": "Markdown fence recognizers: what each reader treats as inside a fence > 'closer-trailing-tab-then-closer'",
+         "firstError": "\u2192 closer-trailing-tab-then-closer extraction: expected 'VHHHHV' to be 'VHHVVH' // Object.is equality"
+        },
+        {
+         "test": "Markdown fence recognizers: what each reader treats as inside a fence > links, extraction and the renderer read CRLF exactly as they read LF",
+         "firstError": "\u2192 closer-indent1 extraction: expected 'VHHVV' to be 'VHHHH' // Object.is equality"
+        },
+        {
+         "test": "Markdown fence recognizers: what each reader treats as inside a fence > GAP G2: the extractor keeps its own fence closer > a closer indented",
+         "firstError": "\u2192 expected { kind: 'extracted', \u2026(2) } to deeply equal { kind: 'extracted', \u2026(2) }"
+        },
+        {
+         "test": "Markdown fence recognizers: what each reader treats as inside a fence > GAP G2: the extractor keeps its own fence closer > a closer indented",
+         "firstError": "\u2192 expected { kind: 'extracted', \u2026(2) } to deeply equal { kind: 'extracted', \u2026(2) }"
+        },
+        {
+         "test": "Markdown fence recognizers: what each reader treats as inside a fence > GAP G2: the extractor keeps its own fence closer > a closer-shaped l",
+         "firstError": "\u2192 expected { kind: 'extracted', \u2026(2) } to deeply equal { kind: 'extracted', \u2026(2) }"
+        }
+       ],
+       "failedCount": 8
+      },
+      "newRows": {
+       "killed": true,
+       "project": "@syzygy/three-surface-poc-app",
+       "files": [
+        "apps/three-surface-poc/src/fence-rules.test.ts"
+       ],
+       "select": "GAP G2|GAP G3|indented with a tab",
+       "summary": [
+        "Test Files  1 failed (1)",
+        "Tests  3 failed | 8 passed | 46 skipped (57)"
+       ],
+       "failed": [
+        {
+         "test": "Markdown fence recognizers: what each reader treats as inside a fence > GAP G2: the extractor keeps its own fence closer > a closer indented",
+         "firstError": "\u2192 expected { kind: 'extracted', \u2026(2) } to deeply equal { kind: 'extracted', \u2026(2) }"
+        },
+        {
+         "test": "Markdown fence recognizers: what each reader treats as inside a fence > GAP G2: the extractor keeps its own fence closer > a closer indented",
+         "firstError": "\u2192 expected { kind: 'extracted', \u2026(2) } to deeply equal { kind: 'extracted', \u2026(2) }"
+        },
+        {
+         "test": "Markdown fence recognizers: what each reader treats as inside a fence > GAP G2: the extractor keeps its own fence closer > a closer-shaped l",
+         "firstError": "\u2192 expected { kind: 'extracted', \u2026(2) } to deeply equal { kind: 'extracted', \u2026(2) }"
+        }
+       ],
+       "failedCount": 3
+      },
+      "probe": {
+       "killed": true,
+       "casesThatDiffer": 8,
+       "casesCompared": 66,
+       "inlineCasesThatDiffer": [],
+       "consentFunctionTextDiffers": false,
+       "firstDifferingCases": [
+        "closer-indent1",
+        "closer-indent1@crlf",
+        "closer-indent3",
+        "closer-indent3@crlf",
+        "closer-trailing-tab"
+       ]
+      },
+      "existing": {
+       "killed": false,
+       "project": "@syzygy/three-surface-poc-core",
+       "files": [
+        "packages/three-surface-poc-core/src/project-shape-extraction.test.ts"
+       ],
+       "select": null,
+       "summary": [
+        "Test Files  1 passed (1)",
+        "Tests  87 passed (87)"
+       ],
+       "failed": [],
+       "failedCount": 0
+      },
+      "prior": {
+       "killed": true,
+       "project": "@syzygy/three-surface-poc-app",
+       "files": [
+        "apps/three-surface-poc/src/fence-rules-r1.test.ts"
+       ],
+       "select": null,
+       "summary": [
+        "Test Files  1 failed (1)",
+        "Tests  5 failed | 41 passed (46)"
+       ],
+       "failed": [
+        {
+         "test": "Markdown fence recognizers: what each reader treats as inside a fence > 'closer-indent1'",
+         "firstError": "\u2192 closer-indent1 extraction: expected 'VHHVV' to be 'VHHHH' // Object.is equality"
+        },
+        {
+         "test": "Markdown fence recognizers: what each reader treats as inside a fence > 'closer-indent3'",
+         "firstError": "\u2192 closer-indent3 extraction: expected 'VHHVV' to be 'VHHHH' // Object.is equality"
+        },
+        {
+         "test": "Markdown fence recognizers: what each reader treats as inside a fence > 'closer-trailing-tab'",
+         "firstError": "\u2192 closer-trailing-tab extraction: expected 'VHHH' to be 'VHHV' // Object.is equality"
+        },
+        {
+         "test": "Markdown fence recognizers: what each reader treats as inside a fence > 'closer-trailing-tab-then-closer'",
+         "firstError": "\u2192 closer-trailing-tab-then-closer extraction: expected 'VHHHHV' to be 'VHHVVH' // Object.is equality"
+        },
+        {
+         "test": "Markdown fence recognizers: what each reader treats as inside a fence > links, extraction and the renderer read CRLF exactly as they read LF",
+         "firstError": "\u2192 closer-indent1 extraction: expected 'VHHVV' to be 'VHHHH' // Object.is equality"
+        }
+       ],
+       "failedCount": 5
+      }
+     },
+     "verdict": "killed by test, newRows, probe, prior",
+     "repairEffect": "killed by the tests at the reviewed head too"
+    },
+    {
+     "id": "L5-links-closer-is-the-profile-closer",
+     "kind": "closes-a-gap",
+     "file": "packages/three-surface-poc-core/src/project-shape-manifest.ts",
+     "old": ".length >= fence.length) {",
+     "new": ".length >= fence.length && /^ {0,3}(`{3,}|~{3,}) *$/.test(line)) {",
+     "commit": "01f1d9416d22e7aba1bd7067475b41945e00f47e",
+     "detectors": {
+      "test": {
+       "killed": true,
+       "project": "@syzygy/three-surface-poc-app",
+       "files": [
+        "apps/three-surface-poc/src/fence-rules.test.ts"
+       ],
+       "select": null,
+       "summary": [
+        "Test Files  1 failed (1)",
+        "Tests  9 failed | 48 passed (57)"
+       ],
+       "failed": [
+        {
+         "test": "Markdown fence recognizers: what each reader treats as inside a fence > 'backtick-tab'",
+         "firstError": "\u2192 backtick-tab links: expected 'VHHH' to be 'VHHV' // Object.is equality"
+        },
+        {
+         "test": "Markdown fence recognizers: what each reader treats as inside a fence > 'closer-trailing-tab'",
+         "firstError": "\u2192 closer-trailing-tab links: expected 'VHHH' to be 'VHHV' // Object.is equality"
+        },
+        {
+         "test": "Markdown fence recognizers: what each reader treats as inside a fence > 'closer-trailing-tab-then-closer'",
+         "firstError": "\u2192 closer-trailing-tab-then-closer links: expected 'VHHHHV' to be 'VHHVVH' // Object.is equality"
+        },
+        {
+         "test": "Markdown fence recognizers: what each reader treats as inside a fence > 'closer-with-info'",
+         "firstError": "\u2192 closer-with-info links: expected 'VHHHHV' to be 'VHHVVH' // Object.is equality"
+        },
+        {
+         "test": "Markdown fence recognizers: what each reader treats as inside a fence > 'closer-longer-with-info'",
+         "firstError": "\u2192 closer-longer-with-info links: expected 'VHHHV' to be 'VHVVH' // Object.is equality"
+        },
+        {
+         "test": "Markdown fence recognizers: what each reader treats as inside a fence > 'closer-with-text'",
+         "firstError": "\u2192 closer-with-text links: expected 'VHHHHV' to be 'VHHVVH' // Object.is equality"
+        },
+        {
+         "test": "Markdown fence recognizers: what each reader treats as inside a fence > links, extraction and the renderer read CRLF exactly as they read LF",
+         "firstError": "\u2192 backtick-col0 links: expected 'VHHH' to be 'VHHV' // Object.is equality"
+        },
+        {
+         "test": "Markdown fence recognizers: what each reader treats as inside a fence > GAP G3: the link reader keeps its own fence and span rules > a close",
+         "firstError": "\u2192 expected [ 'a.md' ] to deeply equal []"
+        },
+        {
+         "test": "Markdown fence recognizers: what each reader treats as inside a fence > GAP G3: the link reader keeps its own fence and span rules > a close",
+         "firstError": "\u2192 expected [ 'hide.md' ] to deeply equal [ 'mint.md' ]"
+        }
+       ],
+       "failedCount": 9
+      },
+      "newRows": {
+       "killed": true,
+       "project": "@syzygy/three-surface-poc-app",
+       "files": [
+        "apps/three-surface-poc/src/fence-rules.test.ts"
+       ],
+       "select": "GAP G2|GAP G3|indented with a tab",
+       "summary": [
+        "Test Files  1 failed (1)",
+        "Tests  2 failed | 9 passed | 46 skipped (57)"
+       ],
+       "failed": [
+        {
+         "test": "Markdown fence recognizers: what each reader treats as inside a fence > GAP G3: the link reader keeps its own fence and span rules > a close",
+         "firstError": "\u2192 expected [ 'a.md' ] to deeply equal []"
+        },
+        {
+         "test": "Markdown fence recognizers: what each reader treats as inside a fence > GAP G3: the link reader keeps its own fence and span rules > a close",
+         "firstError": "\u2192 expected [ 'hide.md' ] to deeply equal [ 'mint.md' ]"
+        }
+       ],
+       "failedCount": 2
+      },
+      "probe": {
+       "killed": true,
+       "casesThatDiffer": 33,
+       "casesCompared": 66,
+       "inlineCasesThatDiffer": [],
+       "consentFunctionTextDiffers": false,
+       "firstDifferingCases": [
+        "backtick-col0@crlf",
+        "backtick-indent1@crlf",
+        "backtick-indent2@crlf",
+        "backtick-indent3@crlf",
+        "backtick-tab"
+       ]
+      },
+      "existing": {
+       "killed": false,
+       "project": "@syzygy/three-surface-poc-core",
+       "files": [
+        "packages/three-surface-poc-core/src/project-shape-manifest.test.ts"
+       ],
+       "select": null,
+       "summary": [
+        "Test Files  1 passed (1)",
+        "Tests  24 passed (24)"
+       ],
+       "failed": [],
+       "failedCount": 0
+      },
+      "prior": {
+       "killed": true,
+       "project": "@syzygy/three-surface-poc-app",
+       "files": [
+        "apps/three-surface-poc/src/fence-rules-r1.test.ts"
+       ],
+       "select": null,
+       "summary": [
+        "Test Files  1 failed (1)",
+        "Tests  7 failed | 39 passed (46)"
+       ],
+       "failed": [
+        {
+         "test": "Markdown fence recognizers: what each reader treats as inside a fence > 'backtick-tab'",
+         "firstError": "\u2192 backtick-tab links: expected 'VHHH' to be 'VHHV' // Object.is equality"
+        },
+        {
+         "test": "Markdown fence recognizers: what each reader treats as inside a fence > 'closer-trailing-tab'",
+         "firstError": "\u2192 closer-trailing-tab links: expected 'VHHH' to be 'VHHV' // Object.is equality"
+        },
+        {
+         "test": "Markdown fence recognizers: what each reader treats as inside a fence > 'closer-trailing-tab-then-closer'",
+         "firstError": "\u2192 closer-trailing-tab-then-closer links: expected 'VHHHHV' to be 'VHHVVH' // Object.is equality"
+        },
+        {
+         "test": "Markdown fence recognizers: what each reader treats as inside a fence > 'closer-with-info'",
+         "firstError": "\u2192 closer-with-info links: expected 'VHHHHV' to be 'VHHVVH' // Object.is equality"
+        },
+        {
+         "test": "Markdown fence recognizers: what each reader treats as inside a fence > 'closer-longer-with-info'",
+         "firstError": "\u2192 closer-longer-with-info links: expected 'VHHHV' to be 'VHVVH' // Object.is equality"
+        },
+        {
+         "test": "Markdown fence recognizers: what each reader treats as inside a fence > 'closer-with-text'",
+         "firstError": "\u2192 closer-with-text links: expected 'VHHHHV' to be 'VHHVVH' // Object.is equality"
+        },
+        {
+         "test": "Markdown fence recognizers: what each reader treats as inside a fence > links, extraction and the renderer read CRLF exactly as they read LF",
+         "firstError": "\u2192 backtick-col0 links: expected 'VHHH' to be 'VHHV' // Object.is equality"
+        }
+       ],
+       "failedCount": 7
+      }
+     },
+     "verdict": "killed by test, newRows, probe, prior",
+     "repairEffect": "killed by the tests at the reviewed head too"
+    },
+    {
+     "id": "L6-links-strip-spans-across-lines",
+     "kind": "closes-a-gap",
+     "file": "packages/three-surface-poc-core/src/project-shape-manifest.ts",
+     "old": "    kept.push(stripInlineCode ? line.replace(/`[^`]*`/g, '') : line);\n  }\n  return kept;",
+     "new": "    kept.push(line);\n  }\n  return stripInlineCode ? kept.join('\\n').replace(/(`+)[\\s\\S]*?\\1/g, '').split('\\n') : kept;",
+     "commit": "375d7396d27ee6ddf618f25497de8fa5c5a6ed35",
+     "detectors": {
+      "test": {
+       "killed": true,
+       "project": "@syzygy/three-surface-poc-app",
+       "files": [
+        "apps/three-surface-poc/src/fence-rules.test.ts"
+       ],
+       "select": null,
+       "summary": [
+        "Test Files  1 failed (1)",
+        "Tests  9 failed | 48 passed (57)"
+       ],
+       "failed": [
+        {
+         "test": "Markdown fence recognizers: what each reader treats as inside a fence > 'backtick-indent4'",
+         "firstError": "\u2192 backtick-indent4 links: expected 'VHHV' to be 'VVVV' // Object.is equality"
+        },
+        {
+         "test": "Markdown fence recognizers: what each reader treats as inside a fence > 'two-backticks'",
+         "firstError": "\u2192 two-backticks links: expected 'VHHV' to be 'VVVV' // Object.is equality"
+        },
+        {
+         "test": "Markdown fence recognizers: what each reader treats as inside a fence > 'blockquote'",
+         "firstError": "\u2192 blockquote links: expected 'VHHV' to be 'VVVV' // Object.is equality"
+        },
+        {
+         "test": "Markdown fence recognizers: what each reader treats as inside a fence > links, extraction and the renderer read CRLF exactly as they read LF",
+         "firstError": "\u2192 backtick-indent4 links: expected 'VHHV' to be 'VVVV' // Object.is equality"
+        },
+        {
+         "test": "Markdown fence recognizers: what each reader treats as inside a fence > inline span: 'inside-double-span'",
+         "firstError": "\u2192 expected { profile: 'H', links: 'H' } to deeply equal { profile: 'H', links: 'V' }"
+        },
+        {
+         "test": "Markdown fence recognizers: what each reader treats as inside a fence > inline span: 'double-span-with-inner-backtick-aroun\u2026'",
+         "firstError": "\u2192 expected { profile: 'H', links: 'H' } to deeply equal { profile: 'H', links: 'V' }"
+        },
+        {
+         "test": "Markdown fence recognizers: what each reader treats as inside a fence > GAP G3: the link reader keeps its own fence and span rules > a link ",
+         "firstError": "\u2192 expected [] to deeply equal [ 'probe.md' ]"
+        },
+        {
+         "test": "Markdown fence recognizers: what each reader treats as inside a fence > GAP G3: the link reader keeps its own fence and span rules > a link ",
+         "firstError": "\u2192 expected [] to deeply equal [ 'probe.md' ]"
+        },
+        {
+         "test": "Markdown fence recognizers: what each reader treats as inside a fence > GAP G3: the link reader keeps its own fence and span rules > a link ",
+         "firstError": "\u2192 expected [] to deeply equal [ 'probe.md' ]"
+        }
+       ],
+       "failedCount": 9
+      },
+      "newRows": {
+       "killed": true,
+       "project": "@syzygy/three-surface-poc-app",
+       "files": [
+        "apps/three-surface-poc/src/fence-rules.test.ts"
+       ],
+       "select": "GAP G2|GAP G3|indented with a tab",
+       "summary": [
+        "Test Files  1 failed (1)",
+        "Tests  3 failed | 8 passed | 46 skipped (57)"
+       ],
+       "failed": [
+        {
+         "test": "Markdown fence recognizers: what each reader treats as inside a fence > GAP G3: the link reader keeps its own fence and span rules > a link ",
+         "firstError": "\u2192 expected [] to deeply equal [ 'probe.md' ]"
+        },
+        {
+         "test": "Markdown fence recognizers: what each reader treats as inside a fence > GAP G3: the link reader keeps its own fence and span rules > a link ",
+         "firstError": "\u2192 expected [] to deeply equal [ 'probe.md' ]"
+        },
+        {
+         "test": "Markdown fence recognizers: what each reader treats as inside a fence > GAP G3: the link reader keeps its own fence and span rules > a link ",
+         "firstError": "\u2192 expected [] to deeply equal [ 'probe.md' ]"
+        }
+       ],
+       "failedCount": 3
+      },
+      "probe": {
+       "killed": true,
+       "casesThatDiffer": 6,
+       "casesCompared": 66,
+       "inlineCasesThatDiffer": [
+        "inside-double-span",
+        "double-span-with-inner-backtick-around-link"
+       ],
+       "consentFunctionTextDiffers": false,
+       "firstDifferingCases": [
+        "backtick-indent4",
+        "backtick-indent4@crlf",
+        "two-backticks",
+        "two-backticks@crlf",
+        "blockquote"
+       ]
+      },
+      "existing": {
+       "killed": false,
+       "project": "@syzygy/three-surface-poc-core",
+       "files": [
+        "packages/three-surface-poc-core/src/project-shape-manifest.test.ts"
+       ],
+       "select": null,
+       "summary": [
+        "Test Files  1 passed (1)",
+        "Tests  24 passed (24)"
+       ],
+       "failed": [],
+       "failedCount": 0
+      },
+      "prior": {
+       "killed": true,
+       "project": "@syzygy/three-surface-poc-app",
+       "files": [
+        "apps/three-surface-poc/src/fence-rules-r1.test.ts"
+       ],
+       "select": null,
+       "summary": [
+        "Test Files  1 failed (1)",
+        "Tests  6 failed | 40 passed (46)"
+       ],
+       "failed": [
+        {
+         "test": "Markdown fence recognizers: what each reader treats as inside a fence > 'backtick-indent4'",
+         "firstError": "\u2192 backtick-indent4 links: expected 'VHHV' to be 'VVVV' // Object.is equality"
+        },
+        {
+         "test": "Markdown fence recognizers: what each reader treats as inside a fence > 'two-backticks'",
+         "firstError": "\u2192 two-backticks links: expected 'VHHV' to be 'VVVV' // Object.is equality"
+        },
+        {
+         "test": "Markdown fence recognizers: what each reader treats as inside a fence > 'blockquote'",
+         "firstError": "\u2192 blockquote links: expected 'VHHV' to be 'VVVV' // Object.is equality"
+        },
+        {
+         "test": "Markdown fence recognizers: what each reader treats as inside a fence > links, extraction and the renderer read CRLF exactly as they read LF",
+         "firstError": "\u2192 backtick-indent4 links: expected 'VHHV' to be 'VVVV' // Object.is equality"
+        },
+        {
+         "test": "Markdown fence recognizers: what each reader treats as inside a fence > inline span: 'inside-double-span'",
+         "firstError": "\u2192 expected { profile: 'H', links: 'H' } to deeply equal { profile: 'H', links: 'V' }"
+        },
+        {
+         "test": "Markdown fence recognizers: what each reader treats as inside a fence > inline span: 'double-span-with-inner-backtick-aroun\u2026'",
+         "firstError": "\u2192 expected { profile: 'H', links: 'H' } to deeply equal { profile: 'H', links: 'V' }"
+        }
+       ],
+       "failedCount": 6
+      }
+     },
+     "verdict": "killed by test, newRows, probe, prior",
+     "repairEffect": "killed by the tests at the reviewed head too"
+    },
+    {
+     "id": "N1a-consent-act-title-check-tolerates-crlf",
+     "kind": "closes-a-gap",
+     "file": "packages/polaris-generation-consent/src/package-reader.ts",
+     "old": "if (!text.startsWith(`${form.title}\\n`)) refuse();",
+     "new": "if (!text.startsWith(form.title)) refuse();",
+     "commit": "700c84bd11f177503e91bb65d672f197f1f2ca3b",
+     "detectors": {
+      "test": {
+       "killed": false,
+       "project": "@syzygy/three-surface-poc-app",
+       "files": [
+        "apps/three-surface-poc/src/fence-rules.test.ts"
+       ],
+       "select": null,
+       "summary": [
+        "Test Files  1 passed (1)",
+        "Tests  57 passed (57)"
+       ],
+       "failed": [],
+       "failedCount": 0
+      },
+      "consentNew": {
+       "killed": true,
+       "project": "@syzygy/polaris-generation-consent",
+       "files": [
+        "packages/polaris-generation-consent/src/package-reader.test.ts"
+       ],
+       "select": "fence reading of the act records",
+       "summary": [
+        "Test Files  1 failed (1)",
+        "Tests  1 failed | 3 passed | 299 skipped (303)"
+       ],
+       "failed": [
+        {
+         "test": "fence reading of the act records > refuses an act record written with CRLF line ends",
+         "firstError": "\u2192 promise resolved \"[ { \u2026(16) }, { \u2026(16) } ]\" instead of rejecting"
+        }
+       ],
+       "failedCount": 1
+      },
+      "probe": {
+       "killed": false,
+       "casesThatDiffer": 0,
+       "casesCompared": 66,
+       "inlineCasesThatDiffer": [],
+       "consentFunctionTextDiffers": false,
+       "firstDifferingCases": []
+      },
+      "existing": {
+       "killed": false,
+       "project": "@syzygy/polaris-generation-consent",
+       "files": [
+        "packages/polaris-generation-consent/src/package-reader.test.ts"
+       ],
+       "select": "^(?!fence reading of the act records)",
+       "summary": [
+        "Test Files  1 passed (1)",
+        "Tests  299 passed | 4 skipped (303)"
+       ],
+       "failed": [],
+       "failedCount": 0
+      },
+      "prior": {
+       "killed": false,
+       "project": "@syzygy/polaris-generation-consent",
+       "files": [
+        "packages/polaris-generation-consent/src/package-reader-r1.test.ts"
+       ],
+       "select": null,
+       "summary": [
+        "Test Files  1 passed (1)",
+        "Tests  299 passed (299)"
+       ],
+       "failed": [],
+       "failedCount": 0
+      }
+     },
+     "verdict": "killed by consentNew",
+     "repairEffect": "the tests at the reviewed head pass this mutant and consentNew kill it"
+    },
+    {
+     "id": "N1b-consent-instance-table-check-tolerates-crlf",
+     "kind": "closes-a-gap",
+     "file": "packages/polaris-generation-consent/src/package-reader.ts",
+     "old": "const lines = outsideFences(text).split('\\n'), head = lines.indexOf('| Label | Commit object id |');",
+     "new": "const lines = outsideFences(text).replace(/\\r/g, '').split('\\n'), head = lines.indexOf('| Label | Commit object id |');",
+     "commit": "db5dc676704757da824480396d66ecd88bb9dcd2",
+     "detectors": {
+      "test": {
+       "killed": false,
+       "project": "@syzygy/three-surface-poc-app",
+       "files": [
+        "apps/three-surface-poc/src/fence-rules.test.ts"
+       ],
+       "select": null,
+       "summary": [
+        "Test Files  1 passed (1)",
+        "Tests  57 passed (57)"
+       ],
+       "failed": [],
+       "failedCount": 0
+      },
+      "consentNew": {
+       "killed": true,
+       "project": "@syzygy/polaris-generation-consent",
+       "files": [
+        "packages/polaris-generation-consent/src/package-reader.test.ts"
+       ],
+       "select": "fence reading of the act records",
+       "summary": [
+        "Test Files  1 failed (1)",
+        "Tests  1 failed | 3 passed | 299 skipped (303)"
+       ],
+       "failed": [
+        {
+         "test": "fence reading of the act records > refuses an instance written with CRLF line ends, even when its act record binds its digest",
+         "firstError": "\u2192 promise resolved \"[ { \u2026(16) }, { \u2026(16) } ]\" instead of rejecting"
+        }
+       ],
+       "failedCount": 1
+      },
+      "probe": {
+       "killed": false,
+       "casesThatDiffer": 0,
+       "casesCompared": 66,
+       "inlineCasesThatDiffer": [],
+       "consentFunctionTextDiffers": false,
+       "firstDifferingCases": []
+      },
+      "existing": {
+       "killed": false,
+       "project": "@syzygy/polaris-generation-consent",
+       "files": [
+        "packages/polaris-generation-consent/src/package-reader.test.ts"
+       ],
+       "select": "^(?!fence reading of the act records)",
+       "summary": [
+        "Test Files  1 passed (1)",
+        "Tests  299 passed | 4 skipped (303)"
+       ],
+       "failed": [],
+       "failedCount": 0
+      },
+      "prior": {
+       "killed": false,
+       "project": "@syzygy/polaris-generation-consent",
+       "files": [
+        "packages/polaris-generation-consent/src/package-reader-r1.test.ts"
+       ],
+       "select": null,
+       "summary": [
+        "Test Files  1 passed (1)",
+        "Tests  299 passed (299)"
+       ],
+       "failed": [],
+       "failedCount": 0
+      }
+     },
+     "verdict": "killed by consentNew",
+     "repairEffect": "the tests at the reviewed head pass this mutant and consentNew kill it"
     }
    ]
   },
@@ -2314,6 +3942,160 @@
     "K3-consent-closer-any-text": "killed by probe, existing",
     "K4-consent-backtick-info-opens": "killed by probe, existing"
    }
+  },
+  "roundOneRun": {
+   "head": "7e58cd1f",
+   "codeCommitFull": "7e58cd1f9e1be0c4d79ebff298cc97261a79f6ce",
+   "expectedProbeOutput": "a scratch path that was not retained (round-1 review N8): /tmp/lc63pr/fence-head.json",
+   "rowsAreInGitAt": "9d9c98a6f265393fcb46dae6e1484eea097aad20:docs/evidence/syzygy-bpyt-6-3/dc3-fence-rules-2026-10-25.json",
+   "fragmentsEqualTheRepairRun": "the 19 rows have the same file, old and new fragment as the same ids in the repair run (checked by script), and each old fragment occurs exactly once at 7e58cd1f",
+   "verdicts": {
+    "PR1-profile-opener-indent4": "killed by test, probe, existing",
+    "PR2-profile-closer-any-whitespace": "killed by test, probe",
+    "PR3-profile-closer-strictly-longer": "killed by test, probe, existing",
+    "PR4-profile-backtick-info-allowed": "killed by test, probe, existing",
+    "PR5-profile-opener-tolerates-CR": "killed by test, probe",
+    "L1-links-opener-spaces-only": "killed by test, probe",
+    "L2-links-closer-any-length": "killed by test, probe",
+    "L3-links-closer-any-fence-char": "killed by test, probe",
+    "L4-links-inline-span-needs-content": "killed by test, probe",
+    "E1-extraction-opener-indent3": "killed by test, probe",
+    "E2-extraction-closer-trim-both-sides": "killed by test, probe",
+    "E3-extraction-closer-any-text": "killed by test, probe",
+    "R1-renderer-opener-indent4": "killed by test",
+    "R2-renderer-closer-longer-than-opener": "killed by test, probe, existing",
+    "R3-renderer-heading-depth-closer-longer": "killed by test",
+    "K1-consent-opener-indent4": "killed by probe",
+    "K2-consent-closer-strictly-longer": "killed by probe",
+    "K3-consent-closer-any-text": "killed by probe, existing",
+    "K4-consent-backtick-info-opens": "killed by probe, existing"
+   }
+  },
+  "repairedCodeCommitFull": "ba7fce369ebfbd605be4a8da76dbdb4351ab9f25",
+  "summary": {
+   "rows": 26,
+   "killedByATest": 26,
+   "killedByTheProbeOnly": [],
+   "survived": [],
+   "newlyKilledByTheRepair": [
+    "K1-consent-opener-indent4",
+    "K2-consent-closer-strictly-longer",
+    "RV7-renderer-tab-indented-fence-ends-paragraph",
+    "RV11-profile-fence-opener-drops-open-span",
+    "N1a-consent-act-title-check-tolerates-crlf",
+    "N1b-consent-instance-table-check-tolerates-crlf"
+   ],
+   "rowsAddedInTheRepair": [
+    "RV7-renderer-tab-indented-fence-ends-paragraph",
+    "RV11-profile-fence-opener-drops-open-span",
+    "E4-extraction-closer-is-the-profile-closer",
+    "L5-links-closer-is-the-profile-closer",
+    "L6-links-strip-spans-across-lines",
+    "N1a-consent-act-title-check-tolerates-crlf",
+    "N1b-consent-instance-table-check-tolerates-crlf"
+   ]
+  }
+ },
+ "roundOneRepair": {
+  "review": {
+   "raw": "R-GP-IMPL-FENCE-RULES-1-RAW.md",
+   "rawSha256": "4fba7d5e195e742915d001164ae69d3f2e7ec5dc3fcd25ef7ba45fa64846deb9",
+   "verdict": "REVISE",
+   "reviewedCommit": "9d9c98a6f265393fcb46dae6e1484eea097aad20",
+   "reading": "the code is clean; the verdict is for the record misstating how far G2 and G3 reach"
+  },
+  "merge": "main f7477f52 merged into the branch first, never rebased, as af534d6e (parents 9d9c98a6 and f7477f52); clean, no hand resolution",
+  "items": [
+   {
+    "id": "F1",
+    "what": "G2 restated in the record (what, directions, pinnedBy, decision) and in the PR body: a closer indented 1-3 spaces never closes the extractor's fence, so a vision.md with 3 principles extracts {principle: 1} under a known denominator; a closer-shaped line ending in a tab closes it early and the next plain closer hides the rest",
+    "pins": "fence-rules.test.ts, describe \"GAP G2: the extractor keeps its own fence closer\" (4 tests), titled as G2 so the fix must flip them",
+    "mutants": [
+     "E4-extraction-closer-is-the-profile-closer"
+    ]
+   },
+   {
+    "id": "F2",
+    "what": "G3 restated with five directions: multi-line spans are indexed, an early close plus a plain closer hides every later link (the manifest population loses named files), the tab-closer direction corrected, and the PR body's \"because the inline rule ignores run length\" cause removed for the three multi-line span cases",
+    "pins": "fence-rules.test.ts, describe \"GAP G3: the link reader keeps its own fence and span rules\" (6 tests: three multi-line spans, a single-line control, the hide row, the tab row)",
+    "mutants": [
+     "L5-links-closer-is-the-profile-closer",
+     "L6-links-strip-spans-across-lines"
+    ]
+   },
+   {
+    "id": "N1",
+    "what": "G4.reading restated: on CRLF the consent reader passes a field wholly inside a fence, and the record is refused anyway by three LF-exact checks (title, table, heading); both CRLF refusals are now committed tests",
+    "pins": "package-reader.test.ts, describe \"fence reading of the act records\": a CRLF act record and a CRLF instance bound by its own digest are refused",
+    "mutants": [
+     "N1a-consent-act-title-check-tolerates-crlf",
+     "N1b-consent-instance-table-check-tolerates-crlf"
+    ]
+   },
+   {
+    "id": "N4",
+    "what": "the consent reader's fence rules are pinned through the public reader with no export of outsideFences: a four-space-indented fence line stays in force, and a closed example fence stays in force",
+    "pins": "package-reader.test.ts, the same describe (2 of its 4 tests)",
+    "mutants": [
+     "K1-consent-opener-indent4",
+     "K2-consent-closer-strictly-longer"
+    ],
+    "reading": "K1 and K2 survive the tests of the reviewed head and are killed by the new tests; round 1 of this record had them killed by the probe alone, a tool CI does not run"
+   },
+   {
+    "id": "N5",
+    "what": "the AGENTS.md bullet says fence-rules.test.ts pins four of the gaps (the consent reader through the probe and its own tests), names G1 as ruled by the owner (syzygy-bpyt.1.14) and fixed by syzygy-bpyt.16, and G2 and G3 as open owner questions; the GAP comment for G1 in fence-rules.test.ts is rewritten the same way"
+   },
+   {
+    "id": "N6",
+    "what": "the claim is named \"emit-equal (runtime-equal)\" here and in the PR body; line-level-check.mjs is added beside comment-only.mjs and both ran, with a type-only and a code mutant and a code-changing range as negative controls (changedProductionFiles.roundOneRepairRun)"
+   },
+   {
+    "id": "N7",
+    "what": "a malformation-reason column (whole, wholeCrlf) on all 33 CASES rows, from the probe's profileOnTheWholeCase; a tab-indented renderer pin",
+    "mutants": [
+     "RV11-profile-fence-opener-drops-open-span",
+     "RV7-renderer-tab-indented-fence-ends-paragraph"
+    ],
+    "notHere": "RV10 goes to syzygy-bpyt.16"
+   },
+   {
+    "id": "N8",
+    "what": "inlineCasesThatDiffer in each probe row; every per-mutant commit named as a discarded scratch commit (commitNote) with codeCommitFull kept; failed lists are no longer capped at 6; expectedProbeOutput is the tracked fence-probe-output.json with its sha256"
+   },
+   {
+    "id": "N9",
+    "what": "the renderer reading says \"on the 25 fence-only cases (1 of 25)\", and that over the 33 cases it also differs on all 4 span cases and reads a backtick opener with a backtick in its info string as an opener"
+   },
+   {
+    "id": "N10",
+    "what": "the toHaveLength(14) assertion on a literal count is dropped from fence-rules.test.ts"
+   }
+  ],
+  "notRepairedHere": [
+   {
+    "id": "N2",
+    "goesTo": "syzygy-bpyt.16"
+   },
+   {
+    "id": "N3",
+    "goesTo": "syzygy-bpyt.16"
+   },
+   {
+    "id": "RV10",
+    "goesTo": "syzygy-bpyt.16"
+   },
+   {
+    "id": "N11",
+    "what": "the PR's GitHub base is main; #530 has since merged, so the hosted diff is this PR alone"
+   }
+  ],
+  "tests": {
+   "fence-rules.test.ts": "46 -> 57 (+11 new; 2 declarations modified: the CASES it.each, 33 rows, which now also checks the whole-text reading, and the CRLF-equality test, which lost its literal count)",
+   "package-reader.test.ts": "299 -> 303 (+4 new)",
+   "total": "+15 ~34 -0 as vitest counts instances (the 34 are the 33 CASES rows and the CRLF-equality test)",
+   "fenceRulesFiveTimes": "docs/evidence/syzygy-bpyt-6-3/repair1-fence-rules-5x.log (5 runs, each \"Tests  57 passed (57)\")",
+   "typecheck": "docs/evidence/syzygy-bpyt-6-3/repair1-typecheck.log (npm run typecheck, exit 0)"
   }
  }
 }
