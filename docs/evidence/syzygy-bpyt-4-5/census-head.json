@@ -3,7 +3,7 @@
   "name": "timing_census.py",
   "sha256": "79aad9c52e1a11f8887d8fe5475a86e93bd742ac8aec436089a69cb098840f48"
  },
- "commit": "3fc3709fc73175e2e42ab12329caf28384da7645",
+ "commit": "bb5df68080b00a08557f64156c9bf3b4d9d25ed4",
  "population": 250,
  "summary": {
   "timeout-arg": {
@@ -953,7 +953,7 @@
   },
   {
    "path": "apps/three-surface-poc/src/polaris-generation/redis-shaped-discovery.test.ts",
-   "line": 212,
+   "line": 214,
    "kind": "timeout-arg",
    "arg": "120_000",
    "const": null,
@@ -962,11 +962,11 @@
   },
   {
    "path": "apps/three-surface-poc/src/polaris-generation/self-corpus.test.ts",
-   "line": 32,
+   "line": 35,
    "kind": "timeout-arg",
    "arg": "PINNED_READ_TIMEOUT_MS",
    "const": {
-    "line": 17,
+    "line": 20,
     "value": "60_000",
     "reason": true
    },
@@ -975,7 +975,7 @@
   },
   {
    "path": "apps/three-surface-poc/src/polaris-generation/self-corpus.test.ts",
-   "line": 46,
+   "line": 49,
    "kind": "timeout-arg",
    "arg": "30_000",
    "const": null,
@@ -1693,13 +1693,13 @@
   },
   {
    "path": "packages/polaris-generation-core/src/dossier-profile.test.ts",
-   "line": 176,
+   "line": 182,
    "kind": "cpu-bound",
    "text": "expect(cpuMsSince(cpu)).toBeLessThan(EDGE_TRIM_CPU_MS);"
   },
   {
    "path": "packages/polaris-generation-core/src/excerpt.test.ts",
-   "line": 267,
+   "line": 273,
    "kind": "cpu-bound",
    "text": "expect(cpuMsSince(cpu)).toBeLessThan(HOSTILE_LINE_CPU_MS);"
   },
@@ -1742,13 +1742,13 @@
   },
   {
    "path": "packages/three-surface-poc-core/src/test-artifact-verification.test.ts",
-   "line": 103,
+   "line": 111,
    "kind": "cpu-bound",
    "text": "expect(cpuMsSince(cpu)).toBeLessThan(TAG_SCAN_CPU_MS);"
   },
   {
    "path": "packages/three-surface-poc-core/src/test-artifact-verification.test.ts",
-   "line": 110,
+   "line": 118,
    "kind": "cpu-bound",
    "text": "expect(cpuMsSince(cpu)).toBeLessThan(ATTRIBUTE_SCAN_CPU_MS);"
   }

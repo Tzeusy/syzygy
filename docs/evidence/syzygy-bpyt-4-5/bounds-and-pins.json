@@ -4,7 +4,7 @@
  "subject": {
   "base": "c104771ff90f47ffd070f2339c36010458679c71",
   "main": "8ff50172b127cba676ff32ce62c12c91b2b0d924",
-  "evidenceCommit": "3fc3709fc73175e2e42ab12329caf28384da7645",
+  "evidenceCommit": "bb5df68080b00a08557f64156c9bf3b4d9d25ed4",
   "testFiles": [
    {
     "path": "apps/three-surface-poc/src/capture-test-artifact-main.test.ts",
@@ -16,11 +16,15 @@
    },
    {
     "path": "apps/three-surface-poc/src/polaris-generation/redis-shaped-discovery.test.ts",
-    "sha256": "a75c62efd676e2d85553afa8a4688d152336f6bd3614a8fb962445a46c409daa"
+    "sha256": "5744d214aca18003ff3ab1c6700758686af697b3d40fbc0301ab504939b6e219"
+   },
+   {
+    "path": "apps/three-surface-poc/src/polaris-generation/self-corpus.test.ts",
+    "sha256": "9f4fbe00e9d4935ac824c6453bc9da4e9d702f34b7c8e221cbd918a43b84e4ae"
    },
    {
     "path": "packages/cap1-system/src/daemon-entry-unchanged.system.test.ts",
-    "sha256": "d089a9587d9137741c2488333f35c8204002a08bfa2f53a5ee8986b8528ac4f6"
+    "sha256": "4e1fd09f875720aa903b751df4127d02be4dee878790c565d3db8208b5f5590d"
    },
    {
     "path": "packages/polaris-dossier/src/git-object-reader.test.ts",
@@ -32,32 +36,34 @@
    },
    {
     "path": "packages/polaris-generation-core/src/dossier-profile.test.ts",
-    "sha256": "bb2ff158b9ddf3092e3d72ebd49fa9bcfbdb84c17db03a23d2383bf1d6355265"
+    "sha256": "b8f088264c35dc042bdb353ccf8a4288334fd5cfbde0c96c9c0ef1882f59a81e"
    },
    {
     "path": "packages/polaris-generation-core/src/excerpt.test.ts",
-    "sha256": "23ec8036de6bcb4d28460a862885bc4dd5b9d8f595a0777f44244e475b83a8bc"
+    "sha256": "f0b5a4a5ae23b544e17f126191a18c7d937172d663ff158faf8c2e5f0ca6dd28"
    },
    {
     "path": "packages/three-surface-poc-core/src/test-artifact-verification.test.ts",
-    "sha256": "4a4bbd71fc73143782ba82bebbd3d8b202e8f3900c3f1540472214b4a5d3302e"
+    "sha256": "390294b2c1d2f4e47dc6d835f01cfdff1ab107353ae4effa2007a3a6d28b4142"
    }
   ],
-  "testDiffSha256": "7886e2d5dfc5c6d957ee8ec9e813b38a81acdd73bb7d1de53783b5e976461107",
+  "testDiffSha256": "88c6d284cb83a3dfe02e0538aebeb97c60810687e2f6b052b8ff4d663df9b416",
   "note": "The test files are the subject; no product file differs between base and the evidence commit."
  },
  "productFilesChanged": [],
  "resultsRanAt": {
-  "mutants": "3fc3709fc73175e2e42ab12329caf28384da7645",
-  "censusHead": "3fc3709fc73175e2e42ab12329caf28384da7645",
-  "daemonEntryHead": "8aaef44691d93f73ea92c769d583e80c7b6227eb",
-  "daemonEntryOldTest": "8aaef44691d93f73ea92c769d583e80c7b6227eb",
-  "cpuSeparation": "ab70ef7bfbaed7833f2a36d4331efcafcd37d6e3"
+  "mutants": "bb5df68080b00a08557f64156c9bf3b4d9d25ed4",
+  "censusHead": "bb5df68080b00a08557f64156c9bf3b4d9d25ed4",
+  "daemonEntryHead": "722231fe0365eccd0239fb63edee92e7c5239531",
+  "daemonEntryOldTest": "722231fe0365eccd0239fb63edee92e7c5239531",
+  "daemonEntryPriorTest": "722231fe0365eccd0239fb63edee92e7c5239531",
+  "cpuSeparation": "722231fe0365eccd0239fb63edee92e7c5239531",
+  "cpuSeparationNode22": "bb5df68080b00a08557f64156c9bf3b4d9d25ed4"
  },
  "files": [
   {
    "path": "docs/evidence/syzygy-bpyt-4-5/bound-and-pin-mutants.json",
-   "sha256": "ebd08b2065f14439e8f05af32259c5a3d05b6a8c0fd3d0715589c7298abf1900"
+   "sha256": "b522ca9b092b46e971dbae95090586aa048da421bd9712c8700f3bddd8671510"
   },
   {
    "path": "docs/evidence/syzygy-bpyt-4-5/census-base.json",
@@ -65,19 +71,27 @@
   },
   {
    "path": "docs/evidence/syzygy-bpyt-4-5/census-head.json",
-   "sha256": "67a0e23c7cc73434e73102f3827cca3b7a6e70e5f551f397ddbd18cf7f00acc7"
+   "sha256": "64d8966c1a29751fa3e28d76d4397b554481d44f0d85c0169a0641a3d55bf38f"
+  },
+  {
+   "path": "docs/evidence/syzygy-bpyt-4-5/cpu-separation-node22.json",
+   "sha256": "af10b53fd1da665f4f84b3fb34ebc7e622306e64637d388693752c81b8a4b146"
   },
   {
    "path": "docs/evidence/syzygy-bpyt-4-5/cpu-separation.json",
-   "sha256": "abfb343379e70a8dcd18cca00dc6fdebac61c709c4c7cc8f96b2ec98c488c949"
+   "sha256": "ec554ea44726a4cfcb33e76d9f932b1e26c5aa4c801f6a817eac5d12895d550c"
   },
   {
    "path": "docs/evidence/syzygy-bpyt-4-5/daemon-entry-base-test.json",
-   "sha256": "af7b9c8235507303cad5273e7eea5bb3cc8739d96e61ad308140cff6cae0c921"
+   "sha256": "9add3074a2b38e590306cbe58bf0210bf9bd16193a10f57124697240337a051d"
   },
   {
    "path": "docs/evidence/syzygy-bpyt-4-5/daemon-entry-head.json",
-   "sha256": "4ab7be783f756bf568afae1e7f849da1a1537a1ce409d81454b76e93fc9db676"
+   "sha256": "f36ae1ebdb66b7e4aaf90b3eda5913de2f1a1f32033ef0234aa577ec36db2141"
+  },
+  {
+   "path": "docs/evidence/syzygy-bpyt-4-5/daemon-entry-prior-test.json",
+   "sha256": "dd5a00c442e57d4fef633ec588d2a690e3c366f6e4be3cc0c5dd3508a45c2fda"
   },
   {
    "path": "docs/evidence/syzygy-bpyt-4-5/durations/dossier-profile.json",
@@ -113,19 +127,19 @@
   },
   {
    "path": "docs/evidence/syzygy-bpyt-4-5/tools/bound_and_pin_mutants.py",
-   "sha256": "18de550b251dd8ba32044447362b6b7d820b895a6d1ac90f09a1ee415ed20f45"
+   "sha256": "c496ba4072b31347e2f7c3ac9d58efd750a4fa2f71cc3a188c8c05167980ff47"
   },
   {
    "path": "docs/evidence/syzygy-bpyt-4-5/tools/build_record.py",
-   "sha256": "c1a62f1480616323f8ec0c0ed2803b0eb9e4e742a57d179d831607c49cb20160"
+   "sha256": "1b189b6a8195e4193e1e9848d1a8685b7b409afef0249fb4e189333eadbbb784"
   },
   {
    "path": "docs/evidence/syzygy-bpyt-4-5/tools/cpu_separation.py",
-   "sha256": "82cbaf22419cfe2269ba22e9a125d186c0fc19fa8595d6394cd17b4fc0b827f2"
+   "sha256": "eca8164ed1f35daca44907a15578a5a4192252e6a212c129a6ff8eafcdf69b3b"
   },
   {
    "path": "docs/evidence/syzygy-bpyt-4-5/tools/daemon_entry_probe.py",
-   "sha256": "4f00316eb90f0707059865156c22fa6aa58419aca77cbbba1ff16705707e5a31"
+   "sha256": "b371f924917db4c3cd14b51a0cbc9fb47593303465f1acfb4c44c65815b4bedc"
   },
   {
    "path": "docs/evidence/syzygy-bpyt-4-5/tools/mutant-cases.json",
@@ -219,16 +233,28 @@
    "regex": "hrtime|performance\\.now\\(\\)|Date\\.now\\(\\) *-|elapsed|getTime\\(\\) *-|[cC]puUsage",
    "over": "apps/*.test.* and packages/*.test.* at the evidence commit, git grep -E",
    "lines": [
-    "3fc3709fc73175e2e42ab12329caf28384da7645:apps/three-surface-poc/src/capture-test-artifact-main.test.ts:379:    // The message names the lstat refusal, made before any open. No elapsed-time bound: a blocking open never",
-    "3fc3709fc73175e2e42ab12329caf28384da7645:packages/polaris-dossier/src/status.test.ts:111:    expect(before.ok && before.report.limitsSpent.deadline).toBe('PT3H from the brief, ending at 2026-10-07T13:00:00.000Z on Syzygy\\'s clock; elapsed time not recorded');",
-    "3fc3709fc73175e2e42ab12329caf28384da7645:packages/polaris-dossier/src/status.test.ts:115:    expect(after.ok && after.report.limitsSpent.deadline).toBe('PT3H from the brief, ended at 2026-10-07T13:00:00.000Z on Syzygy\\'s clock; elapsed time not recorded');",
-    "3fc3709fc73175e2e42ab12329caf28384da7645:packages/polaris-generation-core/src/dossier-profile.test.ts:14:const cpuMsSince = (from: NodeJS.CpuUsage): number => { const { user, system } = process.threadCpuUsage(from); return (user + system) / 1000; };",
-    "3fc3709fc73175e2e42ab12329caf28384da7645:packages/polaris-generation-core/src/dossier-profile.test.ts:169:    const cpu = process.threadCpuUsage();",
-    "3fc3709fc73175e2e42ab12329caf28384da7645:packages/polaris-generation-core/src/excerpt.test.ts:7:const cpuMsSince = (from: NodeJS.CpuUsage): number => { const { user, system } = process.threadCpuUsage(from); return (user + system) / 1000; };",
-    "3fc3709fc73175e2e42ab12329caf28384da7645:packages/polaris-generation-core/src/excerpt.test.ts:265:      const cpu = process.threadCpuUsage();",
-    "3fc3709fc73175e2e42ab12329caf28384da7645:packages/three-surface-poc-core/src/test-artifact-verification.test.ts:24:const cpuMsSince = (from: NodeJS.CpuUsage): number => { const { user, system } = process.threadCpuUsage(from); return (user + system) / 1000; };",
-    "3fc3709fc73175e2e42ab12329caf28384da7645:packages/three-surface-poc-core/src/test-artifact-verification.test.ts:101:    const cpu = process.threadCpuUsage();",
-    "3fc3709fc73175e2e42ab12329caf28384da7645:packages/three-surface-poc-core/src/test-artifact-verification.test.ts:108:    const cpu = process.threadCpuUsage();"
+    "bb5df68080b00a08557f64156c9bf3b4d9d25ed4:apps/three-surface-poc/src/capture-test-artifact-main.test.ts:379:    // The message names the lstat refusal, made before any open. No elapsed-time bound: a blocking open never",
+    "bb5df68080b00a08557f64156c9bf3b4d9d25ed4:packages/polaris-dossier/src/status.test.ts:111:    expect(before.ok && before.report.limitsSpent.deadline).toBe('PT3H from the brief, ending at 2026-10-07T13:00:00.000Z on Syzygy\\'s clock; elapsed time not recorded');",
+    "bb5df68080b00a08557f64156c9bf3b4d9d25ed4:packages/polaris-dossier/src/status.test.ts:115:    expect(after.ok && after.report.limitsSpent.deadline).toBe('PT3H from the brief, ended at 2026-10-07T13:00:00.000Z on Syzygy\\'s clock; elapsed time not recorded');",
+    "bb5df68080b00a08557f64156c9bf3b4d9d25ed4:packages/polaris-generation-core/src/dossier-profile.test.ts:13:/** CPU time so far: this thread's (`process.threadCpuUsage`, Node 23.9 and later) or, on the Node 22 releases `engines` admits, the",
+    "bb5df68080b00a08557f64156c9bf3b4d9d25ed4:packages/polaris-generation-core/src/dossier-profile.test.ts:14: * whole process's (`process.cpuUsage`), which also counts the worker's other threads; each bound keeps its 10x margins under",
+    "bb5df68080b00a08557f64156c9bf3b4d9d25ed4:packages/polaris-generation-core/src/dossier-profile.test.ts:16:const cpuUsage = (from?: NodeJS.CpuUsage): NodeJS.CpuUsage =>",
+    "bb5df68080b00a08557f64156c9bf3b4d9d25ed4:packages/polaris-generation-core/src/dossier-profile.test.ts:17:  (typeof process.threadCpuUsage === 'function' ? process.threadCpuUsage(from) : process.cpuUsage(from));",
+    "bb5df68080b00a08557f64156c9bf3b4d9d25ed4:packages/polaris-generation-core/src/dossier-profile.test.ts:19:const cpuMsSince = (from: NodeJS.CpuUsage): number => { const { user, system } = cpuUsage(from); return (user + system) / 1000; };",
+    "bb5df68080b00a08557f64156c9bf3b4d9d25ed4:packages/polaris-generation-core/src/dossier-profile.test.ts:175:    const cpu = cpuUsage();",
+    "bb5df68080b00a08557f64156c9bf3b4d9d25ed4:packages/polaris-generation-core/src/excerpt.test.ts:6:/** CPU time so far: this thread's (`process.threadCpuUsage`, Node 23.9 and later) or, on the Node 22 releases `engines` admits, the",
+    "bb5df68080b00a08557f64156c9bf3b4d9d25ed4:packages/polaris-generation-core/src/excerpt.test.ts:7: * whole process's (`process.cpuUsage`), which also counts the worker's other threads; each bound keeps its 10x margins under",
+    "bb5df68080b00a08557f64156c9bf3b4d9d25ed4:packages/polaris-generation-core/src/excerpt.test.ts:9:const cpuUsage = (from?: NodeJS.CpuUsage): NodeJS.CpuUsage =>",
+    "bb5df68080b00a08557f64156c9bf3b4d9d25ed4:packages/polaris-generation-core/src/excerpt.test.ts:10:  (typeof process.threadCpuUsage === 'function' ? process.threadCpuUsage(from) : process.cpuUsage(from));",
+    "bb5df68080b00a08557f64156c9bf3b4d9d25ed4:packages/polaris-generation-core/src/excerpt.test.ts:12:const cpuMsSince = (from: NodeJS.CpuUsage): number => { const { user, system } = cpuUsage(from); return (user + system) / 1000; };",
+    "bb5df68080b00a08557f64156c9bf3b4d9d25ed4:packages/polaris-generation-core/src/excerpt.test.ts:271:      const cpu = cpuUsage();",
+    "bb5df68080b00a08557f64156c9bf3b4d9d25ed4:packages/three-surface-poc-core/src/test-artifact-verification.test.ts:23:/** CPU time so far: this thread's (`process.threadCpuUsage`, Node 23.9 and later) or, on the Node 22 releases `engines` admits, the",
+    "bb5df68080b00a08557f64156c9bf3b4d9d25ed4:packages/three-surface-poc-core/src/test-artifact-verification.test.ts:24: * whole process's (`process.cpuUsage`), which also counts the worker's other threads; each bound keeps its 10x margins under",
+    "bb5df68080b00a08557f64156c9bf3b4d9d25ed4:packages/three-surface-poc-core/src/test-artifact-verification.test.ts:26:const cpuUsage = (from?: NodeJS.CpuUsage): NodeJS.CpuUsage =>",
+    "bb5df68080b00a08557f64156c9bf3b4d9d25ed4:packages/three-surface-poc-core/src/test-artifact-verification.test.ts:27:  (typeof process.threadCpuUsage === 'function' ? process.threadCpuUsage(from) : process.cpuUsage(from));",
+    "bb5df68080b00a08557f64156c9bf3b4d9d25ed4:packages/three-surface-poc-core/src/test-artifact-verification.test.ts:29:const cpuMsSince = (from: NodeJS.CpuUsage): number => { const { user, system } = cpuUsage(from); return (user + system) / 1000; };",
+    "bb5df68080b00a08557f64156c9bf3b4d9d25ed4:packages/three-surface-poc-core/src/test-artifact-verification.test.ts:109:    const cpu = cpuUsage();",
+    "bb5df68080b00a08557f64156c9bf3b4d9d25ed4:packages/three-surface-poc-core/src/test-artifact-verification.test.ts:116:    const cpu = cpuUsage();"
    ]
   },
   "refusedWithinCallSites": {
@@ -273,25 +299,25 @@
    "lines": [
     {
      "path": "packages/polaris-generation-core/src/dossier-profile.test.ts",
-     "line": 176,
+     "line": 182,
      "kind": "cpu-bound",
      "text": "expect(cpuMsSince(cpu)).toBeLessThan(EDGE_TRIM_CPU_MS);"
     },
     {
      "path": "packages/polaris-generation-core/src/excerpt.test.ts",
-     "line": 267,
+     "line": 273,
      "kind": "cpu-bound",
      "text": "expect(cpuMsSince(cpu)).toBeLessThan(HOSTILE_LINE_CPU_MS);"
     },
     {
      "path": "packages/three-surface-poc-core/src/test-artifact-verification.test.ts",
-     "line": 103,
+     "line": 111,
      "kind": "cpu-bound",
      "text": "expect(cpuMsSince(cpu)).toBeLessThan(TAG_SCAN_CPU_MS);"
     },
     {
      "path": "packages/three-surface-poc-core/src/test-artifact-verification.test.ts",
-     "line": 110,
+     "line": 118,
      "kind": "cpu-bound",
      "text": "expect(cpuMsSince(cpu)).toBeLessThan(ATTRIBUTE_SCAN_CPU_MS);"
     }
@@ -372,7 +398,7 @@
    "outcomes": {
     "started-waits-for-bound": {
      "base": "fail",
-     "head": "fail"
+     "head": "fail (by the test timeout)"
     }
    }
   },
@@ -393,12 +419,12 @@
      "head": "fail"
     },
     "reader-no-depth-cap": {
-     "base": "fail",
-     "head": "fail"
+     "base": "fail (by the test timeout)",
+     "head": "fail (by the test timeout)"
     },
     "reader-blocking-open": {
      "base": "fail",
-     "head": "fail"
+     "head": "fail (by the test timeout)"
     },
     "reader-no-stored-bound": {
      "base": "fail",
@@ -426,10 +452,10 @@
     "file": "packages/polaris-generation-core/src/dossier-profile.test.ts",
     "boundMs": 1900,
     "headRuns": 10,
-    "headMaxMs": 64.094,
+    "headMaxMs": 64.686,
     "headLoad1": [
-     10.69,
-     12.8
+     29.31,
+     32.31
     ],
     "mutants": [
      {
@@ -437,14 +463,25 @@
       "title": "trims a long run of spaces in linear time",
       "runs": 3,
       "cappedRuns": 3,
-      "minMs": 60046.1,
+      "minMs": 60066.3,
       "reached": true
      }
     ],
-    "mutantMinMs": 60046.1,
+    "mutantMinMs": 60066.3,
     "mutantMinIsLowerBound": true,
-    "boundOverHeadMax": 29.6,
-    "mutantMinOverBound": 31.6
+    "boundOverHeadMax": 29.4,
+    "mutantMinOverBound": 31.6,
+    "geometricMeanNowMs": 1900,
+    "underProcessCpuFallback": {
+     "node": "v22.18.0",
+     "cpuSource": "process",
+     "headRuns": 10,
+     "headMaxMs": 88.331,
+     "mutantMinMs": 60019.1,
+     "mutantMinIsLowerBound": true,
+     "boundOverHeadMax": 21.5,
+     "mutantMinOverBound": 31.6
+    }
    }
   },
   {
@@ -481,10 +518,10 @@
     "file": "packages/polaris-generation-core/src/excerpt.test.ts",
     "boundMs": 140,
     "headRuns": 10,
-    "headMaxMs": 1.883,
+    "headMaxMs": 2.042,
     "headLoad1": [
-     12.23,
-     12.53
+     25.44,
+     26.85
     ],
     "mutants": [
      {
@@ -492,14 +529,25 @@
       "title": "stays linear on one 100k line of spaces after an identifier",
       "runs": 10,
       "cappedRuns": 0,
-      "minMs": 10443.762,
+      "minMs": 15327.977,
       "reached": true
      }
     ],
-    "mutantMinMs": 10443.762,
+    "mutantMinMs": 15327.977,
     "mutantMinIsLowerBound": false,
-    "boundOverHeadMax": 74.3,
-    "mutantMinOverBound": 74.6
+    "boundOverHeadMax": 68.6,
+    "mutantMinOverBound": 109.5,
+    "geometricMeanNowMs": 170,
+    "underProcessCpuFallback": {
+     "node": "v22.18.0",
+     "cpuSource": "process",
+     "headRuns": 10,
+     "headMaxMs": 1.631,
+     "mutantMinMs": 17314.492,
+     "mutantMinIsLowerBound": false,
+     "boundOverHeadMax": 85.8,
+     "mutantMinOverBound": 123.7
+    }
    }
   },
   {
@@ -521,10 +569,10 @@
     "file": "packages/three-surface-poc-core/src/test-artifact-verification.test.ts",
     "boundMs": 1500,
     "headRuns": 10,
-    "headMaxMs": 38.784,
+    "headMaxMs": 66.144,
     "headLoad1": [
-     14.93,
-     15.83
+     37.15,
+     42.58
     ],
     "mutants": [
      {
@@ -532,7 +580,7 @@
       "title": "scans unterminated opening tags at the ceiling",
       "runs": 3,
       "cappedRuns": 3,
-      "minMs": 60107.1,
+      "minMs": 60021.3,
       "reached": true
      },
      {
@@ -540,7 +588,7 @@
       "title": "scans unterminated plural tags at the ceiling",
       "runs": 3,
       "cappedRuns": 3,
-      "minMs": 60024.6,
+      "minMs": 60038.6,
       "reached": true
      },
      {
@@ -548,14 +596,25 @@
       "title": "scans near-miss tag names at the ceiling",
       "runs": 10,
       "cappedRuns": 0,
-      "minMs": 12.689,
+      "minMs": 16.378,
       "reached": false
      }
     ],
-    "mutantMinMs": 60024.6,
+    "mutantMinMs": 60021.3,
     "mutantMinIsLowerBound": true,
-    "boundOverHeadMax": 38.7,
-    "mutantMinOverBound": 40.0
+    "boundOverHeadMax": 22.7,
+    "mutantMinOverBound": 40.0,
+    "geometricMeanNowMs": 1900,
+    "underProcessCpuFallback": {
+     "node": "v22.18.0",
+     "cpuSource": "process",
+     "headRuns": 10,
+     "headMaxMs": 64.521,
+     "mutantMinMs": 60007.8,
+     "mutantMinIsLowerBound": true,
+     "boundOverHeadMax": 23.2,
+     "mutantMinOverBound": 40.0
+    }
    }
   },
   {
@@ -577,10 +636,10 @@
     "file": "packages/three-surface-poc-core/src/test-artifact-verification.test.ts",
     "boundMs": 3000,
     "headRuns": 10,
-    "headMaxMs": 154.665,
+    "headMaxMs": 148.918,
     "headLoad1": [
-     19.2,
-     20.78
+     23.25,
+     26.44
     ],
     "mutants": [
      {
@@ -588,14 +647,25 @@
       "title": "scans one tag body that is a single word run at the ceiling",
       "runs": 3,
       "cappedRuns": 3,
-      "minMs": 60032.2,
+      "minMs": 60001.8,
       "reached": true
      }
     ],
-    "mutantMinMs": 60032.2,
+    "mutantMinMs": 60001.8,
     "mutantMinIsLowerBound": true,
-    "boundOverHeadMax": 19.4,
-    "mutantMinOverBound": 20.0
+    "boundOverHeadMax": 20.1,
+    "mutantMinOverBound": 20.0,
+    "geometricMeanNowMs": 2900,
+    "underProcessCpuFallback": {
+     "node": "v22.18.0",
+     "cpuSource": "process",
+     "headRuns": 10,
+     "headMaxMs": 191.092,
+     "mutantMinMs": 60008.8,
+     "mutantMinIsLowerBound": true,
+     "boundOverHeadMax": 15.7,
+     "mutantMinOverBound": 20.0
+    }
    }
   },
   {
@@ -647,6 +717,24 @@
      "head": "fail"
     }
    }
+  },
+  {
+   "site": "apps/three-surface-poc/src/polaris-generation/self-corpus.test.ts:11 (base), PINNED_MAIN",
+   "was": "an exact 40-hex commit pin",
+   "property": "the self-corpus denominator is the one the M7 record measured",
+   "disposition": "kept",
+   "now": "kept as an exact pin: the commit is the contract docs/evidence/polaris-m7-synthetic-successor-2026-09-23.json binds, and node-ci.yml checks out with fetch-depth: 0 to keep it in a hosted checkout; the comment above the constant says so",
+   "mutants": [],
+   "outcomes": {}
+  },
+  {
+   "site": "apps/three-surface-poc/src/polaris-generation/redis-shaped-discovery.test.ts:152,159 (base), the two [Observed] rows",
+   "was": "exact byte totals {selected, deferred, cap}",
+   "property": "what selection measured on the fixed fixture corpus",
+   "disposition": "kept",
+   "now": "kept: each row reports an observation over the fixed fixture corpus, so its totals are the observation and not a bound; the greedy fill is the :137 (base) row's property; the comment above the two rows says so",
+   "mutants": [],
+   "outcomes": {}
   }
  ],
  "controls": {
@@ -704,7 +792,8 @@
   }
  },
  "residuals": [
-  "process.threadCpuUsage() exists from Node 23.9.0 while package.json engines admits Node 22.15 and later: on a Node 22 the four bounded rows throw rather than measure. CI and this host run Node 24.",
+  "process.threadCpuUsage() exists from Node 23.9.0 while package.json engines admits Node 22.15 and later. On a Node 22 the tests fall back to process.cpuUsage(), which also counts the worker process's other threads (garbage collection, compilation): each bound's separation under that fallback, on Node 22, is `underProcessCpuFallback`. CI and this host run Node 24.",
+  "The near-miss tag-names case runs under TAG_SCAN_CPU_MS with no mutant that fails it: the replaced scan is linear on that input too, so the bound rests on the other two cases; the test says so in a comment.",
   "A capped mutant run gives a lower bound on its region, not the region: the mutant minimum for those bounds is at least the cap, so each bound sits at least as far from the mutant as recorded.",
   "The kept daemon-entry text row also fails a mutant that loads nothing: a type-only import naming the POC app at module top (E-type-only-import), and a comment naming it outside the two branches would fail it the same way. The equivalents it passes are in daemonEntry.",
   "dossier-evaluation's INDEX and DEEP fixtures are ASCII, so a module that counted string length instead of UTF-8 bytes would pass every byte assertion there, at the base (literals) and at the head (counts) alike.",
@@ -726,7 +815,8 @@
     "newTextRow": "pass",
     "newOtherRows": [],
     "oldTextPin": "pass",
-    "oldOtherRows": []
+    "oldOtherRows": [],
+    "priorTest": "pass"
    },
    {
     "id": "P-static",
@@ -735,7 +825,11 @@
     "newTextRow": "fail",
     "newOtherRows": [],
     "oldTextPin": "fail",
-    "oldOtherRows": []
+    "oldOtherRows": [],
+    "priorTest": [
+     "daemon entry: the one changed input, `dossier` as the first argument every line of main.ts naming the POC app sits in the `dossier` and `polaris` branches, before the daemon path",
+     "daemon entry: the one changed input, `dossier` as the first argument the daemon path never loads the POC app, and the `dossier render` branch does"
+    ]
    },
    {
     "id": "P-before-branches",
@@ -744,16 +838,23 @@
     "newTextRow": "fail",
     "newOtherRows": [],
     "oldTextPin": "fail",
-    "oldOtherRows": []
+    "oldOtherRows": [],
+    "priorTest": [
+     "daemon entry: the one changed input, `dossier` as the first argument every line of main.ts naming the POC app sits in the `dossier` and `polaris` branches, before the daemon path",
+     "daemon entry: the one changed input, `dossier` as the first argument the daemon path never loads the POC app, and the `dossier render` branch does"
+    ]
    },
    {
     "id": "P-daemon-dynamic",
     "kind": "defect",
     "newHookRow": "fail",
-    "newTextRow": "pass",
+    "newTextRow": "fail",
     "newOtherRows": [],
     "oldTextPin": "fail",
-    "oldOtherRows": []
+    "oldOtherRows": [],
+    "priorTest": [
+     "daemon entry: the one changed input, `dossier` as the first argument the daemon path never loads the POC app, and the `dossier render` branch does"
+    ]
    },
    {
     "id": "P-help-branch",
@@ -762,7 +863,11 @@
     "newTextRow": "fail",
     "newOtherRows": [],
     "oldTextPin": "fail",
-    "oldOtherRows": []
+    "oldOtherRows": [],
+    "priorTest": [
+     "daemon entry: the one changed input, `dossier` as the first argument every line of main.ts naming the POC app sits in the `dossier` and `polaris` branches, before the daemon path",
+     "daemon entry: the one changed input, `dossier` as the first argument the daemon path never loads the POC app, and the `dossier render` branch does"
+    ]
    },
    {
     "id": "P-invalid-branch",
@@ -771,7 +876,11 @@
     "newTextRow": "fail",
     "newOtherRows": [],
     "oldTextPin": "fail",
-    "oldOtherRows": []
+    "oldOtherRows": [],
+    "priorTest": [
+     "daemon entry: the one changed input, `dossier` as the first argument every line of main.ts naming the POC app sits in the `dossier` and `polaris` branches, before the daemon path",
+     "daemon entry: the one changed input, `dossier` as the first argument the daemon path never loads the POC app, and the `dossier render` branch does"
+    ]
    },
    {
     "id": "P-start-failure",
@@ -780,7 +889,10 @@
     "newTextRow": "fail",
     "newOtherRows": [],
     "oldTextPin": "fail",
-    "oldOtherRows": []
+    "oldOtherRows": [],
+    "priorTest": [
+     "daemon entry: the one changed input, `dossier` as the first argument every line of main.ts naming the POC app sits in the `dossier` and `polaris` branches, before the daemon path"
+    ]
    },
    {
     "id": "P-entry-read",
@@ -789,7 +901,10 @@
     "newTextRow": "fail",
     "newOtherRows": [],
     "oldTextPin": "fail",
-    "oldOtherRows": []
+    "oldOtherRows": [],
+    "priorTest": [
+     "daemon entry: the one changed input, `dossier` as the first argument every line of main.ts naming the POC app sits in the `dossier` and `polaris` branches, before the daemon path"
+    ]
    },
    {
     "id": "P-shutdown",
@@ -798,7 +913,11 @@
     "newTextRow": "fail",
     "newOtherRows": [],
     "oldTextPin": "fail",
-    "oldOtherRows": []
+    "oldOtherRows": [],
+    "priorTest": [
+     "daemon entry: the one changed input, `dossier` as the first argument every line of main.ts naming the POC app sits in the `dossier` and `polaris` branches, before the daemon path",
+     "daemon entry: the one changed input, `dossier` as the first argument the daemon path never loads the POC app, and the `dossier render` branch does"
+    ]
    },
    {
     "id": "P-close-failure",
@@ -807,7 +926,10 @@
     "newTextRow": "fail",
     "newOtherRows": [],
     "oldTextPin": "fail",
-    "oldOtherRows": []
+    "oldOtherRows": [],
+    "priorTest": [
+     "daemon entry: the one changed input, `dossier` as the first argument every line of main.ts naming the POC app sits in the `dossier` and `polaris` branches, before the daemon path"
+    ]
    },
    {
     "id": "P-transitive",
@@ -816,7 +938,40 @@
     "newTextRow": "pass",
     "newOtherRows": [],
     "oldTextPin": "pass",
-    "oldOtherRows": []
+    "oldOtherRows": [],
+    "priorTest": [
+     "daemon entry: the one changed input, `dossier` as the first argument the daemon path never loads the POC app, and the `dossier render` branch does"
+    ]
+   },
+   {
+    "id": "R1-flag-between-branches",
+    "kind": "defect",
+    "newHookRow": "pass",
+    "newTextRow": "fail",
+    "newOtherRows": [],
+    "oldTextPin": "fail",
+    "oldOtherRows": [],
+    "priorTest": "pass"
+   },
+   {
+    "id": "R2-flag-createRequire-before-daemon",
+    "kind": "defect",
+    "newHookRow": "pass",
+    "newTextRow": "fail",
+    "newOtherRows": [],
+    "oldTextPin": "fail",
+    "oldOtherRows": [],
+    "priorTest": "pass"
+   },
+   {
+    "id": "R3-runtime-hook",
+    "kind": "defect",
+    "newHookRow": "pass",
+    "newTextRow": "fail",
+    "newOtherRows": [],
+    "oldTextPin": "fail",
+    "oldOtherRows": [],
+    "priorTest": "pass"
    },
    {
     "id": "E-type-only-import",
@@ -825,7 +980,10 @@
     "newTextRow": "fail",
     "newOtherRows": [],
     "oldTextPin": "fail",
-    "oldOtherRows": []
+    "oldOtherRows": [],
+    "priorTest": [
+     "daemon entry: the one changed input, `dossier` as the first argument every line of main.ts naming the POC app sits in the `dossier` and `polaris` branches, before the daemon path"
+    ]
    },
    {
     "id": "E-comment-in-branch",
@@ -834,7 +992,8 @@
     "newTextRow": "pass",
     "newOtherRows": [],
     "oldTextPin": "fail",
-    "oldOtherRows": []
+    "oldOtherRows": [],
+    "priorTest": "pass"
    },
    {
     "id": "E-renamed-binding",
@@ -843,7 +1002,8 @@
     "newTextRow": "pass",
     "newOtherRows": [],
     "oldTextPin": "fail",
-    "oldOtherRows": []
+    "oldOtherRows": [],
+    "priorTest": "pass"
    },
    {
     "id": "E-branch-swap",
@@ -852,7 +1012,8 @@
     "newTextRow": "pass",
     "newOtherRows": [],
     "oldTextPin": "fail",
-    "oldOtherRows": []
+    "oldOtherRows": [],
+    "priorTest": "pass"
    },
    {
     "id": "H-hook-blind",
@@ -861,7 +1022,10 @@
     "newTextRow": "pass",
     "newOtherRows": [],
     "oldTextPin": "skipped",
-    "oldOtherRows": []
+    "oldOtherRows": [],
+    "priorTest": [
+     "daemon entry: the one changed input, `dossier` as the first argument the daemon path never loads the POC app, and the `dossier render` branch does"
+    ]
    },
    {
     "id": "H-no-preload",
@@ -870,9 +1034,13 @@
     "newTextRow": "pass",
     "newOtherRows": [],
     "oldTextPin": "skipped",
-    "oldOtherRows": []
+    "oldOtherRows": [],
+    "priorTest": [
+     "daemon entry: the one changed input, `dossier` as the first argument the daemon path never loads the POC app, and the `dossier render` branch does"
+    ]
    }
   ],
+  "priorTestFrom": "447d9f083fb120c14ddd8da646c03675f3ce7bc7",
   "note": "defect: the daemon path loads the POC app on some argv or event; equivalent: nothing on any daemon path loads it; hook: the load hook itself is broken.",
   "pinKillsDropped": [
    "E-comment-in-branch",
@@ -886,7 +1054,7 @@
  "rowDelta": {
   "tool": "row_delta.py",
   "base": "8ff50172b127cba676ff32ce62c12c91b2b0d924",
-  "head": "3fc3709fc73175e2e42ab12329caf28384da7645",
+  "head": "bb5df68080b00a08557f64156c9bf3b4d9d25ed4",
   "lines": [
    "apps/three-surface-poc/src/capture-test-artifact-main.test.ts + 0 ~ 1 - 0",
    "   ~ capture-test-artifact never starts the observed project (run check) > refuses a FIFO without opening it, so a pipe nobody writes cannot hang the inges",
@@ -894,8 +1062,9 @@
    "   ~ started(): the wait for main to serve > reports a run that finished first, at once and by name",
    "apps/three-surface-poc/src/polaris-generation/redis-shaped-discovery.test.ts + 0 ~ 1 - 0",
    "   ~ discovery on a synthetic tree shaped like a large C key-value server > under the dossier byte cap (400,000 bytes of quotable text) > keeps the selecti",
+   "apps/three-surface-poc/src/polaris-generation/self-corpus.test.ts + 0 ~ 0 - 0",
    "packages/cap1-system/src/daemon-entry-unchanged.system.test.ts + 2 ~ 0 - 1",
-   "   + daemon entry: the one changed input, `dossier` as the first argument > every line of main.ts naming the POC app sits in the `dossier` and `polaris` br",
+   "   + daemon entry: the one changed input, `dossier` as the first argument > every line of main.ts naming the POC app sits inside the `dossier` or the `pola",
    "   + daemon entry: the one changed input, `dossier` as the first argument > the daemon path never loads the POC app, and the `dossier render` branch does",
    "   - daemon entry: the one changed input, `dossier` as the first argument > the daemon path never loads the POC app: each import is dynamic and inside the ",
    "packages/polaris-dossier/src/git-object-reader.test.ts + 0 ~ 8 - 0",

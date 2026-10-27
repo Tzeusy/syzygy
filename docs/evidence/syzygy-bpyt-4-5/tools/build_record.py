@@ -14,13 +14,15 @@ result file's sha256, the census totals at both commits, the mutant outcomes, th
 What each result must have run against, checked here: the mutants and the head census at EVIDENCE_COMMIT itself; the
 daemon-entry probe at a commit whose main.ts, state-directory.ts and daemon-entry test are byte-identical to EVIDENCE_COMMIT's;
 both CPU separations (thread CPU on Node 24, and process CPU on Node 22, where the tests' cpuUsage falls back) at a commit
-whose three timed test files differ from EVIDENCE_COMMIT's only in `const <NAME>_CPU_MS = ` lines (the bounds it proposed).
+whose three timed test files differ from EVIDENCE_COMMIT's only in `const <NAME>_CPU_MS = ` lines or in lines that are `//`
+comments, neither of which changes what the timed regions run.
 Each result's tool must hash, at EVIDENCE_COMMIT, to the digest the result records, and each result that reads
 tools/mutant-cases.json must record the digest that file has at EVIDENCE_COMMIT.
 
-Checked claims: every mutant case ran as its `expect` says; every CPU bound in the tests equals the bound its separation
-proposed and sits 10x or more from the head's slowest region and from the mutant's fastest, on thread CPU, and sits 10x or
-more from both under the process-CPU fallback too; on the daemon entry, every `defect` mutant fails the new test, every
+Checked claims: every mutant case ran as its `expect` says; every CPU bound in the tests sits 10x or more from the head's
+slowest region and from the mutant's fastest, on thread CPU and under the process-CPU fallback alike. The bounds were set
+at 3fc3709f at the geometric mean of the first separation and are not refitted: each later run's mean is recorded as
+`geometricMeanNowMs`; on the daemon entry, every `defect` mutant fails the new test, every
 `hook` mutant fails the load-hook row, every defect the old text pin failed the new test also fails, the R- mutants
 (rev-532's daemon-path loads) pass the kept text row as it stood at PRIOR_TEST_COMMIT and fail it now, and the three
 equivalents whose kills were dropped (E-comment-in-branch, E-renamed-binding, E-branch-swap) pass the new test. The narrative fields (`sites`, `residuals`) are the lane's own words.
@@ -56,7 +58,7 @@ cpu_files = sorted({s['file'] for s in sep['sites']})
 for name, record in (('cpu-separation', sep), ('cpu-separation-node22', sep22)):
     for line in git('diff', '-U0', record['tree'], ev, '--', *cpu_files).decode().split('\n'):
         if line.startswith(('+++', '---')) or not line.startswith(('+', '-')): continue
-        if not re.match(r'^[+-]const [A-Z_]+_CPU_MS = [0-9_]+;', line): sys.exit(f'{name}: a line other than a bound differs from {ev}: {line}')
+        if not re.match(r'^[+-](const [A-Z_]+_CPU_MS = [0-9_]+;|\s*//)', line): sys.exit(f'{name}: a line other than a bound or a comment differs from {ev}: {line}')
 cases_sha = sha(git('show', f'{ev}:docs/evidence/syzygy-bpyt-4-5/tools/mutant-cases.json'))
 for name, record in (('mutants', mutants), ('cpu-separation', sep), ('cpu-separation-node22', sep22)):
     if record['cases']['sha256'] != cases_sha: sys.exit(f'{name} used a mutant-cases.json other than the one at {ev}')
@@ -88,14 +90,14 @@ for s in sep22['sites']:
 separation = {}
 for s in sep['sites']:
     b = bounds_at_ev.get(s['bound'])
-    if b is None or b != s['proposedBoundMs']: sys.exit(f'{s["bound"]}: the test holds {b}, the separation proposed {s["proposedBoundMs"]}')
-    if not (b / s['headMaxMs'] >= 10 and s['mutantMinMs'] / b >= 10): sys.exit(f'{s["bound"]}: not 10x from both sides')
+    if b is None or s['fileBound']['ms'] != b: sys.exit(f'{s["bound"]}: the separation measured a bound other than the {b} the test holds')
+    if not (s['fileBound']['separated'] and b / s['headMaxMs'] >= 10 and s['mutantMinMs'] / b >= 10): sys.exit(f'{s["bound"]}: not 10x from both sides')
     loads = [r['load1Start'] for r in s['headRuns']] + [r['load1End'] for r in s['headRuns']]
     separation[s['bound']] = {
         'file': s['file'], 'boundMs': b, 'headRuns': len(s['headRuns']), 'headMaxMs': s['headMaxMs'], 'headLoad1': [min(loads), max(loads)],
         'mutants': [{'id': m['id'], 'title': m['title'], 'runs': len(m['runs']), 'cappedRuns': m['cappedRuns'], 'minMs': m['min'], 'reached': m['reached']} for m in s['mutants']],
         'mutantMinMs': s['mutantMinMs'], 'mutantMinIsLowerBound': s['mutantMinIsLowerBound'],
-        'boundOverHeadMax': round(b / s['headMaxMs'], 1), 'mutantMinOverBound': round(s['mutantMinMs'] / b, 1),
+        'boundOverHeadMax': round(b / s['headMaxMs'], 1), 'mutantMinOverBound': round(s['mutantMinMs'] / b, 1), 'geometricMeanNowMs': s['proposedBoundMs'],
         'underProcessCpuFallback': fallback[s['bound']]}
 
 SITES = [

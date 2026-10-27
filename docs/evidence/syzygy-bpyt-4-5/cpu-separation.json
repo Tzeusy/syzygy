@@ -1,37 +1,38 @@
 {
  "tool": {
   "name": "cpu_separation.py",
-  "sha256": "82cbaf22419cfe2269ba22e9a125d186c0fc19fa8595d6394cd17b4fc0b827f2"
+  "sha256": "eca8164ed1f35daca44907a15578a5a4192252e6a212c129a6ff8eafcdf69b3b"
  },
  "cases": {
   "path": "mutant-cases.json",
-  "sha256": "a1eddc42ccb40bcabd066eb6721f37f36b9ae0b826f034d58cd536a16b862ece"
+  "sha256": "80a34aae115f99b80d2cafdd0928aa5e93126d786fb729242b39bb1029745583"
  },
- "tree": "ab70ef7bfbaed7833f2a36d4331efcafcd37d6e3",
+ "tree": "722231fe0365eccd0239fb63edee92e7c5239531",
  "headRuns": 10,
  "mutantRuns": 10,
  "capMs": 60000,
  "cpus": 12,
+ "cpuSource": "thread",
  "node": "v24.6.0",
  "sites": [
   {
    "bound": "EDGE_TRIM_CPU_MS",
    "file": "packages/polaris-generation-core/src/dossier-profile.test.ts",
    "lines": [
-    176
+    181
    ],
    "headRuns": [
     {
      "title": "trims a long run of spaces in linear time",
      "exit": 0,
-     "seconds": 1.4,
-     "load1Start": 10.69,
-     "load1End": 10.88,
+     "seconds": 2.2,
+     "load1Start": 32.31,
+     "load1End": 32.31,
      "regions": [
       {
-       "line": 176,
+       "line": 181,
        "bound": "EDGE_TRIM_CPU_MS",
-       "cpuMs": 37.538
+       "cpuMs": 64.686
       }
      ],
      "capped": null
@@ -39,14 +40,14 @@
     {
      "title": "trims a long run of spaces in linear time",
      "exit": 0,
-     "seconds": 1.8,
-     "load1Start": 10.88,
-     "load1End": 10.88,
+     "seconds": 3.0,
+     "load1Start": 32.31,
+     "load1End": 31.33,
      "regions": [
       {
-       "line": 176,
+       "line": 181,
        "bound": "EDGE_TRIM_CPU_MS",
-       "cpuMs": 44
+       "cpuMs": 53.937
       }
      ],
      "capped": null
@@ -54,14 +55,14 @@
     {
      "title": "trims a long run of spaces in linear time",
      "exit": 0,
-     "seconds": 1.8,
-     "load1Start": 10.88,
-     "load1End": 10.88,
+     "seconds": 3.2,
+     "load1Start": 31.33,
+     "load1End": 31.33,
      "regions": [
       {
-       "line": 176,
+       "line": 181,
        "bound": "EDGE_TRIM_CPU_MS",
-       "cpuMs": 42.248
+       "cpuMs": 52.741
       }
      ],
      "capped": null
@@ -69,14 +70,14 @@
     {
      "title": "trims a long run of spaces in linear time",
      "exit": 0,
-     "seconds": 2.4,
-     "load1Start": 10.88,
-     "load1End": 12.09,
+     "seconds": 3.8,
+     "load1Start": 31.33,
+     "load1End": 31.14,
      "regions": [
       {
-       "line": 176,
+       "line": 181,
        "bound": "EDGE_TRIM_CPU_MS",
-       "cpuMs": 50.865
+       "cpuMs": 53.802
       }
      ],
      "capped": null
@@ -85,13 +86,13 @@
      "title": "trims a long run of spaces in linear time",
      "exit": 0,
      "seconds": 2.6,
-     "load1Start": 12.09,
-     "load1End": 12.09,
+     "load1Start": 31.14,
+     "load1End": 30.01,
      "regions": [
       {
-       "line": 176,
+       "line": 181,
        "bound": "EDGE_TRIM_CPU_MS",
-       "cpuMs": 54.848
+       "cpuMs": 54.91
       }
      ],
      "capped": null
@@ -99,14 +100,14 @@
     {
      "title": "trims a long run of spaces in linear time",
      "exit": 0,
-     "seconds": 1.8,
-     "load1Start": 12.09,
-     "load1End": 12.8,
+     "seconds": 3.7,
+     "load1Start": 30.01,
+     "load1End": 29.69,
      "regions": [
       {
-       "line": 176,
+       "line": 181,
        "bound": "EDGE_TRIM_CPU_MS",
-       "cpuMs": 52.341
+       "cpuMs": 56.333
       }
      ],
      "capped": null
@@ -114,14 +115,14 @@
     {
      "title": "trims a long run of spaces in linear time",
      "exit": 0,
-     "seconds": 1.6,
-     "load1Start": 12.8,
-     "load1End": 12.8,
+     "seconds": 2.7,
+     "load1Start": 29.69,
+     "load1End": 29.69,
      "regions": [
       {
-       "line": 176,
+       "line": 181,
        "bound": "EDGE_TRIM_CPU_MS",
-       "cpuMs": 64.094
+       "cpuMs": 55.171
       }
      ],
      "capped": null
@@ -129,14 +130,14 @@
     {
      "title": "trims a long run of spaces in linear time",
      "exit": 0,
-     "seconds": 1.6,
-     "load1Start": 12.8,
-     "load1End": 12.8,
+     "seconds": 3.2,
+     "load1Start": 29.69,
+     "load1End": 29.31,
      "regions": [
       {
-       "line": 176,
+       "line": 181,
        "bound": "EDGE_TRIM_CPU_MS",
-       "cpuMs": 40.686
+       "cpuMs": 56.945
       }
      ],
      "capped": null
@@ -144,14 +145,14 @@
     {
      "title": "trims a long run of spaces in linear time",
      "exit": 0,
-     "seconds": 2.0,
-     "load1Start": 12.8,
-     "load1End": 12.74,
+     "seconds": 3.4,
+     "load1Start": 29.31,
+     "load1End": 29.31,
      "regions": [
       {
-       "line": 176,
+       "line": 181,
        "bound": "EDGE_TRIM_CPU_MS",
-       "cpuMs": 59.001
+       "cpuMs": 59.402
       }
      ],
      "capped": null
@@ -159,20 +160,20 @@
     {
      "title": "trims a long run of spaces in linear time",
      "exit": 0,
-     "seconds": 1.8,
-     "load1Start": 12.74,
-     "load1End": 12.74,
+     "seconds": 3.2,
+     "load1Start": 29.31,
+     "load1End": 29.53,
      "regions": [
       {
-       "line": 176,
+       "line": 181,
        "bound": "EDGE_TRIM_CPU_MS",
-       "cpuMs": 54.599
+       "cpuMs": 60.493
       }
      ],
      "capped": null
     }
    ],
-   "headMaxMs": 64.094,
+   "headMaxMs": 64.686,
    "mutants": [
     {
      "id": "edge-backtracking-regex",
@@ -188,73 +189,99 @@
       {
        "title": "trims a long run of spaces in linear time",
        "exit": -9,
-       "seconds": 63.8,
-       "load1Start": 12.74,
-       "load1End": 14.35,
+       "seconds": 119.8,
+       "load1Start": 29.53,
+       "load1End": 39.89,
        "regions": [],
        "capped": {
-        "line": 169,
-        "regionCpuMsAtLeast": 60046.1
+        "line": 174,
+        "regionCpuMsAtLeast": 60123.5
        }
       },
       {
        "title": "trims a long run of spaces in linear time",
        "exit": -9,
-       "seconds": 63.6,
-       "load1Start": 14.35,
-       "load1End": 11.93,
+       "seconds": 86.7,
+       "load1Start": 39.89,
+       "load1End": 30.86,
        "regions": [],
        "capped": {
-        "line": 169,
-        "regionCpuMsAtLeast": 60069.1
+        "line": 174,
+        "regionCpuMsAtLeast": 60066.3
        }
       },
       {
        "title": "trims a long run of spaces in linear time",
        "exit": -9,
-       "seconds": 65.9,
-       "load1Start": 11.93,
-       "load1End": 12.23,
+       "seconds": 80.8,
+       "load1Start": 30.86,
+       "load1End": 26.46,
        "regions": [],
        "capped": {
-        "line": 169,
-        "regionCpuMsAtLeast": 60164.6
+        "line": 174,
+        "regionCpuMsAtLeast": 60080.6
        }
       }
      ],
-     "min": 60046.1,
+     "min": 60066.3,
      "cappedRuns": 3,
      "reached": true
     }
    ],
-   "mutantMinMs": 60046.1,
+   "mutantMinMs": 60066.3,
    "mutantMinIsLowerBound": true,
    "proposedBoundMs": 1900,
-   "boundOverHeadMax": 29.6,
+   "boundOverHeadMax": 29.4,
    "mutantMinOverBound": 31.6,
-   "separated": true
+   "separated": true,
+   "fileBound": {
+    "ms": 1900,
+    "overHeadMax": 29.4,
+    "mutantMinOver": 31.6,
+    "separated": true
+   }
   },
   {
    "bound": "HOSTILE_LINE_CPU_MS",
    "file": "packages/polaris-generation-core/src/excerpt.test.ts",
    "lines": [
-    267
+    272
    ],
    "headRuns": [
     {
      "title": "stays linear on one 100k line of spaces after",
      "exit": 0,
-     "seconds": 1.6,
-     "load1Start": 12.23,
-     "load1End": 12.23,
+     "seconds": 2.2,
+     "load1Start": 26.46,
+     "load1End": 25.78,
      "regions": [
       {
-       "line": 267,
+       "line": 272,
        "bound": "HOSTILE_LINE_CPU_MS",
-       "cpuMs": 0.937
+       "cpuMs": 0.999
       },
       {
-       "line": 267,
+       "line": 272,
+       "bound": "HOSTILE_LINE_CPU_MS",
+       "cpuMs": 0.264
+      }
+     ],
+     "capped": null
+    },
+    {
+     "title": "stays linear on one 100k line of spaces after",
+     "exit": 0,
+     "seconds": 2.2,
+     "load1Start": 25.78,
+     "load1End": 25.78,
+     "regions": [
+      {
+       "line": 272,
+       "bound": "HOSTILE_LINE_CPU_MS",
+       "cpuMs": 1.311
+      },
+      {
+       "line": 272,
        "bound": "HOSTILE_LINE_CPU_MS",
        "cpuMs": 0
       }
@@ -264,17 +291,17 @@
     {
      "title": "stays linear on one 100k line of spaces after",
      "exit": 0,
-     "seconds": 1.8,
-     "load1Start": 12.23,
-     "load1End": 12.53,
+     "seconds": 2.6,
+     "load1Start": 25.78,
+     "load1End": 26.76,
      "regions": [
       {
-       "line": 267,
+       "line": 272,
        "bound": "HOSTILE_LINE_CPU_MS",
-       "cpuMs": 0.71
+       "cpuMs": 1.272
       },
       {
-       "line": 267,
+       "line": 272,
        "bound": "HOSTILE_LINE_CPU_MS",
        "cpuMs": 0
       }
@@ -284,19 +311,99 @@
     {
      "title": "stays linear on one 100k line of spaces after",
      "exit": 0,
-     "seconds": 1.8,
-     "load1Start": 12.53,
-     "load1End": 12.53,
+     "seconds": 2.7,
+     "load1Start": 26.76,
+     "load1End": 26.76,
      "regions": [
       {
-       "line": 267,
+       "line": 272,
+       "bound": "HOSTILE_LINE_CPU_MS",
+       "cpuMs": 1.228
+      },
+      {
+       "line": 272,
+       "bound": "HOSTILE_LINE_CPU_MS",
+       "cpuMs": 0.129
+      }
+     ],
+     "capped": null
+    },
+    {
+     "title": "stays linear on one 100k line of spaces after",
+     "exit": 0,
+     "seconds": 2.2,
+     "load1Start": 26.76,
+     "load1End": 25.82,
+     "regions": [
+      {
+       "line": 272,
+       "bound": "HOSTILE_LINE_CPU_MS",
+       "cpuMs": 2.042
+      },
+      {
+       "line": 272,
+       "bound": "HOSTILE_LINE_CPU_MS",
+       "cpuMs": 0.425
+      }
+     ],
+     "capped": null
+    },
+    {
+     "title": "stays linear on one 100k line of spaces after",
+     "exit": 0,
+     "seconds": 2.6,
+     "load1Start": 25.82,
+     "load1End": 25.82,
+     "regions": [
+      {
+       "line": 272,
+       "bound": "HOSTILE_LINE_CPU_MS",
+       "cpuMs": 1.681
+      },
+      {
+       "line": 272,
+       "bound": "HOSTILE_LINE_CPU_MS",
+       "cpuMs": 0.358
+      }
+     ],
+     "capped": null
+    },
+    {
+     "title": "stays linear on one 100k line of spaces after",
+     "exit": 0,
+     "seconds": 3.4,
+     "load1Start": 25.82,
+     "load1End": 25.83,
+     "regions": [
+      {
+       "line": 272,
+       "bound": "HOSTILE_LINE_CPU_MS",
+       "cpuMs": 1.476
+      },
+      {
+       "line": 272,
+       "bound": "HOSTILE_LINE_CPU_MS",
+       "cpuMs": 0
+      }
+     ],
+     "capped": null
+    },
+    {
+     "title": "stays linear on one 100k line of spaces after",
+     "exit": 0,
+     "seconds": 2.6,
+     "load1Start": 25.83,
+     "load1End": 25.44,
+     "regions": [
+      {
+       "line": 272,
        "bound": "HOSTILE_LINE_CPU_MS",
        "cpuMs": 1
       },
       {
-       "line": 267,
+       "line": 272,
        "bound": "HOSTILE_LINE_CPU_MS",
-       "cpuMs": 0.345
+       "cpuMs": 0.591
       }
      ],
      "capped": null
@@ -304,79 +411,19 @@
     {
      "title": "stays linear on one 100k line of spaces after",
      "exit": 0,
-     "seconds": 1.4,
-     "load1Start": 12.53,
-     "load1End": 12.53,
+     "seconds": 2.9,
+     "load1Start": 25.44,
+     "load1End": 25.44,
      "regions": [
       {
-       "line": 267,
-       "bound": "HOSTILE_LINE_CPU_MS",
-       "cpuMs": 0.496
-      },
-      {
-       "line": 267,
-       "bound": "HOSTILE_LINE_CPU_MS",
-       "cpuMs": 0
-      }
-     ],
-     "capped": null
-    },
-    {
-     "title": "stays linear on one 100k line of spaces after",
-     "exit": 0,
-     "seconds": 1.4,
-     "load1Start": 12.53,
-     "load1End": 12.53,
-     "regions": [
-      {
-       "line": 267,
-       "bound": "HOSTILE_LINE_CPU_MS",
-       "cpuMs": 0.366
-      },
-      {
-       "line": 267,
-       "bound": "HOSTILE_LINE_CPU_MS",
-       "cpuMs": 0
-      }
-     ],
-     "capped": null
-    },
-    {
-     "title": "stays linear on one 100k line of spaces after",
-     "exit": 0,
-     "seconds": 1.8,
-     "load1Start": 12.53,
-     "load1End": 12.49,
-     "regions": [
-      {
-       "line": 267,
-       "bound": "HOSTILE_LINE_CPU_MS",
-       "cpuMs": 1.001
-      },
-      {
-       "line": 267,
-       "bound": "HOSTILE_LINE_CPU_MS",
-       "cpuMs": 1
-      }
-     ],
-     "capped": null
-    },
-    {
-     "title": "stays linear on one 100k line of spaces after",
-     "exit": 0,
-     "seconds": 1.6,
-     "load1Start": 12.49,
-     "load1End": 12.49,
-     "regions": [
-      {
-       "line": 267,
+       "line": 272,
        "bound": "HOSTILE_LINE_CPU_MS",
        "cpuMs": 1
       },
       {
-       "line": 267,
+       "line": 272,
        "bound": "HOSTILE_LINE_CPU_MS",
-       "cpuMs": 0
+       "cpuMs": 0.099
       }
      ],
      "capped": null
@@ -384,65 +431,25 @@
     {
      "title": "stays linear on one 100k line of spaces after",
      "exit": 0,
-     "seconds": 1.4,
-     "load1Start": 12.49,
-     "load1End": 12.49,
+     "seconds": 2.4,
+     "load1Start": 25.44,
+     "load1End": 26.85,
      "regions": [
       {
-       "line": 267,
+       "line": 272,
        "bound": "HOSTILE_LINE_CPU_MS",
-       "cpuMs": 1.007
+       "cpuMs": 1.289
       },
       {
-       "line": 267,
+       "line": 272,
        "bound": "HOSTILE_LINE_CPU_MS",
-       "cpuMs": 1
-      }
-     ],
-     "capped": null
-    },
-    {
-     "title": "stays linear on one 100k line of spaces after",
-     "exit": 0,
-     "seconds": 1.4,
-     "load1Start": 12.49,
-     "load1End": 12.53,
-     "regions": [
-      {
-       "line": 267,
-       "bound": "HOSTILE_LINE_CPU_MS",
-       "cpuMs": 1.001
-      },
-      {
-       "line": 267,
-       "bound": "HOSTILE_LINE_CPU_MS",
-       "cpuMs": 0.385
-      }
-     ],
-     "capped": null
-    },
-    {
-     "title": "stays linear on one 100k line of spaces after",
-     "exit": 0,
-     "seconds": 1.6,
-     "load1Start": 12.53,
-     "load1End": 12.53,
-     "regions": [
-      {
-       "line": 267,
-       "bound": "HOSTILE_LINE_CPU_MS",
-       "cpuMs": 1.883
-      },
-      {
-       "line": 267,
-       "bound": "HOSTILE_LINE_CPU_MS",
-       "cpuMs": 0
+       "cpuMs": 0.243
       }
      ],
      "capped": null
     }
    ],
-   "headMaxMs": 1.883,
+   "headMaxMs": 2.042,
    "mutants": [
     {
      "id": "excerpt-no-cap-quadratic-pattern",
@@ -463,14 +470,14 @@
       {
        "title": "stays linear on one 100k line of spaces after an identifier",
        "exit": 1,
-       "seconds": 16.8,
-       "load1Start": 12.53,
-       "load1End": 15.83,
+       "seconds": 22.8,
+       "load1Start": 26.85,
+       "load1End": 27.48,
        "regions": [
         {
-         "line": 267,
+         "line": 272,
          "bound": "HOSTILE_LINE_CPU_MS",
-         "cpuMs": 13541.501
+         "cpuMs": 15886.905
         }
        ],
        "capped": null
@@ -478,14 +485,14 @@
       {
        "title": "stays linear on one 100k line of spaces after an identifier",
        "exit": 1,
-       "seconds": 16.7,
-       "load1Start": 15.83,
-       "load1End": 14.88,
+       "seconds": 23.5,
+       "load1Start": 27.48,
+       "load1End": 26.93,
        "regions": [
         {
-         "line": 267,
+         "line": 272,
          "bound": "HOSTILE_LINE_CPU_MS",
-         "cpuMs": 13303.92
+         "cpuMs": 15889.051
         }
        ],
        "capped": null
@@ -493,14 +500,14 @@
       {
        "title": "stays linear on one 100k line of spaces after an identifier",
        "exit": 1,
-       "seconds": 15.1,
-       "load1Start": 14.88,
-       "load1End": 13.86,
+       "seconds": 23.8,
+       "load1Start": 26.93,
+       "load1End": 30.62,
        "regions": [
         {
-         "line": 267,
+         "line": 272,
          "bound": "HOSTILE_LINE_CPU_MS",
-         "cpuMs": 12816.551
+         "cpuMs": 15858.616
         }
        ],
        "capped": null
@@ -508,14 +515,14 @@
       {
        "title": "stays linear on one 100k line of spaces after an identifier",
        "exit": 1,
-       "seconds": 16.5,
-       "load1Start": 13.86,
-       "load1End": 14.24,
+       "seconds": 25.0,
+       "load1Start": 30.62,
+       "load1End": 28.57,
        "regions": [
         {
-         "line": 267,
+         "line": 272,
          "bound": "HOSTILE_LINE_CPU_MS",
-         "cpuMs": 13311.266
+         "cpuMs": 15820.533
         }
        ],
        "capped": null
@@ -523,14 +530,14 @@
       {
        "title": "stays linear on one 100k line of spaces after an identifier",
        "exit": 1,
-       "seconds": 17.3,
-       "load1Start": 14.24,
-       "load1End": 15.41,
+       "seconds": 20.6,
+       "load1Start": 28.57,
+       "load1End": 26.62,
        "regions": [
         {
-         "line": 267,
+         "line": 272,
          "bound": "HOSTILE_LINE_CPU_MS",
-         "cpuMs": 14040.974
+         "cpuMs": 15327.977
         }
        ],
        "capped": null
@@ -538,14 +545,14 @@
       {
        "title": "stays linear on one 100k line of spaces after an identifier",
        "exit": 1,
-       "seconds": 19.8,
-       "load1Start": 15.41,
-       "load1End": 18.46,
+       "seconds": 23.3,
+       "load1Start": 26.62,
+       "load1End": 25.43,
        "regions": [
         {
-         "line": 267,
+         "line": 272,
          "bound": "HOSTILE_LINE_CPU_MS",
-         "cpuMs": 14738.389
+         "cpuMs": 15979.215
         }
        ],
        "capped": null
@@ -553,14 +560,14 @@
       {
        "title": "stays linear on one 100k line of spaces after an identifier",
        "exit": 1,
-       "seconds": 14.5,
-       "load1Start": 18.46,
-       "load1End": 19.11,
+       "seconds": 23.0,
+       "load1Start": 25.43,
+       "load1End": 23.34,
        "regions": [
         {
-         "line": 267,
+         "line": 272,
          "bound": "HOSTILE_LINE_CPU_MS",
-         "cpuMs": 12102.556
+         "cpuMs": 15918.323
         }
        ],
        "capped": null
@@ -568,14 +575,14 @@
       {
        "title": "stays linear on one 100k line of spaces after an identifier",
        "exit": 1,
-       "seconds": 14.1,
-       "load1Start": 19.11,
-       "load1End": 18.18,
+       "seconds": 21.2,
+       "load1Start": 23.34,
+       "load1End": 21.21,
        "regions": [
         {
-         "line": 267,
+         "line": 272,
          "bound": "HOSTILE_LINE_CPU_MS",
-         "cpuMs": 12278.003
+         "cpuMs": 15442.15
         }
        ],
        "capped": null
@@ -583,14 +590,14 @@
       {
        "title": "stays linear on one 100k line of spaces after an identifier",
        "exit": 1,
-       "seconds": 13.6,
-       "load1Start": 18.18,
-       "load1End": 16.49,
+       "seconds": 25.7,
+       "load1Start": 21.21,
+       "load1End": 25.1,
        "regions": [
         {
-         "line": 267,
+         "line": 272,
          "bound": "HOSTILE_LINE_CPU_MS",
-         "cpuMs": 11950.189
+         "cpuMs": 15873.791
         }
        ],
        "capped": null
@@ -598,59 +605,65 @@
       {
        "title": "stays linear on one 100k line of spaces after an identifier",
        "exit": 1,
-       "seconds": 11.8,
-       "load1Start": 16.49,
-       "load1End": 15.83,
+       "seconds": 28.8,
+       "load1Start": 25.1,
+       "load1End": 37.94,
        "regions": [
         {
-         "line": 267,
+         "line": 272,
          "bound": "HOSTILE_LINE_CPU_MS",
-         "cpuMs": 10443.762
+         "cpuMs": 16252.443
         }
        ],
        "capped": null
       }
      ],
-     "min": 10443.762,
+     "min": 15327.977,
      "cappedRuns": 0,
      "reached": true
     }
    ],
-   "mutantMinMs": 10443.762,
+   "mutantMinMs": 15327.977,
    "mutantMinIsLowerBound": false,
-   "proposedBoundMs": 140,
-   "boundOverHeadMax": 74.3,
-   "mutantMinOverBound": 74.6,
-   "separated": true
+   "proposedBoundMs": 170,
+   "boundOverHeadMax": 83.3,
+   "mutantMinOverBound": 90.2,
+   "separated": true,
+   "fileBound": {
+    "ms": 140,
+    "overHeadMax": 68.6,
+    "mutantMinOver": 109.5,
+    "separated": true
+   }
   },
   {
    "bound": "TAG_SCAN_CPU_MS",
    "file": "packages/three-surface-poc-core/src/test-artifact-verification.test.ts",
    "lines": [
-    103
+    110
    ],
    "headRuns": [
     {
      "title": "scans (unterminated opening tags|unterminated plural tags|near-miss tag names) at the ceiling",
      "exit": 0,
-     "seconds": 1.2,
-     "load1Start": 15.83,
-     "load1End": 15.36,
+     "seconds": 3.4,
+     "load1Start": 37.94,
+     "load1End": 37.95,
      "regions": [
       {
-       "line": 103,
+       "line": 110,
        "bound": "TAG_SCAN_CPU_MS",
-       "cpuMs": 10
+       "cpuMs": 13.116
       },
       {
-       "line": 103,
+       "line": 110,
        "bound": "TAG_SCAN_CPU_MS",
-       "cpuMs": 33.939
+       "cpuMs": 43.16
       },
       {
-       "line": 103,
+       "line": 110,
        "bound": "TAG_SCAN_CPU_MS",
-       "cpuMs": 23.993
+       "cpuMs": 34.36
       }
      ],
      "capped": null
@@ -658,24 +671,24 @@
     {
      "title": "scans (unterminated opening tags|unterminated plural tags|near-miss tag names) at the ceiling",
      "exit": 0,
-     "seconds": 1.2,
-     "load1Start": 15.36,
-     "load1End": 15.36,
+     "seconds": 3.3,
+     "load1Start": 37.95,
+     "load1End": 37.15,
      "regions": [
       {
-       "line": 103,
+       "line": 110,
        "bound": "TAG_SCAN_CPU_MS",
-       "cpuMs": 7.858
+       "cpuMs": 11.181
       },
       {
-       "line": 103,
+       "line": 110,
        "bound": "TAG_SCAN_CPU_MS",
-       "cpuMs": 27.848
+       "cpuMs": 37.771
       },
       {
-       "line": 103,
+       "line": 110,
        "bound": "TAG_SCAN_CPU_MS",
-       "cpuMs": 24.836
+       "cpuMs": 37.867
       }
      ],
      "capped": null
@@ -683,24 +696,24 @@
     {
      "title": "scans (unterminated opening tags|unterminated plural tags|near-miss tag names) at the ceiling",
      "exit": 0,
-     "seconds": 1.2,
-     "load1Start": 15.36,
-     "load1End": 15.36,
+     "seconds": 4.0,
+     "load1Start": 37.15,
+     "load1End": 37.15,
      "regions": [
       {
-       "line": 103,
+       "line": 110,
        "bound": "TAG_SCAN_CPU_MS",
-       "cpuMs": 10.726
+       "cpuMs": 12.73
       },
       {
-       "line": 103,
+       "line": 110,
        "bound": "TAG_SCAN_CPU_MS",
-       "cpuMs": 38.784
+       "cpuMs": 66.144
       },
       {
-       "line": 103,
+       "line": 110,
        "bound": "TAG_SCAN_CPU_MS",
-       "cpuMs": 27.994
+       "cpuMs": 36.115
       }
      ],
      "capped": null
@@ -708,24 +721,24 @@
     {
      "title": "scans (unterminated opening tags|unterminated plural tags|near-miss tag names) at the ceiling",
      "exit": 0,
-     "seconds": 1.2,
-     "load1Start": 15.36,
-     "load1End": 15.36,
+     "seconds": 3.2,
+     "load1Start": 37.15,
+     "load1End": 38.02,
      "regions": [
       {
-       "line": 103,
+       "line": 110,
        "bound": "TAG_SCAN_CPU_MS",
-       "cpuMs": 10.993
+       "cpuMs": 11.276
       },
       {
-       "line": 103,
+       "line": 110,
        "bound": "TAG_SCAN_CPU_MS",
-       "cpuMs": 30.945
+       "cpuMs": 48.497
       },
       {
-       "line": 103,
+       "line": 110,
        "bound": "TAG_SCAN_CPU_MS",
-       "cpuMs": 23.99
+       "cpuMs": 33.827
       }
      ],
      "capped": null
@@ -733,24 +746,24 @@
     {
      "title": "scans (unterminated opening tags|unterminated plural tags|near-miss tag names) at the ceiling",
      "exit": 0,
-     "seconds": 1.4,
-     "load1Start": 15.36,
-     "load1End": 14.93,
+     "seconds": 3.8,
+     "load1Start": 38.02,
+     "load1End": 39.14,
      "regions": [
       {
-       "line": 103,
+       "line": 110,
        "bound": "TAG_SCAN_CPU_MS",
-       "cpuMs": 9.999
+       "cpuMs": 10.988
       },
       {
-       "line": 103,
+       "line": 110,
        "bound": "TAG_SCAN_CPU_MS",
-       "cpuMs": 31.841
+       "cpuMs": 48.337
       },
       {
-       "line": 103,
+       "line": 110,
        "bound": "TAG_SCAN_CPU_MS",
-       "cpuMs": 23.991
+       "cpuMs": 38.226
       }
      ],
      "capped": null
@@ -758,24 +771,24 @@
     {
      "title": "scans (unterminated opening tags|unterminated plural tags|near-miss tag names) at the ceiling",
      "exit": 0,
-     "seconds": 1.6,
-     "load1Start": 14.93,
-     "load1End": 14.93,
+     "seconds": 3.5,
+     "load1Start": 39.14,
+     "load1End": 39.14,
      "regions": [
       {
-       "line": 103,
+       "line": 110,
        "bound": "TAG_SCAN_CPU_MS",
-       "cpuMs": 8
+       "cpuMs": 10.718
       },
       {
-       "line": 103,
+       "line": 110,
        "bound": "TAG_SCAN_CPU_MS",
-       "cpuMs": 31.921
+       "cpuMs": 37.908
       },
       {
-       "line": 103,
+       "line": 110,
        "bound": "TAG_SCAN_CPU_MS",
-       "cpuMs": 24.967
+       "cpuMs": 37.762
       }
      ],
      "capped": null
@@ -783,24 +796,24 @@
     {
      "title": "scans (unterminated opening tags|unterminated plural tags|near-miss tag names) at the ceiling",
      "exit": 0,
-     "seconds": 1.4,
-     "load1Start": 14.93,
-     "load1End": 14.93,
+     "seconds": 4.1,
+     "load1Start": 39.14,
+     "load1End": 40.09,
      "regions": [
       {
-       "line": 103,
+       "line": 110,
        "bound": "TAG_SCAN_CPU_MS",
-       "cpuMs": 8.041
+       "cpuMs": 10.738
       },
       {
-       "line": 103,
+       "line": 110,
        "bound": "TAG_SCAN_CPU_MS",
-       "cpuMs": 29.635
+       "cpuMs": 42.792
       },
       {
-       "line": 103,
+       "line": 110,
        "bound": "TAG_SCAN_CPU_MS",
-       "cpuMs": 24.994
+       "cpuMs": 33.801
       }
      ],
      "capped": null
@@ -808,24 +821,24 @@
     {
      "title": "scans (unterminated opening tags|unterminated plural tags|near-miss tag names) at the ceiling",
      "exit": 0,
-     "seconds": 1.2,
-     "load1Start": 14.93,
-     "load1End": 14.93,
+     "seconds": 3.9,
+     "load1Start": 40.09,
+     "load1End": 41.04,
      "regions": [
       {
-       "line": 103,
+       "line": 110,
        "bound": "TAG_SCAN_CPU_MS",
-       "cpuMs": 11.527
+       "cpuMs": 11.376
       },
       {
-       "line": 103,
+       "line": 110,
        "bound": "TAG_SCAN_CPU_MS",
-       "cpuMs": 30.954
+       "cpuMs": 39.387
       },
       {
-       "line": 103,
+       "line": 110,
        "bound": "TAG_SCAN_CPU_MS",
-       "cpuMs": 22.993
+       "cpuMs": 44.165
       }
      ],
      "capped": null
@@ -833,24 +846,24 @@
     {
      "title": "scans (unterminated opening tags|unterminated plural tags|near-miss tag names) at the ceiling",
      "exit": 0,
-     "seconds": 1.4,
-     "load1Start": 14.93,
-     "load1End": 15.58,
+     "seconds": 3.7,
+     "load1Start": 41.04,
+     "load1End": 40.8,
      "regions": [
       {
-       "line": 103,
+       "line": 110,
        "bound": "TAG_SCAN_CPU_MS",
-       "cpuMs": 9.967
+       "cpuMs": 9.981
       },
       {
-       "line": 103,
+       "line": 110,
        "bound": "TAG_SCAN_CPU_MS",
-       "cpuMs": 36.435
+       "cpuMs": 42.895
       },
       {
-       "line": 103,
+       "line": 110,
        "bound": "TAG_SCAN_CPU_MS",
-       "cpuMs": 31.333
+       "cpuMs": 38.704
       }
      ],
      "capped": null
@@ -858,30 +871,30 @@
     {
      "title": "scans (unterminated opening tags|unterminated plural tags|near-miss tag names) at the ceiling",
      "exit": 0,
-     "seconds": 1.2,
-     "load1Start": 15.58,
-     "load1End": 15.58,
+     "seconds": 4.9,
+     "load1Start": 40.8,
+     "load1End": 42.58,
      "regions": [
       {
-       "line": 103,
+       "line": 110,
        "bound": "TAG_SCAN_CPU_MS",
-       "cpuMs": 8.427
+       "cpuMs": 11.256
       },
       {
-       "line": 103,
+       "line": 110,
        "bound": "TAG_SCAN_CPU_MS",
-       "cpuMs": 32.408
+       "cpuMs": 41.469
       },
       {
-       "line": 103,
+       "line": 110,
        "bound": "TAG_SCAN_CPU_MS",
-       "cpuMs": 24.987
+       "cpuMs": 34.743
       }
      ],
      "capped": null
     }
    ],
-   "headMaxMs": 38.784,
+   "headMaxMs": 66.144,
    "mutants": [
     {
      "id": "junit-tag-regex",
@@ -897,41 +910,41 @@
       {
        "title": "scans unterminated opening tags at the ceiling",
        "exit": -9,
-       "seconds": 61.6,
-       "load1Start": 15.58,
-       "load1End": 13.13,
+       "seconds": 75.4,
+       "load1Start": 42.58,
+       "load1End": 31.9,
        "regions": [],
        "capped": {
-        "line": 101,
-        "regionCpuMsAtLeast": 60171.5
+        "line": 108,
+        "regionCpuMsAtLeast": 60054.1
        }
       },
       {
        "title": "scans unterminated opening tags at the ceiling",
        "exit": -9,
-       "seconds": 63.3,
-       "load1Start": 13.13,
-       "load1End": 12.52,
+       "seconds": 82.3,
+       "load1Start": 31.9,
+       "load1End": 28.03,
        "regions": [],
        "capped": {
-        "line": 101,
-        "regionCpuMsAtLeast": 60107.1
+        "line": 108,
+        "regionCpuMsAtLeast": 60120.9
        }
       },
       {
        "title": "scans unterminated opening tags at the ceiling",
        "exit": -9,
-       "seconds": 62.9,
-       "load1Start": 12.52,
-       "load1End": 13.36,
+       "seconds": 70.8,
+       "load1Start": 28.03,
+       "load1End": 23.2,
        "regions": [],
        "capped": {
-        "line": 101,
-        "regionCpuMsAtLeast": 60188.4
+        "line": 108,
+        "regionCpuMsAtLeast": 60021.3
        }
       }
      ],
-     "min": 60107.1,
+     "min": 60021.3,
      "cappedRuns": 3,
      "reached": true
     },
@@ -949,41 +962,41 @@
       {
        "title": "scans unterminated plural tags at the ceiling",
        "exit": -9,
-       "seconds": 75.9,
-       "load1Start": 13.36,
-       "load1End": 21.15,
+       "seconds": 68.5,
+       "load1Start": 23.2,
+       "load1End": 20.24,
        "regions": [],
        "capped": {
-        "line": 101,
-        "regionCpuMsAtLeast": 60138.2
+        "line": 108,
+        "regionCpuMsAtLeast": 60050.7
        }
       },
       {
        "title": "scans unterminated plural tags at the ceiling",
        "exit": -9,
-       "seconds": 78.8,
-       "load1Start": 21.15,
-       "load1End": 20.98,
+       "seconds": 68.3,
+       "load1Start": 20.24,
+       "load1End": 18.48,
        "regions": [],
        "capped": {
-        "line": 101,
-        "regionCpuMsAtLeast": 60024.6
+        "line": 108,
+        "regionCpuMsAtLeast": 60069.9
        }
       },
       {
        "title": "scans unterminated plural tags at the ceiling",
        "exit": -9,
-       "seconds": 66.0,
-       "load1Start": 20.98,
-       "load1End": 17.23,
+       "seconds": 75.8,
+       "load1Start": 18.48,
+       "load1End": 23.43,
        "regions": [],
        "capped": {
-        "line": 101,
-        "regionCpuMsAtLeast": 60062.2
+        "line": 108,
+        "regionCpuMsAtLeast": 60038.6
        }
       }
      ],
-     "min": 60024.6,
+     "min": 60038.6,
      "cappedRuns": 3,
      "reached": true
     },
@@ -1001,59 +1014,14 @@
       {
        "title": "scans near-miss tag names at the ceiling",
        "exit": 0,
-       "seconds": 2.4,
-       "load1Start": 17.23,
-       "load1End": 17.23,
-       "regions": [
-        {
-         "line": 103,
-         "bound": "TAG_SCAN_CPU_MS",
-         "cpuMs": 19.1
-        }
-       ],
-       "capped": null
-      },
-      {
-       "title": "scans near-miss tag names at the ceiling",
-       "exit": 0,
-       "seconds": 2.0,
-       "load1Start": 17.23,
-       "load1End": 17.23,
-       "regions": [
-        {
-         "line": 103,
-         "bound": "TAG_SCAN_CPU_MS",
-         "cpuMs": 17.917
-        }
-       ],
-       "capped": null
-      },
-      {
-       "title": "scans near-miss tag names at the ceiling",
-       "exit": 0,
-       "seconds": 2.4,
-       "load1Start": 17.23,
-       "load1End": 18.02,
-       "regions": [
-        {
-         "line": 103,
-         "bound": "TAG_SCAN_CPU_MS",
-         "cpuMs": 12.91
-        }
-       ],
-       "capped": null
-      },
-      {
-       "title": "scans near-miss tag names at the ceiling",
-       "exit": 0,
        "seconds": 2.2,
-       "load1Start": 18.02,
-       "load1End": 18.02,
+       "load1Start": 23.43,
+       "load1End": 23.43,
        "regions": [
         {
-         "line": 103,
+         "line": 110,
          "bound": "TAG_SCAN_CPU_MS",
-         "cpuMs": 18.501
+         "cpuMs": 17.999
         }
        ],
        "capped": null
@@ -1061,14 +1029,29 @@
       {
        "title": "scans near-miss tag names at the ceiling",
        "exit": 0,
-       "seconds": 2.8,
-       "load1Start": 18.02,
-       "load1End": 18.49,
+       "seconds": 2.6,
+       "load1Start": 23.43,
+       "load1End": 24.12,
        "regions": [
         {
-         "line": 103,
+         "line": 110,
          "bound": "TAG_SCAN_CPU_MS",
-         "cpuMs": 16.911
+         "cpuMs": 18.828
+        }
+       ],
+       "capped": null
+      },
+      {
+       "title": "scans near-miss tag names at the ceiling",
+       "exit": 0,
+       "seconds": 2.4,
+       "load1Start": 24.12,
+       "load1End": 24.12,
+       "regions": [
+        {
+         "line": 110,
+         "bound": "TAG_SCAN_CPU_MS",
+         "cpuMs": 17.465
         }
        ],
        "capped": null
@@ -1077,13 +1060,13 @@
        "title": "scans near-miss tag names at the ceiling",
        "exit": 0,
        "seconds": 1.8,
-       "load1Start": 18.49,
-       "load1End": 18.49,
+       "load1Start": 24.12,
+       "load1End": 23.47,
        "regions": [
         {
-         "line": 103,
+         "line": 110,
          "bound": "TAG_SCAN_CPU_MS",
-         "cpuMs": 14.499
+         "cpuMs": 18.744
         }
        ],
        "capped": null
@@ -1092,13 +1075,13 @@
        "title": "scans near-miss tag names at the ceiling",
        "exit": 0,
        "seconds": 1.6,
-       "load1Start": 18.49,
-       "load1End": 19.74,
+       "load1Start": 23.47,
+       "load1End": 23.47,
        "regions": [
         {
-         "line": 103,
+         "line": 110,
          "bound": "TAG_SCAN_CPU_MS",
-         "cpuMs": 12.689
+         "cpuMs": 18.627
         }
        ],
        "capped": null
@@ -1107,13 +1090,13 @@
        "title": "scans near-miss tag names at the ceiling",
        "exit": 0,
        "seconds": 1.6,
-       "load1Start": 19.74,
-       "load1End": 19.74,
+       "load1Start": 23.47,
+       "load1End": 23.47,
        "regions": [
         {
-         "line": 103,
+         "line": 110,
          "bound": "TAG_SCAN_CPU_MS",
-         "cpuMs": 18.507
+         "cpuMs": 20.166
         }
        ],
        "capped": null
@@ -1121,14 +1104,14 @@
       {
        "title": "scans near-miss tag names at the ceiling",
        "exit": 0,
-       "seconds": 1.6,
-       "load1Start": 19.74,
-       "load1End": 19.74,
+       "seconds": 2.0,
+       "load1Start": 23.47,
+       "load1End": 23.27,
        "regions": [
         {
-         "line": 103,
+         "line": 110,
          "bound": "TAG_SCAN_CPU_MS",
-         "cpuMs": 13.943
+         "cpuMs": 20.143
         }
        ],
        "capped": null
@@ -1136,49 +1119,85 @@
       {
        "title": "scans near-miss tag names at the ceiling",
        "exit": 0,
-       "seconds": 1.6,
-       "load1Start": 19.74,
-       "load1End": 19.2,
+       "seconds": 2.5,
+       "load1Start": 23.27,
+       "load1End": 23.27,
        "regions": [
         {
-         "line": 103,
+         "line": 110,
          "bound": "TAG_SCAN_CPU_MS",
-         "cpuMs": 14.474
+         "cpuMs": 19.499
+        }
+       ],
+       "capped": null
+      },
+      {
+       "title": "scans near-miss tag names at the ceiling",
+       "exit": 0,
+       "seconds": 2.2,
+       "load1Start": 23.27,
+       "load1End": 23.25,
+       "regions": [
+        {
+         "line": 110,
+         "bound": "TAG_SCAN_CPU_MS",
+         "cpuMs": 16.378
+        }
+       ],
+       "capped": null
+      },
+      {
+       "title": "scans near-miss tag names at the ceiling",
+       "exit": 0,
+       "seconds": 2.0,
+       "load1Start": 23.25,
+       "load1End": 23.25,
+       "regions": [
+        {
+         "line": 110,
+         "bound": "TAG_SCAN_CPU_MS",
+         "cpuMs": 19.629
         }
        ],
        "capped": null
       }
      ],
-     "min": 12.689,
+     "min": 16.378,
      "cappedRuns": 0,
      "reached": false
     }
    ],
-   "mutantMinMs": 60024.6,
+   "mutantMinMs": 60021.3,
    "mutantMinIsLowerBound": true,
-   "proposedBoundMs": 1500,
-   "boundOverHeadMax": 38.7,
-   "mutantMinOverBound": 40.0,
-   "separated": true
+   "proposedBoundMs": 1900,
+   "boundOverHeadMax": 28.7,
+   "mutantMinOverBound": 31.6,
+   "separated": true,
+   "fileBound": {
+    "ms": 1500,
+    "overHeadMax": 22.7,
+    "mutantMinOver": 40.0,
+    "separated": true
+   }
   },
   {
    "bound": "ATTRIBUTE_SCAN_CPU_MS",
    "file": "packages/three-surface-poc-core/src/test-artifact-verification.test.ts",
    "lines": [
-    110
+    117
    ],
    "headRuns": [
     {
      "title": "scans one tag body that is a single word run at the ceiling",
      "exit": 0,
-     "seconds": 1.6,
-     "load1Start": 19.2,
-     "load1End": 19.2,
+     "seconds": 2.2,
+     "load1Start": 23.25,
+     "load1End": 24.91,
      "regions": [
       {
-       "line": 110,
+       "line": 117,
        "bound": "ATTRIBUTE_SCAN_CPU_MS",
-       "cpuMs": 108.638
+       "cpuMs": 144.733
       }
      ],
      "capped": null
@@ -1186,14 +1205,14 @@
     {
      "title": "scans one tag body that is a single word run at the ceiling",
      "exit": 0,
-     "seconds": 1.6,
-     "load1Start": 19.2,
-     "load1End": 19.2,
+     "seconds": 2.0,
+     "load1Start": 24.91,
+     "load1End": 24.91,
      "regions": [
       {
-       "line": 110,
+       "line": 117,
        "bound": "ATTRIBUTE_SCAN_CPU_MS",
-       "cpuMs": 121.946
+       "cpuMs": 134.96
       }
      ],
      "capped": null
@@ -1201,14 +1220,14 @@
     {
      "title": "scans one tag body that is a single word run at the ceiling",
      "exit": 0,
-     "seconds": 1.8,
-     "load1Start": 19.2,
-     "load1End": 19.26,
+     "seconds": 2.6,
+     "load1Start": 24.91,
+     "load1End": 26.44,
      "regions": [
       {
-       "line": 110,
+       "line": 117,
        "bound": "ATTRIBUTE_SCAN_CPU_MS",
-       "cpuMs": 149.441
+       "cpuMs": 135.923
       }
      ],
      "capped": null
@@ -1216,29 +1235,14 @@
     {
      "title": "scans one tag body that is a single word run at the ceiling",
      "exit": 0,
-     "seconds": 1.8,
-     "load1Start": 19.26,
-     "load1End": 19.26,
+     "seconds": 2.2,
+     "load1Start": 26.44,
+     "load1End": 26.44,
      "regions": [
       {
-       "line": 110,
+       "line": 117,
        "bound": "ATTRIBUTE_SCAN_CPU_MS",
-       "cpuMs": 142.351
-      }
-     ],
-     "capped": null
-    },
-    {
-     "title": "scans one tag body that is a single word run at the ceiling",
-     "exit": 0,
-     "seconds": 1.8,
-     "load1Start": 19.26,
-     "load1End": 19.26,
-     "regions": [
-      {
-       "line": 110,
-       "bound": "ATTRIBUTE_SCAN_CPU_MS",
-       "cpuMs": 154.665
+       "cpuMs": 124.212
       }
      ],
      "capped": null
@@ -1247,13 +1251,13 @@
      "title": "scans one tag body that is a single word run at the ceiling",
      "exit": 0,
      "seconds": 1.8,
-     "load1Start": 19.26,
-     "load1End": 19.72,
+     "load1Start": 26.44,
+     "load1End": 26.44,
      "regions": [
       {
-       "line": 110,
+       "line": 117,
        "bound": "ATTRIBUTE_SCAN_CPU_MS",
-       "cpuMs": 137.686
+       "cpuMs": 137.761
       }
      ],
      "capped": null
@@ -1261,14 +1265,14 @@
     {
      "title": "scans one tag body that is a single word run at the ceiling",
      "exit": 0,
-     "seconds": 1.6,
-     "load1Start": 19.72,
-     "load1End": 19.72,
+     "seconds": 2.2,
+     "load1Start": 26.44,
+     "load1End": 26.08,
      "regions": [
       {
-       "line": 110,
+       "line": 117,
        "bound": "ATTRIBUTE_SCAN_CPU_MS",
-       "cpuMs": 129.14
+       "cpuMs": 139.568
       }
      ],
      "capped": null
@@ -1276,14 +1280,14 @@
     {
      "title": "scans one tag body that is a single word run at the ceiling",
      "exit": 0,
-     "seconds": 1.6,
-     "load1Start": 19.72,
-     "load1End": 19.72,
+     "seconds": 2.0,
+     "load1Start": 26.08,
+     "load1End": 26.08,
      "regions": [
       {
-       "line": 110,
+       "line": 117,
        "bound": "ATTRIBUTE_SCAN_CPU_MS",
-       "cpuMs": 119.479
+       "cpuMs": 117.195
       }
      ],
      "capped": null
@@ -1291,14 +1295,14 @@
     {
      "title": "scans one tag body that is a single word run at the ceiling",
      "exit": 0,
-     "seconds": 1.8,
-     "load1Start": 19.72,
-     "load1End": 20.78,
+     "seconds": 2.0,
+     "load1Start": 26.08,
+     "load1End": 25.6,
      "regions": [
       {
-       "line": 110,
+       "line": 117,
        "bound": "ATTRIBUTE_SCAN_CPU_MS",
-       "cpuMs": 133.335
+       "cpuMs": 148.918
       }
      ],
      "capped": null
@@ -1306,20 +1310,35 @@
     {
      "title": "scans one tag body that is a single word run at the ceiling",
      "exit": 0,
-     "seconds": 1.6,
-     "load1Start": 20.78,
-     "load1End": 20.78,
+     "seconds": 2.2,
+     "load1Start": 25.6,
+     "load1End": 25.6,
      "regions": [
       {
-       "line": 110,
+       "line": 117,
        "bound": "ATTRIBUTE_SCAN_CPU_MS",
-       "cpuMs": 129.234
+       "cpuMs": 141.297
+      }
+     ],
+     "capped": null
+    },
+    {
+     "title": "scans one tag body that is a single word run at the ceiling",
+     "exit": 0,
+     "seconds": 2.0,
+     "load1Start": 25.6,
+     "load1End": 25.6,
+     "regions": [
+      {
+       "line": 117,
+       "bound": "ATTRIBUTE_SCAN_CPU_MS",
+       "cpuMs": 145.86
       }
      ],
      "capped": null
     }
    ],
-   "headMaxMs": 154.665,
+   "headMaxMs": 148.918,
    "mutants": [
     {
      "id": "junit-attr-regex",
@@ -1335,51 +1354,57 @@
       {
        "title": "scans one tag body that is a single word run at the ceiling",
        "exit": -9,
-       "seconds": 64.3,
-       "load1Start": 20.78,
-       "load1End": 17.86,
+       "seconds": 67.6,
+       "load1Start": 25.6,
+       "load1End": 22.44,
        "regions": [],
        "capped": {
-        "line": 108,
-        "regionCpuMsAtLeast": 60032.2
+        "line": 115,
+        "regionCpuMsAtLeast": 60064.9
        }
       },
       {
        "title": "scans one tag body that is a single word run at the ceiling",
        "exit": -9,
-       "seconds": 73.1,
-       "load1Start": 17.86,
-       "load1End": 20.12,
+       "seconds": 69.9,
+       "load1Start": 22.44,
+       "load1End": 20.77,
        "regions": [],
        "capped": {
-        "line": 108,
-        "regionCpuMsAtLeast": 60179.3
+        "line": 115,
+        "regionCpuMsAtLeast": 60050.5
        }
       },
       {
        "title": "scans one tag body that is a single word run at the ceiling",
        "exit": -9,
-       "seconds": 62.6,
-       "load1Start": 20.12,
-       "load1End": 16.9,
+       "seconds": 81.1,
+       "load1Start": 20.77,
+       "load1End": 28.97,
        "regions": [],
        "capped": {
-        "line": 108,
-        "regionCpuMsAtLeast": 60090.4
+        "line": 115,
+        "regionCpuMsAtLeast": 60001.8
        }
       }
      ],
-     "min": 60032.2,
+     "min": 60001.8,
      "cappedRuns": 3,
      "reached": true
     }
    ],
-   "mutantMinMs": 60032.2,
+   "mutantMinMs": 60001.8,
    "mutantMinIsLowerBound": true,
-   "proposedBoundMs": 3000,
-   "boundOverHeadMax": 19.4,
-   "mutantMinOverBound": 20.0,
-   "separated": true
+   "proposedBoundMs": 2900,
+   "boundOverHeadMax": 19.5,
+   "mutantMinOverBound": 20.7,
+   "separated": true,
+   "fileBound": {
+    "ms": 3000,
+    "overHeadMax": 20.1,
+    "mutantMinOver": 20.0,
+    "separated": true
+   }
   }
  ]
 }
