@@ -67,8 +67,40 @@
    ],
    "killed": true,
    "exact": true
+  },
+  {
+   "id": "S5",
+   "predicate": "C1 LF unchanged (separator slice)",
+   "file": "markdown-code-context.js",
+   "old": "const LINE_END = /\\r\\n|\\r|\\n/g;",
+   "new": "const LINE_END = /\\r\\n|[\\r\\n\\u2028\\u2029]/g;",
+   "exit": 1,
+   "failingChecks": [
+    "C1"
+   ],
+   "targetChecks": [
+    "C1"
+   ],
+   "killed": true,
+   "exact": true
+  },
+  {
+   "id": "S6",
+   "predicate": "C1 LF unchanged (separator slice)",
+   "file": "markdown-code-context.js",
+   "old": "const LINE_END = /\\r\\n|\\r|\\n/g;",
+   "new": "const LINE_END = /\\r\\n|\\r|\\n|\\x85/g;",
+   "exit": 1,
+   "failingChecks": [
+    "C1"
+   ],
+   "targetChecks": [
+    "C1"
+   ],
+   "killed": true,
+   "exact": true
   }
  ],
- "killed": 4,
- "total": 4
+ "killed": 6,
+ "total": 6
 }

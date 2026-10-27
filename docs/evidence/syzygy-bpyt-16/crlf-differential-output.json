@@ -35,11 +35,21 @@
    "lastCrlf",
    "firstCr",
    "cycle"
-  ]
+  ],
+  "separatorSlice": {
+   "separators": [
+    "U+2028",
+    "U+2029",
+    "U+0085"
+   ],
+   "texts": 6079,
+   "excludedByHead": 4864
+  }
  },
  "checks": {
   "C1_lfUnchanged": {
    "texts": 1825,
+   "separatorSliceTexts": 6079,
    "failures": 0
   },
   "C2_renderingEqualsLf": {

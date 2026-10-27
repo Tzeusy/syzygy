@@ -1,6 +1,6 @@
 {
- "baseTests": 331,
- "headTests": 385,
+ "baseTests": 332,
+ "headTests": 388,
  "added": [
   [
    "apps/three-surface-poc/src/fence-rules.test.ts",
@@ -135,6 +135,10 @@
    "a CRLF or CR blob gets the outcome its LF form gets LF: a script element inside a closed tilde fence reads as text, byte for byte"
   ],
   [
+   "packages/three-surface-poc-core/src/git-object-reader.test.ts",
+   "reported positions in CRLF and bare-CR texts CRLF as LF; a bare CR counted by the malformed line only"
+  ],
+  [
    "packages/three-surface-poc-core/src/markdown-code-context.test.ts",
    "closed-pwb-code-context-v1 \u2014 CRLF, CR and LF each end one line CR: a backtick opener whose info string holds a backtick is malformed at its own line"
   ],
@@ -220,6 +224,10 @@
   ],
   [
    "packages/three-surface-poc-core/src/markdown-code-context.test.ts",
+   "closed-pwb-code-context-v1 \u2014 CRLF, CR and LF each end one line U+2028, U+2029 and U+0085 are line content, not line ends"
+  ],
+  [
+   "packages/three-surface-poc-core/src/markdown-code-context.test.ts",
    "closed-pwb-code-context-v1 \u2014 CRLF, CR and LF each end one line a CRLF or CR text gets the structure its LF form gets, for every case here"
   ],
   [
@@ -255,7 +263,7 @@
  "changedGeneratedTests": {
   "Markdown fence recognizers: what each reader treats as inside a fence > $id": 33
  },
- "line": "Tests: +57 ~33 -3",
+ "line": "Tests: +59 ~33 -3",
  "allBasePassed": true,
  "allHeadPassed": true
 }

@@ -1,20 +1,22 @@
 {
  "summary": {
-  "codeCommit": "6928b50a49b8a06b405892de0580d7c421c52f5e",
+  "codeCommit": "224e8faaaf60e2809fd167ce934d2dda3d63f131",
   "baseCommit": "d621bfa2",
-  "mutants": 16,
-  "killed": 15,
+  "mutants": 21,
+  "killed": 20,
   "survivedEquivalent": 1,
-  "survived": []
+  "survived": [],
+  "killedByExpectedKillerOnly": 5,
+  "expectedKillerNotAlone": []
  },
  "rows": [
   {
    "id": "CONTROL-code-commit",
-   "ranAt": "6928b50a49b8a06b405892de0580d7c421c52f5e",
+   "ranAt": "224e8faaaf60e2809fd167ce934d2dda3d63f131",
    "fileSha256": "93b95f6d4eabc440344404d01040ba1f10bdceb65e69ab74c4ea59c1fa5831f7",
    "detectors": {
     "unit": {
-     "tests": 41,
+     "tests": 42,
      "failed": 0,
      "firstFailed": []
     },
@@ -24,7 +26,7 @@
      "firstFailed": []
     },
     "callSites": {
-     "tests": 275,
+     "tests": 277,
      "failed": 0,
      "firstFailed": []
     }
@@ -32,7 +34,7 @@
   },
   {
    "id": "BASE-whole-file-of-the-base-commit",
-   "ranAt": "6928b50a49b8a06b405892de0580d7c421c52f5e",
+   "ranAt": "224e8faaaf60e2809fd167ce934d2dda3d63f131",
    "file": "packages/three-surface-poc-core/src/markdown-code-context.ts",
    "replacements": "the whole file of d621bfa2",
    "fileSha256": "a02c105a483d11a9e90d27aade01ef5ddee6b60b9e165a9a7193c5baaa21f8fe",
@@ -40,7 +42,7 @@
    "outcome": "killed",
    "detectors": {
     "unit": {
-     "tests": 41,
+     "tests": 42,
      "failed": 17,
      "firstFailed": [
       {
@@ -84,8 +86,8 @@
      ]
     },
     "callSites": {
-     "tests": 275,
-     "failed": 12,
+     "tests": 277,
+     "failed": 13,
      "firstFailed": [
       {
        "test": "the project-documentation class (syzygy-2coz) CRLF: a documentation body is withheld as active content or admitted as its LF form is",
@@ -109,7 +111,7 @@
   },
   {
    "id": "MU1-lf-only",
-   "ranAt": "6928b50a49b8a06b405892de0580d7c421c52f5e",
+   "ranAt": "224e8faaaf60e2809fd167ce934d2dda3d63f131",
    "file": "packages/three-surface-poc-core/src/markdown-code-context.ts",
    "replacements": [
     {
@@ -122,7 +124,7 @@
    "outcome": "killed",
    "detectors": {
     "unit": {
-     "tests": 41,
+     "tests": 42,
      "failed": 17,
      "firstFailed": [
       {
@@ -166,8 +168,8 @@
      ]
     },
     "callSites": {
-     "tests": 275,
-     "failed": 12,
+     "tests": 277,
+     "failed": 13,
      "firstFailed": [
       {
        "test": "the project-documentation class (syzygy-2coz) CRLF: a documentation body is withheld as active content or admitted as its LF form is",
@@ -191,7 +193,7 @@
   },
   {
    "id": "MU2-crlf-only",
-   "ranAt": "6928b50a49b8a06b405892de0580d7c421c52f5e",
+   "ranAt": "224e8faaaf60e2809fd167ce934d2dda3d63f131",
    "file": "packages/three-surface-poc-core/src/markdown-code-context.ts",
    "replacements": [
     {
@@ -204,7 +206,7 @@
    "outcome": "killed",
    "detectors": {
     "unit": {
-     "tests": 41,
+     "tests": 42,
      "failed": 10,
      "firstFailed": [
       {
@@ -248,8 +250,8 @@
      ]
     },
     "callSites": {
-     "tests": 275,
-     "failed": 6,
+     "tests": 277,
+     "failed": 7,
      "firstFailed": [
       {
        "test": "the project-documentation class (syzygy-2coz) CR: a documentation body is withheld as active content or admitted as its LF form is",
@@ -273,7 +275,7 @@
   },
   {
    "id": "MU3-crlf-as-two-line-ends",
-   "ranAt": "6928b50a49b8a06b405892de0580d7c421c52f5e",
+   "ranAt": "224e8faaaf60e2809fd167ce934d2dda3d63f131",
    "file": "packages/three-surface-poc-core/src/markdown-code-context.ts",
    "replacements": [
     {
@@ -286,7 +288,7 @@
    "outcome": "killed",
    "detectors": {
     "unit": {
-     "tests": 41,
+     "tests": 42,
      "failed": 3,
      "firstFailed": [
       {
@@ -309,7 +311,7 @@
      "firstFailed": []
     },
     "callSites": {
-     "tests": 275,
+     "tests": 277,
      "failed": 1,
      "firstFailed": [
       {
@@ -322,7 +324,7 @@
   },
   {
    "id": "MU4-no-bare-cr",
-   "ranAt": "6928b50a49b8a06b405892de0580d7c421c52f5e",
+   "ranAt": "224e8faaaf60e2809fd167ce934d2dda3d63f131",
    "file": "packages/three-surface-poc-core/src/markdown-code-context.ts",
    "replacements": [
     {
@@ -335,7 +337,7 @@
    "outcome": "killed",
    "detectors": {
     "unit": {
-     "tests": 41,
+     "tests": 42,
      "failed": 10,
      "firstFailed": [
       {
@@ -379,8 +381,8 @@
      ]
     },
     "callSites": {
-     "tests": 275,
-     "failed": 6,
+     "tests": 277,
+     "failed": 7,
      "firstFailed": [
       {
        "test": "the project-documentation class (syzygy-2coz) CR: a documentation body is withheld as active content or admitted as its LF form is",
@@ -404,7 +406,7 @@
   },
   {
    "id": "MU5-rejoin-with-lf",
-   "ranAt": "6928b50a49b8a06b405892de0580d7c421c52f5e",
+   "ranAt": "224e8faaaf60e2809fd167ce934d2dda3d63f131",
    "file": "packages/three-surface-poc-core/src/markdown-code-context.ts",
    "replacements": [
     {
@@ -417,7 +419,7 @@
    "outcome": "killed",
    "detectors": {
     "unit": {
-     "tests": 41,
+     "tests": 42,
      "failed": 9,
      "firstFailed": [
       {
@@ -461,15 +463,20 @@
      ]
     },
     "callSites": {
-     "tests": 275,
-     "failed": 0,
-     "firstFailed": []
+     "tests": 277,
+     "failed": 1,
+     "firstFailed": [
+      {
+       "test": "reported positions in CRLF and bare-CR texts CRLF as LF; a bare CR counted by the malformed line only",
+       "error": "AssertionError: expected [ \u2026(2) ] to deeply equal [ \u2026(2) ]"
+      }
+     ]
     }
    }
   },
   {
    "id": "MU6-cr-re-emitted-as-lf",
-   "ranAt": "6928b50a49b8a06b405892de0580d7c421c52f5e",
+   "ranAt": "224e8faaaf60e2809fd167ce934d2dda3d63f131",
    "file": "packages/three-surface-poc-core/src/markdown-code-context.ts",
    "replacements": [
     {
@@ -482,7 +489,7 @@
    "outcome": "killed",
    "detectors": {
     "unit": {
-     "tests": 41,
+     "tests": 42,
      "failed": 5,
      "firstFailed": [
       {
@@ -522,15 +529,20 @@
      ]
     },
     "callSites": {
-     "tests": 275,
-     "failed": 0,
-     "firstFailed": []
+     "tests": 277,
+     "failed": 1,
+     "firstFailed": [
+      {
+       "test": "reported positions in CRLF and bare-CR texts CRLF as LF; a bare CR counted by the malformed line only",
+       "error": "AssertionError: expected [ \u2026(2) ] to deeply equal [ \u2026(2) ]"
+      }
+     ]
     }
    }
   },
   {
    "id": "MU7-lf-split-closer-tolerates-cr",
-   "ranAt": "6928b50a49b8a06b405892de0580d7c421c52f5e",
+   "ranAt": "224e8faaaf60e2809fd167ce934d2dda3d63f131",
    "file": "packages/three-surface-poc-core/src/markdown-code-context.ts",
    "replacements": [
     {
@@ -547,7 +559,7 @@
    "outcome": "killed",
    "detectors": {
     "unit": {
-     "tests": 41,
+     "tests": 42,
      "failed": 17,
      "firstFailed": [
       {
@@ -591,8 +603,8 @@
      ]
     },
     "callSites": {
-     "tests": 275,
-     "failed": 12,
+     "tests": 277,
+     "failed": 13,
      "firstFailed": [
       {
        "test": "the project-documentation class (syzygy-2coz) CRLF: a documentation body is withheld as active content or admitted as its LF form is",
@@ -616,7 +628,7 @@
   },
   {
    "id": "MU8-lf-split-opener-and-closer-tolerate-cr",
-   "ranAt": "6928b50a49b8a06b405892de0580d7c421c52f5e",
+   "ranAt": "224e8faaaf60e2809fd167ce934d2dda3d63f131",
    "file": "packages/three-surface-poc-core/src/markdown-code-context.ts",
    "replacements": [
     {
@@ -637,7 +649,7 @@
    "outcome": "killed",
    "detectors": {
     "unit": {
-     "tests": 41,
+     "tests": 42,
      "failed": 13,
      "firstFailed": [
       {
@@ -681,8 +693,8 @@
      ]
     },
     "callSites": {
-     "tests": 275,
-     "failed": 6,
+     "tests": 277,
+     "failed": 7,
      "firstFailed": [
       {
        "test": "the project-documentation class (syzygy-2coz) CR: a documentation body is withheld as active content or admitted as its LF form is",
@@ -706,7 +718,7 @@
   },
   {
    "id": "MU9-terminator-dropped",
-   "ranAt": "6928b50a49b8a06b405892de0580d7c421c52f5e",
+   "ranAt": "224e8faaaf60e2809fd167ce934d2dda3d63f131",
    "file": "packages/three-surface-poc-core/src/markdown-code-context.ts",
    "replacements": [
     {
@@ -719,7 +731,7 @@
    "outcome": "killed",
    "detectors": {
     "unit": {
-     "tests": 41,
+     "tests": 42,
      "failed": 21,
      "firstFailed": [
       {
@@ -763,8 +775,8 @@
      ]
     },
     "callSites": {
-     "tests": 275,
-     "failed": 2,
+     "tests": 277,
+     "failed": 3,
      "firstFailed": [
       {
        "test": "active content is rejected and never reaches a sink scanActiveContent: forms, positions, obfuscation and case",
@@ -773,6 +785,10 @@
       {
        "test": "active content is rejected and never reaches a sink the same sentinel outside the context still excludes, at its raw position",
        "error": "AssertionError: expected [ { form: 'script-element', \u2026(2) } ] to deeply equal [ { form: 'script-element', \u2026(2) } ]"
+      },
+      {
+       "test": "reported positions in CRLF and bare-CR texts CRLF as LF; a bare CR counted by the malformed line only",
+       "error": "AssertionError: expected [ \u2026(2) ] to deeply equal [ \u2026(2) ]"
       }
      ]
     }
@@ -780,7 +796,7 @@
   },
   {
    "id": "MU10-terminator-index-shifted",
-   "ranAt": "6928b50a49b8a06b405892de0580d7c421c52f5e",
+   "ranAt": "224e8faaaf60e2809fd167ce934d2dda3d63f131",
    "file": "packages/three-surface-poc-core/src/markdown-code-context.ts",
    "replacements": [
     {
@@ -793,7 +809,7 @@
    "outcome": "killed",
    "detectors": {
     "unit": {
-     "tests": 41,
+     "tests": 42,
      "failed": 21,
      "firstFailed": [
       {
@@ -837,8 +853,8 @@
      ]
     },
     "callSites": {
-     "tests": 275,
-     "failed": 2,
+     "tests": 277,
+     "failed": 3,
      "firstFailed": [
       {
        "test": "active content is rejected and never reaches a sink scanActiveContent: forms, positions, obfuscation and case",
@@ -847,6 +863,10 @@
       {
        "test": "active content is rejected and never reaches a sink the same sentinel outside the context still excludes, at its raw position",
        "error": "AssertionError: expected [ { form: 'script-element', \u2026(2) } ] to deeply equal [ { form: 'script-element', \u2026(2) } ]"
+      },
+      {
+       "test": "reported positions in CRLF and bare-CR texts CRLF as LF; a bare CR counted by the malformed line only",
+       "error": "AssertionError: expected [ \u2026(2) ] to deeply equal [ \u2026(2) ]"
       }
      ]
     }
@@ -854,7 +874,7 @@
   },
   {
    "id": "MU11-start-ignores-terminator-length",
-   "ranAt": "6928b50a49b8a06b405892de0580d7c421c52f5e",
+   "ranAt": "224e8faaaf60e2809fd167ce934d2dda3d63f131",
    "file": "packages/three-surface-poc-core/src/markdown-code-context.ts",
    "replacements": [
     {
@@ -867,7 +887,7 @@
    "outcome": "killed",
    "detectors": {
     "unit": {
-     "tests": 41,
+     "tests": 42,
      "failed": 9,
      "firstFailed": [
       {
@@ -911,8 +931,8 @@
      ]
     },
     "callSites": {
-     "tests": 275,
-     "failed": 6,
+     "tests": 277,
+     "failed": 7,
      "firstFailed": [
       {
        "test": "the project-documentation class (syzygy-2coz) CRLF: a documentation body is withheld as active content or admitted as its LF form is",
@@ -936,7 +956,7 @@
   },
   {
    "id": "MU12-phantom-final-terminator",
-   "ranAt": "6928b50a49b8a06b405892de0580d7c421c52f5e",
+   "ranAt": "224e8faaaf60e2809fd167ce934d2dda3d63f131",
    "file": "packages/three-surface-poc-core/src/markdown-code-context.ts",
    "replacements": [
     {
@@ -949,8 +969,8 @@
    "outcome": "killed",
    "detectors": {
     "unit": {
-     "tests": 41,
-     "failed": 24,
+     "tests": 42,
+     "failed": 25,
      "firstFailed": [
       {
        "test": "closed-pwb-code-context-v1 \u2014 fenced code blocks a closed backtick fence is blanked, delimiters included, keeping every newline and length",
@@ -993,7 +1013,7 @@
      ]
     },
     "callSites": {
-     "tests": 275,
+     "tests": 277,
      "failed": 0,
      "firstFailed": []
     }
@@ -1001,7 +1021,7 @@
   },
   {
    "id": "MU13-last-line-dropped",
-   "ranAt": "6928b50a49b8a06b405892de0580d7c421c52f5e",
+   "ranAt": "224e8faaaf60e2809fd167ce934d2dda3d63f131",
    "file": "packages/three-surface-poc-core/src/markdown-code-context.ts",
    "replacements": [
     {
@@ -1014,8 +1034,8 @@
    "outcome": "killed",
    "detectors": {
     "unit": {
-     "tests": 41,
-     "failed": 19,
+     "tests": 42,
+     "failed": 20,
      "firstFailed": [
       {
        "test": "closed-pwb-code-context-v1 \u2014 fenced code blocks a closed backtick fence is blanked, delimiters included, keeping every newline and length",
@@ -1058,8 +1078,8 @@
      ]
     },
     "callSites": {
-     "tests": 275,
-     "failed": 7,
+     "tests": 277,
+     "failed": 8,
      "firstFailed": [
       {
        "test": "active content is rejected and never reaches a sink the handler sentinels also name the event-handler form",
@@ -1083,7 +1103,7 @@
   },
   {
    "id": "MU14-line-keeps-its-terminator",
-   "ranAt": "6928b50a49b8a06b405892de0580d7c421c52f5e",
+   "ranAt": "224e8faaaf60e2809fd167ce934d2dda3d63f131",
    "file": "packages/three-surface-poc-core/src/markdown-code-context.ts",
    "replacements": [
     {
@@ -1096,7 +1116,7 @@
    "outcome": "killed",
    "detectors": {
     "unit": {
-     "tests": 41,
+     "tests": 42,
      "failed": 36,
      "firstFailed": [
       {
@@ -1140,8 +1160,8 @@
      ]
     },
     "callSites": {
-     "tests": 275,
-     "failed": 22,
+     "tests": 277,
+     "failed": 23,
      "firstFailed": [
       {
        "test": "the project-documentation class (syzygy-2coz) LF: a documentation body is withheld as active content or admitted as its LF form is",
@@ -1165,7 +1185,7 @@
   },
   {
    "id": "MU15-alternation-order",
-   "ranAt": "6928b50a49b8a06b405892de0580d7c421c52f5e",
+   "ranAt": "224e8faaaf60e2809fd167ce934d2dda3d63f131",
    "file": "packages/three-surface-poc-core/src/markdown-code-context.ts",
    "replacements": [
     {
@@ -1178,7 +1198,7 @@
    "outcome": "killed",
    "detectors": {
     "unit": {
-     "tests": 41,
+     "tests": 42,
      "failed": 3,
      "firstFailed": [
       {
@@ -1201,7 +1221,7 @@
      "firstFailed": []
     },
     "callSites": {
-     "tests": 275,
+     "tests": 277,
      "failed": 1,
      "firstFailed": [
       {
@@ -1214,7 +1234,7 @@
   },
   {
    "id": "MU16-blank-keeps-nothing-but-lf",
-   "ranAt": "6928b50a49b8a06b405892de0580d7c421c52f5e",
+   "ranAt": "224e8faaaf60e2809fd167ce934d2dda3d63f131",
    "file": "packages/three-surface-poc-core/src/markdown-code-context.ts",
    "replacements": [
     {
@@ -1227,7 +1247,7 @@
    "outcome": "survived-equivalent",
    "detectors": {
     "unit": {
-     "tests": 41,
+     "tests": 42,
      "failed": 0,
      "firstFailed": []
     },
@@ -1237,11 +1257,216 @@
      "firstFailed": []
     },
     "callSites": {
-     "tests": 275,
+     "tests": 277,
      "failed": 0,
      "firstFailed": []
     }
    }
+  },
+  {
+   "id": "MU17-u2028-is-a-line-end",
+   "ranAt": "224e8faaaf60e2809fd167ce934d2dda3d63f131",
+   "file": "packages/three-surface-poc-core/src/markdown-code-context.ts",
+   "replacements": [
+    {
+     "old": "const LINE_END = /\\r\\n|\\r|\\n/g;",
+     "new": "const LINE_END = /\\r\\n|\\r|\\n|\\u2028/g;"
+    }
+   ],
+   "fileSha256": "fc83a936f843db1e27e203a7b0b0fecf05611f0ab29bce8ad519c7a366e7301e",
+   "note": "U+2028 ends a line: changes LF texts that hold one",
+   "outcome": "killed",
+   "detectors": {
+    "unit": {
+     "tests": 42,
+     "failed": 1,
+     "firstFailed": [
+      {
+       "test": "closed-pwb-code-context-v1 \u2014 CRLF, CR and LF each end one line U+2028, U+2029 and U+0085 are line content, not line ends",
+       "error": "AssertionError: \"\u2028\": expected 'a   \\u2028   d' to be 'a       d' // Object.is equality"
+      }
+     ]
+    },
+    "fenceRules": {
+     "tests": 69,
+     "failed": 0,
+     "firstFailed": []
+    },
+    "callSites": {
+     "tests": 277,
+     "failed": 0,
+     "firstFailed": []
+    }
+   },
+   "expectedKiller": "U+2028, U+2029 and U+0085 are line content, not line ends",
+   "failingTests": [
+    "closed-pwb-code-context-v1 \u2014 CRLF, CR and LF each end one line U+2028, U+2029 and U+0085 are line content, not line ends"
+   ],
+   "killedByExpectedKillerOnly": true
+  },
+  {
+   "id": "MU18-nel-is-a-line-end",
+   "ranAt": "224e8faaaf60e2809fd167ce934d2dda3d63f131",
+   "file": "packages/three-surface-poc-core/src/markdown-code-context.ts",
+   "replacements": [
+    {
+     "old": "const LINE_END = /\\r\\n|\\r|\\n/g;",
+     "new": "const LINE_END = /\\r\\n|\\r|\\n|\\x85/g;"
+    }
+   ],
+   "fileSha256": "0964030efb3dbc43102b8a12e79a582b44e6db8cdce9693837f105ec2d3c5dc3",
+   "note": "U+0085 ends a line: changes LF texts that hold one",
+   "outcome": "killed",
+   "detectors": {
+    "unit": {
+     "tests": 42,
+     "failed": 1,
+     "firstFailed": [
+      {
+       "test": "closed-pwb-code-context-v1 \u2014 CRLF, CR and LF each end one line U+2028, U+2029 and U+0085 are line content, not line ends",
+       "error": "AssertionError: \"\u0085\": expected 'a   \\u0085   d' to be 'a       d' // Object.is equality"
+      }
+     ]
+    },
+    "fenceRules": {
+     "tests": 69,
+     "failed": 0,
+     "firstFailed": []
+    },
+    "callSites": {
+     "tests": 277,
+     "failed": 0,
+     "firstFailed": []
+    }
+   },
+   "expectedKiller": "U+2028, U+2029 and U+0085 are line content, not line ends",
+   "failingTests": [
+    "closed-pwb-code-context-v1 \u2014 CRLF, CR and LF each end one line U+2028, U+2029 and U+0085 are line content, not line ends"
+   ],
+   "killedByExpectedKillerOnly": true
+  },
+  {
+   "id": "MU19-js-line-terminators",
+   "ranAt": "224e8faaaf60e2809fd167ce934d2dda3d63f131",
+   "file": "packages/three-surface-poc-core/src/markdown-code-context.ts",
+   "replacements": [
+    {
+     "old": "const LINE_END = /\\r\\n|\\r|\\n/g;",
+     "new": "const LINE_END = /\\r\\n|[\\r\\n\\u2028\\u2029]/g;"
+    }
+   ],
+   "fileSha256": "143f6ff5c7c129b73a5dfd552ecd0846171a55e1bb1feb0c1032d3be66564f98",
+   "note": "the JavaScript line-terminator set",
+   "outcome": "killed",
+   "detectors": {
+    "unit": {
+     "tests": 42,
+     "failed": 1,
+     "firstFailed": [
+      {
+       "test": "closed-pwb-code-context-v1 \u2014 CRLF, CR and LF each end one line U+2028, U+2029 and U+0085 are line content, not line ends",
+       "error": "AssertionError: \"\u2028\": expected 'a   \\u2028   d' to be 'a       d' // Object.is equality"
+      }
+     ]
+    },
+    "fenceRules": {
+     "tests": 69,
+     "failed": 0,
+     "firstFailed": []
+    },
+    "callSites": {
+     "tests": 277,
+     "failed": 0,
+     "firstFailed": []
+    }
+   },
+   "expectedKiller": "U+2028, U+2029 and U+0085 are line content, not line ends",
+   "failingTests": [
+    "closed-pwb-code-context-v1 \u2014 CRLF, CR and LF each end one line U+2028, U+2029 and U+0085 are line content, not line ends"
+   ],
+   "killedByExpectedKillerOnly": true
+  },
+  {
+   "id": "MU20-positionOf-counts-bare-cr",
+   "ranAt": "224e8faaaf60e2809fd167ce934d2dda3d63f131",
+   "file": "packages/three-surface-poc-core/src/git-object-reader.ts",
+   "replacements": [
+    {
+     "old": "if (text.charCodeAt(i) === 10) {",
+     "new": "if (text.charCodeAt(i) === 10 || (text.charCodeAt(i) === 13 && text.charCodeAt(i + 1) !== 10)) {"
+    }
+   ],
+   "fileSha256": "744cd75333a20167bbede34fec3900863f5da30f9827709eafea75fda114f0ae",
+   "note": "positionOf counts a bare CR as a line end: renumbers non-malformed findings in bare-CR texts (reviewer RM8)",
+   "outcome": "killed",
+   "detectors": {
+    "unit": {
+     "tests": 42,
+     "failed": 0,
+     "firstFailed": []
+    },
+    "fenceRules": {
+     "tests": 69,
+     "failed": 0,
+     "firstFailed": []
+    },
+    "callSites": {
+     "tests": 277,
+     "failed": 1,
+     "firstFailed": [
+      {
+       "test": "reported positions in CRLF and bare-CR texts CRLF as LF; a bare CR counted by the malformed line only",
+       "error": "AssertionError: expected [ \u2026(2) ] to deeply equal [ \u2026(2) ]"
+      }
+     ]
+    }
+   },
+   "expectedKiller": "CRLF as LF; a bare CR counted by the malformed line only",
+   "failingTests": [
+    "reported positions in CRLF and bare-CR texts CRLF as LF; a bare CR counted by the malformed line only"
+   ],
+   "killedByExpectedKillerOnly": true
+  },
+  {
+   "id": "MU21-positionOf-counts-every-cr",
+   "ranAt": "224e8faaaf60e2809fd167ce934d2dda3d63f131",
+   "file": "packages/three-surface-poc-core/src/git-object-reader.ts",
+   "replacements": [
+    {
+     "old": "if (text.charCodeAt(i) === 10) {",
+     "new": "if (text.charCodeAt(i) === 10 || text.charCodeAt(i) === 13) {"
+    }
+   ],
+   "fileSha256": "056f6f546026ddae2ef8d1de36185b43d32a699f7783bfa572fa86eba6c2e3e4",
+   "note": "positionOf counts every CR as a line end: renumbers CRLF and CR findings (reviewer RM10)",
+   "outcome": "killed",
+   "detectors": {
+    "unit": {
+     "tests": 42,
+     "failed": 0,
+     "firstFailed": []
+    },
+    "fenceRules": {
+     "tests": 69,
+     "failed": 0,
+     "firstFailed": []
+    },
+    "callSites": {
+     "tests": 277,
+     "failed": 1,
+     "firstFailed": [
+      {
+       "test": "reported positions in CRLF and bare-CR texts CRLF as LF; a bare CR counted by the malformed line only",
+       "error": "AssertionError: expected [ \u2026(2) ] to deeply equal [ \u2026(2) ]"
+      }
+     ]
+    }
+   },
+   "expectedKiller": "CRLF as LF; a bare CR counted by the malformed line only",
+   "failingTests": [
+    "reported positions in CRLF and bare-CR texts CRLF as LF; a bare CR counted by the malformed line only"
+   ],
+   "killedByExpectedKillerOnly": true
   }
  ]
 }

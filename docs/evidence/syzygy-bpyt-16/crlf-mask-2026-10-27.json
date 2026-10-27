@@ -88,7 +88,50 @@
     "bytesAtCode": 7465,
     "sha256AtCode": "93b95f6d4eabc440344404d01040ba1f10bdceb65e69ab74c4ea59c1fa5831f7"
    }
-  ]
+  ],
+  "repair": {
+   "what": "round 1 of the CC-REV-1 review of this change (R-GP-IMPL-CRLF-MASK-1) returned REVISE with one blocking finding, F1: a mutant that widens LINE_END to U+2028, U+0085 or the JavaScript line-terminator set changes LF decisions and no test, mutant or differential row failed. The repair adds the pins and the rows that measure them; no production byte changes",
+   "review": {
+    "name": "R-GP-IMPL-CRLF-MASK-1-RAW.md",
+    "sha256": "1a2010ae4d7fe2de19aac036545b0ade689d69dcca0ef5c9f15333a161302964",
+    "verdict": "REVISE",
+    "blockingFindings": [
+     "F1"
+    ],
+    "inThisTree": false,
+    "reviewedCommit": "c399eda908a3d549e051f45499557e82356af9ab",
+    "why": "the raw is retained by the coordinator, not in this tree"
+   },
+   "range": {
+    "from": "c399eda908a3d549e051f45499557e82356af9ab",
+    "to": "224e8faaaf60e2809fd167ce934d2dda3d63f131"
+   },
+   "productionFileUnchanged": {
+    "path": "packages/three-surface-poc-core/src/markdown-code-context.ts",
+    "sha256AtCode": "93b95f6d4eabc440344404d01040ba1f10bdceb65e69ab74c4ea59c1fa5831f7",
+    "sha256AtRepair": "93b95f6d4eabc440344404d01040ba1f10bdceb65e69ab74c4ea59c1fa5831f7"
+   },
+   "changedFiles": [
+    {
+     "path": "packages/three-surface-poc-core/src/git-object-reader.test.ts",
+     "status": "M",
+     "bytesBefore": 38320,
+     "sha256Before": "cec8779a2317fe422561832cee5900e4705619712719eeff6a89b9c0669bc432",
+     "bytesAtRepair": 39211,
+     "sha256AtRepair": "3baf9834932e133ee27032784bf0ee2d9b63f8c8e6984bcd04cde6f72ac70d41"
+    },
+    {
+     "path": "packages/three-surface-poc-core/src/markdown-code-context.test.ts",
+     "status": "M",
+     "bytesBefore": 12311,
+     "sha256Before": "c7447136d7800de8d6c538646e994420b72e428f2ffd98d0dc66870d737ca188",
+     "bytesAtRepair": 12784,
+     "sha256AtRepair": "7daf9b244f6944a9d48c3fc0402eee28121b9b2744b874e5aea4c0b3e3dd4d66"
+    }
+   ],
+   "measuredAtRepair": "the mutant runs (crlf-mask-mutants-output.json), the test report (test-delta-output.json) and the head build of the differential; the differential and the test report take main as merged into the branch, f7ea858480b30ffc4407154a84d1d03f3fe4a549, as their base: its mask is byte-equal to the base of the fix, and the re-run differential equals the one the review was bound to on every field but the separator slice (checked by this script)",
+   "remeasureBase": "f7ea858480b30ffc4407154a84d1d03f3fe4a549"
+  }
  },
  "ccRev1Classes": {
   "touched": [
@@ -150,6 +193,7 @@
   "checks": {
    "C1_lfUnchanged": {
     "texts": 1825,
+    "separatorSliceTexts": 6079,
     "failures": 0
    },
    "C2_renderingEqualsLf": {
@@ -166,7 +210,7 @@
    }
   },
   "meaning": {
-   "C1": "every LF text decides identically at BASE and HEAD: findings and mask deep-equal",
+   "C1": "every LF text decides identically at BASE and HEAD: findings and mask deep-equal, over the distinct LF forms of the rows and over the separator slice (LF texts whose lines hold U+2028, U+2029 and U+0085 at fence and span positions)",
    "C2": "at HEAD every CRLF, CR and mixed rendering decides as its LF form: same finding multiset (form, context, malformed line), equal mask once terminators read as LF",
    "C3": "at HEAD the masked text has the text length, every terminator at its offset, every other byte its own or a space",
    "C4": "at HEAD a CRLF text has findings deep-equal to its LF form, line and column included"
@@ -3382,8 +3426,8 @@
   "differentialSelftest": {
    "tool": "docs/evidence/syzygy-bpyt-16/crlf-differential-selftest.mjs",
    "output": "docs/evidence/syzygy-bpyt-16/crlf-differential-selftest-output.json",
-   "killed": 4,
-   "of": 4,
+   "killed": 6,
+   "of": 6,
    "mutants": [
     {
      "id": "S1",
@@ -3428,21 +3472,43 @@
      "failingChecks": [
       "C4"
      ]
+    },
+    {
+     "id": "S5",
+     "predicate": "C1 LF unchanged (separator slice)",
+     "file": "markdown-code-context.js",
+     "old": "const LINE_END = /\\r\\n|\\r|\\n/g;",
+     "new": "const LINE_END = /\\r\\n|[\\r\\n\\u2028\\u2029]/g;",
+     "failingChecks": [
+      "C1"
+     ]
+    },
+    {
+     "id": "S6",
+     "predicate": "C1 LF unchanged (separator slice)",
+     "file": "markdown-code-context.js",
+     "old": "const LINE_END = /\\r\\n|\\r|\\n/g;",
+     "new": "const LINE_END = /\\r\\n|\\r|\\n|\\x85/g;",
+     "failingChecks": [
+      "C1"
+     ]
     }
    ]
   },
   "maskMutants": {
    "tool": "docs/evidence/syzygy-bpyt-16/crlf-mask-mutants.py",
    "output": "docs/evidence/syzygy-bpyt-16/crlf-mask-mutants-output.json",
-   "ranAt": "6928b50a49b8a06b405892de0580d7c421c52f5e",
+   "ranAt": "224e8faaaf60e2809fd167ce934d2dda3d63f131",
    "detectors": "the seven test files this change adds or edits, one vitest run per mutant",
    "summary": {
-    "codeCommit": "6928b50a49b8a06b405892de0580d7c421c52f5e",
+    "codeCommit": "224e8faaaf60e2809fd167ce934d2dda3d63f131",
     "baseCommit": "d621bfa2",
-    "mutants": 16,
-    "killed": 15,
+    "mutants": 21,
+    "killed": 20,
     "survivedEquivalent": 1,
-    "survived": []
+    "survived": [],
+    "killedByExpectedKillerOnly": 5,
+    "expectedKillerNotAlone": []
    },
    "mutants": [
     {
@@ -3451,7 +3517,7 @@
      "failedTests": {
       "unit": 17,
       "fenceRules": 10,
-      "callSites": 12
+      "callSites": 13
      }
     },
     {
@@ -3460,7 +3526,7 @@
      "failedTests": {
       "unit": 17,
       "fenceRules": 10,
-      "callSites": 12
+      "callSites": 13
      }
     },
     {
@@ -3469,7 +3535,7 @@
      "failedTests": {
       "unit": 10,
       "fenceRules": 6,
-      "callSites": 6
+      "callSites": 7
      }
     },
     {
@@ -3487,7 +3553,7 @@
      "failedTests": {
       "unit": 10,
       "fenceRules": 6,
-      "callSites": 6
+      "callSites": 7
      }
     },
     {
@@ -3496,7 +3562,7 @@
      "failedTests": {
       "unit": 9,
       "fenceRules": 7,
-      "callSites": 0
+      "callSites": 1
      }
     },
     {
@@ -3505,7 +3571,7 @@
      "failedTests": {
       "unit": 5,
       "fenceRules": 3,
-      "callSites": 0
+      "callSites": 1
      }
     },
     {
@@ -3514,7 +3580,7 @@
      "failedTests": {
       "unit": 17,
       "fenceRules": 10,
-      "callSites": 12
+      "callSites": 13
      }
     },
     {
@@ -3523,7 +3589,7 @@
      "failedTests": {
       "unit": 13,
       "fenceRules": 9,
-      "callSites": 6
+      "callSites": 7
      }
     },
     {
@@ -3532,7 +3598,7 @@
      "failedTests": {
       "unit": 21,
       "fenceRules": 36,
-      "callSites": 2
+      "callSites": 3
      }
     },
     {
@@ -3541,7 +3607,7 @@
      "failedTests": {
       "unit": 21,
       "fenceRules": 36,
-      "callSites": 2
+      "callSites": 3
      }
     },
     {
@@ -3550,14 +3616,14 @@
      "failedTests": {
       "unit": 9,
       "fenceRules": 7,
-      "callSites": 6
+      "callSites": 7
      }
     },
     {
      "id": "MU12-phantom-final-terminator",
      "outcome": "killed",
      "failedTests": {
-      "unit": 24,
+      "unit": 25,
       "fenceRules": 36,
       "callSites": 0
      }
@@ -3566,9 +3632,9 @@
      "id": "MU13-last-line-dropped",
      "outcome": "killed",
      "failedTests": {
-      "unit": 19,
+      "unit": 20,
       "fenceRules": 4,
-      "callSites": 7
+      "callSites": 8
      }
     },
     {
@@ -3577,7 +3643,7 @@
      "failedTests": {
       "unit": 36,
       "fenceRules": 46,
-      "callSites": 22
+      "callSites": 23
      }
     },
     {
@@ -3597,6 +3663,71 @@
       "fenceRules": 0,
       "callSites": 0
      }
+    },
+    {
+     "id": "MU17-u2028-is-a-line-end",
+     "outcome": "killed",
+     "failedTests": {
+      "unit": 1,
+      "fenceRules": 0,
+      "callSites": 0
+     },
+     "expectedKiller": "U+2028, U+2029 and U+0085 are line content, not line ends",
+     "failingTests": [
+      "closed-pwb-code-context-v1 \u2014 CRLF, CR and LF each end one line U+2028, U+2029 and U+0085 are line content, not line ends"
+     ]
+    },
+    {
+     "id": "MU18-nel-is-a-line-end",
+     "outcome": "killed",
+     "failedTests": {
+      "unit": 1,
+      "fenceRules": 0,
+      "callSites": 0
+     },
+     "expectedKiller": "U+2028, U+2029 and U+0085 are line content, not line ends",
+     "failingTests": [
+      "closed-pwb-code-context-v1 \u2014 CRLF, CR and LF each end one line U+2028, U+2029 and U+0085 are line content, not line ends"
+     ]
+    },
+    {
+     "id": "MU19-js-line-terminators",
+     "outcome": "killed",
+     "failedTests": {
+      "unit": 1,
+      "fenceRules": 0,
+      "callSites": 0
+     },
+     "expectedKiller": "U+2028, U+2029 and U+0085 are line content, not line ends",
+     "failingTests": [
+      "closed-pwb-code-context-v1 \u2014 CRLF, CR and LF each end one line U+2028, U+2029 and U+0085 are line content, not line ends"
+     ]
+    },
+    {
+     "id": "MU20-positionOf-counts-bare-cr",
+     "outcome": "killed",
+     "failedTests": {
+      "unit": 0,
+      "fenceRules": 0,
+      "callSites": 1
+     },
+     "expectedKiller": "CRLF as LF; a bare CR counted by the malformed line only",
+     "failingTests": [
+      "reported positions in CRLF and bare-CR texts CRLF as LF; a bare CR counted by the malformed line only"
+     ]
+    },
+    {
+     "id": "MU21-positionOf-counts-every-cr",
+     "outcome": "killed",
+     "failedTests": {
+      "unit": 0,
+      "fenceRules": 0,
+      "callSites": 1
+     },
+     "expectedKiller": "CRLF as LF; a bare CR counted by the malformed line only",
+     "failingTests": [
+      "reported positions in CRLF and bare-CR texts CRLF as LF; a bare CR counted by the malformed line only"
+     ]
     }
    ],
    "equivalent": "MU16: a line holds no CR or LF now (both are split points), so blanking by [^\\n] and by length agree; no test can tell them apart"
@@ -3624,14 +3755,24 @@
   "reading": "the base digest is cited only by retained review-measurement records of the fence-rule review (they name the file as it was then); no act, manifest, acceptance record or .syzygy or openspec file cites either digest"
  },
  "tests": {
-  "line": "Tests: +57 ~33 -3",
+  "line": "Tests: +59 ~33 -3",
   "method": "by (file, full name) identity from vitest reports of the seven files at each commit, and by call text for a changed it.each call (tool: test-delta.py, test-inventory.mjs); a helper the callbacks call is not followed",
-  "baseTests": 331,
-  "headTests": 385,
+  "baseCommit": "f7ea858480b30ffc4407154a84d1d03f3fe4a549",
+  "headCommit": "224e8faaaf60e2809fd167ce934d2dda3d63f131",
+  "previousMeasurement": {
+   "baseCommit": "d621bfa267f24ff68f6f83ac7bfba44b81a32a34",
+   "codeCommit": "6928b50a49b8a06b405892de0580d7c421c52f5e",
+   "line": "Tests: +57 ~33 -3",
+   "baseTests": 331,
+   "headTests": 385,
+   "why": "the count before the repair, read from test-delta-output.json at c399eda908a3d549e051f45499557e82356af9ab; the base then was the parent of the fix, which holds one test fewer in the seven files than f7ea858480b30ffc4407154a84d1d03f3fe4a549 (the BOM test, main)"
+  },
+  "baseTests": 332,
+  "headTests": 388,
   "output": "docs/evidence/syzygy-bpyt-16/test-delta-output.json"
  },
  "residuals": [
-  "[Observed] positionOf in git-object-reader counts LF only and is unchanged (the ruling). A non-malformed finding in a bare-CR or mixed text keeps the LF-only line and column; a malformed finding takes the mask line, which now counts CR and CRLF as line ends. The differential counts those rows under positionOf.",
+  "[Observed] positionOf in git-object-reader counts LF only and is unchanged (the ruling). In a text that holds a bare CR, a non-malformed finding keeps the LF-only line and column, while a malformed finding takes the mask line, which counts every CR, CRLF and LF; a text whose terminators are only LF and CRLF reports the LF form positions. No production path reads a finding line or column. The differential counts those rows under positionOf, and git-object-reader.test.ts pins the reading (the GAP test, which kills MU20 and MU21). A follow-up bead holds the line-model question; it is not G2 or G3.",
   "[Observed] The extractor splits at LF and drops one trailing CR; the link reader splits at LF only. For a bare-CR text each differs from the profile (links in 30 of the 33 fence cases, extraction in all 33, pinned in fence-rules.test.ts rows named GAP G2/G3). They are open owner questions G2 and G3 and are not changed here.",
   "[Observed] The consent reader (outsideFences) is unchanged and stays CR-blind (G4).",
   "[Observed] docs/evidence/syzygy-bpyt-6-3/dc3-fence-rules-2026-10-25.json and its probe outputs record G1 as measured before this fix; they are not edited.",
@@ -3640,38 +3781,38 @@
  "files": [
   {
    "path": "docs/evidence/syzygy-bpyt-16/build-record.py",
-   "bytes": 13836,
-   "sha256": "f35ce60729d121866c05c25d38e0eac98fc787ac3581435a2383c1cb611f99ec"
+   "bytes": 20024,
+   "sha256": "1f927a1e750ad7a7c77747829ba1bfea640ebc16fa9b6d628f11bcda8d6cd150"
   },
   {
    "path": "docs/evidence/syzygy-bpyt-16/crlf-differential-output.json",
-   "bytes": 57777,
-   "sha256": "32096a4be4dae8958754204a11d39f79118a1812e99b505b268c238a4da60532"
+   "bytes": 57946,
+   "sha256": "60723b1634347af5e52b2137e339050341759615c0966edcebd52dcdcc27fd4c"
   },
   {
    "path": "docs/evidence/syzygy-bpyt-16/crlf-differential-selftest-output.json",
-   "bytes": 1449,
-   "sha256": "45ca624be80631da575481f0c5f117ce4d2fd1b0e9f325d8eed5eab7fc1575aa"
+   "bytes": 2144,
+   "sha256": "4661ec240f10abacedfa73bbe0f3a4bc36028da3669e524f12eca34556e46db0"
   },
   {
    "path": "docs/evidence/syzygy-bpyt-16/crlf-differential-selftest.mjs",
-   "bytes": 3765,
-   "sha256": "179e373f9bdfad5253c6e8d16d104a26c978bbd5b0df35a682c1e1d28f0b3bd1"
+   "bytes": 4343,
+   "sha256": "b73be1baa2aa2db8b9973a3a0800db1b6a4bd62b0b83b96e9c5c4503e6a1781c"
   },
   {
    "path": "docs/evidence/syzygy-bpyt-16/crlf-differential.mjs",
-   "bytes": 17418,
-   "sha256": "fd070957b1078e5ac0f4b0ddd3b5c780cf78c6dc9af9c4185b6cb5203467dfe3"
+   "bytes": 19812,
+   "sha256": "ce981fadd9fc83e26477e6988ba3cfea57c32627c13262834a8f9f4810698092"
   },
   {
    "path": "docs/evidence/syzygy-bpyt-16/crlf-mask-mutants-output.json",
-   "bytes": 61325,
-   "sha256": "3a2a02715d7dbb7d69d281ac0a43443c0b21bc61ecba246c2dccba69e189bf03"
+   "bytes": 68960,
+   "sha256": "4d7b65dd1916c653eb71b5955f0e957ed801dc45dd71a95cdaed8c0d2b61ec43"
   },
   {
    "path": "docs/evidence/syzygy-bpyt-16/crlf-mask-mutants.py",
-   "bytes": 10423,
-   "sha256": "94e03e7e58da1d6edf8a428a756c050cb3359585866807c1871d6d8526ba7071"
+   "bytes": 13469,
+   "sha256": "4905d5541f18122a9c61c65ea3b967d955a844313ecd820632609b93155ba7c2"
   },
   {
    "path": "docs/evidence/syzygy-bpyt-16/digest-citers-6928b50a.json",
@@ -3680,8 +3821,8 @@
   },
   {
    "path": "docs/evidence/syzygy-bpyt-16/test-delta-output.json",
-   "bytes": 14076,
-   "sha256": "599fd43d05f9ef5c4b405a944cc95238eade711cb5bdb811629185d79642701e"
+   "bytes": 14472,
+   "sha256": "d256d45e264d04bdef5ab3fee99927170c2bef5e221666393ff151d15e8e19d9"
   },
   {
    "path": "docs/evidence/syzygy-bpyt-16/test-delta.py",
