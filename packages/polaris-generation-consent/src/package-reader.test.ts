@@ -144,6 +144,36 @@ describe('package admission reader', () => {
   });
 });
 
+/** The reader's own fence rule, `outsideFences` (private; docs/evidence/syzygy-bpyt-6-3/dc3-fence-rules-2026-10-25.json, reader 4). A
+ * field inside a fence is not a field, so a record in which a field counts differently with and without fences is refused. These cases
+ * put a fence-shaped block after the title of an act record: the record stays in force exactly when the block does not open a fence
+ * that swallows the fields below it, which pins the opener's indent limit and the closer's length rule without exporting the function.
+ * On CRLF the function recognizes no fence (its opener ends in `(.*)$` and `.` does not match CR), so a field wholly inside a fence
+ * would pass `one()`; the record is refused anyway, by the title, table and heading checks that compare whole lines against LF. The
+ * two CRLF cases pin that refusal, not the mechanism, and a change that makes those checks CR-tolerant must make the fence guard so too. */
+describe('fence reading of the act records', () => {
+  const ACT_KEY = `${DECISIONS_DIR}/PUBLIC-REPO-ADMISSION-REDIS-OBSERVATION-ACT.md`;
+  const afterTitle = (act: string, block: string): string => act.replace('\n\n', `\n\n${block}\n\n`);
+  const states = async (files: Record<string, string>): Promise<string[]> =>
+    (await reader(files).read()).map(r => `${r.class}:${r.repositoryId ?? r.providerId}:${r.inForceAt === null ? 'not-in-force' : 'in-force'}`).sort();
+  const IN_FORCE = ['egress:anthropic:in-force', 'observation:redis-redis:in-force'];
+
+  it('a line indented four spaces is not a fence opener: the record stays in force', async () => {
+    expect(await states(world())).toEqual(IN_FORCE);
+    expect(await states(world({ [ACT_KEY]: afterTitle(world()[ACT_KEY]!, '    ```') }))).toEqual(IN_FORCE);
+  });
+  it('a closed example fence after the title is blanked, and its closer of the opener\'s length closes it: the record stays in force', async () => {
+    expect(await states(world({ [ACT_KEY]: afterTitle(world()[ACT_KEY]!, '```\nexample\n```') }))).toEqual(IN_FORCE);
+  });
+  it('refuses an act record written with CRLF line ends', async () => {
+    await expect(reader(world({ [ACT_KEY]: world()[ACT_KEY]!.replace(/\n/g, '\r\n') })).read()).rejects.toBeInstanceOf(AdmissionRecordError);
+  });
+  it('refuses an instance written with CRLF line ends, even when its act record binds its digest', async () => {
+    const crlf = obsText().replace(/\n/g, '\r\n');
+    await expect(reader(world({ [REDIS_PATH]: crlf, [ACT_KEY]: actText('consent-observation', REDIS_PATH, crlf) })).read()).rejects.toBeInstanceOf(AdmissionRecordError);
+  });
+});
+
 describe('admission records port', () => {
   const port = (files: Record<string, string>, now: number) => createAdmissionRecordsPort({ reader: reader(files), now: () => now });
   it('satisfies observation and egress exactly when an act is in force, and not before the act\'s instant', async () => {

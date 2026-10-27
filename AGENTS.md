@@ -188,6 +188,15 @@ sweep lessons added 2026-09-23; the raw-head digest lesson the same day.
   After a merge that adds a workspace package, run `npm ci` in every checkout
   that builds or serves from it: until the `node_modules/@syzygy/` link
   exists, the package does not resolve.
+- Markdown fences are read by five separate rules, kept apart on purpose:
+  `markdown-code-context.ts` (the PWB-REQ-006 profile, the only one a clause
+  states), the manifest's `stripFences`, the extractor's `parseDoc`, the
+  consent `outsideFences` and the Polaris renderer. `docs/evidence/syzygy-bpyt-6-3/dc3-fence-rules-2026-10-25.json`
+  says which clause governs each and where they differ; `fence-rules.test.ts`
+  pins four of them (the consent reader through the probe and its own tests).
+  Do not merge or "fix" one without the owner, since that changes what a gate
+  accepts. G1, the CRLF reading, is ruled by the owner (`syzygy-bpyt.1.14`)
+  and `syzygy-bpyt.16` fixes it; G2 and G3 are open owner questions.
 - Three-Surface POC: `packages/three-surface-poc-core/` (one shared
   `PocModel`) and `apps/three-surface-poc/` read the same instance — never
   split surface truth stores. `build:poc` keeps `tsc -b --force`: ignored

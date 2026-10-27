@@ -172,7 +172,7 @@ export type DeriveManifestResult =
 // line start. Images (`![...]`) are not links. Fragments and queries are
 // dropped. Nothing else in an index names a file.
 
-function stripFences(text: string, stripInlineCode = true): readonly string[] {
+function stripFences(text: string, stripInlineCode = true): readonly string[] { // not the PWB-REQ-006 profile; one of five fence rules: docs/evidence/syzygy-bpyt-6-3/dc3-fence-rules-2026-10-25.json
   const kept: string[] = [];
   let fence: string | undefined;
   for (const line of text.split('\n')) {
