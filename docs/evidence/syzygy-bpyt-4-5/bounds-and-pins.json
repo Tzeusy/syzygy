@@ -67,6 +67,10 @@
    "sha256": "6126bb9f5e2fdfdcfbab427b4fcdefbbc2113d0589bdfc5fe08f7d4c5b2aa1b8"
   },
   {
+   "path": "docs/evidence/syzygy-bpyt-4-5/build-record-mutants.json",
+   "sha256": "b12d6f8f843848264198e7281b51d262568f17158e0047d86c75038fac452d3a"
+  },
+  {
    "path": "docs/evidence/syzygy-bpyt-4-5/census-base.json",
    "sha256": "1a7f336817bea73babce870c2757aab1c8d1741b5fb29f345339736b793da6ec"
   },
