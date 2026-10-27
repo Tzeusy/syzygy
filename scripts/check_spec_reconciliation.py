@@ -106,8 +106,12 @@ Since the 2026-10-03 tree-framing sign-off moved `spec.md` past the pinned
 row, the case also replays `spec.md` as the pinned bytes (the re-pin
 builder's `spec_at_pin`, every later signed patch reversed): R6 must read
 zero over that tree, and R2, R3 and R4, which then see bytes no act binds,
-must fail exactly. On the tree itself R6 reports both pins until their own
-re-pin act. The strict case `pins-after-tree-framing-repin-acts` does the
+must fail exactly. After the P115 sign-off, replaying its governing PWB
+input must additionally produce exactly the P115 R1 refusal. The fixture
+requires the complete signed transaction to validate when only PWB is
+restored, so the early input refusal cannot hide another record defect.
+The unsigned fixture retains the exact R2/R3/R4 expectation. On the tree
+itself R6 reports both pins until their own re-pin act. The strict case `pins-after-tree-framing-repin-acts` does the
 same for the `syzygy-2g0d` package, which re-pins both to the tree-framing
 `spec.md` row: with its proposed bytes in place of both subjects, R6 must
 examine both pins and report zero, and no other predicate may fail.
@@ -2119,6 +2123,39 @@ def _selftest_cases(tmp, commit, witnesses, failures, witness_path, base, clean,
             allowed = set(filter(None, tail.split(",")))
             failed_ok = (got.failed == allowed if applied
                          else got.failed <= allowed)
+            if name == "pins-after-repin-acts" and applied:
+                reference = poc_reference()
+                if reference.transaction_present(start):
+                    original_pwb = (start / FAMILY_SPECS["PWB"]).read_bytes()
+                    replayed_pwb = (tree / FAMILY_SPECS["PWB"]).read_bytes()
+                    if not reference.is_signed(start):
+                        failed_ok = False
+                    elif replayed_pwb != original_pwb:
+                        # Rewinding this governing input must invalidate
+                        # P115, with exactly this refusal and no other R1.
+                        required = allowed | {"R1"}
+                        expect = f"{rid}=0|" + ",".join(sorted(required))
+                        expected_r1 = [
+                            "poc (syzygy-73e.5.2) successor "
+                            "THREE-SURFACE-POC-GOVERNEDBY-REFERENCE-"
+                            "AMENDMENT-SIGNOFF-v1.0.md: incomplete or "
+                            "invalid exact P115 sign-off transaction"]
+                        failed_ok = (
+                            got.failed == required
+                            and got.findings.get("R1") == expected_r1
+                            and reference.binding_findings(tree) == [
+                                "current P115 governing input differs: "
+                                + FAMILY_SPECS["PWB"]])
+                        if failed_ok:
+                            # The early input refusal can hide a second
+                            # record defect. Restoring only PWB must make
+                            # the complete signed transaction valid again.
+                            target = tree / FAMILY_SPECS["PWB"]
+                            try:
+                                target.write_bytes(original_pwb)
+                                failed_ok = reference.is_signed(tree)
+                            finally:
+                                target.write_bytes(replayed_pwb)
             caught = (got.findings.get(rid) == [] and failed_ok
                       and any(int(m.group(1)) > 0 for m in (
                           re.match(rf"OK +{rid}  .* — (\d+) examined", line)
