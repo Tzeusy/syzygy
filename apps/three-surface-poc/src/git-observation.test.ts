@@ -120,6 +120,12 @@ describe('read-only Git observation', () => {
     expect(pocObserverInputsAreClean({ changedPaths: ['packages/http-host/package.json'] })).toBe(false);
   });
 
+  // syzygy-bpyt.4.2, the PR 549 review's F2: `build:poc` names scripts/clean_build.mjs, which removes the dists and runs tsc, so the
+  // build definition that package.json held whole before is protected as an exact input too.
+  it('protects the clean-build script that build:poc runs', () => {
+    expect(pocObserverInputsAreClean({ changedPaths: ['scripts/clean_build.mjs'] })).toBe(false);
+  });
+
   // syzygy-bpyt.6.15, the PR 535 review's N6: a protected package is protected whole. Narrowing a prefix to its src/
   // directory, or to src/ plus its manifest, would admit a dirty build input such as its tsconfig.json.
   it('protects every file of each protected package, its manifest and tsconfig among them', () => {

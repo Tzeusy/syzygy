@@ -325,9 +325,12 @@ sweep lessons added 2026-09-23; the raw-head digest lesson the same day.
 - `npm run typecheck` is one noEmit program over every workspace's `src/`,
   tests among them (the root `tsconfig.json`); it reads no `dist`
   declaration, so it needs no build first. Each package `tsconfig.json` is
-  the product build alone and excludes `src/**/*.test.ts`; TypeScript still
-  emits any module a built one imports, so no built module may import a test
-  (`product-build.test.ts`).
+  the product build and excludes its tests and test-support modules; it
+  still emits two kits a reader takes from `dist` (`full-run.testkit.ts` for
+  `scripts/dossier_scale_measure.mjs`, `recorder-fixtures.testkit.ts` for the
+  consent package's `./testing` entry). TypeScript emits any module a built
+  one imports, so no built module may import a test or test support
+  (`product-build.test.ts` lists the excludes per project).
 - Ledger semantics: a refused read is not a counted pass; phase-B breaches
   are typed findings and do not set the degradation state; catalog
   extraction keys off the basename `v1.md`. The tailnet mount is detected

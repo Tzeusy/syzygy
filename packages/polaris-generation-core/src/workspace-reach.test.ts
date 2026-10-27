@@ -166,4 +166,21 @@ describe("the tree's own exports", () => {
     });
     expect(wrong.map(({ manifest, subpath }) => `${manifest.name} ${subpath}`)).toEqual([]);
   });
+
+  // The PR 549 review's F5: the row above reads the manifests, and the suite scan reads vitest.config.ts as text, so neither sees a
+  // resolver plugin that sends a specifier to its dist. This imports each one as the suite does and asks for the source module's
+  // own instance. The POC app's `.` entry runs the POC on import (main.ts), so only its manifest is checked, above.
+  it('load, under the suite, each entry from its source module', async () => {
+    const entries = [...WORKSPACE.manifests.values()].flatMap((manifest) =>
+      Object.entries(manifest.exports ?? {}).map(([subpath, entry]) => ({
+        specifier: subpath === '.' ? manifest.name : `${manifest.name}${subpath.slice(1)}`,
+        source: posix.join(manifest.dir, (entry as Record<string, string>)['source']!),
+      })));
+    const imported = entries.filter(({ source }) => source !== 'apps/three-surface-poc/src/main.ts');
+    expect(entries.length - imported.length).toBe(1);
+    expect(imported.length).toBeGreaterThanOrEqual(16);
+    for (const { specifier, source } of imported) {
+      expect(await import(specifier), specifier).toBe(await import(pathToFileURL(join(ROOT, source)).href));
+    }
+  }, 60_000);
 });

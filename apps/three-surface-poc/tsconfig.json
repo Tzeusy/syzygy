@@ -9,7 +9,10 @@
     "src"
   ],
   "exclude": [
-    "src/**/*.test.ts"
+    "src/**/*.test.ts",
+    "src/test-deep-dive-markers.ts",
+    "src/test-fixture-sweep.global-setup.ts",
+    "src/test-http-client.ts"
   ],
   "references": [
     {

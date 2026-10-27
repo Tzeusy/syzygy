@@ -213,7 +213,7 @@ type StepDeps<K extends keyof StepPorts> = { readonly sources: GateSources; read
 /** What every command reads and prints through: the one context, built once per invocation. */
 function commandContext(json: boolean, io: CliIo, ports: CliPorts) {
   const now = ports.now ?? Date.now;
-  const env = ports.env ?? process.env;
+  const env: Readonly<Record<string, string | undefined>> = ports.env ?? process.env;
   const probe = (): StepPorts['probe'] => createCredentialProbe(credentialListFromEnv(env));
   return {
     json, now, env, io, probe,
