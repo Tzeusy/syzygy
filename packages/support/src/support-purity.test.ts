@@ -85,6 +85,17 @@ describe('the specifier reader this guard stands on', () => {
   });
 });
 
+describe('the forbidden-token list both guards stand on', () => {
+  // One form per token, each matched by that token alone, so a token dropped from the shared list fails its row.
+  const CASES: readonly string[] = [
+    'const m = require(name);', 'const m = await import(name);', 'await fetch(url);', 'writeFileSync(p, d);', 'appendFileSync(p, d);',
+    'mkdirSync(p);', 'const h = process.env.HOME;', 'const t = new Date();', "import { readFileSync } from 'node:fs';",
+  ];
+  it.each(CASES)('refuses %j', (source) => {
+    expect(FORBIDDEN.filter((forbidden) => forbidden.test(source))).toHaveLength(1);
+  });
+});
+
 describe('the identifier reader the allowlist stands on', () => {
   const CASES: readonly (readonly [string, readonly string[]])[] = [
     ["const h = globalThis['process']; // console.log(h)", ['globalThis', 'h']],
