@@ -14,7 +14,7 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { afterEach, describe, expect, it } from 'vitest';
 
-import { createDaemon, escapeHtml, type RunningDaemon } from '@syzygy/cap1-daemon';
+import { createDaemon, escapeHtml, type RunningDaemon } from '@syzygy/http-host';
 import { PWB_RESOURCE_LIMITS, type PocModel, type ProjectShape } from '@syzygy/three-surface-poc-core';
 
 import { TAILNET_HOST } from './browser-origin.js';
