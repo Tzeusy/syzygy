@@ -179,17 +179,22 @@ function unliftedOf(module: string, source: ts.SourceFile): string[] {
   return found;
 }
 
-/** Every non-test source module of the workspace that names readArgv, and every call of it there with the spec it passes. */
-function readArgvCallers(): { modules: string[]; calls: { module: string; spec: unknown }[]; unlifted: string[] } {
-  const sources = ['apps', 'packages'].flatMap((parent) => fs.readdirSync(path.join(ROOT, parent)).map((name) => `${parent}/${name}/src`))
-    .filter((dir) => fs.existsSync(path.join(ROOT, dir)))
-    .flatMap((dir) => fs.readdirSync(path.join(ROOT, dir), { recursive: true, encoding: 'utf8' }).map((file) => `${dir}/${file}`))
-    .filter((module) => module.endsWith('.ts') && !module.endsWith('.test.ts')).sort();
+/** Every path under a workspace package's src directory. */
+const treeFiles = (): string[] => ['apps', 'packages'].flatMap((parent) => fs.readdirSync(path.join(ROOT, parent)).map((name) => `${parent}/${name}/src`))
+  .filter((dir) => fs.existsSync(path.join(ROOT, dir)))
+  .flatMap((dir) => fs.readdirSync(path.join(ROOT, dir), { recursive: true, encoding: 'utf8' }).map((file) => `${dir}/${file}`));
+const readTree = (file: string): string => fs.readFileSync(path.join(ROOT, file), 'utf8');
+
+/** Every non-test source module among `files` (the tree's, by default) that names readArgv, and every call of it there with the
+ * spec it passes. A source module is any TypeScript module the packages' `include: ["src"]` compiles: `.ts`, `.mts`, `.cts` or
+ * `.tsx` (syzygy-bpyt.8.37, the review of 8.36, N3). */
+function readArgvCallers(files: readonly string[] = treeFiles(), read: (file: string) => string = readTree): { modules: string[]; calls: { module: string; spec: unknown }[]; unlifted: string[] } {
+  const sources = files.filter((module) => /\.[cm]?tsx?$/u.test(module) && !/\.test\.[cm]?tsx?$/u.test(module)).sort();
   const modules: string[] = [];
   const calls: { module: string; spec: unknown }[] = [];
   const unlifted: string[] = [];
   for (const module of sources) {
-    const text = fs.readFileSync(path.join(ROOT, module), 'utf8');
+    const text = read(module);
     if (!text.includes('readArgv')) continue;
     modules.push(module);
     const source = ts.createSourceFile(module, text, ts.ScriptTarget.Latest, true);
@@ -228,8 +233,30 @@ describe('each policy copy above, against the spec its caller passes', () => {
     ["import { readArgv as readArgs } from './argv.js';\nvoid readArgs([], { valued: [] });", ['module.ts:1 readArgv as readArgs']],
     ["import { readArgv } from './argv.js';\n[[]].map((args) => readArgv.call(undefined, args, { valued: [] }));", ['module.ts:2 readArgv.call']],
     ["import { readArgv } from './argv.js';\nexport const policies = { daemon: readArgv };", ['module.ts:2 daemon: readArgv']],
+    ["import { readArgv } from './argv.js';\nvoid [[]].map(readArgv);", ['module.ts:2 [[]].map(readArgv)']],
+    ['export function readArgv(): void {}', ['module.ts:1 export function readArgv(): void {}']],
   ])('the census sees a reading the lift does not in %j (its own mutant)', (text, unlifted) => {
     expect(unliftedOf('module.ts', ts.createSourceFile('module.ts', text, ts.ScriptTarget.Latest, true))).toEqual(unlifted);
+  });
+
+  // syzygy-bpyt.8.37 (the review of 8.36, N1 and N3): this block's rows over the tree cannot tell a census never taken from an
+  // empty one, nor a module left out of the population from one that names readArgv nowhere, so these two give readArgvCallers
+  // modules of their own.
+  const READER = "import { readArgv } from './argv.js';\nvoid readArgv([], { valued: ['--x'] });";
+  const read = (texts: Record<string, string>) => (file: string): string => texts[file]!;
+
+  it("adds each module's census to what it reports unlifted", () => {
+    const texts = { 'packages/polaris-dossier/src/argv.ts': 'export function readArgv(): void {}', 'apps/app/src/main.ts': "import * as argvNs from './argv.js';\nvoid argvNs.readArgv([], { valued: [] });" };
+    expect(readArgvCallers(Object.keys(texts), read(texts))).toEqual({
+      modules: ['apps/app/src/main.ts', 'packages/polaris-dossier/src/argv.ts'], calls: [], unlifted: ['apps/app/src/main.ts:2 argvNs.readArgv'],
+    });
+  });
+
+  it('reads every module TypeScript compiles under src, .mts, .cts and .tsx among them, and no test module', () => {
+    const texts = Object.fromEntries(['main.ts', 'reader.mts', 'reader.cts', 'view.tsx', 'main.test.ts', 'reader.test.mts', 'reader.test.cts', 'view.test.tsx', 'notes.md', 'fixture.json']
+      .map((file) => [`apps/app/src/${file}`, READER]));
+    expect(readArgvCallers(Object.keys(texts), read(texts)).calls).toEqual(['main.ts', 'reader.cts', 'reader.mts', 'view.tsx']
+      .map((file) => ({ module: `apps/app/src/${file}`, spec: { valued: ['--x'] } })));
   });
 
   it("names allow-execution's options as the dossier options policy's", () => {
