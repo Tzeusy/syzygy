@@ -1,5 +1,5 @@
 {
- "commit": "22142d9f8731f1494258bfaa6b58ab0c24a2e607",
+ "commit": "28024ade30ac30ffeac3bb09fe0833fe63a43981",
  "controls": [
   {
    "id": "C0-authority-artifact-fields.ts",
@@ -8,9 +8,9 @@
     "packages/three-surface-poc-core/src/authority-artifact-fields.test.ts"
    ],
    "exit": 0,
-   "passed": 32,
+   "passed": 27,
    "failed": 0,
-   "total": 32,
+   "total": 27,
    "failedTests": [],
    "passed_clean": true
   },
@@ -21,9 +21,9 @@
     "packages/three-surface-poc-core/src/authority-artifact-fields.test.ts"
    ],
    "exit": 0,
-   "passed": 32,
+   "passed": 27,
    "failed": 0,
-   "total": 32,
+   "total": 27,
    "failedTests": [],
    "passed_clean": true
   },
@@ -34,9 +34,9 @@
     "packages/polaris-generation-core/src/secret-redaction.test.ts"
    ],
    "exit": 0,
-   "passed": 37,
+   "passed": 38,
    "failed": 0,
-   "total": 37,
+   "total": 38,
    "failedTests": [],
    "passed_clean": true
   },
@@ -47,9 +47,9 @@
     "packages/polaris-generation-core/src/secret-redaction.test.ts"
    ],
    "exit": 0,
-   "passed": 37,
+   "passed": 38,
    "failed": 0,
-   "total": 37,
+   "total": 38,
    "failedTests": [],
    "passed_clean": true
   },
@@ -122,9 +122,9 @@
     "packages/three-surface-poc-core/src/authority-artifact-fields.test.ts"
    ],
    "exit": 1,
-   "passed": 31,
+   "passed": 26,
    "failed": 1,
-   "total": 32,
+   "total": 27,
    "failedTests": [
     "the parsers read a JSON container as an object only when it is one refuse a policy document that is an array"
    ],
@@ -145,9 +145,9 @@
     "packages/three-surface-poc-core/src/authority-artifact-fields.test.ts"
    ],
    "exit": 1,
-   "passed": 31,
+   "passed": 26,
    "failed": 1,
-   "total": 32,
+   "total": 27,
    "failedTests": [
     "the parsers read a JSON container as an object only when it is one refuse a policy document that is null"
    ],
@@ -168,9 +168,9 @@
     "packages/three-surface-poc-core/src/authority-artifact-fields.test.ts"
    ],
    "exit": 1,
-   "passed": 27,
-   "failed": 5,
-   "total": 32,
+   "passed": 23,
+   "failed": 4,
+   "total": 27,
    "failedTests": [
     "the parsers read a JSON container as an object only when it is one refuse a policy document that is an array",
     "the parsers read a JSON container as an object only when it is one refuse a policy document that is null",
@@ -193,9 +193,9 @@
     "packages/three-surface-poc-core/src/authority-artifact-fields.test.ts"
    ],
    "exit": 1,
-   "passed": 31,
+   "passed": 26,
    "failed": 1,
-   "total": 32,
+   "total": 27,
    "failedTests": [
     "the parsers read a JSON container as an object only when it is one refuse a registry document that is an array"
    ],
@@ -216,9 +216,9 @@
     "packages/three-surface-poc-core/src/authority-artifact-fields.test.ts"
    ],
    "exit": 1,
-   "passed": 31,
+   "passed": 26,
    "failed": 1,
-   "total": 32,
+   "total": 27,
    "failedTests": [
     "the parsers read a JSON container as an object only when it is one refuse a registry document that is null"
    ],
@@ -239,9 +239,9 @@
     "packages/three-surface-poc-core/src/authority-artifact-fields.test.ts"
    ],
    "exit": 1,
-   "passed": 27,
-   "failed": 5,
-   "total": 32,
+   "passed": 23,
+   "failed": 4,
+   "total": 27,
    "failedTests": [
     "the parsers read a JSON container as an object only when it is one refuse a registry document that is an array",
     "the parsers read a JSON container as an object only when it is one refuse a registry document that is null",
@@ -264,9 +264,9 @@
     "packages/three-surface-poc-core/src/authority-artifact-fields.test.ts"
    ],
    "exit": 1,
-   "passed": 31,
+   "passed": 26,
    "failed": 1,
-   "total": 32,
+   "total": 27,
    "failedTests": [
     "the parsers read a JSON container as an object only when it is one surface a first registry entry that is an array as the malformed entries list"
    ],
@@ -287,9 +287,9 @@
     "packages/three-surface-poc-core/src/authority-artifact-fields.test.ts"
    ],
    "exit": 1,
-   "passed": 31,
+   "passed": 26,
    "failed": 1,
-   "total": 32,
+   "total": 27,
    "failedTests": [
     "the parsers read a JSON container as an object only when it is one surface a first registry entry that is null as the malformed entries list"
    ],
@@ -310,9 +310,9 @@
     "packages/three-surface-poc-core/src/authority-artifact-fields.test.ts"
    ],
    "exit": 1,
-   "passed": 27,
-   "failed": 5,
-   "total": 32,
+   "passed": 23,
+   "failed": 4,
+   "total": 27,
    "failedTests": [
     "the parsers read a JSON container as an object only when it is one surface a first registry entry that is an array as the malformed entries list",
     "the parsers read a JSON container as an object only when it is one surface a first registry entry that is null as the malformed entries list",
@@ -335,9 +335,9 @@
     "packages/three-surface-poc-core/src/authority-artifact-fields.test.ts"
    ],
    "exit": 1,
-   "passed": 31,
+   "passed": 26,
    "failed": 1,
-   "total": 32,
+   "total": 27,
    "failedTests": [
     "the parsers read a JSON container as an object only when it is one surface an entry subject that is an array as the repository field"
    ],
@@ -358,9 +358,9 @@
     "packages/three-surface-poc-core/src/authority-artifact-fields.test.ts"
    ],
    "exit": 1,
-   "passed": 31,
+   "passed": 26,
    "failed": 1,
-   "total": 32,
+   "total": 27,
    "failedTests": [
     "the parsers read a JSON container as an object only when it is one surface an entry subject that is null as the repository field"
    ],
@@ -381,9 +381,9 @@
     "packages/three-surface-poc-core/src/authority-artifact-fields.test.ts"
    ],
    "exit": 1,
-   "passed": 20,
-   "failed": 12,
-   "total": 32,
+   "passed": 17,
+   "failed": 10,
+   "total": 27,
    "failedTests": [
     "the parsers read a JSON container as an object only when it is one surface an entry subject that is an array as the repository field",
     "the parsers read a JSON container as an object only when it is one surface an entry subject that is null as the repository field",
@@ -406,16 +406,16 @@
     "packages/three-surface-poc-core/src/authority-artifact-fields.test.ts"
    ],
    "exit": 0,
-   "passed": 32,
+   "passed": 27,
    "failed": 0,
-   "total": 32,
+   "total": 27,
    "failedTests": [],
    "killed": false,
    "escalated": {
     "exit": 0,
-    "passed": 2228,
+    "passed": 2223,
     "failed": 0,
-    "total": 2233,
+    "total": 2228,
     "failedTests": []
    },
    "killedByRelated": false
@@ -433,9 +433,9 @@
     "packages/three-surface-poc-core/src/authority-artifact-fields.test.ts"
    ],
    "exit": 1,
-   "passed": 31,
+   "passed": 26,
    "failed": 1,
-   "total": 32,
+   "total": 27,
    "failedTests": [
     "the parsers read a JSON container as an object only when it is one surface typed authority that is null as present, with no write surface"
    ],
@@ -456,9 +456,9 @@
     "packages/three-surface-poc-core/src/authority-artifact-fields.test.ts"
    ],
    "exit": 1,
-   "passed": 31,
+   "passed": 26,
    "failed": 1,
-   "total": 32,
+   "total": 27,
    "failedTests": [
     "the parsers read a JSON container as an object only when it is one surface typed authority that is null as present, with no write surface"
    ],
@@ -479,9 +479,9 @@
     "packages/polaris-generation-core/src/secret-redaction.test.ts"
    ],
    "exit": 1,
-   "passed": 36,
+   "passed": 37,
    "failed": 1,
-   "total": 37,
+   "total": 38,
    "failedTests": [
     "readSecretRedaction refuses what it does not implement reads null for a scope that is an array that carries the field"
    ],
@@ -502,9 +502,9 @@
     "packages/polaris-generation-core/src/secret-redaction.test.ts"
    ],
    "exit": 1,
-   "passed": 36,
+   "passed": 37,
    "failed": 1,
-   "total": 37,
+   "total": 38,
    "failedTests": [
     "readSecretRedaction refuses what it does not implement reads null for a scope that is null"
    ],
@@ -525,9 +525,9 @@
     "packages/polaris-generation-core/src/secret-redaction.test.ts"
    ],
    "exit": 1,
-   "passed": 34,
+   "passed": 35,
    "failed": 3,
-   "total": 37,
+   "total": 38,
    "failedTests": [
     "readSecretRedaction refuses what it does not implement reads null for a scope that is null",
     "readSecretRedaction refuses what it does not implement reads null for a scope that is undefined",
@@ -550,9 +550,9 @@
     "packages/polaris-generation-core/src/secret-redaction.test.ts"
    ],
    "exit": 1,
-   "passed": 35,
+   "passed": 36,
    "failed": 2,
-   "total": 37,
+   "total": 38,
    "failedTests": [
     "readSecretRedaction refuses what it does not implement refuses a declaration that is an array",
     "readSecretRedaction refuses what it does not implement refuses a declaration that is an array that carries every field"
@@ -574,9 +574,9 @@
     "packages/polaris-generation-core/src/secret-redaction.test.ts"
    ],
    "exit": 1,
-   "passed": 36,
+   "passed": 37,
    "failed": 1,
-   "total": 37,
+   "total": 38,
    "failedTests": [
     "readSecretRedaction refuses what it does not implement refuses a declaration that is null"
    ],
@@ -598,8 +598,8 @@
    ],
    "exit": 1,
    "passed": 32,
-   "failed": 5,
-   "total": 37,
+   "failed": 6,
+   "total": 38,
    "failedTests": [
     "readSecretRedaction refuses what it does not implement refuses a declaration that is an array",
     "readSecretRedaction refuses what it does not implement refuses a declaration that is null",

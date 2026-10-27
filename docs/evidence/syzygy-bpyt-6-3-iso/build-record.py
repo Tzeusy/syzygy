@@ -2,11 +2,14 @@
 """Builds dc4-object-and-iso-helpers-2026-10-28.json, the record of syzygy-bpyt.6.3 stack 4, from the outputs beside it.
 Every digest and total is computed; the decision table is the only hand-written part and is checked against the census.
 
-Usage: build-record.py <git repo> <base commit> <code commit> <evidence dir>
+Usage: build-record.py <git repo> <base commit> <code commit> <evidence dir> <repair commit> <reviewed commit>
+The code commit is the one the census, differential and equivalence results are about; the repair commit is the one that answers round 1
+of the review (R-GP-IMPL-OBJECT-ISO-HELPERS-1) and is the commit the mutants, tests, typecheck and digest sweep of the repair ran at; the
+reviewed commit is the head that review was made over.
 Refuses (exit 1) unless the outputs say what the record is about to say: the two census methods agree per file at both commits, every
 census row of the object-shape and ISO populations has a decision, the differential groups are the ones the decisions rest on, every
-non-equivalent mutant is killed, both digest-citer methods agree, the equivalence check names only the declared exceptions, and every
-test of the head runs passed.
+non-equivalent mutant is killed, both digest-citer methods agree, the equivalence check names only the declared exceptions, every
+test of the head runs passed, and the repair touched only the files it says.
 """
 import hashlib
 import json
@@ -14,8 +17,16 @@ import os
 import subprocess
 import sys
 
-repo, base_arg, code_arg, evidence = sys.argv[1:]
+repo, base_arg, code_arg, evidence, repair_arg, reviewed_arg = sys.argv[1:]
 REGISTRY_BOUND = 'packages/polaris-dossier/src/git-object-reader.ts'
+# The reviewer's strict file (R-GP-IMPL-OBJECT-ISO-HELPERS-1 raw, F1 fix, rev-548/tools/site-equivalence-strict.mjs), as the coordinator's repair list states it.
+REVIEWER_STRICT_TOOL_SHA256 = 'fbcee6fc821dfb35f7461f0fa5cbab4eb7e828d9eef1d866cd48b8db51adb942'
+REVIEW_RAW_SHA256 = '157563c5e445b201d56c49ead8685d4dd0fbec3c2a80a1b215e358f5fcff56df'
+REPAIR_PRODUCTION_FILES = sorted([
+    'AGENTS.md', 'packages/polaris-dossier/src/screen.test.ts', 'packages/polaris-generation-core/src/secret-redaction.test.ts',
+    'packages/support/src/is-record.ts', 'packages/three-surface-poc-core/src/authority-artifact-fields.test.ts',
+])
+SURFACE_VALUES = ['polaris@b3384e7662f1', 'polaris@64c4c7a6ef72', 'b3384e7662f1', '64c4c7a6ef72']
 
 
 def git(*args):
@@ -34,8 +45,14 @@ def file_sha(name):
     return sha(open(os.path.join(evidence, name), 'rb').read())
 
 
+def full(ref):
+    return git('rev-parse', ref).decode().strip()
+
+
 base = git('rev-parse', base_arg).decode().strip()
 code = git('rev-parse', code_arg).decode().strip()
+repair = git('rev-parse', repair_arg).decode().strip()
+reviewed = git('rev-parse', reviewed_arg).decode().strip()
 problems = []
 
 census_b, census_h = load('census-base.json'), load('census-head.json')
@@ -43,7 +60,10 @@ grep_b, grep_h = load('census-grep-base.json'), load('census-grep-head.json')
 diff = load('differential-base.json')
 dates = load('date-probe-base.json')
 equiv = load('site-equivalence.json')
-mut_s, mut_i, mut_c = load('mutants-S.json'), load('mutants-I.json'), load('mutants-C.json')
+mut_s, mut_i, mut_c, mut_n = load('mutants-S.json'), load('mutants-I.json'), load('mutants-C.json'), load('mutants-N.json')
+se_mut = load('site-equivalence-mutants.json')
+se_selftest = open(os.path.join(evidence, 'site-equivalence-selftest-output.txt'), encoding='utf8').read()
+citers_repair = load('digest-citers-repair.json')
 citers = load('digest-citers.json')
 tests = load('test-delta.json')
 runs = load('test-runs-summary.json')
@@ -141,6 +161,23 @@ if equiv['notEqual'] != sorted(['packages/polaris-dossier/src/iso-of.ts', 'packa
     problems.append('equivalence exceptions are not the declared three: ' + ', '.join(equiv['notEqual']))
 if equiv['equal'] != 19 or equiv['modified'] != 20:
     problems.append('the equivalence counts are not 19 of 20 modified')
+if (equiv['base'], equiv['head']) != (base, code):
+    problems.append('site-equivalence.json is of another pair of commits')
+if file_sha('site-equivalence.mjs') != REVIEWER_STRICT_TOOL_SHA256:
+    problems.append('site-equivalence.mjs is not the reviewer\'s strict file byte for byte')
+if se_selftest != 'site-equivalence selftest ok\n':
+    problems.append('the equivalence tool selftest output is not its one ok line')
+by_id = {r['id']: r for r in se_mut['rows']}
+PAIR = {'modified': 20, 'equal': 19, 'notEqual': 3, 'exit': 1}
+pair = se_mut['summary']['pair']
+if se_mut['summary']['ranAt'] != repair or pair is None or (full(pair['base']), full(pair['head'])) != (base, code):
+    problems.append('the equivalence mutants ran at another commit or on another pair')
+if not se_mut['summary']['controlsClean'] or by_id['C0-unmutated']['onThePair'] != PAIR or by_id['N0-trailing-comment']['onThePair'] != PAIR:
+    problems.append('the equivalence mutant controls are not clean on the pair')
+if sorted(se_mut['summary']['killedBySelftest']) != ['SM1-rename-guard-removed', 'SM2-blank-line-filter-restored', 'SM3-definition-removed-without-its-line-end'] or se_mut['summary']['survivedSelftest'] != ['SM4-iso-import-removed-without-its-line-end']:
+    problems.append('the equivalence mutants are not three killed by the selftest and SM4 surviving it')
+if by_id['SM4-iso-import-removed-without-its-line-end']['onThePair']['equal'] == 19 or by_id['SM3-definition-removed-without-its-line-end']['onThePair']['equal'] == 19:
+    problems.append('SM3 or SM4 does not change the result on the pair')
 
 # ---- mutants
 EQUIVALENT = {
@@ -153,6 +190,14 @@ EQUIVALENT = {
     'C-screen-L90n5-B': 'the same: the mutant differs from isRecord only on null, which cannot be there',
     'C-screen-L100n6-A': 'a detectors entry is parsed JSON: an array has no string id, so it is passed over either way',
 }
+EQUIVALENT_N = {
+    'N-authority-artifact-fields-L141n4-E': 'the same argument as L141n4 A: typedAuthority is parsed JSON, a primitive has no own writeSurface, and the next read gives the same missing field',
+    'N-screen-L81n0-E': 'the policy document is parsed JSON: a primitive has no policyId, so the identity test refuses with the same text',
+    'N-screen-L84n2-E': 'source admission is parsed JSON: a primitive has no deniedPathBasenames, so the next test refuses with the same text',
+    'N-screen-L88n3-E': 'the content classification is parsed JSON: a primitive has no rules, so rules is the empty list either way',
+    'N-screen-L89n4-E': 'a rules entry is parsed JSON: a primitive has no class, so it is passed over either way',
+    'N-screen-L100n6-E': 'a detectors entry is parsed JSON: a primitive has no string id, so it is passed over either way',
+}
 survivors = [m for m in mut_c['mutants'] if not (m['killed'] or m.get('killedByRelated'))]
 surv_ids = sorted(m['id'] for m in survivors)
 if surv_ids != sorted(EQUIVALENT):
@@ -160,12 +205,30 @@ if surv_ids != sorted(EQUIVALENT):
 for m in mut_s['mutants'] + mut_i['mutants']:
     if not m['killed']:
         problems.append(f"{m['id']} survived")
-for c in mut_s['controls'] + mut_i['controls'] + mut_c['controls']:
+for c in mut_s['controls'] + mut_i['controls'] + mut_c['controls'] + mut_n['controls']:
     if not c['passed_clean']:
         problems.append(f"control {c['id']} did not pass clean")
+for label, m in (('S', mut_s), ('I', mut_i), ('C', mut_c), ('N', mut_n)):
+    if m['commit'] != repair:
+        problems.append(f'mutants-{label}.json ran at {m["commit"]}, not at the repair commit')
+if len(mut_c['mutants']) != 60:
+    problems.append(f"{len(mut_c['mutants'])} call-site mutants, expected 60")
+by_n = {m['id']: m for m in mut_n['mutants']}
+o8 = by_n.get('N3-O8-function-admitted')
+if o8 is None or not o8['killed'] or o8['failed'] != 1 or not o8['failedTests'][0].endswith('refuses a declaration that is a function that carries every field'):
+    problems.append('the reviewer\'s O8 is not killed by exactly the new function row')
+e_rows = [m for m in mut_n['mutants'] if m['id'].endswith('-E')]
+e_survivors = sorted(m['id'] for m in e_rows if not m['killed'])
+if e_survivors != sorted(EQUIVALENT_N):
+    problems.append(f'the E survivors are not the explained equivalents: {e_survivors}')
+number_only = sorted(m['id'] for m in e_rows if m['killed'] and m['failsOnANumberRow'] and not m['failsOnAStringRow'])
+if number_only != ['N-authority-artifact-fields-L102n0-E', 'N-authority-artifact-fields-L121n1-E', 'N-authority-artifact-fields-L132n2-E', 'N-screen-L83n1-E']:
+    problems.append(f'the sites where only an a-number row kills E are not the four expected: {number_only}')
+other_killed = sorted(m['id'] for m in e_rows if m['killed'] and m['id'] not in number_only)
+if other_killed != ['N-authority-artifact-fields-L136n3-E', 'N-screen-L90n5-E']:
+    problems.append(f'the other killed E rows are not the two expected: {other_killed}')
 
 # ---- citers
-full = lambda ref: git('rev-parse', ref).decode().strip()
 if not citers['methodsAgree'] or full(citers['baseCommit']) != base or full(citers['codeHeadCommit']) != code:
     problems.append('digest-citers: methods disagree or another commit')
 reg_before = sha(git('show', f'{base}:{REGISTRY_BOUND}'))
@@ -188,6 +251,46 @@ if runs['headTestsOnBase']['failed'] != [{'file': 'cli.test.ts', 'name': 'no rou
 if runs['head']['failed'] != 0:
     problems.append('the head run has failures')
 
+# ---- the repair: what it touched, and that the one production file it touched emits the same code
+if subprocess.run(['git', '-C', repo, 'merge-base', '--is-ancestor', reviewed, repair]).returncode != 0:
+    problems.append('the reviewed commit is not an ancestor of the repair commit')
+touched = sorted(f for f in git('diff', '--name-only', '-z', reviewed, repair).decode().split('\0') if f and not f.startswith('docs/evidence/'))
+if touched != REPAIR_PRODUCTION_FILES:
+    problems.append(f'the repair touches {touched}')
+
+
+def emitted(commit, path):
+    script = ("const ts = require('typescript'); const src = require('fs').readFileSync(0, 'utf8');"
+              "process.stdout.write(ts.transpileModule(src, { fileName: 'x.ts', compilerOptions: { target: ts.ScriptTarget.ES2022, module: ts.ModuleKind.ESNext, removeComments: true } }).outputText);")
+    return subprocess.run(['node', '-e', script], input=git('show', f'{commit}:{path}'), capture_output=True, check=True, cwd=repo).stdout
+
+
+is_record_emit_equal = emitted(reviewed, 'packages/support/src/is-record.ts') == emitted(repair, 'packages/support/src/is-record.ts')
+if not is_record_emit_equal:
+    problems.append('is-record.ts emits other code after the repair')
+if not citers_repair['methodsAgree'] or citers_repair['needlesCited'] or full(citers_repair['baseCommit']) != reviewed or full(citers_repair['codeHeadCommit']) != repair:
+    problems.append('digest-citers-repair: methods disagree, a digest is cited, or another range')
+if sorted(citers_repair['editedFiles']) != REPAIR_PRODUCTION_FILES:
+    problems.append('digest-citers-repair swept other files than the repair edits')
+if tests['headTests'] != 546 or runs['head']['checkout'] != repair or runs['head']['tests'] != 546:
+    problems.append('the test runs are not the 546 tests of the repair commit')
+
+
+def surface_citers(commit):
+    files = [f for f in git('ls-tree', '-r', '-z', '--name-only', commit).decode().split('\0') if f]
+    one = sorted(f for f, blob in ((f, git('show', f'{commit}:{f}')) for f in files) if any(v.encode() in blob for v in SURFACE_VALUES))
+    args = ['git', '-C', repo, 'grep', '-F', '-l'] + [x for v in SURFACE_VALUES for x in ('-e', v)] + [commit]
+    two = sorted(line.split(':', 1)[1] for line in subprocess.run(args, capture_output=True, text=True).stdout.splitlines())
+    return len(files), one, two
+
+
+surface_population, surface_one, surface_two = surface_citers(repair)
+if surface_one != surface_two:
+    problems.append('the surface-version sweep methods disagree')
+surface_outside = [f for f in surface_one if not f.startswith('docs/evidence/syzygy-bpyt-6-3-iso/')]
+if surface_outside:
+    problems.append(f'a tracked file outside the evidence directory carries a surface value: {surface_outside}')
+
 if problems:
     print('refusing:', *problems, sep='\n  ')
     sys.exit(1)
@@ -204,8 +307,8 @@ record = {
     'codeCommit': code,
     'codeCommits': [c for c in git('log', '--format=%H', '--reverse', f'{base}..{code}').decode().split()],
     'epistemic': 'Observed for every count, group and mutant below (computed by the tools beside this file, at the commits named); Inferred where a row says so (a validator rebuilt from its line)',
-    'toolDigests': {n: file_sha(n) for n in ['census.mjs', 'census-grep.py', 'differential.mjs', 'date-probe.mjs', 'apply-is-record.mjs', 'apply-iso-of.mjs', 'site-equivalence.mjs', 'mutants.py', 'digest-citers.py', 'test-delta.py', 'test-inventory.mjs']},
-    'outputDigests': {n: file_sha(n) for n in ['census-base.json', 'census-head.json', 'census-grep-base.json', 'census-grep-head.json', 'differential-base.json', 'date-probe-base.json', 'site-equivalence.json', 'mutants-S.json', 'mutants-I.json', 'mutants-C.json', 'digest-citers.json', 'test-delta.json', 'test-runs-summary.json', 'typecheck-all-20-sites-attempt.log', 'typecheck-head.log']},
+    'toolDigests': {n: file_sha(n) for n in ['census.mjs', 'census-grep.py', 'differential.mjs', 'date-probe.mjs', 'apply-is-record.mjs', 'apply-iso-of.mjs', 'site-equivalence.mjs', 'site-equivalence-mutants.mjs', 'mutants.py', 'digest-citers.py', 'test-delta.py', 'test-inventory.mjs', 'test-runs-summary.py']},
+    'outputDigests': {n: file_sha(n) for n in ['census-base.json', 'census-head.json', 'census-grep-base.json', 'census-grep-head.json', 'differential-base.json', 'date-probe-base.json', 'site-equivalence.json', 'site-equivalence-selftest-output.txt', 'site-equivalence-mutants.json', 'mutants-S.json', 'mutants-I.json', 'mutants-C.json', 'mutants-N.json', 'digest-citers.json', 'digest-citers-repair.json', 'test-delta.json', 'test-runs-summary.json', 'typecheck-all-20-sites-attempt.log', 'typecheck-head.log', 'typecheck-repair.log']},
     'census': {
         'method': 'one: TypeScript syntax tree over every tracked .ts/.mjs/.cjs file of packages/, apps/ and scripts/ read from the commit; two: git grep -E over the same paths, reconciled per file',
         'population': {'base': census_b['summary']['population'], 'head': census_h['summary']['population']},
@@ -237,9 +340,17 @@ record = {
     'typecheck': {
         'attempt': 'with all 20 in-scope sites merged tsc failed in the three files kept local (8 errors); typecheck-all-20-sites-attempt.log',
         'head': 'npm run typecheck exit 0 at the code commit; typecheck-head.log',
+        'repair': 'npm run typecheck exit 0 at the repair commit; typecheck-repair.log',
     },
     'equivalence': {'tool': 'site-equivalence.mjs', 'changedProductionFiles': equiv['changedSourceFiles'], 'modified': equiv['modified'], 'equalModuloDeclaredEdit': equiv['equal'],
-                    'declaredExceptions': equiv['notEqual'], 'exceptionNote': 'the support index (one added export) and the two new modules; test files are listed, not compared'},
+                    'declaredExceptions': equiv['notEqual'], 'exceptionNote': 'the support index (one added export) and the two new modules; test files are listed, not compared',
+                    'pair': {'base': base, 'head': code},
+                    'toolIsTheReviewersStrictFile': {'sha256': file_sha('site-equivalence.mjs'), 'equalsReviewersFile': True,
+                                                     'what': 'each censused definition and each import line is removed with its own line end, no blank-line filter is applied, and before the rename the tool counts matches of the old names against Identifier nodes in the base emit and refuses a file where an old name occurs elsewhere (RENAME-GUARD)'},
+                    'selftest': se_selftest.strip(),
+                    'rule6': {'ranAt': se_mut['summary']['ranAt'], 'mutants': se_mut['summary']['mutants'], 'killedBySelftest': se_mut['summary']['killedBySelftest'], 'survivedSelftest': se_mut['summary']['survivedSelftest'],
+                              'onThePair': {r['id']: r['onThePair'] for r in se_mut['rows']},
+                              'reading': 'SM1 (the rename guard removed) and SM2 (the blank-line filter restored) are killed by the selftest and leave the pair at 20 modified, 19 equal [Observed]; the reading is that no string or template literal of the reviewed pair is touched, so the guard and the filter protect and are not active here [Inferred: the review\'s own raw-source check found the same]. SM3 (a definition removed without its line end) is killed and changes the pair to 0 equal. SM4 (the isoOf import removed without its line end) survives the reviewer\'s selftest, which holds no isoOf import case, and changes the pair from 19 equal to 12: the real run sees what the selftest cannot. The selftest is kept byte for byte; a case for the isoOf import line end is a follow-up.'}},
     'mutants': {
         'support': {'commit': mut_s['commit'], 'mutants': len(mut_s['mutants']), 'killed': sum(m['killed'] for m in mut_s['mutants']), 'controlsClean': all(c['passed_clean'] for c in mut_s['controls'])},
         'iso': {'commit': mut_i['commit'], 'mutants': len(mut_i['mutants']), 'killed': sum(m['killed'] for m in mut_i['mutants']), 'controlsClean': all(c['passed_clean'] for c in mut_i['controls'])},
@@ -247,7 +358,18 @@ record = {
                       'escalation': 'a mutant that survived the importer\'s direct test files was re-run against vitest related <file>; none of the eight was killed there either',
                       'byImporter': {f: sum(1 for m in mut_c['mutants'] if m['file'] == f) for f in sorted({m['file'] for m in mut_c['mutants']})}},
         'unchangedBetweenSupportRunAndCallSiteRun': unchanged_support == '',
-        'note': 'each row of the three outputs stores file, line, the exact text replaced, its replacement and the commit',
+        'note': 'each row of the outputs stores file, line, the exact text replaced, its replacement and the commit; all four outputs (S, I, C, N) ran at the repair commit',
+        'repairRows': {
+            'commit': mut_n['commit'], 'mutants': len(mut_n['mutants']),
+            'o8': {'what': 'the reviewer\'s mutant: a function is admitted at the secret-redaction declaration read', 'file': o8['file'], 'line': o8['line'], 'old': o8['old'], 'new': o8['new'],
+                   'killedBy': o8['failedTests'], 'failed': o8['failed'], 'of': o8['total'], 'survivesAtTheReviewedCommit': 'observed by the reviewer (raw, N3): it survives the head and the base tests; the new row is the only test that kills it here'},
+            'e': {'what': 'a test written as typeof value !== string: isRecord(x) replaced by (x !== null && typeof x !== string && !Array.isArray(x)), at each call of the two importers whose NOT_OBJECTS tables hold the a-number row',
+                  'mutants': len(e_rows), 'killed': sum(m['killed'] for m in e_rows),
+                  'killedOnlyByANumberRow': number_only,
+                  'killedAlsoForAnotherReason': {m['id']: 'admits undefined (an entry with no subject, a classification with no rules), which breaks the positive cases; the a-string rows fail as collateral' for m in e_rows if m['id'] in other_killed},
+                  'survivors': [{'id': m['id'], 'file': m['file'], 'line': m['line'], 'old': m['old'], 'new': m['new'], 'equivalentBecause': EQUIVALENT_N[m['id']]} for m in e_rows if not m['killed']]},
+            'reading': 'The a-number row is the only test that fails a string-naming test at 4 of the 12 call sites it was run at (authority-artifact-fields.ts 102, 121, 132 and screen.ts 83). At 2 sites that mutant dies of admitting undefined, and at 6 it is equivalent. None of the mutants run (A, B and D admit true and a number alike, E admits both) separates a true row from the a-number row, so the true row was dropped; a mutant that admits only booleans was not written [Inferred: a test that refuses a string and a number yet admits a boolean has to name three types].',
+        },
     },
     'digestCitersOfEditedFiles': {
         'population': citers['population'], 'editedFiles': len(citers['editedFiles']), 'needles': citers['needles'], 'methodsAgree': citers['methodsAgree'],
@@ -255,6 +377,8 @@ record = {
         'citers': sorted({c for v in citers['needlesCited'].values() for c in v}),
         'reading': 'every citer is a record of an earlier commit or run (it names its own commit, run or diff); none is a performed act, a manifest row or a script input; the head digests are cited nowhere. The governed-plane citer is a static trace that names its source commit.',
         'registryBoundFile': {'path': REGISTRY_BOUND, 'sha256AtBase': reg_before, 'sha256AtCode': reg_after, 'equal': reg_before == reg_after},
+        'repairSweep': {'editedFiles': citers_repair['editedFiles'], 'range': {'from': reviewed, 'to': repair}, 'needles': citers_repair['needles'], 'population': citers_repair['population'], 'methodsAgree': True, 'cited': 0,
+                        'note': 'sha256 and git blob id, full and first twelve, of the four .ts files and AGENTS.md the repair edits, at both ends of the range; no tracked file outside the evidence directory cites any'},
     },
     'tests': {'line': f"Tests: +{len(tests['added'])} ~1 -{len(tests['removed'])}", 'toolLine': tests['line'], 'baseTests': tests['baseTests'], 'headTests': tests['headTests'], 'added': len(tests['added']), 'removed': len(tests['removed']),
               'changedCalls': tests['changedCalls'], 'runs': runs,
@@ -267,8 +391,33 @@ record = {
         '3 deterministic observation': 'the other thirteen consumers (dossier run records, checks, reviews, rendering; generation discovery, evaluation and reader questions) and the seven isoOf callers, whose text becomes run-record and brief bytes',
         '6 public interface': ['packages/support/src/index.ts: a new export of an internal workspace package (no external API)'],
         'none of': ['2 graph identity', '5 data migration', '7 certificate logic'],
+        'reviewerRuling': {'review': 'R-GP-IMPL-OBJECT-ISO-HELPERS-1, section 2', 'claimed': 'classes 1, 3 and 4 touched, as the author claimed; class 6 over-inclusive because packages/support/package.json has "private": true, so no external consumer can depend on the new export (over-claiming only adds review); 2, 5 and 7 not touched'},
     },
-    'pocSurfaceVersion': {'base': 'polaris@b3384e7662f1', 'code': 'polaris@64c4c7a6ef72', 'why': 'authority-artifact-fields.ts is in packages/three-surface-poc-core/src, one of the two trees the version addresses; no tracked file carries either value'},
+    'pocSurfaceVersion': {'base': 'polaris@b3384e7662f1', 'code': 'polaris@64c4c7a6ef72', 'why': 'authority-artifact-fields.ts is in packages/three-surface-poc-core/src, one of the two trees the version addresses; no tracked file outside this evidence directory carries either value',
+                          'sweep': {'commit': repair, 'population': surface_population, 'values': SURFACE_VALUES, 'methods': 'one: Python bytes search over every blob; two: git grep -F -l', 'methodsAgree': True, 'carriedBy': surface_one,
+                                    'outsideTheEvidenceDirectory': surface_outside},
+                          'atTheMerge': 'the version that lands is neither value: it is re-derived at the merge commit by the coordinator (review note N4)'},
+    'repair': {
+        'review': {'id': 'R-GP-IMPL-OBJECT-ISO-HELPERS-1', 'round': 1, 'verdict': 'REVISE', 'reviewedCommit': reviewed, 'rawSha256': REVIEW_RAW_SHA256,
+                   'epistemic': 'the raw is retained by the coordinator, not in this tree'},
+        'repairCommit': repair, 'noProductionBehaviourChange': True,
+        'changedOutsideEvidence': touched,
+        'changedFiles': sorted(f for f in git('diff', '--name-only', '-z', reviewed, repair).decode().split('\0') if f),
+        'isRecordEmitsTheSameCode': is_record_emit_equal,
+        'items': {
+            'F1': 'site-equivalence.mjs is the reviewer\'s strict file byte for byte; its selftest, its rule-6 rows and the regenerated site-equivalence.json are in equivalence',
+            'F2': 'three PR-body sentences replaced with the reviewer\'s text (the PR body; the surface-version sweep is in pocSurfaceVersion)',
+            'N1 N2': 'mutants.py: the occurrence note, and a --tmpdir argument or TMPDIR in place of a fixed path',
+            'N3': 'a function-that-carries-every-field row in secret-redaction.test.ts; mutants.repairRows.o8',
+            'N5': 'AGENTS.md names isRecord and why isoOf stays in polaris-dossier',
+            'N8': 'the a-number row is kept in both NOT_OBJECTS tables with a comment naming the bug it catches; the true row of authority-artifact-fields.test.ts is dropped because no mutant run separates it from the a-number row; mutants.repairRows.e',
+            'N10': 'is-record.ts: a revoked proxy of an object or an array throws',
+            'N6': 'the PR body Battery section states the lc63s4 result at the reviewed commit, not at the repair head',
+            'classes': 'ccRev1Classes.reviewerRuling',
+            'notTaken': 'N4, N7 and N9 are the coordinator\'s, by the repair list',
+        },
+        'followUps': ['a selftest case for the isoOf import line end in site-equivalence.mjs (SM4 survives the reviewer\'s selftest and is seen only on the pair)'],
+    },
     'changedFiles': changed_files,
 }
 out = os.path.join(evidence, 'dc4-object-and-iso-helpers-2026-10-28.json')

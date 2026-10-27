@@ -1,6 +1,6 @@
 {
  "baseTests": 414,
- "headTests": 550,
+ "headTests": 546,
  "added": [
   [
    "packages/polaris-dossier/src/cli.test.ts",
@@ -256,6 +256,10 @@
   ],
   [
    "packages/polaris-generation-core/src/secret-redaction.test.ts",
+   "readSecretRedaction refuses what it does not implement refuses a declaration that is a function that carries every field"
+  ],
+  [
+   "packages/polaris-generation-core/src/secret-redaction.test.ts",
    "readSecretRedaction refuses what it does not implement refuses a declaration that is a number"
   ],
   [
@@ -464,10 +468,6 @@
   ],
   [
    "packages/three-surface-poc-core/src/authority-artifact-fields.test.ts",
-   "the parsers read a JSON container as an object only when it is one refuse a policy document that is true"
-  ],
-  [
-   "packages/three-surface-poc-core/src/authority-artifact-fields.test.ts",
    "the parsers read a JSON container as an object only when it is one refuse a registry document that is a number"
   ],
   [
@@ -481,10 +481,6 @@
   [
    "packages/three-surface-poc-core/src/authority-artifact-fields.test.ts",
    "the parsers read a JSON container as an object only when it is one refuse a registry document that is null"
-  ],
-  [
-   "packages/three-surface-poc-core/src/authority-artifact-fields.test.ts",
-   "the parsers read a JSON container as an object only when it is one refuse a registry document that is true"
   ],
   [
    "packages/three-surface-poc-core/src/authority-artifact-fields.test.ts",
@@ -504,10 +500,6 @@
   ],
   [
    "packages/three-surface-poc-core/src/authority-artifact-fields.test.ts",
-   "the parsers read a JSON container as an object only when it is one surface a first registry entry that is true as the malformed entries list"
-  ],
-  [
-   "packages/three-surface-poc-core/src/authority-artifact-fields.test.ts",
    "the parsers read a JSON container as an object only when it is one surface an entry subject that is a number as the repository field"
   ],
   [
@@ -524,10 +516,6 @@
   ],
   [
    "packages/three-surface-poc-core/src/authority-artifact-fields.test.ts",
-   "the parsers read a JSON container as an object only when it is one surface an entry subject that is true as the repository field"
-  ],
-  [
-   "packages/three-surface-poc-core/src/authority-artifact-fields.test.ts",
    "the parsers read a JSON container as an object only when it is one surface typed authority that is a number as present, with no write surface"
   ],
   [
@@ -541,10 +529,6 @@
   [
    "packages/three-surface-poc-core/src/authority-artifact-fields.test.ts",
    "the parsers read a JSON container as an object only when it is one surface typed authority that is null as present, with no write surface"
-  ],
-  [
-   "packages/three-surface-poc-core/src/authority-artifact-fields.test.ts",
-   "the parsers read a JSON container as an object only when it is one surface typed authority that is true as present, with no write surface"
   ]
  ],
  "removed": [],
@@ -564,7 +548,7 @@
   "no route and no credential > sweeps a non-empty population of source files": 1,
   "reading the rule > refuses %s": 50
  },
- "line": "Tests: +136 ~51 -0",
+ "line": "Tests: +132 ~51 -0",
  "allBasePassed": true,
  "allHeadPassed": true
 }

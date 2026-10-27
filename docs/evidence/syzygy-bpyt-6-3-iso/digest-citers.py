@@ -1,8 +1,10 @@
 #!/usr/bin/env python3
 """Does any tracked file cite the digest of a file this change edits? For syzygy-bpyt.6.3 stack 4 (the object-shape and ISO helpers); adapted from the stack-3 tool of the same name.
 
-Usage: digest-citers.py <git repo> <base commit> <code head> <population commit> <out.json>
+Usage: digest-citers.py <git repo> <base commit> <code head> <population commit> <out.json> [--also <tracked path>]...
        digest-citers.py --selftest
+`--also` names a further tracked file (any extension) that is swept when it differs between the two commits; the repair of round 1 of the
+review (R-GP-IMPL-OBJECT-ISO-HELPERS-1) edits AGENTS.md, which is not a .ts file.
 
 The edited files are the .ts files under packages/ and apps/ that differ between the base and the code head, tests included (a test can be
 digest-bound as well); a file the change adds has a head digest only. For each, the sha256 of its bytes and its git blob id
@@ -62,7 +64,12 @@ def main():
     if '--selftest' in sys.argv:
         selftest()
     repo, base, head, population, out = sys.argv[1:6]
+    extra = [sys.argv[i + 1] for i, a in enumerate(sys.argv) if a == '--also']
     edited = edited_production(repo, base, head)
+    for path in extra:
+        parts = git(repo, 'diff', '--name-status', '-z', base, head, '--', path).decode().split('\0')
+        if len(parts) >= 2 and parts[1] == path:
+            edited.append((path, parts[0]))
     digests = []
     for path, status in edited:
         for label, commit in (('base', base), ('head', head)):

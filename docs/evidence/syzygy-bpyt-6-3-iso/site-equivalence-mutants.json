@@ -1,0 +1,126 @@
+{
+ "summary": {
+  "ranAt": "28024ade30ac30ffeac3bb09fe0833fe63a43981",
+  "pair": {
+   "base": "81862261",
+   "head": "22142d9f"
+  },
+  "mutants": 4,
+  "killed": 3,
+  "killedBySelftest": [
+   "SM1-rename-guard-removed",
+   "SM2-blank-line-filter-restored",
+   "SM3-definition-removed-without-its-line-end"
+  ],
+  "survivedSelftest": [
+   "SM4-iso-import-removed-without-its-line-end"
+  ],
+  "controlsClean": true
+ },
+ "rows": [
+  {
+   "id": "C0-unmutated",
+   "ranAt": "28024ade30ac30ffeac3bb09fe0833fe63a43981",
+   "file": "docs/evidence/syzygy-bpyt-6-3-iso/site-equivalence.mjs",
+   "toolSha256": "fbcee6fc821dfb35f7461f0fa5cbab4eb7e828d9eef1d866cd48b8db51adb942",
+   "mutatedSha256": "fbcee6fc821dfb35f7461f0fa5cbab4eb7e828d9eef1d866cd48b8db51adb942",
+   "exit": 0,
+   "firstLine": "site-equivalence selftest ok",
+   "onThePair": {
+    "modified": 20,
+    "equal": 19,
+    "notEqual": 3,
+    "exit": 1
+   },
+   "passedClean": true
+  },
+  {
+   "id": "N0-trailing-comment",
+   "ranAt": "28024ade30ac30ffeac3bb09fe0833fe63a43981",
+   "file": "docs/evidence/syzygy-bpyt-6-3-iso/site-equivalence.mjs",
+   "toolSha256": "fbcee6fc821dfb35f7461f0fa5cbab4eb7e828d9eef1d866cd48b8db51adb942",
+   "mutatedSha256": "3d49ab18be7ffb406dc16c11d4ce8ada97a4bdc2c8a9b0b0740691da33c98e99",
+   "exit": 0,
+   "firstLine": "site-equivalence selftest ok",
+   "onThePair": {
+    "modified": 20,
+    "equal": 19,
+    "notEqual": 3,
+    "exit": 1
+   },
+   "passedClean": true
+  },
+  {
+   "id": "SM1-rename-guard-removed",
+   "ranAt": "28024ade30ac30ffeac3bb09fe0833fe63a43981",
+   "file": "docs/evidence/syzygy-bpyt-6-3-iso/site-equivalence.mjs",
+   "toolSha256": "fbcee6fc821dfb35f7461f0fa5cbab4eb7e828d9eef1d866cd48b8db51adb942",
+   "old": "    if ((out.match(/\\bisObj(?:ect)?\\b/g) ?? []).length !== identifiers) return 'RENAME-GUARD: an old name occurs outside an identifier';\n",
+   "new": "",
+   "mutatedSha256": "a6a0fbeac6d0e93387f36229287943303d2628ec187481fc0d44325100447ee6",
+   "exit": 1,
+   "firstLine": "if (compareFiles(`${base}export const s = 'isObj';\\n`, `${head}export const s = 'isRecord';\\n`, 'x.ts').equal !== false) throw new Error('selftest: a string literal renamed from the old name is not eq",
+   "onThePair": {
+    "modified": 20,
+    "equal": 19,
+    "notEqual": 3,
+    "exit": 1
+   },
+   "killed": true
+  },
+  {
+   "id": "SM2-blank-line-filter-restored",
+   "ranAt": "28024ade30ac30ffeac3bb09fe0833fe63a43981",
+   "file": "docs/evidence/syzygy-bpyt-6-3-iso/site-equivalence.mjs",
+   "toolSha256": "fbcee6fc821dfb35f7461f0fa5cbab4eb7e828d9eef1d866cd48b8db51adb942",
+   "old": "  // no blank-line filter: the TypeScript emitter writes no blank line between statements, so a blank line left here is inside a literal\n  return out;\n",
+   "new": "  return out.split('\\n').filter((line) => line.trim() !== '').join('\\n');\n",
+   "mutatedSha256": "b39aa228a67c99a613217b496afc918819aa95b9151c67a6f60b0b712ba8a53c",
+   "exit": 1,
+   "firstLine": "if (compareFiles(tbase, thead.replace('a\\n\\nb', 'a\\nb'), 'x.ts').equal !== false) throw new Error('selftest: a blank line removed inside a template literal is not equal');",
+   "onThePair": {
+    "modified": 20,
+    "equal": 19,
+    "notEqual": 3,
+    "exit": 1
+   },
+   "killed": true
+  },
+  {
+   "id": "SM3-definition-removed-without-its-line-end",
+   "ranAt": "28024ade30ac30ffeac3bb09fe0833fe63a43981",
+   "file": "docs/evidence/syzygy-bpyt-6-3-iso/site-equivalence.mjs",
+   "toolSha256": "fbcee6fc821dfb35f7461f0fa5cbab4eb7e828d9eef1d866cd48b8db51adb942",
+   "old": "for (const d of DEFINITIONS) out = out.split(`${d}\\n`).join('');",
+   "new": "for (const d of DEFINITIONS) out = out.split(d).join('');",
+   "mutatedSha256": "4d9b324a4f75e75ff2efbc7c2e67c1b54277e04900756f9ff46fc57aa5a5504a",
+   "exit": 1,
+   "firstLine": "const ok = (h, expected, why) => { if (compareFiles(base, h, 'x.ts').equal !== expected) throw new Error(`selftest: ${why}`); };",
+   "onThePair": {
+    "modified": 20,
+    "equal": 0,
+    "notEqual": 22,
+    "exit": 1
+   },
+   "killed": true
+  },
+  {
+   "id": "SM4-iso-import-removed-without-its-line-end",
+   "ranAt": "28024ade30ac30ffeac3bb09fe0833fe63a43981",
+   "file": "docs/evidence/syzygy-bpyt-6-3-iso/site-equivalence.mjs",
+   "toolSha256": "fbcee6fc821dfb35f7461f0fa5cbab4eb7e828d9eef1d866cd48b8db51adb942",
+   "old": "out = out.replace(/^import \\{ isoOf \\} from '\\.\\/iso-of\\.js';\\n/m, '');",
+   "new": "out = out.replace(/^import \\{ isoOf \\} from '\\.\\/iso-of\\.js';/m, '');",
+   "mutatedSha256": "7563fb526fc118e6462bc1fca91276273228d8ddb1ef6f2cb7b93f5e25a6cd62",
+   "exit": 0,
+   "firstLine": "site-equivalence selftest ok",
+   "onThePair": {
+    "modified": 20,
+    "equal": 12,
+    "notEqual": 10,
+    "exit": 1
+   },
+   "killed": false
+  }
+ ]
+}
