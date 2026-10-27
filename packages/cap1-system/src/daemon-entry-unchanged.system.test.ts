@@ -20,6 +20,7 @@ import { mkdirSync, mkdtempSync, readFileSync, readdirSync, realpathSync, rmSync
 import { tmpdir } from 'node:os';
 import * as path from 'node:path';
 import { pathToFileURL } from 'node:url';
+import ts from 'typescript';
 import { afterEach, describe, expect, it } from 'vitest';
 
 import { REPO_ROOT, daemonEntry } from './harness.js';
@@ -238,24 +239,35 @@ describe('daemon entry: the one changed input, `dossier` as the first argument',
     expect(readFileSync(log, 'utf8').split('\n')).toContain(`${app}dist/polaris-generation/dossier-site.js`);
   });
 
-  // The kept part of the old text pin. A load the row above never reaches (on a start or close failure, at a request-time
-  // entry read, or behind a variable or a runtime hook the row does not set) shows only in the text. So every line naming
-  // the POC app must sit strictly inside the `dossier` or the `polaris` branch: after the line opening it and before the
-  // first following line that closes it, `  }`. Code between or after the two branches runs on the daemon path.
-  it('every line of main.ts naming the POC app sits inside the `dossier` or the `polaris` branch, before the daemon path', () => {
-    const lines = readFileSync(path.join(REPO_ROOT, 'apps/syzygy/src/main.ts'), 'utf8').split('\n');
-    const blocks = ["  if (argv[0] === 'dossier') {", "  if (argv[0] === 'polaris') {"].map((opening) => {
-      const open = lines.indexOf(opening);
-      return { open, close: open === -1 ? -1 : lines.indexOf('  }', open + 1) };
-    });
-    const daemon = lines.indexOf('  let parsed = parseCli(process.argv.slice(2), process.env);');
-    for (const { open, close } of blocks) {
-      expect(open).toBeGreaterThan(-1);
-      expect(close).toBeGreaterThan(open);
-      expect(daemon).toBeGreaterThan(close);
+  // The kept part of the old text pin. A load the row above never reaches (on a start failure, in main()'s close-failure
+  // callback, at a request-time entry read, or behind a variable or a runtime hook the row does not set) shows only in the
+  // text, and only in main.ts: a load in http-host's close-failure branch reaches neither row. The branches are found
+  // by syntax, so a close that shares its line, sits at another indentation or carries an `else` cannot widen them: each is
+  // the one `if` in main(), or in an else chain there, on `argv[0] === 'dossier'` or `'polaris'`. An else would run on every
+  // other argv, so the only one allowed is the other branch. Both end before the daemon path, and every mention of the POC
+  // app in main.ts lies inside one of their blocks.
+  it('every mention of the POC app in main.ts lies inside the `dossier` or the `polaris` branch, whose only else is the other, before the daemon path', () => {
+    const text = readFileSync(path.join(REPO_ROOT, 'apps/syzygy/src/main.ts'), 'utf8');
+    const source = ts.createSourceFile('main.ts', text, ts.ScriptTarget.Latest, true);
+    const main = source.statements.find((statement): statement is ts.FunctionDeclaration => ts.isFunctionDeclaration(statement) && statement.name?.text === 'main');
+    const body = main?.body?.statements ?? [];
+    const chain = (statement: ts.Statement): ts.IfStatement[] =>
+      ts.isIfStatement(statement) ? [statement, ...(statement.elseStatement === undefined ? [] : chain(statement.elseStatement))] : [];
+    const ifs = body.flatMap(chain);
+    const found = ['dossier', 'polaris'].map((name) => ifs.filter((statement) => statement.expression.getText(source) === `argv[0] === '${name}'`));
+    expect(found.map((branches) => branches.length)).toEqual([1, 1]);
+    const branches = found.map((matches) => matches[0]!);
+    const daemon = body.find((statement) => statement.getText(source).startsWith('let parsed = parseCli('));
+    expect(daemon).toBeDefined();
+    for (const branch of branches) {
+      expect(branch.elseStatement === undefined || branches.includes(branch.elseStatement as ts.IfStatement)).toBe(true);
+      expect(branch.getEnd()).toBeLessThanOrEqual(daemon!.getStart(source));
     }
-    const naming = lines.flatMap((text, index) => (text.includes('three-surface-poc-app') ? [index] : []));
-    expect(naming.length).toBeGreaterThan(0);
-    expect(naming.filter((index) => !blocks.some(({ open, close }) => index > open && index < close)).map((index) => lines[index])).toEqual([]);
+    const blocks = branches.map((branch) => [branch.thenStatement.getStart(source), branch.thenStatement.getEnd()] as const);
+    const mentions: number[] = [];
+    for (let at = text.indexOf('three-surface-poc-app'); at !== -1; at = text.indexOf('three-surface-poc-app', at + 1)) mentions.push(at);
+    expect(mentions.length).toBeGreaterThan(0);
+    const lineAt = (at: number): string => text.slice(text.lastIndexOf('\n', at) + 1, text.indexOf('\n', at));
+    expect(mentions.filter((at) => !blocks.some(([start, end]) => at > start && at < end)).map(lineAt)).toEqual([]);
   });
 });

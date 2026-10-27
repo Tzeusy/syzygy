@@ -4,10 +4,12 @@
 usage: python3 -I daemon_entry_probe.py TREE OUT.json [TEST-FILE-SOURCE-COMMIT]
 
 For each mutant of apps/syzygy/src/main.ts, of a module it imports, or of the test file (and a control with none) it applies the fragment; a
-mutant whose `old` does not occur exactly once is recorded as skipped (the H- mutants exist only in the new test). Each
-mutant carries a kind: `defect` (something on the daemon path loads the POC app: the new test must fail), `equivalent`
-(nothing on any daemon path loads it: the old text pin fails these, and the new test should not) or `hook` (the new row's
-own hook is broken: it must fail). It rebuilds apps/syzygy with `tsc -b`, runs packages/cap1-system/src/daemon-entry-unchanged.system.test.ts
+mutant whose `old` does not occur exactly once is recorded as skipped (the H- mutants exist only in tests that carry the
+load-hook row). Each mutant carries a kind: `defect` (something on the daemon path loads the POC app: the new test must
+fail), `equivalent` (nothing on any daemon path loads it: the old text pin fails most of these, and the new test should
+not), `hook` (the new row's own hook is broken: it must fail) or `residual` (a daemon-path load no row reaches, which the
+record discloses). It rebuilds apps/syzygy with `tsc -b`, which follows the project references into the modules it
+imports, runs packages/cap1-system/src/daemon-entry-unchanged.system.test.ts
 under the system-tier config with the JSON reporter, records every row's status, restores main.ts and rebuilds. With
 TEST-FILE-SOURCE-COMMIT, the test file is first replaced by that commit's copy (and restored afterwards), so one tree
 can be probed with the old and the new test. Each run is its own session; one that outlives LIMIT_S is SIGKILLed as
@@ -28,11 +30,26 @@ POLARIS_COMMENT = "  // `syzygy polaris <url>` is the one-command launched run"
 POLARIS = ("    const { runPolarisCli } = await import('@syzygy/polaris-dossier');\n"
            "    const { renderLocalDossier } = await import('@syzygy/three-surface-poc-app/dossier-site');\n"
            "    return runPolarisCli(argv.slice(1), { renderer: renderLocalDossier });\n")
+SHUT = 'packages/http-host/src/shutdown.ts'
+FLAG = "process.env.SYZYGY_PRELOAD_RENDERER === '1'"
+DOSSIER_END = "    }, { renderer: renderLocalDossier });\n  }\n"
+POLARIS_END = "    return runPolarisCli(argv.slice(1), { renderer: renderLocalDossier });\n  }\n"
+POLARIS_HEAD = ("  }\n\n"
+                "  // `syzygy polaris <url>` is the one-command launched run (prototype under\n"
+                "  // owner direction POLARIS-DOSSIER-ONE-COMMAND-RUN-2026-10-14): it runs the\n"
+                "  // `dossier` steps in process and starts the agent sessions in views.\n"
+                "  if (argv[0] === 'polaris') {\n")
+HOOK_BODY = ("    const { registerHooks } = process.getBuiltinModule('node:module');\n"
+             "    const { readFileSync } = process.getBuiltinModule('node:fs');\n"
+             "    registerHooks({ load: (url, context, nextLoad) => (url.includes('/apps/three-surface-poc/')\n"
+             "      ? { format: 'module', source: readFileSync(new URL(url), 'utf8'), shortCircuit: true } : nextLoad(url, context)) });\n"
+             f"    await import({SITE});\n")
 def after(anchor, line, mid, file=MAIN, kind='defect', note=''):
     return {'id': mid, 'kind': kind, 'file': file, 'note': note, 'old': anchor, 'new': anchor + line}
 # kind `defect`: the daemon path loads the POC app (on some argv or event), so the new test must fail; `equivalent`: nothing
-# on the daemon path loads it, so the new test should pass (the old text pin fails these); `hook`: a mutant of the new row's
-# own hook, which must fail it (absent from the old test, so skipped there).
+# on the daemon path loads it, so the new test should pass (the old text pin fails most of these); `hook`: a mutant of the
+# new row's own hook, which must fail it (absent from the old test, so skipped there); `residual`: a daemon-path load in
+# code no row reads and on a path no row drives, disclosed in the record.
 MUTANTS = [
     None,
     after(ANCHOR, "import '@syzygy/three-surface-poc-app/dossier-site';\n", 'P-static', note='a static side-effect import at module top'),
@@ -43,9 +60,14 @@ MUTANTS = [
     after("  if (parsed.kind === 'invalid') {\n", f"    {LOAD}\n", 'P-invalid-branch', note='a load in the refusal branch'),
     after("  if (!start.started) {\n", f"    {LOAD}\n", 'P-start-failure', note='a load in the branch a daemon that fails to start takes'),
     after("    const { readFile } = await import('node:fs/promises');\n", f"    {LOAD}\n", 'P-entry-read', note='a load at request time, in the entry reader'),
-    after("      if (closing) return;\n", "      void import('@syzygy/three-surface-poc-app/dossier-site');\n", 'P-shutdown', note='a load in the shutdown handler'),
-    after("      void daemon.close().then(resolve, (cause: unknown) => {\n", "        void import('@syzygy/three-surface-poc-app/dossier-site');\n",
-          'P-close-failure', note='a load in the branch a failed close takes'),
+    # X1-X3 are rev-532b's (R-GP-IMPL-TEST-CLOCKS-2, section 3.2): main's #529 moved the shutdown handler into
+    # @syzygy/http-host (`closeOnSignal`), so the lane's P-close-failure and P-shutdown fragments no longer occur in main.ts.
+    after("    closeFailed: (cause) => {\n", f"      void import({SITE});\n", 'X1-close-failed-callback-in-main',
+          note="a load in main.ts's closeFailed callback (the lane's P-close-failure, re-targeted)"),
+    after("      if (closing) return;\n", f"      void import({SITE});\n", 'X3-shutdown-in-http-host', file=SHUT,
+          note="a load in http-host's shutdown function (the lane's P-shutdown, re-targeted); main.ts unchanged"),
+    after("      void daemon.close().then(resolve, (cause: unknown) => {\n", f"        void import({SITE});\n", 'X2-close-failure-in-http-host',
+          file=SHUT, kind='residual', note="a load in http-host's close-failure branch; main.ts unchanged. No row reaches it: round 1's N5 follow-up"),
     after("import * as path from 'node:path';\n", "import '@syzygy/three-surface-poc-app/dossier-site';\n", 'P-transitive',
           file='packages/polaris-dossier/src/state-directory.ts', note='a module main.ts imports statically (polaris-dossier state-directory) imports the POC app; main.ts is unchanged'),
     # R1-R3 are rev-532's (R-GP-IMPL-TEST-CLOCKS-1, section 3.3): daemon-path loads between or after the two branches that the
@@ -58,13 +80,7 @@ MUTANTS = [
      'new': f"  if (process.env.SYZYGY_PRELOAD_RENDERER === '1') process.getBuiltinModule('node:module').createRequire(import.meta.url)({SITE});\n" + DAEMON,
      'note': 'a require through createRequire (taken by process.getBuiltinModule, no import edge), behind a flag, just before the daemon path'},
     {'id': 'R3-runtime-hook', 'kind': 'defect', 'file': MAIN, 'old': DAEMON,
-     'new': ("  {\n"
-             "    const { registerHooks } = process.getBuiltinModule('node:module');\n"
-             "    const { readFileSync } = process.getBuiltinModule('node:fs');\n"
-             "    registerHooks({ load: (url, context, nextLoad) => (url.includes('/apps/three-surface-poc/')\n"
-             "      ? { format: 'module', source: readFileSync(new URL(url), 'utf8'), shortCircuit: true } : nextLoad(url, context)) });\n"
-             f"    await import({SITE});\n"
-             "  }\n") + DAEMON,
+     'new': "  {\n" + HOOK_BODY + "  }\n" + DAEMON,
      'note': 'a load hook registered at runtime that short-circuits every POC-app URL, then an unconditional import of the POC app, just before the daemon path'},
     after(ANCHOR, "import type * as PocSite from '@syzygy/three-surface-poc-app/dossier-site';\n", 'E-type-only-import', kind='equivalent',
           note='a type-only import at module top: erased by tsc, so nothing loads'),
@@ -72,6 +88,49 @@ MUTANTS = [
           note='a comment naming the POC app inside the dossier branch'),
     {'id': 'E-renamed-binding', 'kind': 'equivalent', 'file': MAIN, 'note': "the polaris branch binds the renderer under another name",
      'old': POLARIS, 'new': POLARIS.replace('const { renderLocalDossier }', 'const { renderLocalDossier: render }').replace('renderer: renderLocalDossier', 'renderer: render')},
+    # S1-S6, C1 and L1-L3 are rev-532b's (R-GP-IMPL-TEST-CLOCKS-2, section 3.1). S1-S6 are daemon-path loads whose text sits
+    # between a branch opening and the first `  }` line after it, which the round-1 text row took for the branch's close.
+    {'id': 'S1-else-if-flag-after-dossier', 'kind': 'defect', 'file': MAIN, 'old': DOSSIER_END,
+     'new': DOSSIER_END[:-4] + f"  }} else if ({FLAG}) {{\n    await import({SITE});\n  }}\n",
+     'note': 'an `else if` on the dossier branch: on every non-dossier argv with the flag set, the POC app loads'},
+    {'id': 'S2-same-line-if-after-dossier', 'kind': 'defect', 'file': MAIN, 'old': DOSSIER_END,
+     'new': DOSSIER_END[:-4] + f"  }} if ({FLAG}) await import({SITE});\n",
+     'note': 'the dossier close and a flag-gated import on one line'},
+    {'id': 'S3-else-if-flag-after-polaris', 'kind': 'defect', 'file': MAIN, 'old': POLARIS_END,
+     'new': POLARIS_END[:-4] + f"  }} else if ({FLAG}) {{\n    await import({SITE});\n  }}\n",
+     'note': 'an `else if` on the polaris branch, just before the daemon path'},
+    {'id': 'S4-else-runtime-hook-after-dossier', 'kind': 'defect', 'file': MAIN, 'old': DOSSIER_END,
+     'new': DOSSIER_END[:-4] + "  } else {\n" + HOOK_BODY + "  }\n",
+     'note': "R3's runtime hook and import in an unconditional `else` on the dossier branch: every non-dossier argv loads the POC app, unseen by the test's hook"},
+    {'id': 'S5-else-createRequire-flag-after-polaris', 'kind': 'defect', 'file': MAIN, 'old': POLARIS_END,
+     'new': POLARIS_END[:-4] + f"  }} else if ({FLAG}) {{\n    process.getBuiltinModule('node:module').createRequire(import.meta.url)({SITE});\n  }}\n",
+     'note': "R2's createRequire in an `else if` on the polaris branch"},
+    {'id': 'S6-misindented-close-after-dossier', 'kind': 'defect', 'file': MAIN, 'old': DOSSIER_END,
+     'new': DOSSIER_END[:-4] + f"    }} if ({FLAG}) {{\n    await import({SITE});\n  }}\n",
+     'note': 'the dossier branch closed by a 4-space `}` on a line that opens a flag-gated block, closed by `  }`'},
+    # The lane's: S1 with the specifier split, so main.ts never names the POC app and only the row's else check sees the load.
+    {'id': 'S7-else-split-specifier-after-dossier', 'kind': 'defect', 'file': MAIN, 'old': DOSSIER_END,
+     'new': DOSSIER_END[:-4] + f"  }} else if ({FLAG}) {{\n    await import('@syzygy/three-surface-poc' + '-app/dossier-site');\n  }}\n",
+     'note': "S1's `else if` with the specifier split in two, so no text in main.ts names the POC app"},
+    {'id': 'C1-comment-outside-branches', 'kind': 'equivalent', 'file': MAIN, 'old': "// One exception to all of the above:",
+     'new': "// The dossier renderer is @syzygy/three-surface-poc-app/dossier-site.\n// One exception to all of the above:",
+     'note': 'a comment naming the POC app in the header, outside both branches (a disclosed residual: the text row fails it)'},
+    {'id': 'L1-else-if-chain', 'kind': 'equivalent', 'file': MAIN, 'old': POLARIS_HEAD,
+     'new': ("  } else if (argv[0] === 'polaris') {\n"
+             "    // `syzygy polaris <url>` is the one-command launched run (prototype under\n"
+             "    // owner direction POLARIS-DOSSIER-ONE-COMMAND-RUN-2026-10-14): it runs the\n"
+             "    // `dossier` steps in process and starts the agent sessions in views.\n"),
+     'note': "the two branches chained as `if … else if (argv[0] === 'polaris')`"},
+    {'id': 'L2-nested-function-in-dossier', 'kind': 'equivalent', 'file': MAIN,
+     'old': f"    const {{ renderLocalDossier }} = await import({SITE});\n    return runDossierCli(",
+     'new': f"    const renderLocalDossier = await (async () => {{\n      const site = await import({SITE});\n      return site.renderLocalDossier;\n    }})();\n    return runDossierCli(",
+     'note': 'the dossier import moved into a nested async function inside the branch'},
+    {'id': 'L3-nested-try-in-polaris', 'kind': 'equivalent', 'file': MAIN, 'old': POLARIS,
+     'new': ("    const { runPolarisCli } = await import('@syzygy/polaris-dossier');\n    try {\n"
+             f"      const {{ renderLocalDossier }} = await import({SITE});\n"
+             "      return runPolarisCli(argv.slice(1), { renderer: renderLocalDossier });\n"
+             "    } catch (cause: unknown) {\n      throw cause;\n    }\n"),
+     'note': 'the polaris import inside a nested try block in the branch'},
     {'id': 'H-hook-blind', 'kind': 'hook', 'file': TEST, 'note': "the hook's POC-app prefix points at a directory nothing loads from",
      'old': "    const app = `${pathToFileURL(realpathSync(path.join(REPO_ROOT, 'apps', 'three-surface-poc'))).href}/`;\n",
      'new': "    const app = `${pathToFileURL(realpathSync(path.join(REPO_ROOT, 'apps', 'three-surface-poc'))).href}/no-such-dir/`;\n"},

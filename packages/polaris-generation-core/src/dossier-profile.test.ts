@@ -10,9 +10,9 @@ const file = (path: string): GenerationSource => generationSourcesForBody({ sour
   revision: 'a'.repeat(40), path, objectId: gitBlobObjectId('x\n'), evaluationId: 'e', body: 'x\n' })[0]!;
 const deferredRow = (path: string): GenerationSource => { const { body: _b, spans: _s, ...rest } = file(path); return { ...rest, exclusion: { excluded: true, reason: 'deferred-by-budget' }, spans: [] }; };
 const answer = (id: OwnerAnswer['id'], text: unknown = 'a purpose'): OwnerAnswer => ({ id, answer: text, attribution: 'owner', revision: 'r1', permittedDraftUse: true });
-/** CPU time so far: this thread's (`process.threadCpuUsage`, Node 23.9 and later) or, on the Node 22 releases `engines` admits, the
- * whole process's (`process.cpuUsage`), which also counts the worker's other threads; each bound keeps its 10x margins under
- * both (docs/evidence/syzygy-bpyt-4-5/cpu-separation-node22.json). */
+/** CPU time so far: this thread's (`process.threadCpuUsage`, Node 23.9 and later) or, where `process.threadCpuUsage` is absent
+ * (Node before 23.9), the whole process's (`process.cpuUsage`), which also counts the worker's other threads; each bound keeps
+ * its 10x margins under both (docs/evidence/syzygy-bpyt-4-5/cpu-separation-node22.json). */
 const cpuUsage = (from?: NodeJS.CpuUsage): NodeJS.CpuUsage =>
   (typeof process.threadCpuUsage === 'function' ? process.threadCpuUsage(from) : process.cpuUsage(from));
 /** CPU milliseconds spent since `from`: the work done, which neither load on the host nor the pool running the file stretches. */

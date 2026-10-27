@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Builds docs/evidence/syzygy-bpyt-4-5/bounds-and-pins.json from the retained results beside it (syzygy-bpyt.4.5). Evidence tool, not authority.
 
-usage: python3 -I build_record.py TREE BASE_COMMIT MAIN_COMMIT EVIDENCE_COMMIT PRIOR_TEST_COMMIT
+usage: python3 -I build_record.py TREE BASE_COMMIT MAIN_COMMIT EVIDENCE_COMMIT PRIOR_TEST_COMMIT ROUND1_TEST_COMMIT
 
 BASE_COMMIT is where the branch began and where every base-side result ran; MAIN_COMMIT is the main the branch last merged.
 The change is `git diff MAIN_COMMIT EVIDENCE_COMMIT`, and each file it touches must be identical at BASE_COMMIT and MAIN_COMMIT,
@@ -12,58 +12,70 @@ change touches, their sha256 at EVIDENCE_COMMIT, and the sha256 of `git diff MAI
 result file's sha256, the census totals at both commits, the mutant outcomes, the CPU separations and the full-suite runs.
 
 What each result must have run against, checked here: the mutants and the head census at EVIDENCE_COMMIT itself; the
-daemon-entry probe at a commit whose main.ts, state-directory.ts and daemon-entry test are byte-identical to EVIDENCE_COMMIT's;
-both CPU separations (thread CPU on Node 24, and process CPU on Node 22, where the tests' cpuUsage falls back) at a commit
-whose three timed test files differ from EVIDENCE_COMMIT's only in `const <NAME>_CPU_MS = ` lines or in lines that are `//`
-comments, neither of which changes what the timed regions run.
+daemon-entry probe at a commit whose main.ts, state-directory.ts, http-host's shutdown.ts and daemon-entry test are
+byte-identical to EVIDENCE_COMMIT's; both CPU separations (thread CPU on Node 24, and process CPU on Node 22, where the
+tests' cpuUsage falls back) at a commit whose three timed test files are emit-equal to EVIDENCE_COMMIT's (tools/emit_equal.mjs:
+TypeScript's emit with comments removed and each `const <NAME>_CPU_MS = <n>;` masked), so they differ only in comments, types
+or a bound's value, none of which changes what the timed regions run.
 Each result's tool must hash, at EVIDENCE_COMMIT, to the digest the result records, and each result that reads
 tools/mutant-cases.json must record the digest that file has at EVIDENCE_COMMIT.
 
 Checked claims: every mutant case ran as its `expect` says; every CPU bound in the tests sits 10x or more from the head's
-slowest region and from the mutant's fastest, on thread CPU and under the process-CPU fallback alike. The bounds were set
+slowest region and from the mutant's fastest, on thread CPU and under the process-CPU fallback alike. Both figures are
+derived here from the runs, never read from the producer's summary: the head maximum is the largest region over the head
+runs, each mutant row's minimum is the smallest over its runs (a capped run counts at its reading, a lower bound), a row is
+reached when its minimum is 10x the head maximum or more, and the mutant minimum is the smallest over reached rows. Each
+must equal the figure the separation recorded, and its `fileBound` must agree, or the record is refused; the ratios written
+are the ones computed here. The bounds were set
 at 3fc3709f at the geometric mean of the first separation and are not refitted: each later run's mean is recorded as
-`geometricMeanNowMs`; on the daemon entry, every `defect` mutant fails the new test, every
-`hook` mutant fails the load-hook row, every defect the old text pin failed the new test also fails, the R- mutants
-(rev-532's daemon-path loads) pass the kept text row as it stood at PRIOR_TEST_COMMIT and fail it now, and the three
-equivalents whose kills were dropped (E-comment-in-branch, E-renamed-binding, E-branch-swap) pass the new test. The narrative fields (`sites`, `residuals`) are the lane's own words.
+`geometricMeanNowMs`; on the daemon entry, the four runs (the new test, the old test from BASE_COMMIT, and the tests from
+PRIOR_TEST_COMMIT and ROUND1_TEST_COMMIT) hold the same mutants, none skipped but a `hook` mutant in a test without the
+load-hook row; every `defect` mutant fails the new test, every `hook` mutant fails the load-hook row, the R- mutants
+(rev-532's daemon-path loads) pass the kept text row as it stood at PRIOR_TEST_COMMIT and fail it now, the S- mutants
+(rev-532b's) pass the test at ROUND1_TEST_COMMIT and fail both the new text row and the old pin, S7 (an `else` whose load
+names the POC app nowhere in main.ts) passes the round-1 test and fails the new text row, every `equivalent` passes
+the new test except the two the record discloses (E-type-only-import, C1-comment-outside-branches), which fail its text row
+alone, and the `residual` X2 passes every new row, as the record says. The narrative fields (`sites`, `residuals`) are the lane's own words.
 """
 import glob, hashlib, json, math, os, re, subprocess, sys
 
-tree, base, main, ev, prior = os.path.abspath(sys.argv[1]), sys.argv[2], sys.argv[3], sys.argv[4], sys.argv[5]
+tree, base, main, ev, prior, round1 = os.path.abspath(sys.argv[1]), sys.argv[2], sys.argv[3], sys.argv[4], sys.argv[5], sys.argv[6]
 here = os.path.join(tree, 'docs/evidence/syzygy-bpyt-4-5')
 git = lambda *a: subprocess.run(['git', *a], cwd=tree, capture_output=True, check=True).stdout
 sha = lambda b: hashlib.sha256(b).hexdigest()
 load = lambda name: json.load(open(os.path.join(here, name), encoding='utf8'))
-base, main, ev, prior = (git('rev-parse', c).decode().strip() for c in (base, main, ev, prior))
+base, main, ev, prior, round1 = (git('rev-parse', c).decode().strip() for c in (base, main, ev, prior, round1))
 changed = sorted(p for p in git('diff', '--name-only', main, ev).decode().split('\n') if p)
 for p in changed:
     if not p.startswith('docs/evidence/syzygy-bpyt-4-5/') and subprocess.run(['git', 'diff', '--quiet', base, main, '--', p], cwd=tree).returncode != 0:
         sys.exit(f'{p} differs between {base} and {main}')
 tests = [p for p in changed if p.startswith(('apps/', 'packages/'))]
 MAIN, STATE, DE_TEST = 'apps/syzygy/src/main.ts', 'packages/polaris-dossier/src/state-directory.ts', 'packages/cap1-system/src/daemon-entry-unchanged.system.test.ts'
+SHUT = 'packages/http-host/src/shutdown.ts'
 
 mutants, census_base, census_head = load('bound-and-pin-mutants.json'), load('census-base.json'), load('census-head.json')
 de_head, de_base, sep = load('daemon-entry-head.json'), load('daemon-entry-base-test.json'), load('cpu-separation.json')
-de_prior, sep22 = load('daemon-entry-prior-test.json'), load('cpu-separation-node22.json')
+de_prior, de_round1, sep22 = load('daemon-entry-prior-test.json'), load('daemon-entry-round1-test.json'), load('cpu-separation-node22.json')
 if de_prior['testFileFrom'] != prior: sys.exit(f'daemon-entry-prior-test ran the test from {de_prior["testFileFrom"]}, not {prior}')
+if de_round1['testFileFrom'] != round1: sys.exit(f'daemon-entry-round1-test ran the test from {de_round1["testFileFrom"]}, not {round1}')
 if sep['cpuSource'] != 'thread' or sep22['cpuSource'] != 'process' or not sep22['node'].startswith('v22.'):
     sys.exit('the CPU separations are not one thread-CPU run and one process-CPU run on Node 22')
 for name, at in (('mutants', mutants['tree']), ('census-head', census_head['commit'])):
     if at != ev: sys.exit(f'{name} ran at {at}, not {ev}')
 if census_base['commit'] != base or mutants['base'] != base or de_base['testFileFrom'] != base: sys.exit('a base-side result names another base')
-for name, record in (('daemon-entry-head', de_head), ('daemon-entry-base-test', de_base), ('daemon-entry-prior-test', de_prior)):
-    if subprocess.run(['git', 'diff', '--quiet', record['commit'], ev, '--', MAIN, STATE, DE_TEST], cwd=tree).returncode != 0:
-        sys.exit(f'{name}: {MAIN}, {STATE} or the test differ between {record["commit"]} and {ev}')
+DE_RUNS = (('daemon-entry-head', de_head), ('daemon-entry-base-test', de_base), ('daemon-entry-prior-test', de_prior), ('daemon-entry-round1-test', de_round1))
+for name, record in DE_RUNS:
+    if subprocess.run(['git', 'diff', '--quiet', record['commit'], ev, '--', MAIN, STATE, SHUT, DE_TEST], cwd=tree).returncode != 0:
+        sys.exit(f'{name}: {MAIN}, {STATE}, {SHUT} or the test differ between {record["commit"]} and {ev}')
 cpu_files = sorted({s['file'] for s in sep['sites']})
 for name, record in (('cpu-separation', sep), ('cpu-separation-node22', sep22)):
-    for line in git('diff', '-U0', record['tree'], ev, '--', *cpu_files).decode().split('\n'):
-        if line.startswith(('+++', '---')) or not line.startswith(('+', '-')): continue
-        if not re.match(r'^[+-](const [A-Z_]+_CPU_MS = [0-9_]+;|\s*//)', line): sys.exit(f'{name}: a line other than a bound or a comment differs from {ev}: {line}')
+    equal = json.loads(subprocess.run(['node', os.path.join(here, 'tools', 'emit_equal.mjs'), tree, record['tree'], ev, *cpu_files],
+                                      capture_output=True, text=True, check=True).stdout)
+    if sorted(equal) != cpu_files or not all(equal.values()): sys.exit(f'{name}: a timed test file is not emit-equal between {record["tree"]} and {ev}: {equal}')
 cases_sha = sha(git('show', f'{ev}:docs/evidence/syzygy-bpyt-4-5/tools/mutant-cases.json'))
 for name, record in (('mutants', mutants), ('cpu-separation', sep), ('cpu-separation-node22', sep22)):
     if record['cases']['sha256'] != cases_sha: sys.exit(f'{name} used a mutant-cases.json other than the one at {ev}')
-for name, record in (('mutants', mutants), ('daemon-entry-head', de_head), ('daemon-entry-base-test', de_base), ('daemon-entry-prior-test', de_prior),
-                     ('cpu-separation', sep), ('cpu-separation-node22', sep22), ('census', census_head)):
+for name, record in (('mutants', mutants), *DE_RUNS, ('cpu-separation', sep), ('cpu-separation-node22', sep22), ('census', census_head)):
     path = f'docs/evidence/syzygy-bpyt-4-5/tools/{record["tool"]["name"]}'
     if sha(git('show', f'{ev}:{path}')) != record['tool']['sha256']: sys.exit(f'{name}: tool digest differs from {ev}')
 
@@ -81,24 +93,44 @@ if not all(s['asExpected'] for c in cases.values() for s in c['sides']): sys.exi
 bounds_at_ev = {}
 for f in cpu_files:
     for m in re.finditer(r'^const ([A-Z_]+_CPU_MS) = ([0-9_]+);', git('show', f'{ev}:{f}').decode(), re.M): bounds_at_ev[m.group(1)] = int(m.group(2).replace('_', ''))
-fallback = {}
-for s in sep22['sites']:
-    b = bounds_at_ev.get(s['bound'])
-    if b is None or s['fileBound']['ms'] != b or not s['fileBound']['separated']: sys.exit(f'{s["bound"]}: not 10x from both sides under the process-CPU fallback')
-    fallback[s['bound']] = {'node': sep22['node'], 'cpuSource': 'process', 'headRuns': len(s['headRuns']), 'headMaxMs': s['headMaxMs'], 'mutantMinMs': s['mutantMinMs'],
-                            'mutantMinIsLowerBound': s['mutantMinIsLowerBound'], 'boundOverHeadMax': s['fileBound']['overHeadMax'], 'mutantMinOverBound': s['fileBound']['mutantMinOver']}
+def separated(s, record):
+    """The site's figures derived from its runs, checked against what the separation recorded and against the bound the test holds."""
+    b, name = bounds_at_ev.get(s['bound']), f'{record}: {s["bound"]}'
+    if b is None or s['fileBound']['ms'] != b: sys.exit(f'{name}: the separation measured a bound other than the {b} the test holds')
+    if not s['headRuns'] or any(h['exit'] != 0 for h in s['headRuns']): sys.exit(f'{name}: no head runs, or a head run failed')
+    head = [g['cpuMs'] for h in s['headRuns'] for g in h['regions'] if g['bound'] == s['bound']]
+    if not head: sys.exit(f'{name}: no head run probed the region')
+    head_max, rows = max(head), []
+    for m in s['mutants']:
+        values = [r['capped']['regionCpuMsAtLeast'] if r['capped'] else min((g['cpuMs'] for g in r['regions'] if g['bound'] == s['bound']), default=None)
+                  for r in m['runs']]
+        if not values or None in values: sys.exit(f'{name}: {m["id"]} has a run that neither capped nor probed the region')
+        capped = sum(1 for r in m['runs'] if r['capped'])
+        if min(values) != m['min'] or capped != m['cappedRuns']: sys.exit(f'{name}: {m["id"]} records min {m["min"]} over {m["cappedRuns"]} capped runs; its runs give {min(values)} over {capped}')
+        rows.append({'id': m['id'], 'title': m['title'], 'runs': len(m['runs']), 'cappedRuns': capped, 'minMs': min(values), 'reached': min(values) >= 10 * head_max})
+    reached = [r for r in rows if r['reached']]
+    if not reached: sys.exit(f'{name}: no mutant row reaches 10x the head maximum {head_max}')
+    mutant_min = min(r['minMs'] for r in reached)
+    lower = any(r['cappedRuns'] and r['minMs'] == mutant_min for r in reached)
+    if (head_max, mutant_min, lower) != (s['headMaxMs'], s['mutantMinMs'], s['mutantMinIsLowerBound']):
+        sys.exit(f'{name}: the runs give head max {head_max} and mutant min {mutant_min} (lower bound {lower}); the separation records {s["headMaxMs"]}, {s["mutantMinMs"]} ({s["mutantMinIsLowerBound"]})')
+    over, under = round(b / head_max, 1), round(mutant_min / b, 1)
+    if not (b / head_max >= 10 and mutant_min / b >= 10): sys.exit(f'{name}: not 10x from both sides ({over}, {under})')
+    if (s['fileBound']['overHeadMax'], s['fileBound']['mutantMinOver'], s['fileBound']['separated']) != (over, under, True):
+        sys.exit(f'{name}: fileBound records {s["fileBound"]}; the runs give {over}x and {under}x')
+    return {'boundMs': b, 'headRuns': len(s['headRuns']), 'headMaxMs': head_max, 'mutants': rows, 'mutantMinMs': mutant_min, 'mutantMinIsLowerBound': lower,
+            'boundOverHeadMax': over, 'mutantMinOverBound': under}
+for name, record in (('cpu-separation', sep), ('cpu-separation-node22', sep22)):
+    if sorted(s['bound'] for s in record['sites']) != sorted(bounds_at_ev): sys.exit(f'{name} measured {sorted(s["bound"] for s in record["sites"])}, not every bound the tests hold ({sorted(bounds_at_ev)})')
+fallback = {s['bound']: {'node': sep22['node'], 'cpuSource': 'process', **{k: v for k, v in separated(s, 'cpu-separation-node22').items() if k not in ('boundMs', 'mutants')}}
+            for s in sep22['sites']}
 separation = {}
 for s in sep['sites']:
-    b = bounds_at_ev.get(s['bound'])
-    if b is None or s['fileBound']['ms'] != b: sys.exit(f'{s["bound"]}: the separation measured a bound other than the {b} the test holds')
-    if not (s['fileBound']['separated'] and b / s['headMaxMs'] >= 10 and s['mutantMinMs'] / b >= 10): sys.exit(f'{s["bound"]}: not 10x from both sides')
+    figures = separated(s, 'cpu-separation')
     loads = [r['load1Start'] for r in s['headRuns']] + [r['load1End'] for r in s['headRuns']]
-    separation[s['bound']] = {
-        'file': s['file'], 'boundMs': b, 'headRuns': len(s['headRuns']), 'headMaxMs': s['headMaxMs'], 'headLoad1': [min(loads), max(loads)],
-        'mutants': [{'id': m['id'], 'title': m['title'], 'runs': len(m['runs']), 'cappedRuns': m['cappedRuns'], 'minMs': m['min'], 'reached': m['reached']} for m in s['mutants']],
-        'mutantMinMs': s['mutantMinMs'], 'mutantMinIsLowerBound': s['mutantMinIsLowerBound'],
-        'boundOverHeadMax': round(b / s['headMaxMs'], 1), 'mutantMinOverBound': round(s['mutantMinMs'] / b, 1), 'geometricMeanNowMs': s['proposedBoundMs'],
-        'underProcessCpuFallback': fallback[s['bound']]}
+    separation[s['bound']] = {'file': s['file'], **{k: figures[k] for k in ('boundMs', 'headRuns', 'headMaxMs')}, 'headLoad1': [min(loads), max(loads)],
+                              **{k: figures[k] for k in ('mutants', 'mutantMinMs', 'mutantMinIsLowerBound', 'boundOverHeadMax', 'mutantMinOverBound')},
+                              'geometricMeanNowMs': s['proposedBoundMs'], 'underProcessCpuFallback': fallback[s['bound']]}
 
 SITES = [
     {'site': 'apps/three-surface-poc/src/capture-test-artifact-main.test.ts:381 (base)', 'was': 'expect(Date.now() - started).toBeLessThan(5_000)',
@@ -143,39 +175,66 @@ for s in SITES:
 controls = ran_as_expected(sorted(i for i in cases if i.startswith('control-')))
 
 PIN = 'each import is dynamic and inside the `dossier` or `polaris` branch'
-HOOK_ROW, TEXT_ROW = 'the daemon path never loads the POC app, and the `dossier render` branch does', 'every line of main.ts naming the POC app sits inside the `dossier` or the `polaris` branch'
-PRIOR_TEXT_ROW = 'every line of main.ts naming the POC app sits in the `dossier` and `polaris` branches'
+HOOK_ROW = 'the daemon path never loads the POC app, and the `dossier render` branch does'
+TEXT_ROW = 'every mention of the POC app in main.ts lies inside the `dossier` or the `polaris` branch'
+ROUND1_TEXT_ROW = 'every line of main.ts naming the POC app sits inside the `dossier` or the `polaris` branch'
 REV_LOADS, DROPPED_EQUIVALENTS = ['R1-flag-between-branches', 'R2-flag-createRequire-before-daemon', 'R3-runtime-hook'], ['E-comment-in-branch', 'E-renamed-binding', 'E-branch-swap']
+ROUND2_LOADS = ['S1-else-if-flag-after-dossier', 'S2-same-line-if-after-dossier', 'S3-else-if-flag-after-polaris', 'S4-else-runtime-hook-after-dossier',
+                'S5-else-createRequire-flag-after-polaris', 'S6-misindented-close-after-dossier']
+ELSE_ONLY = 'S7-else-split-specifier-after-dossier'
+ROUND2_EQUIVALENTS, TEXT_ROW_FAILS = ['L1-else-if-chain', 'L2-nested-function-in-dossier', 'L3-nested-try-in-polaris'], ['E-type-only-import', 'C1-comment-outside-branches']
 def outcome(record):
     out = {}
     for r in record['results']:
         mid = (r['mutant'] or {}).get('id', 'control')
         out[mid] = {'kind': (r['mutant'] or {}).get('kind'), 'skipped': r.get('skipped'), 'passed': r['passed'], 'failed': r['failed']}
     return out
-new, old, prior_test = outcome(de_head), outcome(de_base), outcome(de_prior)
-if new['control']['failed'] or old['control']['failed'] or prior_test['control']['failed']: sys.exit('a daemon-entry control failed')
+new, old, prior_test, round1_test = outcome(de_head), outcome(de_base), outcome(de_prior), outcome(de_round1)
+for name, record in (('old', old), ('prior', prior_test), ('round1', round1_test)):
+    if list(record) != list(new) or any(record[mid]['kind'] != new[mid]['kind'] for mid in new): sys.exit(f'the {name}-test run holds other mutants than the new-test run')
+for name, record in (('new', new), ('old', old), ('prior', prior_test), ('round1', round1_test)):
+    for mid, r in record.items():
+        if r['skipped'] and not (name != 'new' and r['kind'] == 'hook'): sys.exit(f'{mid}: skipped in the {name}-test run ({r["skipped"]})')
+        if mid == 'control' and (r['failed'] or not r['passed']): sys.exit(f'the {name}-test control failed or ran nothing')
+fails = lambda record, mid, row: any(row in t for t in record[mid]['failed'])
+KINDS = {**{mid: 'defect' for mid in REV_LOADS + ROUND2_LOADS + [ELSE_ONLY, 'X1-close-failed-callback-in-main', 'X3-shutdown-in-http-host']},
+         **{mid: 'equivalent' for mid in DROPPED_EQUIVALENTS + ROUND2_EQUIVALENTS + TEXT_ROW_FAILS}, 'X2-close-failure-in-http-host': 'residual'}
+if not set(KINDS) <= set(new): sys.exit(f'mutants this record names are absent: {sorted(set(KINDS) - set(new))}')
+if any(new[mid]['kind'] != kind for mid, kind in KINDS.items()): sys.exit(f'a named mutant carries another kind: {[(m, new[m]["kind"]) for m, k in KINDS.items() if new[m]["kind"] != k]}')
 for mid in REV_LOADS:
     if prior_test[mid]['failed'] or not prior_test[mid]['passed']: sys.exit(f'{mid}: fails the kept text row as it stood at {prior}, so it is not the survivor rev-532 found')
-    if not any(TEXT_ROW in t for t in new[mid]['failed']): sys.exit(f'{mid}: the narrowed text row passes it')
-for mid in DROPPED_EQUIVALENTS:
-    if new[mid]['failed']: sys.exit(f'{mid}: an equivalent the new test fails')
+    if not fails(new, mid, TEXT_ROW): sys.exit(f'{mid}: the new text row passes it')
+for mid in ROUND2_LOADS:
+    if round1_test[mid]['failed'] or not round1_test[mid]['passed']: sys.exit(f'{mid}: fails the test as it stood at {round1}, so it is not the survivor rev-532b found')
+    if not fails(new, mid, TEXT_ROW): sys.exit(f'{mid}: the new text row passes it')
+    if not fails(old, mid, PIN): sys.exit(f'{mid}: the old pin passes it')
+if not fails(new, ELSE_ONLY, TEXT_ROW) or not round1_test[ELSE_ONLY]['passed'] or round1_test[ELSE_ONLY]['failed']:
+    sys.exit(f'{ELSE_ONLY}: the new text row passes it, or the round-1 test fails it')
 for mid, r in new.items():
-    rows = r['failed']
-    if r['kind'] == 'defect' and not rows: sys.exit(f'{mid}: a defect the new test passes')
-    if r['kind'] == 'hook' and not any(HOOK_ROW in t for t in rows): sys.exit(f'{mid}: a hook mutant the load-hook row passes')
-    pin_killed = any(PIN in t for t in old.get(mid, {}).get('failed', []))
-    if r['kind'] == 'defect' and pin_killed and not rows: sys.exit(f'{mid}: the old pin killed it and the new test does not')
+    if r['kind'] == 'defect' and not r['failed']: sys.exit(f'{mid}: a defect the new test passes')
+    if r['kind'] == 'hook' and not fails(new, mid, HOOK_ROW): sys.exit(f'{mid}: a hook mutant the load-hook row passes')
+    if r['kind'] == 'equivalent' and mid not in TEXT_ROW_FAILS and r['failed']: sys.exit(f'{mid}: an equivalent the new test fails')
+    if r['kind'] == 'residual' and any(record[mid]['failed'] for record in (new, old, prior_test, round1_test)):
+        sys.exit(f"{mid}: a residual some test now fails, so the record's residual is stale")
+if not fails(new, 'X1-close-failed-callback-in-main', TEXT_ROW) or not fails(new, 'X3-shutdown-in-http-host', HOOK_ROW):
+    sys.exit('X1 passes the text row or X3 the load-hook row, so the X2 residual misstates them')
+for mid in TEXT_ROW_FAILS:
+    if new[mid]['kind'] != 'equivalent' or [t for t in new[mid]['failed'] if TEXT_ROW not in t] or not fails(new, mid, TEXT_ROW):
+        sys.exit(f'{mid}: the record says the new test fails it at the text row alone')
+verdict = lambda record, mid: 'skipped' if record[mid]['skipped'] else ('pass' if not record[mid]['failed'] else sorted(record[mid]['failed']))
 daemon_entry = {
-    'mutants': [{'id': mid, 'kind': r['kind'], 'newHookRow': 'fail' if any(HOOK_ROW in t for t in r['failed']) else 'pass',
-                 'newTextRow': 'fail' if any(TEXT_ROW in t for t in r['failed']) else 'pass',
+    'mutants': [{'id': mid, 'kind': r['kind'], 'newHookRow': 'fail' if fails(new, mid, HOOK_ROW) else 'pass',
+                 'newTextRow': 'fail' if fails(new, mid, TEXT_ROW) else 'pass',
                  'newOtherRows': sorted(t for t in r['failed'] if HOOK_ROW not in t and TEXT_ROW not in t),
-                 'oldTextPin': 'skipped' if old[mid]['skipped'] else ('fail' if any(PIN in t for t in old[mid]['failed']) else 'pass'),
+                 'oldTextPin': 'skipped' if old[mid]['skipped'] else ('fail' if fails(old, mid, PIN) else 'pass'),
                  'oldOtherRows': sorted(t for t in old[mid]['failed'] if PIN not in t),
-                 'priorTest': 'skipped' if prior_test[mid]['skipped'] else ('pass' if not prior_test[mid]['failed'] else sorted(prior_test[mid]['failed']))} for mid, r in new.items()],
-    'priorTestFrom': prior,
-    'note': 'defect: the daemon path loads the POC app on some argv or event; equivalent: nothing on any daemon path loads it; hook: the load hook itself is broken.'}
+                 'priorTest': verdict(prior_test, mid),
+                 'roundOneTest': verdict(round1_test, mid),
+                 'roundOneTextRow': 'skipped' if round1_test[mid]['skipped'] else ('fail' if fails(round1_test, mid, ROUND1_TEXT_ROW) else 'pass')} for mid, r in new.items()],
+    'priorTestFrom': prior, 'roundOneTestFrom': round1,
+    'note': 'defect: the daemon path loads the POC app on some argv or event; equivalent: nothing on any daemon path loads it; hook: the load hook itself is broken; residual: a daemon-path load no row reaches, disclosed in `residuals`.'}
 daemon_entry['pinKillsDropped'] = [m['id'] for m in daemon_entry['mutants'] if m['oldTextPin'] == 'fail' and m['newHookRow'] == 'pass' and m['newTextRow'] == 'pass']
-daemon_entry['pinMisses'] = [m['id'] for m in daemon_entry['mutants'] if m['kind'] == 'defect' and m['oldTextPin'] == 'pass']
+daemon_entry['pinMisses'] = [m['id'] for m in daemon_entry['mutants'] if m['kind'] in ('defect', 'residual') and m['oldTextPin'] == 'pass']
 
 THIRD = r'hrtime|performance\.now\(\)|Date\.now\(\) *-|elapsed|getTime\(\) *-|[cC]puUsage'
 third = [l for l in git('grep', '-n', '-E', THIRD, ev, '--', 'apps/*.test.*', 'packages/*.test.*').decode().split('\n') if l]
@@ -185,10 +244,11 @@ refused_within = {'base': [l for l in grep_n(base, 'refusedWithin(', READER) if 
                   'head': grep_n(ev, 'refusedWithin', READER)}
 timeouts = [r for r in census_head['rows'] if r['kind'].startswith('timeout')]
 RESIDUALS = [
-    'process.threadCpuUsage() exists from Node 23.9.0 while package.json engines admits Node 22.15 and later. On a Node 22 the tests fall back to process.cpuUsage(), which also counts the worker process\'s other threads (garbage collection, compilation): each bound\'s separation under that fallback, on Node 22, is `underProcessCpuFallback`. CI and this host run Node 24.',
+    'process.threadCpuUsage() exists from Node 23.9.0 while package.json engines admits Node 22.15 and later. Where it is absent (Node before 23.9) the tests fall back to process.cpuUsage(), which also counts the worker process\'s other threads (garbage collection, compilation): each bound\'s separation under that fallback, measured on Node 22, is `underProcessCpuFallback`. CI and this host run Node 24.',
     'The near-miss tag-names case runs under TAG_SCAN_CPU_MS with no mutant that fails it: the replaced scan is linear on that input too, so the bound rests on the other two cases; the test says so in a comment.',
     'A capped mutant run gives a lower bound on its region, not the region: the mutant minimum for those bounds is at least the cap, so each bound sits at least as far from the mutant as recorded.',
-    'The kept daemon-entry text row also fails a mutant that loads nothing: a type-only import naming the POC app at module top (E-type-only-import), and a comment naming it outside the two branches would fail it the same way. The equivalents it passes are in daemonEntry.',
+    'The kept daemon-entry text row also fails mutants that load nothing: a type-only import naming the POC app at module top (E-type-only-import) and a header comment naming it outside the two branches (C1-comment-outside-branches). The equivalents it passes are in daemonEntry.',
+    "A load in http-host's close-failure branch (packages/http-host/src/shutdown.ts, X2-close-failure-in-http-host) passes every row of the new test, the old pin and both earlier tests: main's #529 moved the shutdown handler out of main.ts, the one file the text row reads, and no row drives a failing close. A load in main.ts's closeFailed callback (X1) still fails the text row, and one in http-host's shutdown function (X3) the load-hook row. Extending the check to closeOnSignal is round 1's N5 follow-up, not this bead.",
     "dossier-evaluation's INDEX and DEEP fixtures are ASCII, so a module that counted string length instead of UTF-8 bytes would pass every byte assertion there, at the base (literals) and at the head (counts) alike.",
     'A FIFO capture with the lstat refusal removed blocks in a synchronous open at both sides: the row fails by the test timeout or the run is killed, never by a fast refusal (fifo-blocking-open).',
     'Explicit timeouts are harness bounds, not assertions, and are out of this bead (syzygy-bpyt.4.31); most carry no one-line reason (unreasonedTimeouts).',
@@ -204,7 +264,7 @@ record = {
     'subject': {'base': base, 'main': main, 'evidenceCommit': ev, 'testFiles': [{'path': p, 'sha256': sha(git('show', f'{ev}:{p}'))} for p in tests],
                 'testDiffSha256': sha(git('diff', main, ev, '--', *tests)), 'note': 'The test files are the subject; no product file differs between base and the evidence commit.'},
     'productFilesChanged': [p for p in changed if not p.startswith('docs/evidence/syzygy-bpyt-4-5/') and p not in tests],
-    'resultsRanAt': {'mutants': mutants['tree'], 'censusHead': census_head['commit'], 'daemonEntryHead': de_head['commit'], 'daemonEntryOldTest': de_base['commit'], 'daemonEntryPriorTest': de_prior['commit'],
+    'resultsRanAt': {'mutants': mutants['tree'], 'censusHead': census_head['commit'], 'daemonEntryHead': de_head['commit'], 'daemonEntryOldTest': de_base['commit'], 'daemonEntryPriorTest': de_prior['commit'], 'daemonEntryRoundOneTest': de_round1['commit'],
                      'cpuSeparation': sep['tree'], 'cpuSeparationNode22': sep22['tree']},
     'files': [{'path': os.path.relpath(p, tree), 'sha256': sha(open(p, 'rb').read())} for p in files],
     'ac1Sweep': {'population': {'base': census_base['population'], 'head': census_head['population']},
