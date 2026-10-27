@@ -160,14 +160,34 @@ function literal(node: ts.Expression, source: ts.SourceFile): unknown {
   return { expression: node.getText(source) };
 }
 
+/** Each place `source` names readArgv but as its declaration in argv.ts, an import or export of it under its own name, or the callee
+ * of a call the lift below reads: a namespace or element access, an alias, a renamed import, a callback (syzygy-bpyt.8.36, the review
+ * of 8.34, N2). A call made through any of them passes a spec the lift never sees. */
+function unliftedOf(module: string, source: ts.SourceFile): string[] {
+  const found: string[] = [];
+  const visit = (node: ts.Node): void => {
+    if ((ts.isIdentifier(node) || ts.isStringLiteralLike(node)) && node.text === 'readArgv') {
+      const parent = node.parent;
+      const allowed = (ts.isFunctionDeclaration(parent) && parent.name === node && module === 'packages/polaris-dossier/src/argv.ts')
+        || ((ts.isImportSpecifier(parent) || ts.isExportSpecifier(parent)) && parent.name === node && parent.propertyName === undefined)
+        || (ts.isCallExpression(parent) && parent.expression === node);
+      if (!allowed) found.push(`${module}:${source.getLineAndCharacterOfPosition(node.getStart(source)).line + 1} ${parent.getText(source)}`);
+    }
+    ts.forEachChild(node, visit);
+  };
+  visit(source);
+  return found;
+}
+
 /** Every non-test source module of the workspace that names readArgv, and every call of it there with the spec it passes. */
-function readArgvCallers(): { modules: string[]; calls: { module: string; spec: unknown }[] } {
+function readArgvCallers(): { modules: string[]; calls: { module: string; spec: unknown }[]; unlifted: string[] } {
   const sources = ['apps', 'packages'].flatMap((parent) => fs.readdirSync(path.join(ROOT, parent)).map((name) => `${parent}/${name}/src`))
     .filter((dir) => fs.existsSync(path.join(ROOT, dir)))
     .flatMap((dir) => fs.readdirSync(path.join(ROOT, dir), { recursive: true, encoding: 'utf8' }).map((file) => `${dir}/${file}`))
     .filter((module) => module.endsWith('.ts') && !module.endsWith('.test.ts')).sort();
   const modules: string[] = [];
   const calls: { module: string; spec: unknown }[] = [];
+  const unlifted: string[] = [];
   for (const module of sources) {
     const text = fs.readFileSync(path.join(ROOT, module), 'utf8');
     if (!text.includes('readArgv')) continue;
@@ -180,8 +200,9 @@ function readArgvCallers(): { modules: string[]; calls: { module: string; spec: 
       ts.forEachChild(node, visit);
     };
     visit(source);
+    unlifted.push(...unliftedOf(module, source));
   }
-  return { modules, calls };
+  return { modules, calls, unlifted };
 }
 
 describe('each policy copy above, against the spec its caller passes', () => {
@@ -194,6 +215,21 @@ describe('each policy copy above, against the spec its caller passes', () => {
       { module: 'packages/polaris-dossier/src/cli.ts', spec: { ...DOSSIER_OPTIONS, valued: { expression: 'shape.options' } } },
       { module: 'packages/polaris-dossier/src/polaris.ts', spec: POLARIS },
     ]);
+  });
+
+  it('names readArgv only where the lift reads it: its declaration, an import or export of it, and the callee of a call', () => {
+    expect(readArgvCallers().unlifted).toEqual([]);
+  });
+
+  it.each([
+    ["import * as argvNs from './argv.js';\nvoid argvNs.readArgv([], { valued: [] });", ['module.ts:2 argvNs.readArgv']],
+    ["import * as argvNs from './argv.js';\nvoid argvNs['readArgv']([], { valued: [] });", ["module.ts:2 argvNs['readArgv']"]],
+    ["import { readArgv } from './argv.js';\nconst readArgs = readArgv;\nvoid readArgs([], { valued: [] });", ['module.ts:2 readArgs = readArgv']],
+    ["import { readArgv as readArgs } from './argv.js';\nvoid readArgs([], { valued: [] });", ['module.ts:1 readArgv as readArgs']],
+    ["import { readArgv } from './argv.js';\n[[]].map((args) => readArgv.call(undefined, args, { valued: [] }));", ['module.ts:2 readArgv.call']],
+    ["import { readArgv } from './argv.js';\nexport const policies = { daemon: readArgv };", ['module.ts:2 daemon: readArgv']],
+  ])('the census sees a reading the lift does not in %j (its own mutant)', (text, unlifted) => {
+    expect(unliftedOf('module.ts', ts.createSourceFile('module.ts', text, ts.ScriptTarget.Latest, true))).toEqual(unlifted);
   });
 
   it("names allow-execution's options as the dossier options policy's", () => {

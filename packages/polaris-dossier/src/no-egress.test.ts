@@ -40,6 +40,7 @@ beforeAll(async () => {
       '@syzygy/polaris-dossier': src('packages/polaris-dossier/src/index.ts'),
       '@syzygy/cap1-core': src('packages/cap1-core/src/index.ts'),
       '@syzygy/cap1-daemon': src('packages/cap1-daemon/src/index.ts'),
+      '@syzygy/http-host': src('packages/http-host/src/index.ts'),
       '@syzygy/three-surface-poc-core': src('packages/three-surface-poc-core/src/index.ts'),
       '@syzygy/support': src('packages/support/src/index.ts'),
     },

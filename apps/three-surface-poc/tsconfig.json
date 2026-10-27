@@ -13,6 +13,9 @@
       "path": "../../packages/cap1-daemon"
     },
     {
+      "path": "../../packages/http-host"
+    },
+    {
       "path": "../../packages/three-surface-poc-core"
     },
     {
