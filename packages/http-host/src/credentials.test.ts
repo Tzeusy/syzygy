@@ -297,6 +297,17 @@ describe('RT3 — state-write boundary', () => {
     }
   });
 
+  // syzygy-bpyt.7.16: containment compares case too. The `rt3-cred-` prefix
+  // holds letters, so the upper-cased name always differs from the state dir's.
+  it('refuses a sibling whose name differs from the state dir name only in case, as traversal', () => {
+    const stateDir = tempDir();
+    const decision = authorizeStateWrite(stateDir, `../${basename(stateDir).toUpperCase()}/f`);
+    expect(decision.authorized).toBe(false);
+    if (!decision.authorized) {
+      expect(decision.refusedBy).toBe('traversal');
+    }
+  });
+
   it('refuses empty and self-naming candidates, named', () => {
     const stateDir = tempDir();
     for (const candidate of ['', '.', '  ']) {
@@ -374,9 +385,10 @@ describe('RT3 — credential verification through core admission', () => {
   });
 
   // syzygy-bpyt.7.14: the scheme is followed by exactly one space and the
-  // token is every character after it, never trimmed.
+  // token is every character after it, never trimmed. syzygy-bpyt.7.16: the
+  // scheme opens the header, and the one space is U+0020, not another space.
   it('the minted token behind any other whitespace refuses, named', () => {
-    for (const header of [`Bearer  ${TOKEN}`, `Bearer\t${TOKEN}`, `Bearer ${TOKEN} `, `Bearer ${TOKEN}\n`]) {
+    for (const header of [`Bearer  ${TOKEN}`, `Bearer\t${TOKEN}`, `Bearer ${TOKEN} `, `Bearer ${TOKEN}\n`, ` Bearer ${TOKEN}`, `Bearer\u00a0${TOKEN}`]) {
       const credential = credentialFromAuthorizationHeader(header);
       expect(verifyCredential(TOKEN, credential), JSON.stringify(header)).toEqual({
         admitted: false,
