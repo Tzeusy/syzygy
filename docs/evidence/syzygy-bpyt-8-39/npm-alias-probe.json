@@ -260,6 +260,23 @@
    "installExit": null,
    "installedLink": null,
    "appLoads": null
+  },
+  {
+   "shows": "the root's manifest and app's: the same alias under a workspace's name, a range its version does not satisfy",
+   "declaredIn": [
+    "root",
+    "app"
+   ],
+   "declared": {
+    "wlib": "npm:typescript@^5.5.0"
+   },
+   "lockExit": 1,
+   "errorCode": "ENOTCACHED",
+   "wouldRequest": "http://127.0.0.1:9/typescript",
+   "lockEntry": null,
+   "installExit": null,
+   "installedLink": null,
+   "appLoads": null
   }
  ]
 }

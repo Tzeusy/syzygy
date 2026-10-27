@@ -1,6 +1,6 @@
 {
- "tree": "/tmp/la-r541b/head",
- "head": "00b7dcf70b764b13017784581bc80a5a3502532f",
+ "tree": "/tmp/la-r541c/head",
+ "head": "c5fe2d4054f274adbea9eb1f8b38f2b43189b9d1",
  "results": [
   {
    "id": "R541-X1-root-reads-devDependencies-only",
@@ -14,7 +14,7 @@
    ],
    "failed": [],
    "timeouts": 0,
-   "seconds": 4.8,
+   "seconds": 5.6,
    "counts": [
     {
      "file": "packages/polaris-generation-core/src/workspace-reach.testkit.ts",
@@ -44,7 +44,7 @@
     "FAIL   @syzygy/polaris-generation-core  packages/polaris-generation-core/src/workspace-reach.test.ts > the shared workspace resolver > reads a bare name the workspace root's manifest declares as a local dependency as naming no module"
    ],
    "timeouts": 0,
-   "seconds": 5.5,
+   "seconds": 6.9,
    "counts": [
     {
      "file": "packages/polaris-generation-core/src/workspace-reach.testkit.ts",
@@ -74,7 +74,7 @@
     "FAIL   @syzygy/polaris-generation-core  packages/polaris-generation-core/src/workspace-reach.test.ts > the shared workspace resolver > reads a bare name declared as an npm: alias with no version as naming no module"
    ],
    "timeouts": 0,
-   "seconds": 4.0,
+   "seconds": 6.4,
    "counts": [
     {
      "file": "packages/polaris-generation-core/src/workspace-reach.testkit.ts",
@@ -102,7 +102,7 @@
    ],
    "failed": [],
    "timeouts": 0,
-   "seconds": 4.8,
+   "seconds": 7.7,
    "counts": [
     {
      "file": "packages/polaris-generation-core/src/workspace-reach.testkit.ts",
@@ -132,7 +132,7 @@
     "FAIL   @syzygy/polaris-generation-core  packages/polaris-generation-core/src/workspace-reach.test.ts > the shared workspace resolver > reads a bare name declared as a git dependency whose spec ends in a tarball extension as naming no module"
    ],
    "timeouts": 0,
-   "seconds": 5.7,
+   "seconds": 6.4,
    "counts": [
     {
      "file": "packages/polaris-generation-core/src/workspace-reach.testkit.ts",
@@ -162,7 +162,7 @@
     "FAIL   @syzygy/polaris-generation-core  packages/polaris-generation-core/src/workspace-reach.test.ts > the shared workspace resolver > reads a bare name the workspace root's manifest declares as a local dependency as naming no module"
    ],
    "timeouts": 0,
-   "seconds": 3.6,
+   "seconds": 7.4,
    "counts": [
     {
      "file": "packages/polaris-generation-core/src/workspace-reach.testkit.ts",
@@ -192,7 +192,7 @@
     "FAIL   @syzygy/polaris-generation-core  packages/polaris-generation-core/src/workspace-reach.test.ts > the shared workspace resolver > reads a bare name declared as a remote http tarball URL dependency as naming no module"
    ],
    "timeouts": 0,
-   "seconds": 3.4,
+   "seconds": 8.1,
    "counts": [
     {
      "file": "packages/polaris-generation-core/src/workspace-reach.testkit.ts",

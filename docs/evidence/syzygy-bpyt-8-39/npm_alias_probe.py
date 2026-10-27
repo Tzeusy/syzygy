@@ -1,9 +1,11 @@
 """syzygy-bpyt.8.39: what npm installs for an `npm:` alias, the evidence for the testkit's `npm:` clause as rounds 1 and 2 of the
-review of 8.39 (F1 each) corrected it. npa_probe.cjs reads how npm-package-arg parses a spec; this observes what npm then installs.
+review of 8.39 (F1 each) corrected it, and as round 3's F1 corrected round 2's text. npa_probe.cjs reads how npm-package-arg parses
+a spec; this observes what npm then installs.
 
 Each case is a fresh project of three workspaces: `w` named `wlib` and `s` named `@syzygy/slib`, both at version 1.0.0, and `app`.
-The case's one dependency is declared in `app`'s manifest or in the root's (round 2: npm treats the root's differently). Every npm
-call, the version call included, runs offline, with a private empty cache, an empty user and global config, an empty scratch HOME,
+The case's one dependency is declared in `app`'s manifest, in the root's (round 2: npm treats the root's differently), or in both
+(round 3: npm skips the root's and reads `app`'s by its own range). Every npm call, the version call included, runs offline, with a
+private empty cache, an empty user and global config, an empty scratch HOME,
 no inherited npm_config_* variable, and a registry of http://127.0.0.1:9/, so nothing is fetched and no npmrc of the host is read.
 A registry fetch shows as ENOTCACHED, with the URL npm would have requested. A link shows as a lockfile entry with `link: true`;
 the case then installs in full, and records where `node_modules/<name>` points and which package.json Node loads for the name from
@@ -16,7 +18,7 @@ scratch, out = (os.path.realpath(a) for a in sys.argv[1:3])
 if os.listdir(scratch):
     sys.exit(f'{scratch} is not empty')
 WORKSPACES = {'w': 'wlib', 's': '@syzygy/slib'}
-# (what the case shows, the manifest that declares it, the name the dependency is declared under, its spec)
+# (what the case shows, the manifest that declares it or a tuple of the manifests that do, the name it is declared under, its spec)
 CASES = [
     ('an alias under a name no workspace has, its target a registry package', 'app', 'dossier', 'npm:typescript@^5.5.0'),
     ("an alias under a name no workspace has, its target a workspace's name", 'app', 'dossier', 'npm:wlib@*'),
@@ -34,6 +36,8 @@ CASES = [
      'npm:typescript@^5.5.0'),
     ("the root's manifest: a plain range under a workspace's name, not satisfied", 'root', 'wlib', '^5.5.0'),
     ("control: the root's manifest, an alias under a name no workspace has", 'root', 'dossier', 'npm:typescript@^5.5.0'),
+    ("the root's manifest and app's: the same alias under a workspace's name, a range its version does not satisfy", ('root', 'app'),
+     'wlib', 'npm:typescript@^5.5.0'),
 ]
 user, globalrc = (os.path.join(scratch, name) for name in ('empty-user-npmrc', 'empty-global-npmrc'))
 open(user, 'w').close()
@@ -59,7 +63,8 @@ def write(path, data):
 results = []
 for index, (shows, where, name, spec) in enumerate(CASES):
     root = os.path.join(scratch, f'case{index}')
-    declares = lambda manifest: {'dependencies': {name: spec}} if where == manifest else {}
+    manifests = (where,) if isinstance(where, str) else where
+    declares = lambda manifest: {'dependencies': {name: spec}} if manifest in manifests else {}
     write(os.path.join(root, 'package.json'), {'name': 'probe-root', 'version': '0.0.0', 'private': True, 'workspaces': [*WORKSPACES, 'app'],
                                                **declares('root')})
     for directory, workspace in WORKSPACES.items():
@@ -81,8 +86,9 @@ for index, (shows, where, name, spec) in enumerate(CASES):
                               cwd=os.path.join(root, 'app'), capture_output=True, text=True, env=ENV)
         path, loaded, version = json.loads(node.stdout)
         loads = {'packageJson': os.path.relpath(path, root), 'name': loaded, 'version': version}
-    results.append({'shows': shows, 'declaredIn': where, 'declared': {name: spec}, 'lockExit': lock.returncode, 'errorCode': code,
-                    'wouldRequest': request, 'lockEntry': entry, 'installExit': install, 'installedLink': link, 'appLoads': loads})
+    results.append({'shows': shows, 'declaredIn': where if isinstance(where, str) else list(where), 'declared': {name: spec},
+                    'lockExit': lock.returncode, 'errorCode': code, 'wouldRequest': request, 'lockEntry': entry, 'installExit': install,
+                    'installedLink': link, 'appLoads': loads})
     print(index, shows, '|', lock.returncode, code, request, entry, link, loads, flush=True)
 version = lambda *args: subprocess.run(args, capture_output=True, text=True, env=ENV).stdout.strip()
 npm_dir = os.path.dirname(os.path.dirname(os.path.realpath(shutil.which('npm', path=ENV['PATH']))))  # <npm>/bin/npm-cli.js
