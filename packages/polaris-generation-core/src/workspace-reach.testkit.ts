@@ -58,15 +58,15 @@ function moduleIn(workspace: Workspace, dir: string, target: string): string | u
 
 /** A dependency version the guards treat as possibly local, so a bare name declared with it names no module:
  * - `file:`, or a path (`.`, `..`, `./x`, `../x`, `/x`, `~/x`) or tarball name (`x.tgz`, `x.tar`, `x.tar.gz`): npm reads each
- *   as a directory or a file;
- * - `link:` and `workspace:`: npm does not install them at all (npm-package-arg 12.0.2 throws EUNSUPPORTEDPROTOCOL), and other
- *   package managers link them locally;
+ *   as a directory or a file, except in the root's manifest under a workspace's own name, where npm links that workspace;
+ * - `link:` and `workspace:`: npm does not install them at all (npm-package-arg 12.0.2 throws EUNSUPPORTEDPROTOCOL), except in
+ *   the root's manifest under a workspace's own name, as above, and another package manager might link them (not observed here);
  * - `npm:`: an alias. npm-package-arg 12.0.2 accepts only a registry spec after `npm:`. npm 11.5.1 skips each declaration in the
- *   root's manifest under a workspace's own name, whatever its version, and links that workspace. For every other declaration,
- *   npm fetches the alias's spec from the registry unless that declaration is under a workspace's own name and the alias's range
- *   is `*`, absent or one that workspace's version satisfies; then npm links the workspace, as for a plain range so declared.
- *   Every workspace here is `@syzygy/`-scoped, and the `@syzygy/*` branch reads such a name before this pattern. Its target may
- *   carry a workspace package's name, which other package managers can link locally; every alias is refused, failing closed.
+ *   root's manifest under a workspace's own name, whatever its version, and links that workspace. For every other declaration, npm
+ *   fetches the alias's spec from the registry unless that declaration is under a workspace's own name and the alias's range is `*`,
+ *   absent or one that workspace's version satisfies; then npm links the workspace, as for a plain range so declared. Every workspace
+ *   here is `@syzygy/`-scoped, and the `@syzygy/*` branch reads such a name before this pattern. Its target may carry a workspace
+ *   package's name, which another package manager might link locally (not observed here); every alias is refused, failing closed.
  * The tarball arm also matches a tarball URL (`https://…/x.tgz`), which npm types as `remote`, and a git spec whose text ends in a
  * tarball extension (`github:someone/dossier#v1.tar`), which npm types as `git`; both are refused too, failing closed.
  * Residual (syzygy-bpyt.8.38): npm also reads a directory spec with no leading `./`, `../`, `/` or `~/` (`packages/polaris-dossier/`,
