@@ -21,9 +21,10 @@ import { readSelfCorpus } from './polaris-generation/self-corpus.js';
 const REPO_ROOT = fileURLToPath(new URL('../../../', import.meta.url)).replace(/\/$/, '');
 const PINNED_MAIN = '133106eb0f2564f1cefddd19d11985f1b2619397';
 const EVALUATION_INSTANT = '2026-10-03T00:00:00Z';
-// Real-tree reads spawn git; under the parallel-load protocol a hundred
-// single reads took up to 13 s (syzygy-svoj evidence), so these tests carry
-// an explicit budget.
+// Real-tree reads spawn git, once per single read: the three real-tree
+// tests took up to 28.4 s over 5 alone runs at load1 60-88
+// (docs/evidence/syzygy-bpyt-4-31/durations/git-blob-batch.test.tests.json),
+// so they carry an explicit budget.
 const REAL_TREE_TIMEOUT_MS = 120_000;
 
 const bytes = (text: string): Uint8Array => new TextEncoder().encode(text);

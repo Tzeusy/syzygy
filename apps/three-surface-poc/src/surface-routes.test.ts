@@ -310,7 +310,7 @@ describe('surface routes', () => {
       localCleanups.push(directory);
       browser = await launchBrowser(browserExecutable);
       page = await browser.newPage();
-    }, 60_000);
+    }, 60_000); // a fixture model, a daemon and Chrome: at most 0.5 s in 5 alone runs, but hosted run 40428762919 spent at least 9.0 s in this beforeAll and the afterAll together (docs/evidence/syzygy-bpyt-4-31/ci-durations.json)
 
     afterAll(async () => {
       // browser.close() is left to throw: closeDisposableBrowser reports a
@@ -325,7 +325,7 @@ describe('surface routes', () => {
           rmSync(directoryToRemove, { recursive: true, force: true });
         }
       }
-    }, 60_000);
+    }, 60_000); // closes Chrome and the daemon: at most 1.1 s in 5 alone runs, but hosted run 40428762919 spent at least 9.0 s in the beforeAll and this afterAll together (docs/evidence/syzygy-bpyt-4-31/ci-durations.json)
 
     it.skipIf(browserExecutable === undefined).each(['direct', 'tailnet'] as const)('exhausts 15 runtime cross-surface links over six classes and fetches every %s target', async (form) => {
       if (page === undefined) throw new Error('shared browser page not initialized');
@@ -417,7 +417,7 @@ describe('surface routes', () => {
       // Readable capture for the dated size evidence, from the same served
       // evaluation and exactly the three-surface link population above.
       process.stdout.write(`[M9 cross links] ${JSON.stringify({ form, links: links.length, classes, sizes })}\n`);
-    }, 15_000);
+    }, 15_000); // hosted runs timed out at the 5 s default (docs/evidence/syzygy-bul-browser-ci-correction-2026-09-23.json)
   });
 
   it('withholds hrefs and discloses unavailable targets instead of defaulting identities', () => {
@@ -450,7 +450,7 @@ describe('surface routes', () => {
       }))()`);
       expect(result).toEqual({ hrefs: 0, unavailable: 1, exactTableLinks: 1 });
     });
-  }, 10_000);
+  }, 10_000); // a hosted run timed out at the 5 s default (docs/evidence/syzygy-bul-browser-ci-correction-2026-09-23.json)
 
   it('exhausts every served badge, tuple and Unknown disclosure on the three surfaces; Home is a separate diagnostic (POC-REQ-060)', async () => {
     const model = buildFixtureModel(cleanups, { projectShape: { authority: ADMITTING_AUTHORITY, runGit: projectShapeFixtureGit() } });
@@ -534,7 +534,7 @@ describe('surface routes', () => {
       }
       expect(total).toBe(serverTotal + 2);
     });
-  }, 45_000);
+  }, 45_000); // timed out at the 5 s default in 4 of 5 full-suite runs at load1 38-71 (docs/evidence/syzygy-bpyt-4-31/full-runs.json), and took up to 5.1 s in 5 alone runs at load1 30-37 (docs/evidence/syzygy-bpyt-4-31/head-durations/surface-routes.test.tests.json)
 
   it.each([
     ['wrong Unknown token', (html: string) => html.replace('color: var(--unknown);', 'color: var(--observed);')],
