@@ -458,6 +458,16 @@ describe('a CRLF or CR blob gets the outcome its LF form gets', () => {
   });
 });
 
+// GAP, for the line-model follow-up of syzygy-bpyt.16: positionOf counts LF only, so a CRLF text reports its LF form's positions and
+// a bare-CR text reports line 1 with the offset as column, while a malformed finding takes the mask's line, which counts every line end.
+describe('reported positions in CRLF and bare-CR texts', () => {
+  it('CRLF as LF; a bare CR counted by the malformed line only', () => {
+    expect(scanActiveContent('a\r\n<script>x</script>')).toEqual([{ form: 'script-element', line: 2, column: 1 }, { form: 'script-element', line: 2, column: 10 }]);
+    expect(scanActiveContent('a\r<script>x</script>')).toEqual([{ form: 'script-element', line: 1, column: 3 }, { form: 'script-element', line: 1, column: 12 }]);
+    expect(scanActiveContent('a\rb\r`x')).toEqual([{ form: 'malformed-code-context', line: 3, column: 1, context: 'unclosed-inline-span' }]);
+  });
+});
+
 describe('declared resource limits are evaluation inputs', () => {
   it('evaluateLimit: at the limit passes, one over breaches, for every declared limit', () => {
     const limits: PwbResourceLimits = { maxSources: 3, maxBytesPerSource: 10, maxTotalBytes: 20, maxIndexDepth: 4, maxParsePassesPerSource: 16, maxHumanResponseBytes: 100, maxMachineResponseBytes: 400 };

@@ -14,6 +14,9 @@ A mutant is KILLED when at least one test fails. The detectors, by file:
 BASE is the whole mask file of the base commit: the new tests must fail on it (they pin the fix). A mutant marked `equivalent`
 is argued, not run to a verdict: it is expected to survive, and the argument is stored beside it.
 Each row stores the old and new fragments, the code commit it ran at and the sha256 of the mutated file, so it can be re-run.
+A mutant changes the mask file unless TARGET names another file for it (MU20 and MU21 change positionOf in the reader). A mutant
+listed in KILLER must be killed by that one test and no other: the row stores every failing test, and the run exits 1 otherwise
+(MU17 to MU19 by the U+2028 / U+2029 / U+0085 pin, MU20 and MU21 by the GAP pin on reported positions; R-GP-IMPL-CRLF-MASK-1).
 """
 import argparse
 import hashlib
@@ -23,6 +26,7 @@ import subprocess
 import sys
 
 MASK = 'packages/three-surface-poc-core/src/markdown-code-context.ts'
+READER = 'packages/three-surface-poc-core/src/git-object-reader.ts'
 UNIT = ['packages/three-surface-poc-core/src/markdown-code-context.test.ts']
 FENCE = ['apps/three-surface-poc/src/fence-rules.test.ts']
 SITES = [
@@ -38,6 +42,7 @@ LINE_END = 'const LINE_END = /\\r\\n|\\r|\\n/g;'
 JOIN = "out.map((line, index) => line + (terminators[index] ?? '')).join('')"
 CLOSER = '/^ {0,3}(`{3,}|~{3,}) *$/'
 OPENER = 'const FENCE_OPENER = /^ {0,3}(`{3,}|~{3,})(.*)$/;'
+POSITION_OF = 'if (text.charCodeAt(i) === 10) {'
 
 # (id, [(old, new)], note). MU1..MU6 are the vet's (V-CRLF-MASK-1) adapted to this implementation's fragments; MU7 is the analogue
 # of the #533 round-2 mutant RV10 (a closer tolerating a trailing CR); the rest are the failure modes of a split that keeps
@@ -59,8 +64,23 @@ MUTANTS = [
     ('MU14-line-keeps-its-terminator', [('lines.push(text.slice(start, end.index));', 'lines.push(text.slice(start, end.index + end[0].length));')], 'rules see CRLF at the end of a line'),
     ('MU15-alternation-order', [(LINE_END, 'const LINE_END = /\\r|\\r\\n|\\n/g;')], 'CR before CRLF: CRLF splits as CR then LF'),
     ('MU16-blank-keeps-nothing-but-lf', [("return ' '.repeat(segment.length);", "return segment.replace(/[^\\n]/g, ' ');")], 'EQUIVALENT: a line holds no CR or LF now (both are split points), so the old blanking and the new one agree'),
+    ('MU17-u2028-is-a-line-end', [(LINE_END, 'const LINE_END = /\\r\\n|\\r|\\n|\\u2028/g;')], 'U+2028 ends a line: changes LF texts that hold one'),
+    ('MU18-nel-is-a-line-end', [(LINE_END, 'const LINE_END = /\\r\\n|\\r|\\n|\\x85/g;')], 'U+0085 ends a line: changes LF texts that hold one'),
+    ('MU19-js-line-terminators', [(LINE_END, 'const LINE_END = /\\r\\n|[\\r\\n\\u2028\\u2029]/g;')], 'the JavaScript line-terminator set'),
+    ('MU20-positionOf-counts-bare-cr', [(POSITION_OF, 'if (text.charCodeAt(i) === 10 || (text.charCodeAt(i) === 13 && text.charCodeAt(i + 1) !== 10)) {')], 'positionOf counts a bare CR as a line end: renumbers non-malformed findings in bare-CR texts (reviewer RM8)'),
+    ('MU21-positionOf-counts-every-cr', [(POSITION_OF, 'if (text.charCodeAt(i) === 10 || text.charCodeAt(i) === 13) {')], 'positionOf counts every CR as a line end: renumbers CRLF and CR findings (reviewer RM10)'),
 ]
 EQUIVALENT = {'MU16-blank-keeps-nothing-but-lf'}
+TARGET = {'MU20-positionOf-counts-bare-cr': READER, 'MU21-positionOf-counts-every-cr': READER}
+PIN_LINE_CONTENT = 'U+2028, U+2029 and U+0085 are line content, not line ends'
+PIN_POSITIONS = 'CRLF as LF; a bare CR counted by the malformed line only'
+KILLER = {
+    'MU17-u2028-is-a-line-end': PIN_LINE_CONTENT,
+    'MU18-nel-is-a-line-end': PIN_LINE_CONTENT,
+    'MU19-js-line-terminators': PIN_LINE_CONTENT,
+    'MU20-positionOf-counts-bare-cr': PIN_POSITIONS,
+    'MU21-positionOf-counts-every-cr': PIN_POSITIONS,
+}
 
 
 def run(cmd, cwd, env=None, check=True):
@@ -84,6 +104,7 @@ def main():
     clone, code_commit, base_commit, tmpdir, out = ns.clone, ns.code_commit, ns.base_commit, ns.tmpdir, ns.out
     only = set(ns.only.split(',')) if ns.only else None
     target = os.path.join(clone, MASK)
+    originals = {MASK: open(target, encoding='utf8').read(), READER: open(os.path.join(clone, READER), encoding='utf8').read()}
     env = dict(os.environ, TMPDIR=tmpdir)
     os.makedirs(tmpdir, exist_ok=True)
 
@@ -92,7 +113,7 @@ def main():
         raise SystemExit(f'clone is at {head_now}, not {code_commit}')
     if run(['git', 'status', '--porcelain'], clone).stdout.strip():
         raise SystemExit('clone is not clean')
-    original = open(target, encoding='utf8').read()
+    original = originals[MASK]
     base_source = run(['git', 'show', f'{base_commit}:{MASK}'], clone).stdout
 
     all_files = [f for files in DETECTORS.values() for f in files]
@@ -107,6 +128,7 @@ def main():
             raise SystemExit(f'{label}: no report (exit {proc.returncode}): {proc.stderr[-400:]}')
         data = json.load(open(report, encoding='utf8'))
         by_detector = {}
+        every_failure = []
         for name, files in DETECTORS.items():
             failed, total = [], 0
             for result in data['testResults']:
@@ -120,16 +142,17 @@ def main():
                     if t['status'] == 'failed':
                         failed.append({'test': t['fullName'], 'error': (t['failureMessages'][0] if t['failureMessages'] else '').split('\n')[0][:160]})
             by_detector[name] = {'tests': total, 'failed': len(failed), 'firstFailed': failed[:4]}
-        return by_detector
+            every_failure += [f['test'] for f in failed]
+        return by_detector, every_failure
 
     try:
-        control = detect('control')
+        control, _ = detect('control')
         rows.append({'id': 'CONTROL-code-commit', 'ranAt': code_commit, 'fileSha256': sha(target), 'detectors': control})
         print('CONTROL', {k: (v['tests'], v['failed']) for k, v in control.items()}, flush=True)
 
         jobs = [('BASE-whole-file-of-the-base-commit', None, base_source, 'the new tests pin the fix: they fail on the base mask')]
         for mid, pairs, note in MUTANTS:
-            mutated = original
+            mutated = originals[TARGET.get(mid, MASK)]
             for old, new in pairs:
                 if mutated.count(old) != 1:
                     raise SystemExit(f'{mid}: the old fragment occurs {mutated.count(old)} times: {old!r}')
@@ -138,25 +161,37 @@ def main():
         for mid, pairs, mutated, note in jobs:
             if only is not None and mid not in only:
                 continue
-            with open(target, 'w', encoding='utf8') as handle:
+            file = TARGET.get(mid, MASK)
+            path = os.path.join(clone, file)
+            with open(path, 'w', encoding='utf8') as handle:
                 handle.write(mutated)
-            result = detect(mid.split('-')[0])
+            try:
+                result, every_failure = detect(mid.split('-')[0])
+            finally:
+                with open(path, 'w', encoding='utf8') as handle:
+                    handle.write(originals[file])
             killed = any(v['failed'] > 0 for v in result.values())
             outcome = 'killed' if killed else ('survived-equivalent' if mid in EQUIVALENT else 'SURVIVED')
-            rows.append({
+            row = {
                 'id': mid,
                 'ranAt': code_commit,
-                'file': MASK,
+                'file': file,
                 'replacements': [{'old': o, 'new': n} for o, n in pairs] if pairs is not None else 'the whole file of ' + base_commit,
                 'fileSha256': hashlib.sha256(mutated.encode('utf8')).hexdigest(),
                 'note': note,
                 'outcome': outcome,
                 'detectors': result,
-            })
+            }
+            if mid in KILLER:
+                row['expectedKiller'] = KILLER[mid]
+                row['failingTests'] = every_failure
+                row['killedByExpectedKillerOnly'] = bool(every_failure) and all(KILLER[mid] in name for name in every_failure)
+            rows.append(row)
             print(mid, outcome, {k: v['failed'] for k, v in result.items()}, flush=True)
     finally:
-        with open(target, 'w', encoding='utf8') as handle:
-            handle.write(original)
+        for file, text in originals.items():
+            with open(os.path.join(clone, file), 'w', encoding='utf8') as handle:
+                handle.write(text)
 
     mutants = [r for r in rows if r['id'].startswith('MU')]
     summary = {
@@ -166,12 +201,14 @@ def main():
         'killed': sum(1 for r in mutants if r['outcome'] == 'killed'),
         'survivedEquivalent': sum(1 for r in mutants if r['outcome'] == 'survived-equivalent'),
         'survived': [r['id'] for r in mutants if r['outcome'] == 'SURVIVED'],
+        'killedByExpectedKillerOnly': sum(1 for r in mutants if r.get('killedByExpectedKillerOnly')),
+        'expectedKillerNotAlone': [r['id'] for r in mutants if 'expectedKiller' in r and not r['killedByExpectedKillerOnly']],
     }
     with open(out, 'w', encoding='utf8') as handle:
         json.dump({'summary': summary, 'rows': rows}, handle, indent=1)
         handle.write('\n')
     print(json.dumps(summary))
-    return 0 if not summary['survived'] else 1
+    return 0 if not summary['survived'] and not summary['expectedKillerNotAlone'] else 1
 
 
 if __name__ == '__main__':

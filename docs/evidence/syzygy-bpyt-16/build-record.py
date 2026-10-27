@@ -1,9 +1,17 @@
 #!/usr/bin/env python3
 """Builds crlf-mask-2026-10-27.json, the record of syzygy-bpyt.16, from the outputs beside it. Every digest and total is computed.
 
-Usage: build-record.py <git repo> <base commit> <code commit> <evidence dir>
+Usage: build-record.py <git repo> <base commit> <code commit> <evidence dir> <repair commit> <remeasure base> <reviewed commit>
+  base, code   the parent of the fix and the fix commit: the subject of the production-file digests, the built modules and the
+               digest-citer sweep
+  repair       the commit of the round-1 repair of R-GP-IMPL-CRLF-MASK-1 (two pins and the rows that measure them, no production
+               byte changed): the subject of the mutant runs, the differential builds and the test report
+  remeasure base, reviewed   main as merged into the branch (f7ea8584) and the commit the review was bound to (c399eda9): the base
+               of the test report and of the differential re-run, and the commit the repair range starts from
 Refuses (exit 1) unless the outputs say what the record is about to say: no differential failure, every non-equivalent mutant
-killed, the self-test killing 4 of 4, the two digest-citer methods agreeing, the vet runner agreeing at HEAD on every row.
+killed (MU17 to MU21 by their one pin), the self-test killing 6 of 6, the two digest-citer methods agreeing, the vet runner agreeing
+at HEAD on every row, the repair touching no byte outside the two test files and docs/evidence, and the re-run differential equal
+to the one the review was bound to on every field but the separator slice.
 """
 import hashlib
 import json
@@ -11,8 +19,19 @@ import os
 import subprocess
 import sys
 
-repo, base_arg, code_arg, evidence = sys.argv[1:]
+repo, base_arg, code_arg, evidence, repair_arg, remeasure_arg, reviewed_arg = sys.argv[1:]
 MASK = 'packages/three-surface-poc-core/src/markdown-code-context.ts'
+REPAIR_TESTS = [
+    'packages/three-surface-poc-core/src/git-object-reader.test.ts',
+    'packages/three-surface-poc-core/src/markdown-code-context.test.ts',
+]
+REVIEW_RAW = {
+    'name': 'R-GP-IMPL-CRLF-MASK-1-RAW.md',
+    'sha256': '1a2010ae4d7fe2de19aac036545b0ade689d69dcca0ef5c9f15333a161302964',
+    'verdict': 'REVISE',
+    'blockingFindings': ['F1'],
+    'inThisTree': False,
+}
 
 
 def git(*args):
@@ -29,6 +48,10 @@ def load(name):
 
 base = git('rev-parse', base_arg).decode().strip()
 code = git('rev-parse', code_arg).decode().strip()
+repair = git('rev-parse', repair_arg).decode().strip()
+remeasure = git('rev-parse', remeasure_arg).decode().strip()
+reviewed = git('rev-parse', reviewed_arg).decode().strip()
+EVIDENCE_PATH = 'docs/evidence/syzygy-bpyt-16/'
 
 diff = load('crlf-differential-output.json')
 mut = load('crlf-mask-mutants-output.json')
@@ -41,10 +64,32 @@ if any(c['failures'] for c in diff['checks'].values()) or diff['failureCount'] !
     problems.append('the differential has failures')
 if mut['summary']['survived'] or mut['summary']['killed'] + mut['summary']['survivedEquivalent'] != mut['summary']['mutants']:
     problems.append('a non-equivalent mutant survived')
-if self_test['killed'] != self_test['total'] or self_test['total'] != 4:
-    problems.append('the differential self-test is not 4 of 4')
+if self_test['killed'] != self_test['total'] or self_test['total'] != 6:
+    problems.append('the differential self-test is not 6 of 6')
+# The sweep's subject is the digest of the edited file; the repair changes no production byte, so the sweep stands for the repair too.
+swept = {(d['at']): d['sha256'] for d in citers['digests']}
+if swept != {'base': sha(git('show', f'{base}:{MASK}')), 'head': sha(git('show', f'{repair}:{MASK}'))}:
+    problems.append('digest-citers: the swept digests are not the mask at the base and at the repair commit')
 if not citers['methodsAgree'] or citers['codeHeadCommit'] != code or citers['baseCommit'] != base_arg:
     problems.append('digest-citers: methods disagree or another commit')
+repair_paths = git('diff', '--name-only', reviewed, repair, '--', '.', f':(exclude){EVIDENCE_PATH}').decode().split()
+if sorted(repair_paths) != REPAIR_TESTS:
+    problems.append(f'the repair touches {repair_paths}, not exactly the two test files')
+if subprocess.run(['git', '-C', repo, 'merge-base', '--is-ancestor', reviewed, repair]).returncode != 0:
+    problems.append('the reviewed commit is not an ancestor of the repair commit')
+if mut['summary']['codeCommit'] != repair:
+    problems.append('the mutants ran at another commit than the repair commit')
+if mut['summary']['expectedKillerNotAlone'] or mut['summary']['killedByExpectedKillerOnly'] != 5:
+    problems.append('MU17 to MU21 are not each killed by their one pin')
+slice_checks = diff['checks']['C1_lfUnchanged']
+if not slice_checks.get('separatorSliceTexts'):
+    problems.append('the differential has no separator slice')
+previous_diff = json.loads(git('show', f'{reviewed}:{EVIDENCE_PATH}crlf-differential-output.json'))
+current_diff = json.loads(json.dumps(diff))
+del current_diff['checks']['C1_lfUnchanged']['separatorSliceTexts']
+del current_diff['population']['separatorSlice']
+if current_diff != previous_diff:
+    problems.append('the re-run differential differs from the one the review was bound to on a field other than the separator slice')
 vs = vet_head['summary']
 for group in ('CRLF', 'CR', 'MRT'):
     for key in ('payload_today_vs_lf', 'payload_today_vs_oTerm', 'control_today_vs_lf'):
@@ -69,6 +114,14 @@ for i in range(0, len(names) - 1, 2):
     blob = git('show', f'{code}:{path}')
     changed.append({'path': path, 'status': status, 'bytesAtCode': len(blob), 'sha256AtCode': sha(blob)})
 base_mask, head_mask = git('show', f'{base}:{MASK}'), git('show', f'{code}:{MASK}')
+repair_changed = []
+names = git('diff', '--name-status', '-z', reviewed, repair, '--', '.', f':(exclude){EVIDENCE_PATH}').decode().split('\0')
+for i in range(0, len(names) - 1, 2):
+    status, path = names[i], names[i + 1]
+    blob = git('show', f'{repair}:{path}')
+    before = git('show', f'{reviewed}:{path}')
+    repair_changed.append({'path': path, 'status': status, 'bytesBefore': len(before), 'sha256Before': sha(before), 'bytesAtRepair': len(blob), 'sha256AtRepair': sha(blob)})
+previous_tests = json.loads(git('show', f'{reviewed}:{EVIDENCE_PATH}test-delta-output.json'))
 
 # Files of this directory, except the record itself.
 own = []
@@ -109,6 +162,15 @@ record = {
         },
         'builtModule': {'base': diff['baseDistModule'], 'code': diff['headDistModule'], 'what': 'sha256 of dist/markdown-code-context.js, each built with tsc -b in its own checkout'},
         'changedFiles': changed,
+        'repair': {
+            'what': 'round 1 of the CC-REV-1 review of this change (R-GP-IMPL-CRLF-MASK-1) returned REVISE with one blocking finding, F1: a mutant that widens LINE_END to U+2028, U+0085 or the JavaScript line-terminator set changes LF decisions and no test, mutant or differential row failed. The repair adds the pins and the rows that measure them; no production byte changes',
+            'review': dict(REVIEW_RAW, reviewedCommit=reviewed, why='the raw is retained by the coordinator, not in this tree'),
+            'range': {'from': reviewed, 'to': repair},
+            'productionFileUnchanged': {'path': MASK, 'sha256AtCode': sha(head_mask), 'sha256AtRepair': sha(git('show', f'{repair}:{MASK}'))},
+            'changedFiles': repair_changed,
+            'measuredAtRepair': 'the mutant runs (crlf-mask-mutants-output.json), the test report (test-delta-output.json) and the head build of the differential; the differential and the test report take main as merged into the branch, ' + remeasure + ', as their base: its mask is byte-equal to the base of the fix, and the re-run differential equals the one the review was bound to on every field but the separator slice (checked by this script)',
+            'remeasureBase': remeasure,
+        },
     },
     'ccRev1Classes': {
         'touched': [4, 3],
@@ -143,7 +205,7 @@ record = {
         'output': 'docs/evidence/syzygy-bpyt-16/crlf-differential-output.json',
         'checks': diff['checks'],
         'meaning': {
-            'C1': 'every LF text decides identically at BASE and HEAD: findings and mask deep-equal',
+            'C1': 'every LF text decides identically at BASE and HEAD: findings and mask deep-equal, over the distinct LF forms of the rows and over the separator slice (LF texts whose lines hold U+2028, U+2029 and U+0085 at fence and span positions)',
             'C2': 'at HEAD every CRLF, CR and mixed rendering decides as its LF form: same finding multiset (form, context, malformed line), equal mask once terminators read as LF',
             'C3': 'at HEAD the masked text has the text length, every terminator at its offset, every other byte its own or a space',
             'C4': 'at HEAD a CRLF text has findings deep-equal to its LF form, line and column included',
@@ -186,10 +248,10 @@ record = {
         'maskMutants': {
             'tool': 'docs/evidence/syzygy-bpyt-16/crlf-mask-mutants.py',
             'output': 'docs/evidence/syzygy-bpyt-16/crlf-mask-mutants-output.json',
-            'ranAt': code,
+            'ranAt': mut['summary']['codeCommit'],
             'detectors': 'the seven test files this change adds or edits, one vitest run per mutant',
             'summary': mut['summary'],
-            'mutants': [{'id': r['id'], 'outcome': r['outcome'], 'failedTests': {k: v['failed'] for k, v in r['detectors'].items()}} for r in mut['rows'] if r['id'].startswith(('MU', 'BASE'))],
+            'mutants': [{'id': r['id'], 'outcome': r['outcome'], 'failedTests': {k: v['failed'] for k, v in r['detectors'].items()}, **({'expectedKiller': r['expectedKiller'], 'failingTests': r['failingTests']} if 'expectedKiller' in r else {})} for r in mut['rows'] if r['id'].startswith(('MU', 'BASE'))],
             'equivalent': 'MU16: a line holds no CR or LF now (both are split points), so blanking by [^\\n] and by length agree; no test can tell them apart',
         },
     },
@@ -206,12 +268,15 @@ record = {
     'tests': {
         'line': tests['line'],
         'method': 'by (file, full name) identity from vitest reports of the seven files at each commit, and by call text for a changed it.each call (tool: test-delta.py, test-inventory.mjs); a helper the callbacks call is not followed',
+        'baseCommit': remeasure,
+        'headCommit': repair,
+        'previousMeasurement': {'baseCommit': base, 'codeCommit': code, 'line': previous_tests['line'], 'baseTests': previous_tests['baseTests'], 'headTests': previous_tests['headTests'], 'why': 'the count before the repair, read from test-delta-output.json at ' + reviewed + '; the base then was the parent of the fix, which holds one test fewer in the seven files than ' + remeasure + ' (the BOM test, main)'},
         'baseTests': tests['baseTests'],
         'headTests': tests['headTests'],
         'output': 'docs/evidence/syzygy-bpyt-16/test-delta-output.json',
     },
     'residuals': [
-        '[Observed] positionOf in git-object-reader counts LF only and is unchanged (the ruling). A non-malformed finding in a bare-CR or mixed text keeps the LF-only line and column; a malformed finding takes the mask line, which now counts CR and CRLF as line ends. The differential counts those rows under positionOf.',
+        '[Observed] positionOf in git-object-reader counts LF only and is unchanged (the ruling). In a text that holds a bare CR, a non-malformed finding keeps the LF-only line and column, while a malformed finding takes the mask line, which counts every CR, CRLF and LF; a text whose terminators are only LF and CRLF reports the LF form positions. No production path reads a finding line or column. The differential counts those rows under positionOf, and git-object-reader.test.ts pins the reading (the GAP test, which kills MU20 and MU21). A follow-up bead holds the line-model question; it is not G2 or G3.',
         '[Observed] The extractor splits at LF and drops one trailing CR; the link reader splits at LF only. For a bare-CR text each differs from the profile (links in 30 of the 33 fence cases, extraction in all 33, pinned in fence-rules.test.ts rows named GAP G2/G3). They are open owner questions G2 and G3 and are not changed here.',
         '[Observed] The consent reader (outsideFences) is unchanged and stays CR-blind (G4).',
         '[Observed] docs/evidence/syzygy-bpyt-6-3/dc3-fence-rules-2026-10-25.json and its probe outputs record G1 as measured before this fix; they are not edited.',

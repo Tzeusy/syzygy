@@ -167,6 +167,12 @@ describe('closed-pwb-code-context-v1 — CRLF, CR and LF each end one line', () 
     expect(malformed(lines('```', 'code', '    ```', 'after')(end))).toEqual({ reason: 'unclosed-fence', line: 1 });
   });
 
+  // Only CR and LF end a line, which leaves every LF reading as it was (syzygy-bpyt.1.14): U+2028, U+2029 and U+0085 are line
+  // content, blanked inside a span like any other character. A line end widened to them would keep them in the mask.
+  it('U+2028, U+2029 and U+0085 are line content, not line ends', () => {
+    for (const separator of ['\u2028', '\u2029', '\u0085']) expect(masked(`a \`b${separator}c\` d`), JSON.stringify(separator)).toBe('a       d');
+  });
+
   // This test compares a rendering with another, so it proves equality, not correctness: the literals above and the fixtures at the
   // call sites pin the values.
   it('a CRLF or CR text gets the structure its LF form gets, for every case here', () => {

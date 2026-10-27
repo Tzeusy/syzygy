@@ -11,7 +11,10 @@
 //   n2      the two fail-open shapes of the #533 round-1/2 finding N2, and four more built from them, in the same renderings.
 //
 // For every text T, with L its LF form (the same lines, every terminator replaced by LF):
-//   C1  LF unchanged     scanActiveContent(L) and maskMarkdownCodeContexts(L) are deep-equal at BASE and HEAD.
+//   C1  LF unchanged     scanActiveContent(L) and maskMarkdownCodeContexts(L) are deep-equal at BASE and HEAD. It runs over the distinct
+//                        LF forms of the rows above and over the separator slice below: LF texts whose lines hold U+2028, U+2029
+//                        and U+0085 at fence and span positions (line content under the ruling; a split widened to them, as
+//                        a maintainer completing the line-terminator set would write it, changes those texts' decisions).
 //   C2  rendering equals LF   at HEAD, T decides exactly as L: the same multiset of findings (form, context, and the line of a
 //                        malformed finding), and an equal mask (kind, fences, spans, reason, line; the masked text equal once
 //                        every terminator is read as LF).
@@ -205,6 +208,38 @@ for (const text of lfTexts) {
   }
 }
 
+// The separator slice of C1: U+2028, U+2029 and U+0085 are line content, not line ends (the ruling leaves every LF reading as it was).
+// Each case of the three corpora (the vet's, the fence probe's, the N2 shapes) is joined, with and without a script element as a last
+// line, by the separator in place of every LF at once, with the separator in place of one LF, and with the separator appended to or
+// prepended to one line. No text holds a CR.
+const SEPARATORS = ['\u2028', '\u2029', '\u0085'];
+const separatorSlice = (() => {
+  const texts = new Set();
+  for (const lines of [...VET_CASES, ...FENCE_CASES, ...N2_CASES].map((c) => c.lines)) {
+    for (const body of [lines, [...lines, PAYLOAD]]) {
+      for (const sep of SEPARATORS) {
+        texts.add(body.join(sep));
+        for (let i = 0; i < body.length; i += 1) {
+          texts.add(body.map((line, j) => (j === i ? line + sep : line)).join(LF));
+          texts.add(body.map((line, j) => (j === i ? sep + line : line)).join(LF));
+          if (i > 0) texts.add(body.slice(0, i).join(LF) + sep + body.slice(i).join(LF));
+        }
+      }
+    }
+  }
+  const list = [...texts];
+  if (list.some((t) => t.includes(CR))) throw new Error('the separator slice holds a CR');
+  if (!SEPARATORS.every((sep) => list.some((t) => t.includes(sep)))) throw new Error('the separator slice misses a separator');
+  return list;
+})();
+for (const text of separatorSlice) {
+  const b = measure('base', text);
+  const h = measure('head', text);
+  if (!isDeepStrictEqual(b.findings, h.findings) || !isDeepStrictEqual(b.mask, h.mask)) {
+    fail('C1', { corpus: 'lf-separators', caseId: '', variant: '', slot: '' }, { text, base: b, head: h });
+  }
+}
+
 const tally = () => ({ rows: 0, refuses: 0, accepts: 0, sameDecisionOtherFindings: 0, unchanged: 0 });
 const groups = new Map();
 const groupOf = (name) => {
@@ -315,9 +350,10 @@ const result = {
     fence: { cases: FENCE_CASES.length },
     n2: { cases: N2_CASES.length },
     renderings: Object.keys(RENDERINGS),
+    separatorSlice: { separators: SEPARATORS.map((sep) => `U+${sep.charCodeAt(0).toString(16).toUpperCase().padStart(4, '0')}`), texts: separatorSlice.length, excludedByHead: separatorSlice.filter((t) => excluded(measure('head', t).findings)).length },
   },
   checks: {
-    C1_lfUnchanged: { texts: lfTexts.length, failures: byCheck('C1') },
+    C1_lfUnchanged: { texts: lfTexts.length, separatorSliceTexts: separatorSlice.length, failures: byCheck('C1') },
     C2_renderingEqualsLf: { texts: c2, failures: byCheck('C2') },
     C3_maskInvariants: { maskedTexts: c3, failures: byCheck('C3') },
     C4_crlfFindingsEqualLfIncludingPositions: { texts: c4, failures: byCheck('C4') },
