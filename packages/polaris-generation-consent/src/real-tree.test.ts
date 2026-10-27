@@ -28,7 +28,7 @@ const reads = (fs: PackageReaderFs, now = Date.now()) => ({
 });
 const exists = async (rel: string): Promise<boolean> => { try { await readFile(path.join(ROOT, rel)); return true; } catch { return false; } };
 const KINDS = ['observation-consent', 'egress-consent', 'public-source-policy'] as const;
-const TIMEOUT = 120_000;   // each read walks the whole decisions tree
+const TIMEOUT = 120_000;   // each read walks the whole decisions tree: worst 8.0 s over 5 alone runs at load1 39-47 (docs/evidence/syzygy-bpyt-4-31/durations/real-tree.test.tests.json)
 
 describe('the readers over this checkout\'s decisions directory', () => {
   it('refuse nothing: no file in decisions/ trips a sweep or breaks a recorder\'s form', async () => {

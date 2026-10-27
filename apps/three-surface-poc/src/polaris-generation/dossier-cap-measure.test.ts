@@ -9,7 +9,7 @@ let scratch = '', measured: DossierCapMeasurement;
 beforeAll(async () => {
   scratch = mkdtempSync(join(tmpdir(), 'syzygy-dossier-cap-'));
   measured = await measureDossierCapSelection(join(scratch, 'repo'));
-}, 120_000);
+});
 afterAll(() => rmSync(scratch, { recursive: true, force: true }));
 
 describe('what heuristic discovery reads under the dossier cap on the design-prose fixture (no model)', () => {

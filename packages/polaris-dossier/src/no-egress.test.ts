@@ -44,7 +44,7 @@ beforeAll(async () => {
       '@syzygy/three-surface-poc-core': src('packages/three-surface-poc-core/src/index.ts'),
     },
   });
-}, 120_000);
+});
 afterAll(() => { if (dir !== undefined) fs.rmSync(dir, { recursive: true, force: true }); });
 
 interface Capture { readonly status: number | null; readonly stdout: string; readonly stderr: string; readonly calls: readonly string[]; readonly tasks: number }
@@ -81,7 +81,7 @@ describe.skipIf(!HAVE_STRACE)('no provider call and no transmission (S10): an op
     expect(run.calls.filter((line) => INTERNET_FAMILY.test(line))).toEqual([]);
     // One line in the test log saying the proof ran, and over what population.
     console.log(`no-egress proof ran under strace: ${run.calls.length} network-class calls, traced calls from ${run.tasks} task(s), 0 Internet-family`);
-  }, 240_000);
+  });
 
   it('sees the canary: one loopback datagram sent before the same run is in the capture', async () => {
     const run = await captured('canary', true);
@@ -89,7 +89,7 @@ describe.skipIf(!HAVE_STRACE)('no provider call and no transmission (S10): an op
     const internet = run.calls.filter((line) => INTERNET_FAMILY.test(line));
     expect(internet.some((line) => line.startsWith('socket(AF_INET'))).toBe(true);
     expect(internet.some((line) => /^(sendto|sendmsg)\(.*inet_addr\("127\.0\.0\.1"\)/u.test(line))).toBe(true);
-  }, 240_000);
+  });
 });
 
 // Under CI the proof is required: node-ci installs strace, so its absence there is a failure, never a skip.

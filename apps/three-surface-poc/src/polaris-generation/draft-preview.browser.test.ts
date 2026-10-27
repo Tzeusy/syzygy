@@ -44,4 +44,4 @@ it.skipIf(executable === undefined)('renders the pipeline draft with working dia
     try { await browser?.close(); }
     finally { await rm(directory, { recursive: true, force: true }); }
   }
-}, 30_000);
+});

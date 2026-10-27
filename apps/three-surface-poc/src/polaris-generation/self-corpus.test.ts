@@ -43,7 +43,7 @@ describe('zero-egress Syzygy self-corpus proof', () => {
     expect(report.networkCalls).toBe(0);
     expect(report.realProjectProof).toBe(false);
     expect(report.unmetReq014).toContain('two separately admitted real projects');
-  }, 30_000);
+  });
 
   it('refuses a requested pinned commit that is unavailable rather than substituting HEAD', () => {
     expect(() => readSelfCorpus(process.cwd(), '0'.repeat(40))).toThrow();

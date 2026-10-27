@@ -1,0 +1,2628 @@
+{
+ "tool": {
+  "name": "timeout_census.mjs",
+  "sha256": "9c0e2d9f8332bb5c13f87c400d5fdf6c40bccc95fe37ef938b992edd616c99e7"
+ },
+ "commit": "a088f1caf061c1a2062527ce8521c9b64c3c7fd1",
+ "population": {
+  "files": 499,
+  "parsed": 499,
+  "testFiles": 248
+ },
+ "summary": {
+  "sites": 124,
+  "files": 41,
+  "withoutReason": 80,
+  "filesWithoutReason": 26,
+  "withoutCitation": 110,
+  "filesWithoutCitation": 35,
+  "byKind": {
+   "test": {
+    "sites": 102,
+    "files": 29,
+    "withReason": 37,
+    "cited": 11
+   },
+   "hook": {
+    "sites": 19,
+    "files": 18,
+    "withReason": 4,
+    "cited": 3
+   },
+   "suite": {
+    "sites": 1,
+    "files": 1,
+    "withReason": 1,
+    "cited": 0
+   },
+   "config": {
+    "sites": 2,
+    "files": 1,
+    "withReason": 2,
+    "cited": 0
+   }
+  }
+ },
+ "sites": [
+  {
+   "path": "apps/three-surface-poc/src/build-output.test.ts",
+   "line": 62,
+   "callLine": 42,
+   "kind": "test",
+   "callee": "it",
+   "form": "third-argument",
+   "expression": "240_000",
+   "valueMs": 240000,
+   "constant": null,
+   "reason": null,
+   "citations": {
+    "commits": [],
+    "measurements": []
+   },
+   "precedingComment": null
+  },
+  {
+   "path": "apps/three-surface-poc/src/cdp-browser.browser.test.ts",
+   "line": 82,
+   "callLine": 63,
+   "kind": "test",
+   "callee": "it",
+   "form": "third-argument",
+   "expression": "60_000",
+   "valueMs": 60000,
+   "constant": null,
+   "reason": null,
+   "citations": {
+    "commits": [],
+    "measurements": []
+   },
+   "precedingComment": null
+  },
+  {
+   "path": "apps/three-surface-poc/src/cdp-browser.browser.test.ts",
+   "line": 112,
+   "callLine": 84,
+   "kind": "test",
+   "callee": "it",
+   "form": "third-argument",
+   "expression": "60_000",
+   "valueMs": 60000,
+   "constant": null,
+   "reason": null,
+   "citations": {
+    "commits": [],
+    "measurements": []
+   },
+   "precedingComment": null
+  },
+  {
+   "path": "apps/three-surface-poc/src/cdp-browser.test.ts",
+   "line": 335,
+   "callLine": 329,
+   "kind": "test",
+   "callee": "it",
+   "form": "third-argument",
+   "expression": "30_000",
+   "valueMs": 30000,
+   "constant": null,
+   "reason": null,
+   "citations": {
+    "commits": [],
+    "measurements": []
+   },
+   "precedingComment": null
+  },
+  {
+   "path": "apps/three-surface-poc/src/cdp-browser.test.ts",
+   "line": 344,
+   "callLine": 337,
+   "kind": "test",
+   "callee": "it",
+   "form": "third-argument",
+   "expression": "30_000",
+   "valueMs": 30000,
+   "constant": null,
+   "reason": null,
+   "citations": {
+    "commits": [],
+    "measurements": []
+   },
+   "precedingComment": null
+  },
+  {
+   "path": "apps/three-surface-poc/src/cdp-browser.test.ts",
+   "line": 351,
+   "callLine": 346,
+   "kind": "test",
+   "callee": "it",
+   "form": "third-argument",
+   "expression": "30_000",
+   "valueMs": 30000,
+   "constant": null,
+   "reason": null,
+   "citations": {
+    "commits": [],
+    "measurements": []
+   },
+   "precedingComment": null
+  },
+  {
+   "path": "apps/three-surface-poc/src/cdp-browser.test.ts",
+   "line": 364,
+   "callLine": 353,
+   "kind": "test",
+   "callee": "it",
+   "form": "third-argument",
+   "expression": "30_000",
+   "valueMs": 30000,
+   "constant": null,
+   "reason": null,
+   "citations": {
+    "commits": [],
+    "measurements": []
+   },
+   "precedingComment": null
+  },
+  {
+   "path": "apps/three-surface-poc/src/cdp-browser.test.ts",
+   "line": 371,
+   "callLine": 366,
+   "kind": "test",
+   "callee": "it",
+   "form": "third-argument",
+   "expression": "30_000",
+   "valueMs": 30000,
+   "constant": null,
+   "reason": null,
+   "citations": {
+    "commits": [],
+    "measurements": []
+   },
+   "precedingComment": null
+  },
+  {
+   "path": "apps/three-surface-poc/src/cdp-browser.test.ts",
+   "line": 383,
+   "callLine": 373,
+   "kind": "test",
+   "callee": "it",
+   "form": "third-argument",
+   "expression": "30_000",
+   "valueMs": 30000,
+   "constant": null,
+   "reason": null,
+   "citations": {
+    "commits": [],
+    "measurements": []
+   },
+   "precedingComment": null
+  },
+  {
+   "path": "apps/three-surface-poc/src/cdp-browser.test.ts",
+   "line": 401,
+   "callLine": 385,
+   "kind": "test",
+   "callee": "it",
+   "form": "third-argument",
+   "expression": "30_000",
+   "valueMs": 30000,
+   "constant": null,
+   "reason": null,
+   "citations": {
+    "commits": [],
+    "measurements": []
+   },
+   "precedingComment": null
+  },
+  {
+   "path": "apps/three-surface-poc/src/cdp-browser.test.ts",
+   "line": 417,
+   "callLine": 403,
+   "kind": "test",
+   "callee": "it",
+   "form": "third-argument",
+   "expression": "30_000",
+   "valueMs": 30000,
+   "constant": null,
+   "reason": null,
+   "citations": {
+    "commits": [],
+    "measurements": []
+   },
+   "precedingComment": null
+  },
+  {
+   "path": "apps/three-surface-poc/src/cdp-browser.test.ts",
+   "line": 426,
+   "callLine": 419,
+   "kind": "test",
+   "callee": "it",
+   "form": "third-argument",
+   "expression": "30_000",
+   "valueMs": 30000,
+   "constant": null,
+   "reason": null,
+   "citations": {
+    "commits": [],
+    "measurements": []
+   },
+   "precedingComment": null
+  },
+  {
+   "path": "apps/three-surface-poc/src/cdp-browser.test.ts",
+   "line": 439,
+   "callLine": 428,
+   "kind": "test",
+   "callee": "it",
+   "form": "third-argument",
+   "expression": "30_000",
+   "valueMs": 30000,
+   "constant": null,
+   "reason": null,
+   "citations": {
+    "commits": [],
+    "measurements": []
+   },
+   "precedingComment": null
+  },
+  {
+   "path": "apps/three-surface-poc/src/cdp-browser.test.ts",
+   "line": 445,
+   "callLine": 441,
+   "kind": "test",
+   "callee": "it",
+   "form": "third-argument",
+   "expression": "30_000",
+   "valueMs": 30000,
+   "constant": null,
+   "reason": null,
+   "citations": {
+    "commits": [],
+    "measurements": []
+   },
+   "precedingComment": null
+  },
+  {
+   "path": "apps/three-surface-poc/src/cdp-browser.test.ts",
+   "line": 451,
+   "callLine": 447,
+   "kind": "test",
+   "callee": "it",
+   "form": "third-argument",
+   "expression": "30_000",
+   "valueMs": 30000,
+   "constant": null,
+   "reason": null,
+   "citations": {
+    "commits": [],
+    "measurements": []
+   },
+   "precedingComment": null
+  },
+  {
+   "path": "apps/three-surface-poc/src/cdp-browser.test.ts",
+   "line": 458,
+   "callLine": 453,
+   "kind": "test",
+   "callee": "it",
+   "form": "third-argument",
+   "expression": "30_000",
+   "valueMs": 30000,
+   "constant": null,
+   "reason": null,
+   "citations": {
+    "commits": [],
+    "measurements": []
+   },
+   "precedingComment": null
+  },
+  {
+   "path": "apps/three-surface-poc/src/cdp-browser.test.ts",
+   "line": 470,
+   "callLine": 460,
+   "kind": "test",
+   "callee": "it",
+   "form": "third-argument",
+   "expression": "30_000",
+   "valueMs": 30000,
+   "constant": null,
+   "reason": null,
+   "citations": {
+    "commits": [],
+    "measurements": []
+   },
+   "precedingComment": null
+  },
+  {
+   "path": "apps/three-surface-poc/src/cdp-browser.test.ts",
+   "line": 478,
+   "callLine": 472,
+   "kind": "test",
+   "callee": "it",
+   "form": "third-argument",
+   "expression": "30_000",
+   "valueMs": 30000,
+   "constant": null,
+   "reason": null,
+   "citations": {
+    "commits": [],
+    "measurements": []
+   },
+   "precedingComment": null
+  },
+  {
+   "path": "apps/three-surface-poc/src/cdp-browser.test.ts",
+   "line": 489,
+   "callLine": 480,
+   "kind": "test",
+   "callee": "it",
+   "form": "third-argument",
+   "expression": "30_000",
+   "valueMs": 30000,
+   "constant": null,
+   "reason": null,
+   "citations": {
+    "commits": [],
+    "measurements": []
+   },
+   "precedingComment": null
+  },
+  {
+   "path": "apps/three-surface-poc/src/fixture-directories.test.ts",
+   "line": 63,
+   "callLine": 57,
+   "kind": "test",
+   "callee": "it",
+   "form": "third-argument",
+   "expression": "30_000",
+   "valueMs": 30000,
+   "constant": null,
+   "reason": null,
+   "citations": {
+    "commits": [],
+    "measurements": []
+   },
+   "precedingComment": null
+  },
+  {
+   "path": "apps/three-surface-poc/src/fixture-directories.test.ts",
+   "line": 71,
+   "callLine": 65,
+   "kind": "test",
+   "callee": "it",
+   "form": "third-argument",
+   "expression": "30_000",
+   "valueMs": 30000,
+   "constant": null,
+   "reason": null,
+   "citations": {
+    "commits": [],
+    "measurements": []
+   },
+   "precedingComment": null
+  },
+  {
+   "path": "apps/three-surface-poc/src/fixture-directories.test.ts",
+   "line": 94,
+   "callLine": 73,
+   "kind": "test",
+   "callee": "it",
+   "form": "third-argument",
+   "expression": "30_000",
+   "valueMs": 30000,
+   "constant": null,
+   "reason": null,
+   "citations": {
+    "commits": [],
+    "measurements": []
+   },
+   "precedingComment": null
+  },
+  {
+   "path": "apps/three-surface-poc/src/fixture-directories.test.ts",
+   "line": 109,
+   "callLine": 96,
+   "kind": "test",
+   "callee": "it",
+   "form": "third-argument",
+   "expression": "30_000",
+   "valueMs": 30000,
+   "constant": null,
+   "reason": null,
+   "citations": {
+    "commits": [],
+    "measurements": []
+   },
+   "precedingComment": null
+  },
+  {
+   "path": "apps/three-surface-poc/src/fixture-directories.test.ts",
+   "line": 128,
+   "callLine": 111,
+   "kind": "test",
+   "callee": "it",
+   "form": "third-argument",
+   "expression": "30_000",
+   "valueMs": 30000,
+   "constant": null,
+   "reason": null,
+   "citations": {
+    "commits": [],
+    "measurements": []
+   },
+   "precedingComment": null
+  },
+  {
+   "path": "apps/three-surface-poc/src/fixture-directories.test.ts",
+   "line": 142,
+   "callLine": 130,
+   "kind": "test",
+   "callee": "it",
+   "form": "third-argument",
+   "expression": "30_000",
+   "valueMs": 30000,
+   "constant": null,
+   "reason": null,
+   "citations": {
+    "commits": [],
+    "measurements": []
+   },
+   "precedingComment": null
+  },
+  {
+   "path": "apps/three-surface-poc/src/fixture-directories.test.ts",
+   "line": 186,
+   "callLine": 145,
+   "kind": "test",
+   "callee": "it",
+   "form": "third-argument",
+   "expression": "30_000",
+   "valueMs": 30000,
+   "constant": null,
+   "reason": null,
+   "citations": {
+    "commits": [],
+    "measurements": []
+   },
+   "precedingComment": "// A reading that is absent (no /proc, a tmpfs over it) and one that names no inode are the same to the sweep."
+  },
+  {
+   "path": "apps/three-surface-poc/src/fixture-directories.test.ts",
+   "line": 198,
+   "callLine": 188,
+   "kind": "test",
+   "callee": "it",
+   "form": "third-argument",
+   "expression": "30_000",
+   "valueMs": 30000,
+   "constant": null,
+   "reason": null,
+   "citations": {
+    "commits": [],
+    "measurements": []
+   },
+   "precedingComment": null
+  },
+  {
+   "path": "apps/three-surface-poc/src/fixture-directories.test.ts",
+   "line": 212,
+   "callLine": 200,
+   "kind": "test",
+   "callee": "it",
+   "form": "third-argument",
+   "expression": "30_000",
+   "valueMs": 30000,
+   "constant": null,
+   "reason": null,
+   "citations": {
+    "commits": [],
+    "measurements": []
+   },
+   "precedingComment": null
+  },
+  {
+   "path": "apps/three-surface-poc/src/fixture-directories.test.ts",
+   "line": 227,
+   "callLine": 214,
+   "kind": "test",
+   "callee": "it",
+   "form": "third-argument",
+   "expression": "30_000",
+   "valueMs": 30000,
+   "constant": null,
+   "reason": null,
+   "citations": {
+    "commits": [],
+    "measurements": []
+   },
+   "precedingComment": null
+  },
+  {
+   "path": "apps/three-surface-poc/src/fixture-directories.test.ts",
+   "line": 241,
+   "callLine": 229,
+   "kind": "test",
+   "callee": "it",
+   "form": "third-argument",
+   "expression": "30_000",
+   "valueMs": 30000,
+   "constant": null,
+   "reason": null,
+   "citations": {
+    "commits": [],
+    "measurements": []
+   },
+   "precedingComment": null
+  },
+  {
+   "path": "apps/three-surface-poc/src/fixture-directories.test.ts",
+   "line": 256,
+   "callLine": 243,
+   "kind": "test",
+   "callee": "it",
+   "form": "third-argument",
+   "expression": "30_000",
+   "valueMs": 30000,
+   "constant": null,
+   "reason": null,
+   "citations": {
+    "commits": [],
+    "measurements": []
+   },
+   "precedingComment": null
+  },
+  {
+   "path": "apps/three-surface-poc/src/fixture-directories.test.ts",
+   "line": 266,
+   "callLine": 258,
+   "kind": "test",
+   "callee": "it",
+   "form": "third-argument",
+   "expression": "30_000",
+   "valueMs": 30000,
+   "constant": null,
+   "reason": null,
+   "citations": {
+    "commits": [],
+    "measurements": []
+   },
+   "precedingComment": null
+  },
+  {
+   "path": "apps/three-surface-poc/src/fixture-directories.test.ts",
+   "line": 284,
+   "callLine": 268,
+   "kind": "test",
+   "callee": "it",
+   "form": "third-argument",
+   "expression": "30_000",
+   "valueMs": 30000,
+   "constant": null,
+   "reason": null,
+   "citations": {
+    "commits": [],
+    "measurements": []
+   },
+   "precedingComment": null
+  },
+  {
+   "path": "apps/three-surface-poc/src/fixture-directories.test.ts",
+   "line": 296,
+   "callLine": 286,
+   "kind": "test",
+   "callee": "it",
+   "form": "third-argument",
+   "expression": "30_000",
+   "valueMs": 30000,
+   "constant": null,
+   "reason": null,
+   "citations": {
+    "commits": [],
+    "measurements": []
+   },
+   "precedingComment": null
+  },
+  {
+   "path": "apps/three-surface-poc/src/git-blob-batch.test.ts",
+   "line": 241,
+   "callLine": 206,
+   "kind": "test",
+   "callee": "it",
+   "form": "third-argument",
+   "expression": "REAL_TREE_TIMEOUT_MS",
+   "valueMs": 120000,
+   "constant": {
+    "name": "REAL_TREE_TIMEOUT_MS",
+    "at": "apps/three-surface-poc/src/git-blob-batch.test.ts:27"
+   },
+   "reason": {
+    "where": "apps/three-surface-poc/src/git-blob-batch.test.ts:26",
+    "text": "// Real-tree reads spawn git; under the parallel-load protocol a hundred // single reads took up to 13 s (syzygy-svoj evidence), so these tests carry // an explicit budget."
+   },
+   "citations": {
+    "commits": [],
+    "measurements": []
+   },
+   "precedingComment": null
+  },
+  {
+   "path": "apps/three-surface-poc/src/git-blob-batch.test.ts",
+   "line": 253,
+   "callLine": 243,
+   "kind": "test",
+   "callee": "it",
+   "form": "third-argument",
+   "expression": "REAL_TREE_TIMEOUT_MS",
+   "valueMs": 120000,
+   "constant": {
+    "name": "REAL_TREE_TIMEOUT_MS",
+    "at": "apps/three-surface-poc/src/git-blob-batch.test.ts:27"
+   },
+   "reason": {
+    "where": "apps/three-surface-poc/src/git-blob-batch.test.ts:26",
+    "text": "// Real-tree reads spawn git; under the parallel-load protocol a hundred // single reads took up to 13 s (syzygy-svoj evidence), so these tests carry // an explicit budget."
+   },
+   "citations": {
+    "commits": [],
+    "measurements": []
+   },
+   "precedingComment": null
+  },
+  {
+   "path": "apps/three-surface-poc/src/git-blob-batch.test.ts",
+   "line": 286,
+   "callLine": 278,
+   "kind": "test",
+   "callee": "it",
+   "form": "third-argument",
+   "expression": "REAL_TREE_TIMEOUT_MS",
+   "valueMs": 120000,
+   "constant": {
+    "name": "REAL_TREE_TIMEOUT_MS",
+    "at": "apps/three-surface-poc/src/git-blob-batch.test.ts:27"
+   },
+   "reason": {
+    "where": "apps/three-surface-poc/src/git-blob-batch.test.ts:26",
+    "text": "// Real-tree reads spawn git; under the parallel-load protocol a hundred // single reads took up to 13 s (syzygy-svoj evidence), so these tests carry // an explicit budget."
+   },
+   "citations": {
+    "commits": [],
+    "measurements": []
+   },
+   "precedingComment": null
+  },
+  {
+   "path": "apps/three-surface-poc/src/governance-inputs.test.ts",
+   "line": 504,
+   "callLine": 439,
+   "kind": "test",
+   "callee": "it",
+   "form": "third-argument",
+   "expression": "REAL_TREE_TIMEOUT_MS",
+   "valueMs": 60000,
+   "constant": {
+    "name": "REAL_TREE_TIMEOUT_MS",
+    "at": "apps/three-surface-poc/src/governance-inputs.test.ts:436"
+   },
+   "reason": {
+    "where": "apps/three-surface-poc/src/governance-inputs.test.ts:435",
+    "text": "// The production reader spawns one `git cat-file` per blob: 123 over the real // tree (about 1 s alone), the cost this test exists to exercise. Measured // worst case 8.5 s under the parallel-load protocol (syzygy-pln3, // docs/evidence/governance-inputs-timeout-2026-10-03.json)."
+   },
+   "citations": {
+    "commits": [],
+    "measurements": [
+     "docs/evidence/governance-inputs-timeout-2026-10-03.json"
+    ]
+   },
+   "precedingComment": null
+  },
+  {
+   "path": "apps/three-surface-poc/src/governing-intent-sweep.test.ts",
+   "line": 168,
+   "callLine": 164,
+   "kind": "hook",
+   "callee": "beforeAll",
+   "form": "second-argument",
+   "expression": "60_000",
+   "valueMs": 60000,
+   "constant": null,
+   "reason": null,
+   "citations": {
+    "commits": [],
+    "measurements": []
+   },
+   "precedingComment": null
+  },
+  {
+   "path": "apps/three-surface-poc/src/keyboard-sweep-record.test.ts",
+   "line": 59,
+   "callLine": 44,
+   "kind": "test",
+   "callee": "it",
+   "form": "third-argument",
+   "expression": "30_000",
+   "valueMs": 30000,
+   "constant": null,
+   "reason": {
+    "where": "apps/three-surface-poc/src/keyboard-sweep-record.test.ts:59",
+    "text": "two fixture model builds, ~1.5 s each unloaded; the 5 s default failed such tests under suite load (syzygy-k66p)"
+   },
+   "citations": {
+    "commits": [],
+    "measurements": []
+   },
+   "precedingComment": null
+  },
+  {
+   "path": "apps/three-surface-poc/src/main.test.ts",
+   "line": 366,
+   "callLine": 325,
+   "kind": "test",
+   "callee": "it",
+   "form": "third-argument",
+   "expression": "TEST_TIMEOUT_MS",
+   "valueMs": 30000,
+   "constant": {
+    "name": "TEST_TIMEOUT_MS",
+    "at": "apps/three-surface-poc/src/main.test.ts:48"
+   },
+   "reason": {
+    "where": "apps/three-surface-poc/src/main.test.ts:48",
+    "text": "// Every wait in this file is bounded by WAIT_MS, and every test that waits // has a timeout above two of them, so a slow host fails on the unmet // expectation instead of on \"Test timed out\" (vitest's default is 5000 ms).",
+    "group": true
+   },
+   "citations": {
+    "commits": [],
+    "measurements": []
+   },
+   "precedingComment": null
+  },
+  {
+   "path": "apps/three-surface-poc/src/main.test.ts",
+   "line": 378,
+   "callLine": 368,
+   "kind": "test",
+   "callee": "it",
+   "form": "third-argument",
+   "expression": "TEST_TIMEOUT_MS",
+   "valueMs": 30000,
+   "constant": {
+    "name": "TEST_TIMEOUT_MS",
+    "at": "apps/three-surface-poc/src/main.test.ts:48"
+   },
+   "reason": {
+    "where": "apps/three-surface-poc/src/main.test.ts:48",
+    "text": "// Every wait in this file is bounded by WAIT_MS, and every test that waits // has a timeout above two of them, so a slow host fails on the unmet // expectation instead of on \"Test timed out\" (vitest's default is 5000 ms).",
+    "group": true
+   },
+   "citations": {
+    "commits": [],
+    "measurements": []
+   },
+   "precedingComment": null
+  },
+  {
+   "path": "apps/three-surface-poc/src/main.test.ts",
+   "line": 389,
+   "callLine": 380,
+   "kind": "test",
+   "callee": "it",
+   "form": "third-argument",
+   "expression": "TEST_TIMEOUT_MS",
+   "valueMs": 30000,
+   "constant": {
+    "name": "TEST_TIMEOUT_MS",
+    "at": "apps/three-surface-poc/src/main.test.ts:48"
+   },
+   "reason": {
+    "where": "apps/three-surface-poc/src/main.test.ts:48",
+    "text": "// Every wait in this file is bounded by WAIT_MS, and every test that waits // has a timeout above two of them, so a slow host fails on the unmet // expectation instead of on \"Test timed out\" (vitest's default is 5000 ms).",
+    "group": true
+   },
+   "citations": {
+    "commits": [],
+    "measurements": []
+   },
+   "precedingComment": null
+  },
+  {
+   "path": "apps/three-surface-poc/src/main.test.ts",
+   "line": 406,
+   "callLine": 391,
+   "kind": "test",
+   "callee": "it",
+   "form": "third-argument",
+   "expression": "TEST_TIMEOUT_MS",
+   "valueMs": 30000,
+   "constant": {
+    "name": "TEST_TIMEOUT_MS",
+    "at": "apps/three-surface-poc/src/main.test.ts:48"
+   },
+   "reason": {
+    "where": "apps/three-surface-poc/src/main.test.ts:48",
+    "text": "// Every wait in this file is bounded by WAIT_MS, and every test that waits // has a timeout above two of them, so a slow host fails on the unmet // expectation instead of on \"Test timed out\" (vitest's default is 5000 ms).",
+    "group": true
+   },
+   "citations": {
+    "commits": [],
+    "measurements": []
+   },
+   "precedingComment": null
+  },
+  {
+   "path": "apps/three-surface-poc/src/main.test.ts",
+   "line": 424,
+   "callLine": 408,
+   "kind": "test",
+   "callee": "it",
+   "form": "third-argument",
+   "expression": "TEST_TIMEOUT_MS",
+   "valueMs": 30000,
+   "constant": {
+    "name": "TEST_TIMEOUT_MS",
+    "at": "apps/three-surface-poc/src/main.test.ts:48"
+   },
+   "reason": {
+    "where": "apps/three-surface-poc/src/main.test.ts:48",
+    "text": "// Every wait in this file is bounded by WAIT_MS, and every test that waits // has a timeout above two of them, so a slow host fails on the unmet // expectation instead of on \"Test timed out\" (vitest's default is 5000 ms).",
+    "group": true
+   },
+   "citations": {
+    "commits": [],
+    "measurements": []
+   },
+   "precedingComment": null
+  },
+  {
+   "path": "apps/three-surface-poc/src/main.test.ts",
+   "line": 478,
+   "callLine": 439,
+   "kind": "test",
+   "callee": "it",
+   "form": "third-argument",
+   "expression": "TEST_TIMEOUT_MS",
+   "valueMs": 30000,
+   "constant": {
+    "name": "TEST_TIMEOUT_MS",
+    "at": "apps/three-surface-poc/src/main.test.ts:48"
+   },
+   "reason": {
+    "where": "apps/three-surface-poc/src/main.test.ts:48",
+    "text": "// Every wait in this file is bounded by WAIT_MS, and every test that waits // has a timeout above two of them, so a slow host fails on the unmet // expectation instead of on \"Test timed out\" (vitest's default is 5000 ms).",
+    "group": true
+   },
+   "citations": {
+    "commits": [],
+    "measurements": []
+   },
+   "precedingComment": null
+  },
+  {
+   "path": "apps/three-surface-poc/src/main.test.ts",
+   "line": 498,
+   "callLine": 480,
+   "kind": "test",
+   "callee": "it",
+   "form": "third-argument",
+   "expression": "TEST_TIMEOUT_MS",
+   "valueMs": 30000,
+   "constant": {
+    "name": "TEST_TIMEOUT_MS",
+    "at": "apps/three-surface-poc/src/main.test.ts:48"
+   },
+   "reason": {
+    "where": "apps/three-surface-poc/src/main.test.ts:48",
+    "text": "// Every wait in this file is bounded by WAIT_MS, and every test that waits // has a timeout above two of them, so a slow host fails on the unmet // expectation instead of on \"Test timed out\" (vitest's default is 5000 ms).",
+    "group": true
+   },
+   "citations": {
+    "commits": [],
+    "measurements": []
+   },
+   "precedingComment": null
+  },
+  {
+   "path": "apps/three-surface-poc/src/main.test.ts",
+   "line": 513,
+   "callLine": 500,
+   "kind": "test",
+   "callee": "it",
+   "form": "third-argument",
+   "expression": "TEST_TIMEOUT_MS",
+   "valueMs": 30000,
+   "constant": {
+    "name": "TEST_TIMEOUT_MS",
+    "at": "apps/three-surface-poc/src/main.test.ts:48"
+   },
+   "reason": {
+    "where": "apps/three-surface-poc/src/main.test.ts:48",
+    "text": "// Every wait in this file is bounded by WAIT_MS, and every test that waits // has a timeout above two of them, so a slow host fails on the unmet // expectation instead of on \"Test timed out\" (vitest's default is 5000 ms).",
+    "group": true
+   },
+   "citations": {
+    "commits": [],
+    "measurements": []
+   },
+   "precedingComment": null
+  },
+  {
+   "path": "apps/three-surface-poc/src/main.test.ts",
+   "line": 538,
+   "callLine": 517,
+   "kind": "test",
+   "callee": "it",
+   "form": "third-argument",
+   "expression": "TEST_TIMEOUT_MS",
+   "valueMs": 30000,
+   "constant": {
+    "name": "TEST_TIMEOUT_MS",
+    "at": "apps/three-surface-poc/src/main.test.ts:48"
+   },
+   "reason": {
+    "where": "apps/three-surface-poc/src/main.test.ts:48",
+    "text": "// Every wait in this file is bounded by WAIT_MS, and every test that waits // has a timeout above two of them, so a slow host fails on the unmet // expectation instead of on \"Test timed out\" (vitest's default is 5000 ms).",
+    "group": true
+   },
+   "citations": {
+    "commits": [],
+    "measurements": []
+   },
+   "precedingComment": null
+  },
+  {
+   "path": "apps/three-surface-poc/src/main.test.ts",
+   "line": 548,
+   "callLine": 542,
+   "kind": "test",
+   "callee": "it",
+   "form": "third-argument",
+   "expression": "TEST_TIMEOUT_MS",
+   "valueMs": 30000,
+   "constant": {
+    "name": "TEST_TIMEOUT_MS",
+    "at": "apps/three-surface-poc/src/main.test.ts:48"
+   },
+   "reason": {
+    "where": "apps/three-surface-poc/src/main.test.ts:48",
+    "text": "// Every wait in this file is bounded by WAIT_MS, and every test that waits // has a timeout above two of them, so a slow host fails on the unmet // expectation instead of on \"Test timed out\" (vitest's default is 5000 ms).",
+    "group": true
+   },
+   "citations": {
+    "commits": [],
+    "measurements": []
+   },
+   "precedingComment": null
+  },
+  {
+   "path": "apps/three-surface-poc/src/main.test.ts",
+   "line": 555,
+   "callLine": 550,
+   "kind": "test",
+   "callee": "it",
+   "form": "third-argument",
+   "expression": "2_000",
+   "valueMs": 2000,
+   "constant": null,
+   "reason": {
+    "where": "apps/three-surface-poc/src/main.test.ts:555",
+    "text": "its own bound is 50 ms"
+   },
+   "citations": {
+    "commits": [],
+    "measurements": []
+   },
+   "precedingComment": null
+  },
+  {
+   "path": "apps/three-surface-poc/src/orrery.browser.test.ts",
+   "line": 24,
+   "callLine": 22,
+   "kind": "hook",
+   "callee": "beforeAll",
+   "form": "second-argument",
+   "expression": "60_000",
+   "valueMs": 60000,
+   "constant": null,
+   "reason": null,
+   "citations": {
+    "commits": [],
+    "measurements": []
+   },
+   "precedingComment": null
+  },
+  {
+   "path": "apps/three-surface-poc/src/polaris-accessibility.browser.test.ts",
+   "line": 91,
+   "callLine": 80,
+   "kind": "hook",
+   "callee": "beforeAll",
+   "form": "second-argument",
+   "expression": "60_000",
+   "valueMs": 60000,
+   "constant": null,
+   "reason": null,
+   "citations": {
+    "commits": [],
+    "measurements": []
+   },
+   "precedingComment": null
+  },
+  {
+   "path": "apps/three-surface-poc/src/polaris-accessibility.browser.test.ts",
+   "line": 310,
+   "callLine": 287,
+   "kind": "test",
+   "callee": "it",
+   "form": "third-argument",
+   "expression": "240_000",
+   "valueMs": 240000,
+   "constant": null,
+   "reason": null,
+   "citations": {
+    "commits": [],
+    "measurements": []
+   },
+   "precedingComment": null
+  },
+  {
+   "path": "apps/three-surface-poc/src/polaris-accessibility.browser.test.ts",
+   "line": 332,
+   "callLine": 313,
+   "kind": "test",
+   "callee": "it",
+   "form": "third-argument",
+   "expression": "240_000",
+   "valueMs": 240000,
+   "constant": null,
+   "reason": null,
+   "citations": {
+    "commits": [],
+    "measurements": []
+   },
+   "precedingComment": null
+  },
+  {
+   "path": "apps/three-surface-poc/src/polaris-accessible-names.browser.test.ts",
+   "line": 187,
+   "callLine": 184,
+   "kind": "hook",
+   "callee": "beforeAll",
+   "form": "second-argument",
+   "expression": "60_000",
+   "valueMs": 60000,
+   "constant": null,
+   "reason": null,
+   "citations": {
+    "commits": [],
+    "measurements": []
+   },
+   "precedingComment": null
+  },
+  {
+   "path": "apps/three-surface-poc/src/polaris-accessible-names.browser.test.ts",
+   "line": 315,
+   "callLine": 298,
+   "kind": "test",
+   "callee": "it",
+   "form": "third-argument",
+   "expression": "240_000",
+   "valueMs": 240000,
+   "constant": null,
+   "reason": null,
+   "citations": {
+    "commits": [],
+    "measurements": []
+   },
+   "precedingComment": null
+  },
+  {
+   "path": "apps/three-surface-poc/src/polaris-accessible-names.browser.test.ts",
+   "line": 329,
+   "callLine": 317,
+   "kind": "test",
+   "callee": "it",
+   "form": "third-argument",
+   "expression": "240_000",
+   "valueMs": 240000,
+   "constant": null,
+   "reason": null,
+   "citations": {
+    "commits": [],
+    "measurements": []
+   },
+   "precedingComment": null
+  },
+  {
+   "path": "apps/three-surface-poc/src/polaris-accessible-names.browser.test.ts",
+   "line": 343,
+   "callLine": 338,
+   "kind": "test",
+   "callee": "it",
+   "form": "third-argument",
+   "expression": "240_000",
+   "valueMs": 240000,
+   "constant": null,
+   "reason": null,
+   "citations": {
+    "commits": [],
+    "measurements": []
+   },
+   "precedingComment": null
+  },
+  {
+   "path": "apps/three-surface-poc/src/polaris-copy.test.ts",
+   "line": 226,
+   "callLine": 224,
+   "kind": "hook",
+   "callee": "beforeAll",
+   "form": "second-argument",
+   "expression": "60_000",
+   "valueMs": 60000,
+   "constant": null,
+   "reason": null,
+   "citations": {
+    "commits": [],
+    "measurements": []
+   },
+   "precedingComment": "// Measured worst case for the twelve builds under the parallel-load // protocol is recorded in docs/evidence/poc-test-timeouts-2026-10-03.json."
+  },
+  {
+   "path": "apps/three-surface-poc/src/polaris-first-reading.test.ts",
+   "line": 52,
+   "callLine": 52,
+   "kind": "hook",
+   "callee": "beforeAll",
+   "form": "second-argument",
+   "expression": "SHARED_FIXTURE_TIMEOUT_MS",
+   "valueMs": 60000,
+   "constant": {
+    "name": "SHARED_FIXTURE_TIMEOUT_MS",
+    "at": "apps/three-surface-poc/src/test-model-fixture.ts:248"
+   },
+   "reason": {
+    "where": "apps/three-surface-poc/src/test-model-fixture.ts:247",
+    "text": "/** * Budget for building a file's shared fixture models once. Five or six * builds took 4.1-10.9 s across five full-suite runs under eight CPU burners * (docs/evidence/shared-fixture-models-k66p-2026-10-03.json), past the 10 s * hook default at the top. */"
+   },
+   "citations": {
+    "commits": [],
+    "measurements": [
+     "docs/evidence/shared-fixture-models-k66p-2026-10-03.json"
+    ]
+   },
+   "precedingComment": null
+  },
+  {
+   "path": "apps/three-surface-poc/src/polaris-generation/dossier-cap-measure.test.ts",
+   "line": 12,
+   "callLine": 9,
+   "kind": "hook",
+   "callee": "beforeAll",
+   "form": "second-argument",
+   "expression": "120_000",
+   "valueMs": 120000,
+   "constant": null,
+   "reason": null,
+   "citations": {
+    "commits": [],
+    "measurements": []
+   },
+   "precedingComment": null
+  },
+  {
+   "path": "apps/three-surface-poc/src/polaris-generation/draft-preview.browser.test.ts",
+   "line": 47,
+   "callLine": 12,
+   "kind": "test",
+   "callee": "it",
+   "form": "third-argument",
+   "expression": "30_000",
+   "valueMs": 30000,
+   "constant": null,
+   "reason": null,
+   "citations": {
+    "commits": [],
+    "measurements": []
+   },
+   "precedingComment": null
+  },
+  {
+   "path": "apps/three-surface-poc/src/polaris-generation/durable-lifecycle-generate.test.ts",
+   "line": 45,
+   "callLine": 38,
+   "kind": "test",
+   "callee": "it",
+   "form": "third-argument",
+   "expression": "T",
+   "valueMs": 30000,
+   "constant": {
+    "name": "T",
+    "at": "apps/three-surface-poc/src/polaris-generation/durable-lifecycle-generate.test.ts:35"
+   },
+   "reason": {
+    "where": "apps/three-surface-poc/src/polaris-generation/durable-lifecycle-generate.test.ts:34",
+    "text": "// Each journal write fsyncs; see the budget note in durable-lifecycle.test.ts."
+   },
+   "citations": {
+    "commits": [],
+    "measurements": []
+   },
+   "precedingComment": null
+  },
+  {
+   "path": "apps/three-surface-poc/src/polaris-generation/durable-lifecycle-generate.test.ts",
+   "line": 54,
+   "callLine": 47,
+   "kind": "test",
+   "callee": "it",
+   "form": "third-argument",
+   "expression": "T",
+   "valueMs": 30000,
+   "constant": {
+    "name": "T",
+    "at": "apps/three-surface-poc/src/polaris-generation/durable-lifecycle-generate.test.ts:35"
+   },
+   "reason": {
+    "where": "apps/three-surface-poc/src/polaris-generation/durable-lifecycle-generate.test.ts:34",
+    "text": "// Each journal write fsyncs; see the budget note in durable-lifecycle.test.ts."
+   },
+   "citations": {
+    "commits": [],
+    "measurements": []
+   },
+   "precedingComment": null
+  },
+  {
+   "path": "apps/three-surface-poc/src/polaris-generation/durable-lifecycle-generate.test.ts",
+   "line": 85,
+   "callLine": 75,
+   "kind": "test",
+   "callee": "it",
+   "form": "third-argument",
+   "expression": "T",
+   "valueMs": 30000,
+   "constant": {
+    "name": "T",
+    "at": "apps/three-surface-poc/src/polaris-generation/durable-lifecycle-generate.test.ts:35"
+   },
+   "reason": {
+    "where": "apps/three-surface-poc/src/polaris-generation/durable-lifecycle-generate.test.ts:34",
+    "text": "// Each journal write fsyncs; see the budget note in durable-lifecycle.test.ts."
+   },
+   "citations": {
+    "commits": [],
+    "measurements": []
+   },
+   "precedingComment": null
+  },
+  {
+   "path": "apps/three-surface-poc/src/polaris-generation/durable-lifecycle-generate.test.ts",
+   "line": 103,
+   "callLine": 87,
+   "kind": "test",
+   "callee": "it",
+   "form": "third-argument",
+   "expression": "T",
+   "valueMs": 30000,
+   "constant": {
+    "name": "T",
+    "at": "apps/three-surface-poc/src/polaris-generation/durable-lifecycle-generate.test.ts:35"
+   },
+   "reason": {
+    "where": "apps/three-surface-poc/src/polaris-generation/durable-lifecycle-generate.test.ts:34",
+    "text": "// Each journal write fsyncs; see the budget note in durable-lifecycle.test.ts."
+   },
+   "citations": {
+    "commits": [],
+    "measurements": []
+   },
+   "precedingComment": null
+  },
+  {
+   "path": "apps/three-surface-poc/src/polaris-generation/durable-lifecycle-generate.test.ts",
+   "line": 115,
+   "callLine": 105,
+   "kind": "test",
+   "callee": "it",
+   "form": "third-argument",
+   "expression": "T",
+   "valueMs": 30000,
+   "constant": {
+    "name": "T",
+    "at": "apps/three-surface-poc/src/polaris-generation/durable-lifecycle-generate.test.ts:35"
+   },
+   "reason": {
+    "where": "apps/three-surface-poc/src/polaris-generation/durable-lifecycle-generate.test.ts:34",
+    "text": "// Each journal write fsyncs; see the budget note in durable-lifecycle.test.ts."
+   },
+   "citations": {
+    "commits": [],
+    "measurements": []
+   },
+   "precedingComment": null
+  },
+  {
+   "path": "apps/three-surface-poc/src/polaris-generation/durable-lifecycle-generate.test.ts",
+   "line": 127,
+   "callLine": 117,
+   "kind": "test",
+   "callee": "it",
+   "form": "third-argument",
+   "expression": "T",
+   "valueMs": 30000,
+   "constant": {
+    "name": "T",
+    "at": "apps/three-surface-poc/src/polaris-generation/durable-lifecycle-generate.test.ts:35"
+   },
+   "reason": {
+    "where": "apps/three-surface-poc/src/polaris-generation/durable-lifecycle-generate.test.ts:34",
+    "text": "// Each journal write fsyncs; see the budget note in durable-lifecycle.test.ts."
+   },
+   "citations": {
+    "commits": [],
+    "measurements": []
+   },
+   "precedingComment": null
+  },
+  {
+   "path": "apps/three-surface-poc/src/polaris-generation/durable-lifecycle.test.ts",
+   "line": 55,
+   "callLine": 42,
+   "kind": "test",
+   "callee": "it",
+   "form": "third-argument",
+   "expression": "JOURNAL_TIMEOUT_MS",
+   "valueMs": 30000,
+   "constant": {
+    "name": "JOURNAL_TIMEOUT_MS",
+    "at": "apps/three-surface-poc/src/polaris-generation/durable-lifecycle.test.ts:39"
+   },
+   "reason": {
+    "where": "apps/three-surface-poc/src/polaris-generation/durable-lifecycle.test.ts:38",
+    "text": "// Each test runs scripted pipelines over a journal that fsyncs every write // (2-20 fsyncs, about 0.3 s alone); a loaded host stalled one to 6.3 s under // the parallel-load protocol (syzygy-gb4l, // docs/evidence/load-timeouts-gb4l-2026-10-03.json)."
+   },
+   "citations": {
+    "commits": [],
+    "measurements": [
+     "docs/evidence/load-timeouts-gb4l-2026-10-03.json"
+    ]
+   },
+   "precedingComment": null
+  },
+  {
+   "path": "apps/three-surface-poc/src/polaris-generation/durable-lifecycle.test.ts",
+   "line": 79,
+   "callLine": 57,
+   "kind": "test",
+   "callee": "it",
+   "form": "third-argument",
+   "expression": "JOURNAL_TIMEOUT_MS",
+   "valueMs": 30000,
+   "constant": {
+    "name": "JOURNAL_TIMEOUT_MS",
+    "at": "apps/three-surface-poc/src/polaris-generation/durable-lifecycle.test.ts:39"
+   },
+   "reason": {
+    "where": "apps/three-surface-poc/src/polaris-generation/durable-lifecycle.test.ts:38",
+    "text": "// Each test runs scripted pipelines over a journal that fsyncs every write // (2-20 fsyncs, about 0.3 s alone); a loaded host stalled one to 6.3 s under // the parallel-load protocol (syzygy-gb4l, // docs/evidence/load-timeouts-gb4l-2026-10-03.json)."
+   },
+   "citations": {
+    "commits": [],
+    "measurements": [
+     "docs/evidence/load-timeouts-gb4l-2026-10-03.json"
+    ]
+   },
+   "precedingComment": null
+  },
+  {
+   "path": "apps/three-surface-poc/src/polaris-generation/durable-lifecycle.test.ts",
+   "line": 96,
+   "callLine": 81,
+   "kind": "test",
+   "callee": "it",
+   "form": "third-argument",
+   "expression": "JOURNAL_TIMEOUT_MS",
+   "valueMs": 30000,
+   "constant": {
+    "name": "JOURNAL_TIMEOUT_MS",
+    "at": "apps/three-surface-poc/src/polaris-generation/durable-lifecycle.test.ts:39"
+   },
+   "reason": {
+    "where": "apps/three-surface-poc/src/polaris-generation/durable-lifecycle.test.ts:38",
+    "text": "// Each test runs scripted pipelines over a journal that fsyncs every write // (2-20 fsyncs, about 0.3 s alone); a loaded host stalled one to 6.3 s under // the parallel-load protocol (syzygy-gb4l, // docs/evidence/load-timeouts-gb4l-2026-10-03.json)."
+   },
+   "citations": {
+    "commits": [],
+    "measurements": [
+     "docs/evidence/load-timeouts-gb4l-2026-10-03.json"
+    ]
+   },
+   "precedingComment": null
+  },
+  {
+   "path": "apps/three-surface-poc/src/polaris-generation/durable-lifecycle.test.ts",
+   "line": 116,
+   "callLine": 98,
+   "kind": "test",
+   "callee": "it",
+   "form": "third-argument",
+   "expression": "JOURNAL_TIMEOUT_MS",
+   "valueMs": 30000,
+   "constant": {
+    "name": "JOURNAL_TIMEOUT_MS",
+    "at": "apps/three-surface-poc/src/polaris-generation/durable-lifecycle.test.ts:39"
+   },
+   "reason": {
+    "where": "apps/three-surface-poc/src/polaris-generation/durable-lifecycle.test.ts:38",
+    "text": "// Each test runs scripted pipelines over a journal that fsyncs every write // (2-20 fsyncs, about 0.3 s alone); a loaded host stalled one to 6.3 s under // the parallel-load protocol (syzygy-gb4l, // docs/evidence/load-timeouts-gb4l-2026-10-03.json)."
+   },
+   "citations": {
+    "commits": [],
+    "measurements": [
+     "docs/evidence/load-timeouts-gb4l-2026-10-03.json"
+    ]
+   },
+   "precedingComment": null
+  },
+  {
+   "path": "apps/three-surface-poc/src/polaris-generation/pipeline-demo.test.ts",
+   "line": 73,
+   "callLine": 50,
+   "kind": "test",
+   "callee": "it",
+   "form": "third-argument",
+   "expression": "ONRAMP_TEST_BUDGET_MS",
+   "valueMs": null,
+   "constant": {
+    "name": "ONRAMP_TEST_BUDGET_MS",
+    "at": "apps/three-surface-poc/src/polaris-generation/pipeline-demo.test.ts:19"
+   },
+   "reason": {
+    "where": "apps/three-surface-poc/src/polaris-generation/pipeline-demo.test.ts:19",
+    "text": "// Onramp step budgets (syzygy-128g). The test budget is the sum of the inner // timeouts so no step can outlive the test; the figures come from // docs/evidence/pipeline-demo-onramp-budget-2026-10-15.json (max measured // total 225 s at load1 55-90, about 2x margin). The documented command runs // build:poc itself, so the onramp test does not build separately.",
+    "group": true
+   },
+   "citations": {
+    "commits": [],
+    "measurements": [
+     "docs/evidence/pipeline-demo-onramp-budget-2026-10-15.json"
+    ]
+   },
+   "precedingComment": null
+  },
+  {
+   "path": "apps/three-surface-poc/src/polaris-generation/redis-shaped-discovery.test.ts",
+   "line": 16,
+   "callLine": 13,
+   "kind": "hook",
+   "callee": "beforeAll",
+   "form": "second-argument",
+   "expression": "120_000",
+   "valueMs": 120000,
+   "constant": null,
+   "reason": null,
+   "citations": {
+    "commits": [],
+    "measurements": []
+   },
+   "precedingComment": null
+  },
+  {
+   "path": "apps/three-surface-poc/src/polaris-generation/redis-shaped-discovery.test.ts",
+   "line": 205,
+   "callLine": 197,
+   "kind": "test",
+   "callee": "it",
+   "form": "third-argument",
+   "expression": "120_000",
+   "valueMs": 120000,
+   "constant": null,
+   "reason": null,
+   "citations": {
+    "commits": [],
+    "measurements": []
+   },
+   "precedingComment": null
+  },
+  {
+   "path": "apps/three-surface-poc/src/polaris-generation/self-corpus.test.ts",
+   "line": 32,
+   "callLine": 21,
+   "kind": "test",
+   "callee": "it",
+   "form": "third-argument",
+   "expression": "PINNED_READ_TIMEOUT_MS",
+   "valueMs": 60000,
+   "constant": {
+    "name": "PINNED_READ_TIMEOUT_MS",
+    "at": "apps/three-surface-poc/src/polaris-generation/self-corpus.test.ts:17"
+   },
+   "reason": {
+    "where": "apps/three-surface-poc/src/polaris-generation/self-corpus.test.ts:16",
+    "text": "// readSelfCorpus spawns one `git cat-file` per selected blob, over a hundred // at the pinned commit (about 1-2 s alone). Measured worst case 7.8 s under // the parallel-load protocol (syzygy-gb4l, // docs/evidence/load-timeouts-gb4l-2026-10-03.json)."
+   },
+   "citations": {
+    "commits": [],
+    "measurements": [
+     "docs/evidence/load-timeouts-gb4l-2026-10-03.json"
+    ]
+   },
+   "precedingComment": null
+  },
+  {
+   "path": "apps/three-surface-poc/src/polaris-generation/self-corpus.test.ts",
+   "line": 46,
+   "callLine": 34,
+   "kind": "test",
+   "callee": "it",
+   "form": "third-argument",
+   "expression": "30_000",
+   "valueMs": 30000,
+   "constant": null,
+   "reason": null,
+   "citations": {
+    "commits": [],
+    "measurements": []
+   },
+   "precedingComment": null
+  },
+  {
+   "path": "apps/three-surface-poc/src/polaris-narrative.test.ts",
+   "line": 59,
+   "callLine": 59,
+   "kind": "hook",
+   "callee": "beforeAll",
+   "form": "second-argument",
+   "expression": "SHARED_FIXTURE_TIMEOUT_MS",
+   "valueMs": 60000,
+   "constant": {
+    "name": "SHARED_FIXTURE_TIMEOUT_MS",
+    "at": "apps/three-surface-poc/src/test-model-fixture.ts:248"
+   },
+   "reason": {
+    "where": "apps/three-surface-poc/src/test-model-fixture.ts:247",
+    "text": "/** * Budget for building a file's shared fixture models once. Five or six * builds took 4.1-10.9 s across five full-suite runs under eight CPU burners * (docs/evidence/shared-fixture-models-k66p-2026-10-03.json), past the 10 s * hook default at the top. */"
+   },
+   "citations": {
+    "commits": [],
+    "measurements": [
+     "docs/evidence/shared-fixture-models-k66p-2026-10-03.json"
+    ]
+   },
+   "precedingComment": null
+  },
+  {
+   "path": "apps/three-surface-poc/src/polaris-opening-index.browser.test.ts",
+   "line": 316,
+   "callLine": 313,
+   "kind": "hook",
+   "callee": "beforeAll",
+   "form": "second-argument",
+   "expression": "60_000",
+   "valueMs": 60000,
+   "constant": null,
+   "reason": null,
+   "citations": {
+    "commits": [],
+    "measurements": []
+   },
+   "precedingComment": null
+  },
+  {
+   "path": "apps/three-surface-poc/src/polaris-opening-index.browser.test.ts",
+   "line": 352,
+   "callLine": 347,
+   "kind": "test",
+   "callee": "it",
+   "form": "third-argument",
+   "expression": "60_000",
+   "valueMs": 60000,
+   "constant": null,
+   "reason": null,
+   "citations": {
+    "commits": [],
+    "measurements": []
+   },
+   "precedingComment": null
+  },
+  {
+   "path": "apps/three-surface-poc/src/polaris-opening-index.browser.test.ts",
+   "line": 364,
+   "callLine": 354,
+   "kind": "test",
+   "callee": "it",
+   "form": "third-argument",
+   "expression": "60_000",
+   "valueMs": 60000,
+   "constant": null,
+   "reason": null,
+   "citations": {
+    "commits": [],
+    "measurements": []
+   },
+   "precedingComment": null
+  },
+  {
+   "path": "apps/three-surface-poc/src/polaris-opening-index.browser.test.ts",
+   "line": 370,
+   "callLine": 366,
+   "kind": "test",
+   "callee": "it",
+   "form": "third-argument",
+   "expression": "60_000",
+   "valueMs": 60000,
+   "constant": null,
+   "reason": null,
+   "citations": {
+    "commits": [],
+    "measurements": []
+   },
+   "precedingComment": null
+  },
+  {
+   "path": "apps/three-surface-poc/src/polaris-opening-index.browser.test.ts",
+   "line": 408,
+   "callLine": 406,
+   "kind": "test",
+   "callee": "it",
+   "form": "third-argument",
+   "expression": "60_000",
+   "valueMs": 60000,
+   "constant": null,
+   "reason": null,
+   "citations": {
+    "commits": [],
+    "measurements": []
+   },
+   "precedingComment": "// Review finding 1 (R-PWB-OPENING-INDEX-IMPL-1): the target begins inside // a disclosure closed on load. Chrome opens the disclosure on fragment // navigation and focuses the link, and Tab continues from it."
+  },
+  {
+   "path": "apps/three-surface-poc/src/polaris-opening-index.browser.test.ts",
+   "line": 413,
+   "callLine": 410,
+   "kind": "test",
+   "callee": "it",
+   "form": "third-argument",
+   "expression": "60_000",
+   "valueMs": 60000,
+   "constant": null,
+   "reason": null,
+   "citations": {
+    "commits": [],
+    "measurements": []
+   },
+   "precedingComment": null
+  },
+  {
+   "path": "apps/three-surface-poc/src/polaris-opening-index.browser.test.ts",
+   "line": 424,
+   "callLine": 418,
+   "kind": "test",
+   "callee": "it",
+   "form": "third-argument",
+   "expression": "60_000",
+   "valueMs": 60000,
+   "constant": null,
+   "reason": null,
+   "citations": {
+    "commits": [],
+    "measurements": []
+   },
+   "precedingComment": null
+  },
+  {
+   "path": "apps/three-surface-poc/src/polaris-opening-index.browser.test.ts",
+   "line": 443,
+   "callLine": 426,
+   "kind": "test",
+   "callee": "it",
+   "form": "third-argument",
+   "expression": "60_000",
+   "valueMs": 60000,
+   "constant": null,
+   "reason": null,
+   "citations": {
+    "commits": [],
+    "measurements": []
+   },
+   "precedingComment": null
+  },
+  {
+   "path": "apps/three-surface-poc/src/polaris-opening-index.browser.test.ts",
+   "line": 452,
+   "callLine": 445,
+   "kind": "test",
+   "callee": "it",
+   "form": "third-argument",
+   "expression": "60_000",
+   "valueMs": 60000,
+   "constant": null,
+   "reason": null,
+   "citations": {
+    "commits": [],
+    "measurements": []
+   },
+   "precedingComment": null
+  },
+  {
+   "path": "apps/three-surface-poc/src/polaris-reconciliation.test.ts",
+   "line": 81,
+   "callLine": 75,
+   "kind": "hook",
+   "callee": "beforeAll",
+   "form": "second-argument",
+   "expression": "120_000",
+   "valueMs": 120000,
+   "constant": null,
+   "reason": null,
+   "citations": {
+    "commits": [],
+    "measurements": []
+   },
+   "precedingComment": null
+  },
+  {
+   "path": "apps/three-surface-poc/src/production-reobserve.test.ts",
+   "line": 99,
+   "callLine": 86,
+   "kind": "test",
+   "callee": "it",
+   "form": "third-argument",
+   "expression": "PRODUCTION_BUILD_TIMEOUT_MS",
+   "valueMs": 60000,
+   "constant": {
+    "name": "PRODUCTION_BUILD_TIMEOUT_MS",
+    "at": "apps/three-surface-poc/src/production-reobserve.test.ts:71"
+   },
+   "reason": {
+    "where": "apps/three-surface-poc/src/production-reobserve.test.ts:70",
+    "text": "// Each test below runs two full production builds (about 1.4 s each alone; // the observer root is the real tree), so no cheaper fixture keeps what they // test. Measured worst case 18.0 s under the parallel-load protocol // (syzygy-4d15, docs/evidence/poc-test-timeouts-2026-10-03.json)."
+   },
+   "citations": {
+    "commits": [],
+    "measurements": [
+     "docs/evidence/poc-test-timeouts-2026-10-03.json"
+    ]
+   },
+   "precedingComment": null
+  },
+  {
+   "path": "apps/three-surface-poc/src/production-reobserve.test.ts",
+   "line": 132,
+   "callLine": 101,
+   "kind": "test",
+   "callee": "it",
+   "form": "third-argument",
+   "expression": "PRODUCTION_BUILD_TIMEOUT_MS",
+   "valueMs": 60000,
+   "constant": {
+    "name": "PRODUCTION_BUILD_TIMEOUT_MS",
+    "at": "apps/three-surface-poc/src/production-reobserve.test.ts:71"
+   },
+   "reason": {
+    "where": "apps/three-surface-poc/src/production-reobserve.test.ts:70",
+    "text": "// Each test below runs two full production builds (about 1.4 s each alone; // the observer root is the real tree), so no cheaper fixture keeps what they // test. Measured worst case 18.0 s under the parallel-load protocol // (syzygy-4d15, docs/evidence/poc-test-timeouts-2026-10-03.json)."
+   },
+   "citations": {
+    "commits": [],
+    "measurements": [
+     "docs/evidence/poc-test-timeouts-2026-10-03.json"
+    ]
+   },
+   "precedingComment": null
+  },
+  {
+   "path": "apps/three-surface-poc/src/production-reobserve.test.ts",
+   "line": 160,
+   "callLine": 134,
+   "kind": "test",
+   "callee": "it",
+   "form": "third-argument",
+   "expression": "PRODUCTION_BUILD_TIMEOUT_MS",
+   "valueMs": 60000,
+   "constant": {
+    "name": "PRODUCTION_BUILD_TIMEOUT_MS",
+    "at": "apps/three-surface-poc/src/production-reobserve.test.ts:71"
+   },
+   "reason": {
+    "where": "apps/three-surface-poc/src/production-reobserve.test.ts:70",
+    "text": "// Each test below runs two full production builds (about 1.4 s each alone; // the observer root is the real tree), so no cheaper fixture keeps what they // test. Measured worst case 18.0 s under the parallel-load protocol // (syzygy-4d15, docs/evidence/poc-test-timeouts-2026-10-03.json)."
+   },
+   "citations": {
+    "commits": [],
+    "measurements": [
+     "docs/evidence/poc-test-timeouts-2026-10-03.json"
+    ]
+   },
+   "precedingComment": null
+  },
+  {
+   "path": "apps/three-surface-poc/src/production-reobserve.test.ts",
+   "line": 182,
+   "callLine": 162,
+   "kind": "test",
+   "callee": "it",
+   "form": "third-argument",
+   "expression": "PRODUCTION_BUILD_TIMEOUT_MS",
+   "valueMs": 60000,
+   "constant": {
+    "name": "PRODUCTION_BUILD_TIMEOUT_MS",
+    "at": "apps/three-surface-poc/src/production-reobserve.test.ts:71"
+   },
+   "reason": {
+    "where": "apps/three-surface-poc/src/production-reobserve.test.ts:70",
+    "text": "// Each test below runs two full production builds (about 1.4 s each alone; // the observer root is the real tree), so no cheaper fixture keeps what they // test. Measured worst case 18.0 s under the parallel-load protocol // (syzygy-4d15, docs/evidence/poc-test-timeouts-2026-10-03.json)."
+   },
+   "citations": {
+    "commits": [],
+    "measurements": [
+     "docs/evidence/poc-test-timeouts-2026-10-03.json"
+    ]
+   },
+   "precedingComment": null
+  },
+  {
+   "path": "apps/three-surface-poc/src/proposal-disclosure.test.ts",
+   "line": 147,
+   "callLine": 132,
+   "kind": "test",
+   "callee": "it",
+   "form": "third-argument",
+   "expression": "45_000",
+   "valueMs": 45000,
+   "constant": null,
+   "reason": null,
+   "citations": {
+    "commits": [],
+    "measurements": []
+   },
+   "precedingComment": null
+  },
+  {
+   "path": "apps/three-surface-poc/src/restart.test.ts",
+   "line": 321,
+   "callLine": 303,
+   "kind": "hook",
+   "callee": "afterEach",
+   "form": "second-argument",
+   "expression": "TEST_MS",
+   "valueMs": 180000,
+   "constant": {
+    "name": "TEST_MS",
+    "at": "apps/three-surface-poc/src/restart.test.ts:37"
+   },
+   "reason": {
+    "where": "apps/three-surface-poc/src/restart.test.ts:37",
+    "text": "// Two kinds of wall-clock bound live in this file, and they are kept apart // (syzygy-ve8n: three tests failed under a full suite at load average 60-90). // // LIVENESS_MS bounds a wait for a state the test goes on to assert: a fixture // binding, a marker file, a process exit, a successor listener. It never // decides an outcome, so it is generous; under load it only waits longer. // The same budget is passed as `timeoutMs` wherever the restart is expected // to finish before its deadline (30 s is restart.ts's own ceiling). // // An outcome deadline (100 ms, 150 ms) is kept short only where the test makes // the deadline the sole possible exit: a held listener that cannot close, an // inspection that never reports socket absence, or a cleanup scan whose // injected reader can never succeed. No scheduling delay can let // any other outcome win there, so no clock injection is needed. // // TEST_MS is vitest's per-test budget: several fixture spawns at LIVENESS_MS // each must fit inside it.",
+    "group": true
+   },
+   "citations": {
+    "commits": [],
+    "measurements": []
+   },
+   "precedingComment": null
+  },
+  {
+   "path": "apps/three-surface-poc/src/restart.test.ts",
+   "line": 331,
+   "callLine": 331,
+   "kind": "suite",
+   "callee": "describe",
+   "form": "options-first",
+   "expression": "TEST_MS",
+   "valueMs": 180000,
+   "constant": {
+    "name": "TEST_MS",
+    "at": "apps/three-surface-poc/src/restart.test.ts:37"
+   },
+   "reason": {
+    "where": "apps/three-surface-poc/src/restart.test.ts:37",
+    "text": "// Two kinds of wall-clock bound live in this file, and they are kept apart // (syzygy-ve8n: three tests failed under a full suite at load average 60-90). // // LIVENESS_MS bounds a wait for a state the test goes on to assert: a fixture // binding, a marker file, a process exit, a successor listener. It never // decides an outcome, so it is generous; under load it only waits longer. // The same budget is passed as `timeoutMs` wherever the restart is expected // to finish before its deadline (30 s is restart.ts's own ceiling). // // An outcome deadline (100 ms, 150 ms) is kept short only where the test makes // the deadline the sole possible exit: a held listener that cannot close, an // inspection that never reports socket absence, or a cleanup scan whose // injected reader can never succeed. No scheduling delay can let // any other outcome win there, so no clock injection is needed. // // TEST_MS is vitest's per-test budget: several fixture spawns at LIVENESS_MS // each must fit inside it.",
+    "group": true
+   },
+   "citations": {
+    "commits": [],
+    "measurements": []
+   },
+   "precedingComment": null
+  },
+  {
+   "path": "apps/three-surface-poc/src/surface-routes.test.ts",
+   "line": 313,
+   "callLine": 300,
+   "kind": "hook",
+   "callee": "beforeAll",
+   "form": "second-argument",
+   "expression": "60_000",
+   "valueMs": 60000,
+   "constant": null,
+   "reason": null,
+   "citations": {
+    "commits": [],
+    "measurements": []
+   },
+   "precedingComment": null
+  },
+  {
+   "path": "apps/three-surface-poc/src/surface-routes.test.ts",
+   "line": 328,
+   "callLine": 315,
+   "kind": "hook",
+   "callee": "afterAll",
+   "form": "second-argument",
+   "expression": "60_000",
+   "valueMs": 60000,
+   "constant": null,
+   "reason": null,
+   "citations": {
+    "commits": [],
+    "measurements": []
+   },
+   "precedingComment": null
+  },
+  {
+   "path": "apps/three-surface-poc/src/surface-routes.test.ts",
+   "line": 420,
+   "callLine": 330,
+   "kind": "test",
+   "callee": "it",
+   "form": "third-argument",
+   "expression": "15_000",
+   "valueMs": 15000,
+   "constant": null,
+   "reason": null,
+   "citations": {
+    "commits": [],
+    "measurements": []
+   },
+   "precedingComment": null
+  },
+  {
+   "path": "apps/three-surface-poc/src/surface-routes.test.ts",
+   "line": 453,
+   "callLine": 439,
+   "kind": "test",
+   "callee": "it",
+   "form": "third-argument",
+   "expression": "10_000",
+   "valueMs": 10000,
+   "constant": null,
+   "reason": null,
+   "citations": {
+    "commits": [],
+    "measurements": []
+   },
+   "precedingComment": null
+  },
+  {
+   "path": "apps/three-surface-poc/src/surface-routes.test.ts",
+   "line": 537,
+   "callLine": 482,
+   "kind": "test",
+   "callee": "it",
+   "form": "third-argument",
+   "expression": "45_000",
+   "valueMs": 45000,
+   "constant": null,
+   "reason": null,
+   "citations": {
+    "commits": [],
+    "measurements": []
+   },
+   "precedingComment": null
+  },
+  {
+   "path": "apps/three-surface-poc/src/test-model-fixture.test.ts",
+   "line": 120,
+   "callLine": 111,
+   "kind": "test",
+   "callee": "it",
+   "form": "third-argument",
+   "expression": "30_000",
+   "valueMs": 30000,
+   "constant": null,
+   "reason": null,
+   "citations": {
+    "commits": [],
+    "measurements": []
+   },
+   "precedingComment": null
+  },
+  {
+   "path": "apps/three-surface-poc/src/test-model-fixture.test.ts",
+   "line": 131,
+   "callLine": 122,
+   "kind": "test",
+   "callee": "it",
+   "form": "third-argument",
+   "expression": "30_000",
+   "valueMs": 30000,
+   "constant": null,
+   "reason": null,
+   "citations": {
+    "commits": [],
+    "measurements": []
+   },
+   "precedingComment": null
+  },
+  {
+   "path": "apps/three-surface-poc/src/trajectory-narrowing.browser.test.ts",
+   "line": 32,
+   "callLine": 30,
+   "kind": "hook",
+   "callee": "beforeAll",
+   "form": "second-argument",
+   "expression": "60_000",
+   "valueMs": 60000,
+   "constant": null,
+   "reason": null,
+   "citations": {
+    "commits": [],
+    "measurements": []
+   },
+   "precedingComment": null
+  },
+  {
+   "path": "apps/three-surface-poc/src/tuple-encoding.test.ts",
+   "line": 94,
+   "callLine": 94,
+   "kind": "hook",
+   "callee": "beforeAll",
+   "form": "second-argument",
+   "expression": "SHARED_FIXTURE_TIMEOUT_MS",
+   "valueMs": 60000,
+   "constant": {
+    "name": "SHARED_FIXTURE_TIMEOUT_MS",
+    "at": "apps/three-surface-poc/src/test-model-fixture.ts:248"
+   },
+   "reason": {
+    "where": "apps/three-surface-poc/src/test-model-fixture.ts:247",
+    "text": "/** * Budget for building a file's shared fixture models once. Five or six * builds took 4.1-10.9 s across five full-suite runs under eight CPU burners * (docs/evidence/shared-fixture-models-k66p-2026-10-03.json), past the 10 s * hook default at the top. */"
+   },
+   "citations": {
+    "commits": [],
+    "measurements": [
+     "docs/evidence/shared-fixture-models-k66p-2026-10-03.json"
+    ]
+   },
+   "precedingComment": null
+  },
+  {
+   "path": "apps/three-surface-poc/src/tuple-encoding.test.ts",
+   "line": 312,
+   "callLine": 276,
+   "kind": "test",
+   "callee": "it",
+   "form": "third-argument",
+   "expression": "60_000",
+   "valueMs": 60000,
+   "constant": null,
+   "reason": null,
+   "citations": {
+    "commits": [],
+    "measurements": []
+   },
+   "precedingComment": null
+  },
+  {
+   "path": "apps/three-surface-poc/src/unknown-route-sweep.test.ts",
+   "line": 173,
+   "callLine": 126,
+   "kind": "hook",
+   "callee": "beforeAll",
+   "form": "second-argument",
+   "expression": "60_000",
+   "valueMs": 60000,
+   "constant": null,
+   "reason": null,
+   "citations": {
+    "commits": [],
+    "measurements": []
+   },
+   "precedingComment": null
+  },
+  {
+   "path": "packages/cap1-system/src/fresh-clone.system.test.ts",
+   "line": 117,
+   "callLine": 37,
+   "kind": "test",
+   "callee": "it",
+   "form": "third-argument",
+   "expression": "600_000",
+   "valueMs": 600000,
+   "constant": null,
+   "reason": null,
+   "citations": {
+    "commits": [],
+    "measurements": []
+   },
+   "precedingComment": null
+  },
+  {
+   "path": "packages/cap1-system/vitest.config.ts",
+   "line": 18,
+   "callLine": null,
+   "kind": "config",
+   "callee": "testTimeout",
+   "form": "config-property",
+   "expression": "60_000",
+   "valueMs": 60000,
+   "constant": null,
+   "reason": {
+    "where": "packages/cap1-system/vitest.config.ts:17",
+    "text": "// Real process spawns and real filesystem fixtures: generous // timeouts. The fresh-clone test raises its own per-test timeout."
+   },
+   "citations": {
+    "commits": [],
+    "measurements": []
+   },
+   "precedingComment": null
+  },
+  {
+   "path": "packages/cap1-system/vitest.config.ts",
+   "line": 19,
+   "callLine": null,
+   "kind": "config",
+   "callee": "hookTimeout",
+   "form": "config-property",
+   "expression": "60_000",
+   "valueMs": 60000,
+   "constant": null,
+   "reason": {
+    "where": "packages/cap1-system/vitest.config.ts:19",
+    "text": "// Real process spawns and real filesystem fixtures: generous // timeouts. The fresh-clone test raises its own per-test timeout.",
+    "group": true
+   },
+   "citations": {
+    "commits": [],
+    "measurements": []
+   },
+   "precedingComment": null
+  },
+  {
+   "path": "packages/polaris-dossier/src/gate-acts.test.ts",
+   "line": 98,
+   "callLine": 96,
+   "kind": "test",
+   "callee": "it",
+   "form": "third-argument",
+   "expression": "TREE_TIMEOUT",
+   "valueMs": 60000,
+   "constant": {
+    "name": "TREE_TIMEOUT",
+    "at": "packages/polaris-dossier/src/gate-acts.test.ts:84"
+   },
+   "reason": {
+    "where": "packages/polaris-dossier/src/gate-acts.test.ts:83",
+    "text": "/** These walk the whole real decisions tree, or eight worlds in turn: about 2-5 s unloaded, past vitest's 5 s default under load. */"
+   },
+   "citations": {
+    "commits": [],
+    "measurements": []
+   },
+   "precedingComment": null
+  },
+  {
+   "path": "packages/polaris-dossier/src/gate-acts.test.ts",
+   "line": 106,
+   "callLine": 99,
+   "kind": "test",
+   "callee": "it",
+   "form": "third-argument",
+   "expression": "TREE_TIMEOUT",
+   "valueMs": 60000,
+   "constant": {
+    "name": "TREE_TIMEOUT",
+    "at": "packages/polaris-dossier/src/gate-acts.test.ts:84"
+   },
+   "reason": {
+    "where": "packages/polaris-dossier/src/gate-acts.test.ts:83",
+    "text": "/** These walk the whole real decisions tree, or eight worlds in turn: about 2-5 s unloaded, past vitest's 5 s default under load. */"
+   },
+   "citations": {
+    "commits": [],
+    "measurements": []
+   },
+   "precedingComment": null
+  },
+  {
+   "path": "packages/polaris-dossier/src/git-object-reader.test.ts",
+   "line": 582,
+   "callLine": 578,
+   "kind": "test",
+   "callee": "it",
+   "form": "third-argument",
+   "expression": "60_000",
+   "valueMs": 60000,
+   "constant": null,
+   "reason": null,
+   "citations": {
+    "commits": [],
+    "measurements": []
+   },
+   "precedingComment": null
+  },
+  {
+   "path": "packages/polaris-dossier/src/git-object-reader.test.ts",
+   "line": 782,
+   "callLine": 775,
+   "kind": "test",
+   "callee": "it",
+   "form": "third-argument",
+   "expression": "60_000",
+   "valueMs": 60000,
+   "constant": null,
+   "reason": null,
+   "citations": {
+    "commits": [],
+    "measurements": []
+   },
+   "precedingComment": null
+  },
+  {
+   "path": "packages/polaris-dossier/src/git-object-reader.test.ts",
+   "line": 803,
+   "callLine": 797,
+   "kind": "test",
+   "callee": "it",
+   "form": "third-argument",
+   "expression": "240_000",
+   "valueMs": 240000,
+   "constant": null,
+   "reason": null,
+   "citations": {
+    "commits": [],
+    "measurements": []
+   },
+   "precedingComment": null
+  },
+  {
+   "path": "packages/polaris-dossier/src/git-object-reader.test.ts",
+   "line": 812,
+   "callLine": 804,
+   "kind": "test",
+   "callee": "it",
+   "form": "third-argument",
+   "expression": "240_000",
+   "valueMs": 240000,
+   "constant": null,
+   "reason": null,
+   "citations": {
+    "commits": [],
+    "measurements": []
+   },
+   "precedingComment": null
+  },
+  {
+   "path": "packages/polaris-dossier/src/no-egress.test.ts",
+   "line": 46,
+   "callLine": 25,
+   "kind": "hook",
+   "callee": "beforeAll",
+   "form": "second-argument",
+   "expression": "120_000",
+   "valueMs": 120000,
+   "constant": null,
+   "reason": null,
+   "citations": {
+    "commits": [],
+    "measurements": []
+   },
+   "precedingComment": null
+  },
+  {
+   "path": "packages/polaris-dossier/src/no-egress.test.ts",
+   "line": 83,
+   "callLine": 65,
+   "kind": "test",
+   "callee": "it",
+   "form": "third-argument",
+   "expression": "240_000",
+   "valueMs": 240000,
+   "constant": null,
+   "reason": null,
+   "citations": {
+    "commits": [],
+    "measurements": []
+   },
+   "precedingComment": null
+  },
+  {
+   "path": "packages/polaris-dossier/src/no-egress.test.ts",
+   "line": 91,
+   "callLine": 85,
+   "kind": "test",
+   "callee": "it",
+   "form": "third-argument",
+   "expression": "240_000",
+   "valueMs": 240000,
+   "constant": null,
+   "reason": null,
+   "citations": {
+    "commits": [],
+    "measurements": []
+   },
+   "precedingComment": null
+  },
+  {
+   "path": "packages/polaris-dossier/src/start-gates.test.ts",
+   "line": 1015,
+   "callLine": 1009,
+   "kind": "test",
+   "callee": "it",
+   "form": "third-argument",
+   "expression": "TREE_TIMEOUT",
+   "valueMs": 60000,
+   "constant": {
+    "name": "TREE_TIMEOUT",
+    "at": "packages/polaris-dossier/src/start-gates.test.ts:28"
+   },
+   "reason": {
+    "where": "packages/polaris-dossier/src/start-gates.test.ts:27",
+    "text": "// After the sitting the real-tree preflight reads every act record and sweeps every decisions file (about 4.4 s alone), past Vitest's 5 s default under load; gate-acts.test.ts gives its real-tree tests the same budget."
+   },
+   "citations": {
+    "commits": [],
+    "measurements": []
+   },
+   "precedingComment": null
+  },
+  {
+   "path": "packages/polaris-generation-consent/src/package-reader.test.ts",
+   "line": 939,
+   "callLine": 939,
+   "kind": "hook",
+   "callee": "beforeAll",
+   "form": "second-argument",
+   "expression": "60_000",
+   "valueMs": 60000,
+   "constant": null,
+   "reason": null,
+   "citations": {
+    "commits": [],
+    "measurements": []
+   },
+   "precedingComment": "// syzygy-786c: the first `full` spawns Python five times to render the recorders' acts (about 3 s of a cold 4.5 s run, by CPU // profile), which landed inside this test's 5 s budget. Render them once here, under a budget of their own; the renders are cached. // One case per row then keeps each read (about 20 ms) far from the budget whatever the suite load."
+  },
+  {
+   "path": "packages/polaris-generation-consent/src/real-tree.test.ts",
+   "line": 50,
+   "callLine": 34,
+   "kind": "test",
+   "callee": "it",
+   "form": "third-argument",
+   "expression": "TIMEOUT",
+   "valueMs": 120000,
+   "constant": {
+    "name": "TIMEOUT",
+    "at": "packages/polaris-generation-consent/src/real-tree.test.ts:31"
+   },
+   "reason": {
+    "where": "packages/polaris-generation-consent/src/real-tree.test.ts:31",
+    "text": "each read walks the whole decisions tree"
+   },
+   "citations": {
+    "commits": [],
+    "measurements": []
+   },
+   "precedingComment": null
+  },
+  {
+   "path": "packages/polaris-generation-consent/src/real-tree.test.ts",
+   "line": 58,
+   "callLine": 51,
+   "kind": "test",
+   "callee": "it",
+   "form": "third-argument",
+   "expression": "TIMEOUT",
+   "valueMs": 120000,
+   "constant": {
+    "name": "TIMEOUT",
+    "at": "packages/polaris-generation-consent/src/real-tree.test.ts:31"
+   },
+   "reason": {
+    "where": "packages/polaris-generation-consent/src/real-tree.test.ts:31",
+    "text": "each read walks the whole decisions tree"
+   },
+   "citations": {
+    "commits": [],
+    "measurements": []
+   },
+   "precedingComment": null
+  },
+  {
+   "path": "packages/three-surface-poc-core/src/test-artifact-verification.live.test.ts",
+   "line": 139,
+   "callLine": 49,
+   "kind": "test",
+   "callee": "it",
+   "form": "third-argument",
+   "expression": "120_000",
+   "valueMs": 120000,
+   "constant": null,
+   "reason": null,
+   "citations": {
+    "commits": [],
+    "measurements": []
+   },
+   "precedingComment": null
+  }
+ ],
+ "secondMethod": {
+  "regexLines": 145,
+  "matched": 117,
+  "onlyByRegex": [
+   {
+    "path": "apps/three-surface-poc/src/main.test.ts",
+    "line": 402,
+    "text": "await vi.waitFor(() => expect(fake.out().slice(before)).toContain(refusal), { timeout: WAIT_MS });"
+   },
+   {
+    "path": "apps/three-surface-poc/src/polaris-generation/pipeline-demo.test.ts",
+    "line": 59,
+    "text": "await run('git', ['clone', '--quiet', '--local', '--no-hardlinks', process.cwd(), checkout], { timeout: ONRAMP_STEP_TIMEOUT_MS.clone });"
+   },
+   {
+    "path": "apps/three-surface-poc/src/polaris-generation/pipeline-demo.test.ts",
+    "line": 64,
+    "text": "await run(documented[0]!, documented.slice(1), { cwd: checkout, timeout: ONRAMP_STEP_TIMEOUT_MS.refusedRun });"
+   },
+   {
+    "path": "apps/three-surface-poc/src/polaris-generation/pipeline-demo.test.ts",
+    "line": 70,
+    "text": "await run('npm', commands[1].split(' ').slice(1), { cwd: checkout, timeout: ONRAMP_STEP_TIMEOUT_MS.install });"
+   },
+   {
+    "path": "apps/three-surface-poc/src/polaris-generation/pipeline-demo.test.ts",
+    "line": 71,
+    "text": "await run(documented[0]!, documented.slice(1), { cwd: checkout, timeout: ONRAMP_STEP_TIMEOUT_MS.documented });"
+   },
+   {
+    "path": "apps/three-surface-poc/src/polaris-generation/public-source-screening.test.ts",
+    "line": 339,
+    "text": "const request = buildPipelineRequest(corpus, { ...cfg(only.commit), readerQuestions: [{ id: 'core-ideas', topics: ['core-ideas'], text: 'What is it?' }], reques"
+   },
+   {
+    "path": "packages/polaris-dossier/src/execution-flags.test.ts",
+    "line": 63,
+    "text": "const relative = flagCommand({ command: 'ls', workingDirectory: 'the clone' }, CLONE);"
+   },
+   {
+    "path": "packages/polaris-dossier/src/no-egress.test.ts",
+    "line": 56,
+    "text": "env: { PATH: process.env['PATH'] ?? '/usr/bin:/bin', HOME: dir, [FULL_RUN_ROOT_ENV]: REAL_ROOT }, timeout: 240_000,"
+   },
+   {
+    "path": "packages/polaris-dossier/src/review.test.ts",
+    "line": 852,
+    "text": "['no agent tool', () => recheck({ ...record.context, agentTool: 'no-such-tool' }, DELIVERED)],"
+   },
+   {
+    "path": "packages/polaris-dossier/src/review.test.ts",
+    "line": 853,
+    "text": "['cites none', () => recheck({ ...record.context, providerStatement: null }, DELIVERED)],"
+   },
+   {
+    "path": "packages/polaris-dossier/src/review.test.ts",
+    "line": 854,
+    "text": "['another pair', () => recheck({ ...record.context, providerStatement: { ...CITATION, agentTool: 'claude-code' } }, DELIVERED)],"
+   },
+   {
+    "path": "packages/polaris-dossier/src/start-gates.test.ts",
+    "line": 866,
+    "text": "const afterWithdrawal = statements({ ...STATEMENT, withdrawn: true }, OPENAI);"
+   },
+   {
+    "path": "packages/polaris-generation-core/src/quote-fidelity.test.ts",
+    "line": 80,
+    "text": "const [finding] = checkBlockQuotes({ id: 'long-block', text: `\"${'x'.repeat(500)}\"`, sourceIds: ['src-readme'] }, SOURCES);"
+   },
+   {
+    "path": "packages/three-surface-poc-core/src/effect-authority.test.ts",
+    "line": 27,
+    "text": "const verdict = effectAuthority({ writeSurface: ['butlers:.beads'] }, BUTLERS_TRACKER_WRITE);"
+   },
+   {
+    "path": "packages/three-surface-poc-core/src/effect-authority.test.ts",
+    "line": 32,
+    "text": "expect(effectAuthority({ writeSurface: [] }, OTHER)).toMatchObject({"
+   },
+   {
+    "path": "packages/three-surface-poc-core/src/effect-authority.test.ts",
+    "line": 37,
+    "text": "expect(effectAuthority({ writeSurface: ['synthetic:other'] }, OTHER)).toMatchObject({"
+   },
+   {
+    "path": "packages/three-surface-poc-core/src/effect-authority.test.ts",
+    "line": 52,
+    "text": "expect(effectAuthority({ writeSurface }, OTHER)).toMatchObject({"
+   },
+   {
+    "path": "packages/three-surface-poc-core/src/effect-authority.test.ts",
+    "line": 60,
+    "text": "expect(effectAuthority({ writeSurface: ['synthetic:surface'] }, OTHER)).toEqual({"
+   },
+   {
+    "path": "packages/three-surface-poc-core/src/project-shape-extraction.test.ts",
+    "line": 804,
+    "text": "const r = extractSource({ path: 'heart-and-soul/v1.md', extractionClasses: ['catalog-entry'] }, V1);"
+   },
+   {
+    "path": "packages/three-surface-poc-core/src/project-shape-extraction.test.ts",
+    "line": 852,
+    "text": "const r = extractSource({ path: 'heart-and-soul/vision.md', extractionClasses: ['project-account-section'] }, VISION);"
+   },
+   {
+    "path": "packages/three-surface-poc-core/src/project-shape-observation.test.ts",
+    "line": 555,
+    "text": "expect(admitPhaseARead(tree, { path: 'about/README.md', objectId: root }, DECLARED_HOMES)).toEqual({ kind: 'admitted', entry: TREE[1] });"
+   },
+   {
+    "path": "packages/three-surface-poc-core/src/project-shape-observation.test.ts",
+    "line": 556,
+    "text": "expect(admitPhaseARead(tree, { path: 'about/heart-and-soul/README.md', objectId: oidOf('about/heart-and-soul/README.md') }, DECLARED_HOMES)).toEqual({ kind: 'ad"
+   },
+   {
+    "path": "packages/three-surface-poc-core/src/project-shape-observation.test.ts",
+    "line": 557,
+    "text": "expect(admitPhaseARead(tree, { path: 'about/heart-and-soul/vision.md', objectId: oidOf('about/heart-and-soul/vision.md') }, DECLARED_HOMES)).toEqual({ kind: 're"
+   },
+   {
+    "path": "packages/three-surface-poc-core/src/project-shape-observation.test.ts",
+    "line": 558,
+    "text": "expect(admitPhaseARead(tree, { path: 'roster/atlas/butler.toml', objectId: oidOf('roster/atlas/butler.toml') }, DECLARED_HOMES)).toEqual({ kind: 'refused', reas"
+   },
+   {
+    "path": "packages/three-surface-poc-core/src/project-shape-observation.test.ts",
+    "line": 559,
+    "text": "expect(admitPhaseARead(tree, { path: 'README.md', objectId: oidOf('README.md') }, DECLARED_HOMES)).toEqual({ kind: 'refused', reason: 'not-a-phase-a-seed-path' "
+   },
+   {
+    "path": "packages/three-surface-poc-core/src/project-shape-observation.test.ts",
+    "line": 561,
+    "text": "expect(admitPhaseARead(tree, { path: 'about/README.md', objectId: 'f'.repeat(40) }, DECLARED_HOMES)).toEqual({ kind: 'refused', reason: 'object-id-differs-from-"
+   },
+   {
+    "path": "packages/three-surface-poc-core/src/project-shape-observation.test.ts",
+    "line": 563,
+    "text": "expect(admitPhaseARead(symlinked, { path: 'about/README.md', objectId: root }, DECLARED_HOMES)).toEqual({ kind: 'refused', reason: 'not-a-regular-blob' });"
+   },
+   {
+    "path": "packages/three-surface-poc-core/src/project-shape-observation.test.ts",
+    "line": 565,
+    "text": "expect(admitPhaseARead(submodule, { path: 'about/README.md', objectId: root }, DECLARED_HOMES)).toEqual({ kind: 'refused', reason: 'not-a-regular-blob' });"
+   }
+  ],
+  "onlyByAst": [
+   {
+    "path": "apps/three-surface-poc/src/build-output.test.ts",
+    "line": 62,
+    "expression": "240_000",
+    "form": "third-argument"
+   },
+   {
+    "path": "apps/three-surface-poc/src/polaris-first-reading.test.ts",
+    "line": 52,
+    "expression": "SHARED_FIXTURE_TIMEOUT_MS",
+    "form": "second-argument"
+   },
+   {
+    "path": "apps/three-surface-poc/src/polaris-narrative.test.ts",
+    "line": 59,
+    "expression": "SHARED_FIXTURE_TIMEOUT_MS",
+    "form": "second-argument"
+   },
+   {
+    "path": "apps/three-surface-poc/src/tuple-encoding.test.ts",
+    "line": 94,
+    "expression": "SHARED_FIXTURE_TIMEOUT_MS",
+    "form": "second-argument"
+   },
+   {
+    "path": "packages/cap1-system/src/fresh-clone.system.test.ts",
+    "line": 117,
+    "expression": "600_000",
+    "form": "third-argument"
+   }
+  ]
+ }
+}
