@@ -31,8 +31,8 @@ const cleanupObservations: CleanupObservation[] = [];
 // injected reader can never succeed. No scheduling delay can let
 // any other outcome win there, so no clock injection is needed.
 //
-// TEST_MS is vitest's per-test budget: several fixture spawns at LIVENESS_MS
-// each must fit inside it.
+// TEST_MS is vitest's per-test and afterEach budget: several fixture spawns at LIVENESS_MS
+// each must fit inside it (b48d86fa: two tests hit the 5 s default at load 60-90).
 const LIVENESS_MS = 30_000;
 const TEST_MS = 180_000;
 let startedTests = 0;

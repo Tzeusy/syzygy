@@ -165,7 +165,7 @@ beforeAll(() => {
   model = buildFixtureModel(cleanups, { workItemRows: rows() });
   answer = JSON.parse(JSON.stringify(model)) as Obj;
   html = renderTrajectoryPage(model);
-}, 60_000);
+});
 
 afterAll(() => {
   for (const directory of cleanups.splice(0)) rmSync(directory, { recursive: true, force: true });

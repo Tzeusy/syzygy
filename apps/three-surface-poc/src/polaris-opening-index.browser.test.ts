@@ -313,7 +313,7 @@ describe.skipIf(executable === undefined)('opening index in a real browser (PWB-
   beforeAll(async () => {
     browser = await launchBrowser(executable as string);
     pages = mkdtempSync(join(tmpdir(), 'syzygy-poc-opening-index-'));
-  }, 60_000);
+  }, 60_000); // launches Chrome: under 0.6 s in 10 alone runs, but a full-suite run at load1 56-71 left up to 5.1 s of its file's time to its hooks (docs/evidence/syzygy-bpyt-4-31/full-runs.json)
 
   afterAll(async () => {
     await browser?.close();
@@ -349,7 +349,7 @@ describe.skipIf(executable === undefined)('opening index in a real browser (PWB-
       expect(report.violations).toEqual([]);
       expect(report.viewport).toEqual(viewport);
       expect(report.rows.filter((row) => 'offset' in row)).toHaveLength(9);
-    }, 60_000);
+    }, 60_000); // up to 4.2 s in 5 full-suite runs at load1 38-71 (docs/evidence/syzygy-bpyt-4-31/full-runs.json)
 
     it(`the opening Unknown aggregate is absent (${viewport.width}x${viewport.height}): the gaps row says so and routes nowhere; eight rows route`, async () => {
       const report = await run('observed', variant('observed'), viewport);
@@ -361,13 +361,13 @@ describe.skipIf(executable === undefined)('opening index in a real browser (PWB-
       // closed item population: the line stands after that disclosure.
       expect(report.setter).toBe('exact-requirement');
       expect(report.setterInsideClosedDetails).toBe(true);
-    }, 60_000);
+    });
 
     it(`an unobserved shape (${viewport.width}x${viewport.height}): only the gaps and claim-strength targets render`, async () => {
       const report = await run('not-admitted', variant('not-admitted'), viewport);
       expect(report.violations).toEqual([]);
       expect(report.rows.filter((row) => 'offset' in row).map((row) => row.identity)).toEqual(['unknown-or-contradiction', 'claim-strength']);
-    }, 60_000);
+    }, 60_000); // up to 2.7 s in 5 full-suite runs at load1 38-71 (docs/evidence/syzygy-bpyt-4-31/full-runs.json)
   }
 
   /** Follows the exact-requirement row by keyboard (focus, Enter, Tab) and
@@ -405,12 +405,12 @@ describe.skipIf(executable === undefined)('opening index in a real browser (PWB-
   // navigation and focuses the link, and Tab continues from it.
   it('following the exact-requirement row by keyboard lands on its target and Tab continues from it (fixture render)', async () => {
     expect(await followExactRow(variant('observed'), 'keyboard-exact')).toEqual({ inClosed: true, onTarget: true, open: true, nextInside: false, tabContinued: true });
-  }, 60_000);
+  });
 
   it('the same holds where a later control shares the target\'s disclosure (synthetic body)', async () => {
     const body = `<h2>Lead</h2><details><summary>Show items</summary><p><a href="#lead">before</a> <a href="/polaris/source?identity=a">exact</a> <a href="#after">after inside</a></p></details><p><a href="#lead">outside</a></p>`;
     expect(await followExactRow(syntheticPage(body), 'keyboard-synthetic')).toEqual({ inClosed: true, onTarget: true, open: true, nextInside: true, tabContinued: true });
-  }, 60_000);
+  });
 
   // A captured page, for the dated live measurement: the served bytes are
   // written by the operator (`SYZYGY_P98_PAGE`), never fetched here.
@@ -421,7 +421,7 @@ describe.skipIf(executable === undefined)('opening index in a real browser (PWB-
       const report = await run('captured', html, viewport);
       expect(report.violations).toEqual([]);
     }
-  }, 60_000);
+  }, 60_000); // unmeasured: it runs only on an operator's capture of a served /polaris page (SYZYGY_P98_PAGE, da936967), which no hosted or local run sets; the commit holds no measurement, so this is an unmeasured residual of syzygy-bpyt.4.31
 
   it('a tie on the largest offset is broken by document order (synthetic body, hand-counted)', async () => {
     const report = await run('tie', syntheticPage(TIE_BODY), WIDE, false);
@@ -440,7 +440,7 @@ describe.skipIf(executable === undefined)('opening index in a real browser (PWB-
     ]);
     expect(report.setter).toBe('architecture-and-groups');
     expect(report.line).toBe('4 / 11 words');
-  }, 60_000);
+  });
 
   it('with no indexed target rendered, the line follows the index and gives only the total (synthetic body, hand-counted)', async () => {
     const report = await run('none', syntheticPage(NONE_BODY), WIDE, false);
@@ -449,5 +449,5 @@ describe.skipIf(executable === undefined)('opening index in a real browser (PWB-
     expect(report.rows.every((row) => !('offset' in row))).toBe(true);
     expect(report.setter).toBeNull();
     expect(report.line).toBe('6 words');
-  }, 60_000);
+  });
 });
