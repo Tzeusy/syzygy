@@ -212,8 +212,11 @@ sweep lessons added 2026-09-23; the raw-head digest lesson the same day.
   and `syzygy-bpyt.16` fixes it; G2 and G3 are open owner questions.
 - Three-Surface POC: `packages/three-surface-poc-core/` (one shared
   `PocModel`) and `apps/three-surface-poc/` read the same instance — never
-  split surface truth stores. `build:poc` keeps `tsc -b --force`: ignored
-  incremental outputs are executable inputs.
+  split surface truth stores. Ignored build outputs are executable inputs, so
+  `build` and `build:poc` run `scripts/clean_build.mjs`: it removes the dist of
+  every project `tsc -b` will build, then builds (`syzygy-bpyt.4.2`).
+  `tsc -b` alone keeps an altered output whose source is unchanged, and
+  `--force` keeps an output whose source is gone.
 - PWB pipeline (pure, injectable, in order): `body-read-authority` gates
   every Butlers read → observation → `git-object-reader` → classification
   (excluded content yields hash-not-body records) → extraction (literal
