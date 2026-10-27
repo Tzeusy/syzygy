@@ -3,15 +3,18 @@
 
 usage: python3 -I docs/evidence/syzygy-bpyt-4-31/tools/decide.py CENSUS.json SITE-DURATIONS.json CI-DURATIONS.json CITED.json OUT.json
 
-The rule takes syzygy-bpyt.4.13's threshold (scripts/size_vitest_test_timeouts.py): half the default the site would fall back
-to, 2500 ms for a test (testTimeout 5000) and 5000 ms for a hook (hookTimeout 10000). A site is
+The threshold is 2500 ms for every site: the coordinator's ruling 2 of 2026-10-27, "keep the timeout if that worst exceeds
+2500 ms", which takes syzygy-bpyt.4.13's test threshold (scripts/size_vitest_test_timeouts.py, half the 5000 ms testTimeout)
+and applies it to hooks as well, where 4.13 used half the 10000 ms hookTimeout. A site is
 
   cited     when its reason already cites a commit or retained record, or CITED.json names one, that measured it above the
             threshold (or saw it time out at the default); its reason is made to cite that;
   blocked   when its file is one an open pull request changes (CITED.json `blocked`); it is left as it is;
   remove    when the fresh local runs measured it (at least 5 observations, every run passed) at or under the threshold AND every
             hosted run listed bounds it there too: for a test, its slow-test line (or no line, which means under 300 ms) in a
-            run where its file ran; for a hook, its file's duration less the slow tests listed beneath it;
+            run where its file ran; for a hook, its file's duration less the slow tests listed beneath it; AND it is neither
+            below vitest's default (5000 ms for a test or suite, 10000 ms for a hook), where removing it would loosen the test
+            (ruling 3), nor a vitest config's own timeout, which bounds a whole tier (ruling 4): such a site is kept, on that basis;
   keep      otherwise, citing whichever measurement exceeded the threshold, or, when no measurement exceeds it but a host does
             not bound it, the record that shows the gap. Hosted runs print no hook time: a file's duration less its slow tests
             bounds its hooks from above, and that less 300 ms for every other test bounds them, together, from below.
@@ -21,7 +24,8 @@ to, 2500 ms for a test (testTimeout 5000) and 5000 ms for a hook (hookTimeout 10
 A removal still has to pass 5 of 5 full-file runs at the head, each again at or under the threshold, before it lands."""
 import json, os, re, sys
 
-TEST_THRESHOLD_MS, HOOK_THRESHOLD_MS = 2500, 5000
+TEST_THRESHOLD_MS, HOOK_THRESHOLD_MS = 2500, 2500
+DEFAULT_MS = {'test': 5000, 'suite': 5000, 'hook': 10000}
 census_path, durations_path, ci_path, cited_path, out_path = sys.argv[1:6]
 census = json.load(open(census_path, encoding='utf8'))
 durations = {r['site']: r for r in json.load(open(durations_path, encoding='utf8'))['rows']}
@@ -84,8 +88,12 @@ for s in census['sites']:
             worst_test = max((r['worstMs'] for r in tier if r['worstMs'] is not None), default=None)
             local['tierWorstTestMs'] = worst_test
             if worst_test is None or worst_test > threshold: local_ok = hosted_ok = False
-        row.update(local=local, hosted=hosted, decision='remove' if local_ok and hosted_ok else 'keep',
-                   basis=('local worst and every hosted bound at or under the threshold' if local_ok and hosted_ok else
+        guard = (f"measured at or under the threshold, but below vitest's {DEFAULT_MS[s['kind']]} ms default: removing it would loosen the test (ruling 3)"
+                 if s['valueMs'] is not None and s['kind'] in DEFAULT_MS and s['valueMs'] < DEFAULT_MS[s['kind']] else
+                 'measured at or under the threshold, but a vitest config timeout bounds its whole tier and stays (ruling 4)' if s['kind'] == 'config' else None)
+        row.update(local=local, hosted=hosted, decision='remove' if local_ok and hosted_ok and guard is None else 'keep',
+                   basis=(guard if local_ok and hosted_ok and guard else
+                          'local worst and every hosted bound at or under the threshold' if local_ok and hosted_ok else
                           f"its beforeEach and afterEach hooks run inside test durations, which reach {local.get('tierWorstTestMs')} ms" if 'tierWorstTestMs' in local else
                           'local worst over the threshold' if d.get('worstMs') is not None and d['worstMs'] > threshold else
                           'a local run failed' if d.get('anyFailed') else

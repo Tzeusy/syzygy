@@ -45,7 +45,7 @@ beforeAll(async () => {
       '@syzygy/support': src('packages/support/src/index.ts'),
     },
   });
-});
+}, 120_000); // makes a fixture clone and bundles the driver with esbuild: up to 0.9 s in 10 alone runs, but a full-suite run at load1 56-58 left up to 2.8 s of its file's time to its hooks (docs/evidence/syzygy-bpyt-4-31/full-runs.json)
 afterAll(() => { if (dir !== undefined) fs.rmSync(dir, { recursive: true, force: true }); });
 
 interface Capture { readonly status: number | null; readonly stdout: string; readonly stderr: string; readonly calls: readonly string[]; readonly tasks: number }

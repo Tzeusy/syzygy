@@ -421,7 +421,7 @@ describe.skipIf(executable === undefined)('opening index in a real browser (PWB-
       const report = await run('captured', html, viewport);
       expect(report.violations).toEqual([]);
     }
-  }, 60_000); // unmeasured: it runs only on an operator's capture of a served /polaris page (SYZYGY_P98_PAGE, da936967), which no hosted or local run sets
+  }, 60_000); // unmeasured: it runs only on an operator's capture of a served /polaris page (SYZYGY_P98_PAGE, da936967), which no hosted or local run sets; the commit holds no measurement, so this is an unmeasured residual of syzygy-bpyt.4.31
 
   it('a tie on the largest offset is broken by document order (synthetic body, hand-counted)', async () => {
     const report = await run('tie', syntheticPage(TIE_BODY), WIDE, false);

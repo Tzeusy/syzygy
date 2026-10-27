@@ -78,7 +78,7 @@ beforeAll(() => {
     MODELS.set(variant, model);
     PAGES.set(variant, renderPolarisPage(model));
   }
-});
+}, 120_000); // builds and renders seven fixture models: up to 1.1 s in 10 alone runs, but a full-suite run at load1 56-71 left up to 2.6 s of its file's time to its hooks (docs/evidence/syzygy-bpyt-4-31/full-runs.json)
 
 afterAll(() => {
   for (const directory of cleanups.splice(0)) rmSync(directory, { recursive: true, force: true });

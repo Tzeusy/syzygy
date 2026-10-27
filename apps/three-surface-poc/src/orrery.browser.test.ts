@@ -21,7 +21,7 @@ describe.skipIf(executable === undefined)('Orrery rendered geometry', () => {
 
   beforeAll(async () => {
     browser = await launchBrowser(executable as string);
-  });
+  }, 60_000); // launches Chrome: up to 0.5 s in 10 alone runs, but a full-suite run at load1 56-71 left up to 3.4 s of its file's time to its hooks (docs/evidence/syzygy-bpyt-4-31/full-runs.json)
 
   afterAll(async () => {
     await browser?.close();
