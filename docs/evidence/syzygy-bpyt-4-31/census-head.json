@@ -3,15 +3,15 @@
   "name": "timeout_census.mjs",
   "sha256": "6e503285dfe1d3faf64d317f95faf17841991db0901bc1b55822870f96cbbc3a"
  },
- "commit": "08e11a178c986ca002f1f1e907bf7dfb85125ccd",
+ "commit": "d0ccce69fa991f60d62ec59759371bffff9e3e52",
  "population": {
   "files": 514,
   "parsed": 514,
   "testFiles": 255
  },
  "summary": {
-  "sites": 98,
-  "files": 38,
+  "sites": 91,
+  "files": 33,
   "withoutReason": 6,
   "filesWithoutReason": 2,
   "withoutCitation": 17,
@@ -24,10 +24,10 @@
     "cited": 61
    },
    "hook": {
-    "sites": 18,
-    "files": 17,
-    "withReason": 17,
-    "cited": 17
+    "sites": 11,
+    "files": 10,
+    "withReason": 10,
+    "cited": 10
    },
    "suite": {
     "sites": 1,
@@ -595,31 +595,6 @@
    "precedingComment": null
   },
   {
-   "path": "apps/three-surface-poc/src/orrery.browser.test.ts",
-   "line": 24,
-   "callLine": 22,
-   "kind": "hook",
-   "callee": "beforeAll",
-   "form": "second-argument",
-   "expression": "60_000",
-   "valueMs": 60000,
-   "constant": null,
-   "suites": [
-    "Orrery rendered geometry"
-   ],
-   "reason": {
-    "where": "apps/three-surface-poc/src/orrery.browser.test.ts:24",
-    "text": "launches Chrome: up to 0.5 s in 10 alone runs, but a full-suite run at load1 56-71 left up to 3.4 s of its file's time to its hooks (docs/evidence/syzygy-bpyt-4-31/full-runs.json)"
-   },
-   "citations": {
-    "commits": [],
-    "measurements": [
-     "docs/evidence/syzygy-bpyt-4-31/full-runs.json"
-    ]
-   },
-   "precedingComment": null
-  },
-  {
    "path": "apps/three-surface-poc/src/polaris-accessibility.browser.test.ts",
    "line": 91,
    "callLine": 80,
@@ -692,31 +667,6 @@
     "commits": [],
     "measurements": [
      "docs/evidence/syzygy-bpyt-4-31/durations/polaris-accessibility.browser.test.tests.json"
-    ]
-   },
-   "precedingComment": null
-  },
-  {
-   "path": "apps/three-surface-poc/src/polaris-accessible-names.browser.test.ts",
-   "line": 187,
-   "callLine": 184,
-   "kind": "hook",
-   "callee": "beforeAll",
-   "form": "second-argument",
-   "expression": "60_000",
-   "valueMs": 60000,
-   "constant": null,
-   "suites": [
-    "PWB-REQ-016 names and headings in a real browser"
-   ],
-   "reason": {
-    "where": "apps/three-surface-poc/src/polaris-accessible-names.browser.test.ts:187",
-    "text": "launches Chrome: up to 1.1 s in 10 alone runs, but a full-suite run at load1 56-58 left up to 4.8 s of its file's time to its hooks (docs/evidence/syzygy-bpyt-4-31/full-runs.json)"
-   },
-   "citations": {
-    "commits": [],
-    "measurements": [
-     "docs/evidence/syzygy-bpyt-4-31/full-runs.json"
     ]
    },
    "precedingComment": null
@@ -844,29 +794,6 @@
     "commits": [],
     "measurements": [
      "docs/evidence/shared-fixture-models-k66p-2026-10-03.json"
-    ]
-   },
-   "precedingComment": null
-  },
-  {
-   "path": "apps/three-surface-poc/src/polaris-generation/dossier-cap-measure.test.ts",
-   "line": 12,
-   "callLine": 9,
-   "kind": "hook",
-   "callee": "beforeAll",
-   "form": "second-argument",
-   "expression": "120_000",
-   "valueMs": 120000,
-   "constant": null,
-   "suites": [],
-   "reason": {
-    "where": "apps/three-surface-poc/src/polaris-generation/dossier-cap-measure.test.ts:12",
-    "text": "builds the design-prose fixture in git and runs discovery over it: up to 1.4 s in 10 alone runs, but a full-suite run at load1 51-58 left up to 3.3 s of its file's time to its hook (docs/evidence/syzygy-bpyt-4-31/full-runs.json)"
-   },
-   "citations": {
-    "commits": [],
-    "measurements": [
-     "docs/evidence/syzygy-bpyt-4-31/full-runs.json"
     ]
    },
    "precedingComment": null
@@ -1265,29 +1192,6 @@
    "precedingComment": null
   },
   {
-   "path": "apps/three-surface-poc/src/polaris-reconciliation.test.ts",
-   "line": 81,
-   "callLine": 75,
-   "kind": "hook",
-   "callee": "beforeAll",
-   "form": "second-argument",
-   "expression": "120_000",
-   "valueMs": 120000,
-   "constant": null,
-   "suites": [],
-   "reason": {
-    "where": "apps/three-surface-poc/src/polaris-reconciliation.test.ts:81",
-    "text": "builds and renders seven fixture models: up to 1.1 s in 10 alone runs, but a full-suite run at load1 56-71 left up to 2.6 s of its file's time to its hooks (docs/evidence/syzygy-bpyt-4-31/full-runs.json)"
-   },
-   "citations": {
-    "commits": [],
-    "measurements": [
-     "docs/evidence/syzygy-bpyt-4-31/full-runs.json"
-    ]
-   },
-   "precedingComment": null
-  },
-  {
    "path": "apps/three-surface-poc/src/production-reobserve.test.ts",
    "line": 99,
    "callLine": 86,
@@ -1669,31 +1573,6 @@
    "precedingComment": null
   },
   {
-   "path": "apps/three-surface-poc/src/trajectory-narrowing.browser.test.ts",
-   "line": 32,
-   "callLine": 30,
-   "kind": "hook",
-   "callee": "beforeAll",
-   "form": "second-argument",
-   "expression": "60_000",
-   "valueMs": 60000,
-   "constant": null,
-   "suites": [
-    "Trajectory narrowing to the governing-intent Unknown (POC-REQ-014)"
-   ],
-   "reason": {
-    "where": "apps/three-surface-poc/src/trajectory-narrowing.browser.test.ts:32",
-    "text": "launches Chrome: up to 0.7 s in 10 alone runs, but a full-suite run at load1 51-54 left up to 4.2 s of its file's time to its hooks (docs/evidence/syzygy-bpyt-4-31/full-runs.json)"
-   },
-   "citations": {
-    "commits": [],
-    "measurements": [
-     "docs/evidence/syzygy-bpyt-4-31/full-runs.json"
-    ]
-   },
-   "precedingComment": null
-  },
-  {
    "path": "apps/three-surface-poc/src/tuple-encoding.test.ts",
    "line": 94,
    "callLine": 94,
@@ -1741,29 +1620,6 @@
     "commits": [],
     "measurements": [
      "docs/evidence/syzygy-bpyt-4-31/durations/tuple-encoding.test.tests.json"
-    ]
-   },
-   "precedingComment": null
-  },
-  {
-   "path": "apps/three-surface-poc/src/unknown-route-sweep.test.ts",
-   "line": 173,
-   "callLine": 126,
-   "kind": "hook",
-   "callee": "beforeAll",
-   "form": "second-argument",
-   "expression": "60_000",
-   "valueMs": 60000,
-   "constant": null,
-   "suites": [],
-   "reason": {
-    "where": "apps/three-surface-poc/src/unknown-route-sweep.test.ts:173",
-    "text": "builds the fixture repositories in git and a model for each: up to 0.6 s in 10 alone runs, but a full-suite run at load1 38-54 left up to 2.52 s of its file's time to its hooks (docs/evidence/syzygy-bpyt-4-31/full-runs.json)"
-   },
-   "citations": {
-    "commits": [],
-    "measurements": [
-     "docs/evidence/syzygy-bpyt-4-31/full-runs.json"
     ]
    },
    "precedingComment": null
@@ -1978,29 +1834,6 @@
    "citations": {
     "commits": [],
     "measurements": []
-   },
-   "precedingComment": null
-  },
-  {
-   "path": "packages/polaris-dossier/src/no-egress.test.ts",
-   "line": 48,
-   "callLine": 25,
-   "kind": "hook",
-   "callee": "beforeAll",
-   "form": "second-argument",
-   "expression": "120_000",
-   "valueMs": 120000,
-   "constant": null,
-   "suites": [],
-   "reason": {
-    "where": "packages/polaris-dossier/src/no-egress.test.ts:48",
-    "text": "makes a fixture clone and bundles the driver with esbuild: up to 0.9 s in 10 alone runs, but a full-suite run at load1 56-58 left up to 2.8 s of its file's time to its hooks (docs/evidence/syzygy-bpyt-4-31/full-runs.json)"
-   },
-   "citations": {
-    "commits": [],
-    "measurements": [
-     "docs/evidence/syzygy-bpyt-4-31/full-runs.json"
-    ]
    },
    "precedingComment": null
   },
@@ -2612,8 +2445,8 @@
   }
  ],
  "secondMethod": {
-  "regexLines": 121,
-  "matched": 91,
+  "regexLines": 114,
+  "matched": 84,
   "onlyByRegex": [
    {
     "path": "apps/three-surface-poc/src/main.test.ts",
