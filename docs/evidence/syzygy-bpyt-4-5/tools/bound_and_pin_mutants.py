@@ -9,7 +9,9 @@ case and side it sets the test file to BASE_COMMIT's copy (side "base") or leave
 mutation (its `old` must occur exactly once in that side's file), runs `npx vitest run <test> -t <title>` with the JSON
 reporter in its own session (SIGKILLed as a group past limitSeconds, after summing the session's CPU seconds from /proc),
 restores every file, and records the row's status,
-the first failure line, the exit code and whether it was killed. A side's outcome is "pass" (exit 0, every matched row
+the first failure line, the exit code and whether it was killed. A row whose failure begins `Error: STACK_TRACE_ERROR` failed
+by vitest's own timeout (`byTimeout`): @vitest/runner's makeTimeoutError gives its "timed out" error the stack of an error
+named STACK_TRACE_ERROR, and the JSON reporter writes the stack, so the message itself is not in the report. A side's outcome is "pass" (exit 0, every matched row
 passed, at least one matched), "fail" (a matched row failed), "killed" (past the limit) or "error". `expect` names the
 outcome each side must have; "fail-or-killed" accepts either. Rows are matched by `title` as a substring of the full name.
 Runs with TMPDIR set by the caller. The tree must be clean before and is checked clean (`git diff --quiet`) after.
@@ -60,7 +62,8 @@ def side_run(case, side):
         if os.path.exists(report):
             for suite in json.load(open(report, encoding='utf8'))['testResults']:
                 rows += [{'title': a['fullName'], 'status': a['status'], 'durationMs': a.get('duration'),
-                          'failure': ((a.get('failureMessages') or [''])[0].split('\n')[0])[:300]} for a in suite['assertionResults'] if case['title'] in a['fullName']]
+                          'failure': ((a.get('failureMessages') or [''])[0].split('\n')[0])[:300],
+                          'byTimeout': (a.get('failureMessages') or [''])[0].split('\n')[0] == 'Error: STACK_TRACE_ERROR'} for a in suite['assertionResults'] if case['title'] in a['fullName']]
             os.remove(report)
         if killed: outcome = 'killed'
         elif any(r['status'] == 'failed' for r in rows): outcome = 'fail'

@@ -8,6 +8,9 @@ import { proveSelfCorpus, readSelfCorpus } from './self-corpus.js';
 
 // The same historical governed commit bound by the dated M7 evidence. Hosted
 // checkout must retain it; substituting HEAD would change the denominator.
+// Kept as an exact pin (syzygy-bpyt.4.5): the commit is the contract the M7
+// record binds (docs/evidence/polaris-m7-synthetic-successor-2026-09-23.json),
+// and node-ci.yml's fetch-depth: 0 is there to keep it in a hosted checkout.
 const PINNED_MAIN = '133106eb0f2564f1cefddd19d11985f1b2619397';
 const cleanups: string[] = [];
 // readSelfCorpus spawns one `git cat-file` per selected blob, over a hundred

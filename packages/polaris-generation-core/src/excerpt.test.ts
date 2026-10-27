@@ -3,8 +3,13 @@ import { describe, expect, it } from 'vitest';
 import { DECLARATION_LINE_MAX, DOC_COMMENT_SHARE_PERCENT, EXCERPT_KINDS, LICENCE_MARKERS, MAX_EXCERPT_RANGES, PATTERN_PREFIX_MAX, buildExcerpt } from './excerpt.js';
 
 const BUDGET = 1500;
-/** CPU milliseconds this thread has spent since `from`: the work done, which neither load on the host nor the pool running the file stretches. */
-const cpuMsSince = (from: NodeJS.CpuUsage): number => { const { user, system } = process.threadCpuUsage(from); return (user + system) / 1000; };
+/** CPU time so far: this thread's (`process.threadCpuUsage`, Node 23.9 and later) or, on the Node 22 releases `engines` admits, the
+ * whole process's (`process.cpuUsage`), which also counts the worker's other threads; each bound keeps its 10x margins under
+ * both (docs/evidence/syzygy-bpyt-4-5/cpu-separation-node22.json). */
+const cpuUsage = (from?: NodeJS.CpuUsage): NodeJS.CpuUsage =>
+  (typeof process.threadCpuUsage === 'function' ? process.threadCpuUsage(from) : process.cpuUsage(from));
+/** CPU milliseconds spent since `from`: the work done, which neither load on the host nor the pool running the file stretches. */
+const cpuMsSince = (from: NodeJS.CpuUsage): number => { const { user, system } = cpuUsage(from); return (user + system) / 1000; };
 // A CPU-time bound sits at the geometric mean of the slowest head run of its region and the fastest run of the quadratic
 // mutant it names, at least 10x from each (docs/evidence/syzygy-bpyt-4-5/cpu-separation.json, syzygy-bpyt.4.5).
 const HOSTILE_LINE_CPU_MS = 140; // the prefix cap removed and FUNCTION_LINE given overlapping blank runs
@@ -262,7 +267,7 @@ describe('excerpt: line endings and hostile lines', () => {
   for (const [name, lead] of [['a tag keyword', 'struct'], ['an identifier', 'a']] as const) {
     it(`stays linear on one 100k line of spaces after ${name}`, () => {
       const hostile = `${lead}${' '.repeat(100_000)}x\nint f(int a) {\n}\n`;
-      const cpu = process.threadCpuUsage();
+      const cpu = cpuUsage();
       const ex = buildExcerpt('a.c', hostile, 0, BUDGET);
       expect(cpuMsSince(cpu)).toBeLessThan(HOSTILE_LINE_CPU_MS);
       expect(ex.text).toBe('int f(int a) {');

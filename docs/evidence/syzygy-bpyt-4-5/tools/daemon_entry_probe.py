@@ -23,6 +23,8 @@ LIMIT_S = 600
 ANCHOR = "import { resolvePathIntent } from '@syzygy/polaris-dossier/state-directory';\n"
 DAEMON = "  let parsed = parseCli(process.argv.slice(2), process.env);\n"
 LOAD = "await import('@syzygy/three-surface-poc-app/dossier-site');"
+SITE = "'@syzygy/three-surface-poc-app/dossier-site'"
+POLARIS_COMMENT = "  // `syzygy polaris <url>` is the one-command launched run"
 POLARIS = ("    const { runPolarisCli } = await import('@syzygy/polaris-dossier');\n"
            "    const { renderLocalDossier } = await import('@syzygy/three-surface-poc-app/dossier-site');\n"
            "    return runPolarisCli(argv.slice(1), { renderer: renderLocalDossier });\n")
@@ -46,6 +48,24 @@ MUTANTS = [
           'P-close-failure', note='a load in the branch a failed close takes'),
     after("import * as path from 'node:path';\n", "import '@syzygy/three-surface-poc-app/dossier-site';\n", 'P-transitive',
           file='packages/polaris-dossier/src/state-directory.ts', note='a module main.ts imports statically (polaris-dossier state-directory) imports the POC app; main.ts is unchanged'),
+    # R1-R3 are rev-532's (R-GP-IMPL-TEST-CLOCKS-1, section 3.3): daemon-path loads between or after the two branches that the
+    # old text pin failed and the first version of the kept text row passed, because it checked the whole window from the
+    # first branch to the daemon line.
+    {'id': 'R1-flag-between-branches', 'kind': 'defect', 'file': MAIN, 'old': POLARIS_COMMENT,
+     'new': f"  if (process.env.SYZYGY_PRELOAD_RENDERER === '1') {LOAD}\n\n" + POLARIS_COMMENT,
+     'note': 'a dynamic import behind an environment flag, between the dossier and polaris branches; runs on the daemon path when the flag is set'},
+    {'id': 'R2-flag-createRequire-before-daemon', 'kind': 'defect', 'file': MAIN, 'old': DAEMON,
+     'new': f"  if (process.env.SYZYGY_PRELOAD_RENDERER === '1') process.getBuiltinModule('node:module').createRequire(import.meta.url)({SITE});\n" + DAEMON,
+     'note': 'a require through createRequire (taken by process.getBuiltinModule, no import edge), behind a flag, just before the daemon path'},
+    {'id': 'R3-runtime-hook', 'kind': 'defect', 'file': MAIN, 'old': DAEMON,
+     'new': ("  {\n"
+             "    const { registerHooks } = process.getBuiltinModule('node:module');\n"
+             "    const { readFileSync } = process.getBuiltinModule('node:fs');\n"
+             "    registerHooks({ load: (url, context, nextLoad) => (url.includes('/apps/three-surface-poc/')\n"
+             "      ? { format: 'module', source: readFileSync(new URL(url), 'utf8'), shortCircuit: true } : nextLoad(url, context)) });\n"
+             f"    await import({SITE});\n"
+             "  }\n") + DAEMON,
+     'note': 'a load hook registered at runtime that short-circuits every POC-app URL, then an unconditional import of the POC app, just before the daemon path'},
     after(ANCHOR, "import type * as PocSite from '@syzygy/three-surface-poc-app/dossier-site';\n", 'E-type-only-import', kind='equivalent',
           note='a type-only import at module top: erased by tsc, so nothing loads'),
     after("  if (argv[0] === 'dossier') {\n", "    // renders through @syzygy/three-surface-poc-app/dossier-site\n", 'E-comment-in-branch', kind='equivalent',

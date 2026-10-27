@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Builds docs/evidence/syzygy-bpyt-4-5/bounds-and-pins.json from the retained results beside it (syzygy-bpyt.4.5). Evidence tool, not authority.
 
-usage: python3 -I build_record.py TREE BASE_COMMIT MAIN_COMMIT EVIDENCE_COMMIT
+usage: python3 -I build_record.py TREE BASE_COMMIT MAIN_COMMIT EVIDENCE_COMMIT PRIOR_TEST_COMMIT
 
 BASE_COMMIT is where the branch began and where every base-side result ran; MAIN_COMMIT is the main the branch last merged.
 The change is `git diff MAIN_COMMIT EVIDENCE_COMMIT`, and each file it touches must be identical at BASE_COMMIT and MAIN_COMMIT,
@@ -13,22 +13,26 @@ result file's sha256, the census totals at both commits, the mutant outcomes, th
 
 What each result must have run against, checked here: the mutants and the head census at EVIDENCE_COMMIT itself; the
 daemon-entry probe at a commit whose main.ts, state-directory.ts and daemon-entry test are byte-identical to EVIDENCE_COMMIT's;
-the CPU separation at a commit whose three timed test files differ from EVIDENCE_COMMIT's only in `const <NAME>_CPU_MS = `
-lines (the bounds it proposed). Each result's tool must hash, at EVIDENCE_COMMIT, to the digest the result records.
+both CPU separations (thread CPU on Node 24, and process CPU on Node 22, where the tests' cpuUsage falls back) at a commit
+whose three timed test files differ from EVIDENCE_COMMIT's only in `const <NAME>_CPU_MS = ` lines (the bounds it proposed).
+Each result's tool must hash, at EVIDENCE_COMMIT, to the digest the result records, and each result that reads
+tools/mutant-cases.json must record the digest that file has at EVIDENCE_COMMIT.
 
 Checked claims: every mutant case ran as its `expect` says; every CPU bound in the tests equals the bound its separation
-proposed and sits 10x or more from the head's slowest region and from the mutant's fastest; on the daemon entry, every
-`defect` mutant fails the new test, every `hook` mutant fails the load-hook row, and every defect the old text pin failed
-the new test also fails. The narrative fields (`sites`, `residuals`) are the lane's own words.
+proposed and sits 10x or more from the head's slowest region and from the mutant's fastest, on thread CPU, and sits 10x or
+more from both under the process-CPU fallback too; on the daemon entry, every `defect` mutant fails the new test, every
+`hook` mutant fails the load-hook row, every defect the old text pin failed the new test also fails, the R- mutants
+(rev-532's daemon-path loads) pass the kept text row as it stood at PRIOR_TEST_COMMIT and fail it now, and the three
+equivalents whose kills were dropped (E-comment-in-branch, E-renamed-binding, E-branch-swap) pass the new test. The narrative fields (`sites`, `residuals`) are the lane's own words.
 """
 import glob, hashlib, json, math, os, re, subprocess, sys
 
-tree, base, main, ev = os.path.abspath(sys.argv[1]), sys.argv[2], sys.argv[3], sys.argv[4]
+tree, base, main, ev, prior = os.path.abspath(sys.argv[1]), sys.argv[2], sys.argv[3], sys.argv[4], sys.argv[5]
 here = os.path.join(tree, 'docs/evidence/syzygy-bpyt-4-5')
 git = lambda *a: subprocess.run(['git', *a], cwd=tree, capture_output=True, check=True).stdout
 sha = lambda b: hashlib.sha256(b).hexdigest()
 load = lambda name: json.load(open(os.path.join(here, name), encoding='utf8'))
-base, main, ev = (git('rev-parse', c).decode().strip() for c in (base, main, ev))
+base, main, ev, prior = (git('rev-parse', c).decode().strip() for c in (base, main, ev, prior))
 changed = sorted(p for p in git('diff', '--name-only', main, ev).decode().split('\n') if p)
 for p in changed:
     if not p.startswith('docs/evidence/syzygy-bpyt-4-5/') and subprocess.run(['git', 'diff', '--quiet', base, main, '--', p], cwd=tree).returncode != 0:
@@ -38,17 +42,26 @@ MAIN, STATE, DE_TEST = 'apps/syzygy/src/main.ts', 'packages/polaris-dossier/src/
 
 mutants, census_base, census_head = load('bound-and-pin-mutants.json'), load('census-base.json'), load('census-head.json')
 de_head, de_base, sep = load('daemon-entry-head.json'), load('daemon-entry-base-test.json'), load('cpu-separation.json')
+de_prior, sep22 = load('daemon-entry-prior-test.json'), load('cpu-separation-node22.json')
+if de_prior['testFileFrom'] != prior: sys.exit(f'daemon-entry-prior-test ran the test from {de_prior["testFileFrom"]}, not {prior}')
+if sep['cpuSource'] != 'thread' or sep22['cpuSource'] != 'process' or not sep22['node'].startswith('v22.'):
+    sys.exit('the CPU separations are not one thread-CPU run and one process-CPU run on Node 22')
 for name, at in (('mutants', mutants['tree']), ('census-head', census_head['commit'])):
     if at != ev: sys.exit(f'{name} ran at {at}, not {ev}')
 if census_base['commit'] != base or mutants['base'] != base or de_base['testFileFrom'] != base: sys.exit('a base-side result names another base')
-for name, record in (('daemon-entry-head', de_head), ('daemon-entry-base-test', de_base)):
+for name, record in (('daemon-entry-head', de_head), ('daemon-entry-base-test', de_base), ('daemon-entry-prior-test', de_prior)):
     if subprocess.run(['git', 'diff', '--quiet', record['commit'], ev, '--', MAIN, STATE, DE_TEST], cwd=tree).returncode != 0:
         sys.exit(f'{name}: {MAIN}, {STATE} or the test differ between {record["commit"]} and {ev}')
 cpu_files = sorted({s['file'] for s in sep['sites']})
-for line in git('diff', '-U0', sep['tree'], ev, '--', *cpu_files).decode().split('\n'):
-    if line.startswith(('+++', '---')) or not line.startswith(('+', '-')): continue
-    if not re.match(r'^[+-]const [A-Z_]+_CPU_MS = [0-9_]+;', line): sys.exit(f'cpu-separation: a line other than a bound differs from {ev}: {line}')
-for name, record in (('mutants', mutants), ('daemon-entry-head', de_head), ('daemon-entry-base-test', de_base), ('cpu-separation', sep), ('census', census_head)):
+for name, record in (('cpu-separation', sep), ('cpu-separation-node22', sep22)):
+    for line in git('diff', '-U0', record['tree'], ev, '--', *cpu_files).decode().split('\n'):
+        if line.startswith(('+++', '---')) or not line.startswith(('+', '-')): continue
+        if not re.match(r'^[+-]const [A-Z_]+_CPU_MS = [0-9_]+;', line): sys.exit(f'{name}: a line other than a bound differs from {ev}: {line}')
+cases_sha = sha(git('show', f'{ev}:docs/evidence/syzygy-bpyt-4-5/tools/mutant-cases.json'))
+for name, record in (('mutants', mutants), ('cpu-separation', sep), ('cpu-separation-node22', sep22)):
+    if record['cases']['sha256'] != cases_sha: sys.exit(f'{name} used a mutant-cases.json other than the one at {ev}')
+for name, record in (('mutants', mutants), ('daemon-entry-head', de_head), ('daemon-entry-base-test', de_base), ('daemon-entry-prior-test', de_prior),
+                     ('cpu-separation', sep), ('cpu-separation-node22', sep22), ('census', census_head)):
     path = f'docs/evidence/syzygy-bpyt-4-5/tools/{record["tool"]["name"]}'
     if sha(git('show', f'{ev}:{path}')) != record['tool']['sha256']: sys.exit(f'{name}: tool digest differs from {ev}')
 
@@ -57,12 +70,21 @@ def ran_as_expected(ids):
     for i in ids:
         if i not in cases: sys.exit(f'no mutant case {i}')
         if not all(s['asExpected'] for s in cases[i]['sides']): sys.exit(f'case {i} did not run as expected')
-    return {i: {s['side']: s['outcome'] for s in cases[i]['sides']} for i in ids}
+    def said(s):
+        failed = [r for r in s.get('rows', []) if r['status'] == 'failed']
+        return 'fail (by the test timeout)' if s['outcome'] == 'fail' and failed and all(r.get('byTimeout') for r in failed) else s['outcome']
+    return {i: {s['side']: said(s) for s in cases[i]['sides']} for i in ids}
 if not all(s['asExpected'] for c in cases.values() for s in c['sides']): sys.exit('a mutant case did not run as expected')
 
 bounds_at_ev = {}
 for f in cpu_files:
     for m in re.finditer(r'^const ([A-Z_]+_CPU_MS) = ([0-9_]+);', git('show', f'{ev}:{f}').decode(), re.M): bounds_at_ev[m.group(1)] = int(m.group(2).replace('_', ''))
+fallback = {}
+for s in sep22['sites']:
+    b = bounds_at_ev.get(s['bound'])
+    if b is None or s['fileBound']['ms'] != b or not s['fileBound']['separated']: sys.exit(f'{s["bound"]}: not 10x from both sides under the process-CPU fallback')
+    fallback[s['bound']] = {'node': sep22['node'], 'cpuSource': 'process', 'headRuns': len(s['headRuns']), 'headMaxMs': s['headMaxMs'], 'mutantMinMs': s['mutantMinMs'],
+                            'mutantMinIsLowerBound': s['mutantMinIsLowerBound'], 'boundOverHeadMax': s['fileBound']['overHeadMax'], 'mutantMinOverBound': s['fileBound']['mutantMinOver']}
 separation = {}
 for s in sep['sites']:
     b = bounds_at_ev.get(s['bound'])
@@ -73,7 +95,8 @@ for s in sep['sites']:
         'file': s['file'], 'boundMs': b, 'headRuns': len(s['headRuns']), 'headMaxMs': s['headMaxMs'], 'headLoad1': [min(loads), max(loads)],
         'mutants': [{'id': m['id'], 'title': m['title'], 'runs': len(m['runs']), 'cappedRuns': m['cappedRuns'], 'minMs': m['min'], 'reached': m['reached']} for m in s['mutants']],
         'mutantMinMs': s['mutantMinMs'], 'mutantMinIsLowerBound': s['mutantMinIsLowerBound'],
-        'boundOverHeadMax': round(b / s['headMaxMs'], 1), 'mutantMinOverBound': round(s['mutantMinMs'] / b, 1)}
+        'boundOverHeadMax': round(b / s['headMaxMs'], 1), 'mutantMinOverBound': round(s['mutantMinMs'] / b, 1),
+        'underProcessCpuFallback': fallback[s['bound']]}
 
 SITES = [
     {'site': 'apps/three-surface-poc/src/capture-test-artifact-main.test.ts:381 (base)', 'was': 'expect(Date.now() - started).toBeLessThan(5_000)',
@@ -103,6 +126,14 @@ SITES = [
     {'site': 'apps/three-surface-poc/src/polaris-generation/redis-shaped-discovery.test.ts:137 (base)', 'was': 'expect(bytes.selected).toBeGreaterThan(390_000)',
      'property': 'the byte cap is filled greedily', 'now': 'every unsplit deferred file holds more quotable bytes than the room left; the 400,000 cap stays (the contract, named in the describe title)',
      'mutants': ['redis-stop-at-first-misfit']},
+    {'site': 'apps/three-surface-poc/src/polaris-generation/self-corpus.test.ts:11 (base), PINNED_MAIN', 'was': 'an exact 40-hex commit pin',
+     'property': "the self-corpus denominator is the one the M7 record measured", 'disposition': 'kept',
+     'now': 'kept as an exact pin: the commit is the contract docs/evidence/polaris-m7-synthetic-successor-2026-09-23.json binds, and node-ci.yml checks out with fetch-depth: 0 to keep it in a hosted checkout; the comment above the constant says so',
+     'mutants': []},
+    {'site': 'apps/three-surface-poc/src/polaris-generation/redis-shaped-discovery.test.ts:152,159 (base), the two [Observed] rows', 'was': 'exact byte totals {selected, deferred, cap}',
+     'property': 'what selection measured on the fixed fixture corpus', 'disposition': 'kept',
+     'now': "kept: each row reports an observation over the fixed fixture corpus, so its totals are the observation and not a bound; the greedy fill is the :137 (base) row's property; the comment above the two rows says so",
+     'mutants': []},
 ]
 for s in SITES:
     s['outcomes'] = ran_as_expected(s['mutants'])
@@ -110,15 +141,22 @@ for s in SITES:
 controls = ran_as_expected(sorted(i for i in cases if i.startswith('control-')))
 
 PIN = 'each import is dynamic and inside the `dossier` or `polaris` branch'
-HOOK_ROW, TEXT_ROW = 'the daemon path never loads the POC app, and the `dossier render` branch does', 'every line of main.ts naming the POC app sits in'
+HOOK_ROW, TEXT_ROW = 'the daemon path never loads the POC app, and the `dossier render` branch does', 'every line of main.ts naming the POC app sits inside the `dossier` or the `polaris` branch'
+PRIOR_TEXT_ROW = 'every line of main.ts naming the POC app sits in the `dossier` and `polaris` branches'
+REV_LOADS, DROPPED_EQUIVALENTS = ['R1-flag-between-branches', 'R2-flag-createRequire-before-daemon', 'R3-runtime-hook'], ['E-comment-in-branch', 'E-renamed-binding', 'E-branch-swap']
 def outcome(record):
     out = {}
     for r in record['results']:
         mid = (r['mutant'] or {}).get('id', 'control')
         out[mid] = {'kind': (r['mutant'] or {}).get('kind'), 'skipped': r.get('skipped'), 'passed': r['passed'], 'failed': r['failed']}
     return out
-new, old = outcome(de_head), outcome(de_base)
-if new['control']['failed'] or old['control']['failed']: sys.exit('a daemon-entry control failed')
+new, old, prior_test = outcome(de_head), outcome(de_base), outcome(de_prior)
+if new['control']['failed'] or old['control']['failed'] or prior_test['control']['failed']: sys.exit('a daemon-entry control failed')
+for mid in REV_LOADS:
+    if prior_test[mid]['failed'] or not prior_test[mid]['passed']: sys.exit(f'{mid}: fails the kept text row as it stood at {prior}, so it is not the survivor rev-532 found')
+    if not any(TEXT_ROW in t for t in new[mid]['failed']): sys.exit(f'{mid}: the narrowed text row passes it')
+for mid in DROPPED_EQUIVALENTS:
+    if new[mid]['failed']: sys.exit(f'{mid}: an equivalent the new test fails')
 for mid, r in new.items():
     rows = r['failed']
     if r['kind'] == 'defect' and not rows: sys.exit(f'{mid}: a defect the new test passes')
@@ -130,7 +168,9 @@ daemon_entry = {
                  'newTextRow': 'fail' if any(TEXT_ROW in t for t in r['failed']) else 'pass',
                  'newOtherRows': sorted(t for t in r['failed'] if HOOK_ROW not in t and TEXT_ROW not in t),
                  'oldTextPin': 'skipped' if old[mid]['skipped'] else ('fail' if any(PIN in t for t in old[mid]['failed']) else 'pass'),
-                 'oldOtherRows': sorted(t for t in old[mid]['failed'] if PIN not in t)} for mid, r in new.items()],
+                 'oldOtherRows': sorted(t for t in old[mid]['failed'] if PIN not in t),
+                 'priorTest': 'skipped' if prior_test[mid]['skipped'] else ('pass' if not prior_test[mid]['failed'] else sorted(prior_test[mid]['failed']))} for mid, r in new.items()],
+    'priorTestFrom': prior,
     'note': 'defect: the daemon path loads the POC app on some argv or event; equivalent: nothing on any daemon path loads it; hook: the load hook itself is broken.'}
 daemon_entry['pinKillsDropped'] = [m['id'] for m in daemon_entry['mutants'] if m['oldTextPin'] == 'fail' and m['newHookRow'] == 'pass' and m['newTextRow'] == 'pass']
 daemon_entry['pinMisses'] = [m['id'] for m in daemon_entry['mutants'] if m['kind'] == 'defect' and m['oldTextPin'] == 'pass']
@@ -143,7 +183,8 @@ refused_within = {'base': [l for l in grep_n(base, 'refusedWithin(', READER) if 
                   'head': grep_n(ev, 'refusedWithin', READER)}
 timeouts = [r for r in census_head['rows'] if r['kind'].startswith('timeout')]
 RESIDUALS = [
-    'process.threadCpuUsage() exists from Node 23.9.0 while package.json engines admits Node 22.15 and later: on a Node 22 the four bounded rows throw rather than measure. CI and this host run Node 24.',
+    'process.threadCpuUsage() exists from Node 23.9.0 while package.json engines admits Node 22.15 and later. On a Node 22 the tests fall back to process.cpuUsage(), which also counts the worker process\'s other threads (garbage collection, compilation): each bound\'s separation under that fallback, on Node 22, is `underProcessCpuFallback`. CI and this host run Node 24.',
+    'The near-miss tag-names case runs under TAG_SCAN_CPU_MS with no mutant that fails it: the replaced scan is linear on that input too, so the bound rests on the other two cases; the test says so in a comment.',
     'A capped mutant run gives a lower bound on its region, not the region: the mutant minimum for those bounds is at least the cap, so each bound sits at least as far from the mutant as recorded.',
     'The kept daemon-entry text row also fails a mutant that loads nothing: a type-only import naming the POC app at module top (E-type-only-import), and a comment naming it outside the two branches would fail it the same way. The equivalents it passes are in daemonEntry.',
     "dossier-evaluation's INDEX and DEEP fixtures are ASCII, so a module that counted string length instead of UTF-8 bytes would pass every byte assertion there, at the base (literals) and at the head (counts) alike.",
@@ -161,7 +202,8 @@ record = {
     'subject': {'base': base, 'main': main, 'evidenceCommit': ev, 'testFiles': [{'path': p, 'sha256': sha(git('show', f'{ev}:{p}'))} for p in tests],
                 'testDiffSha256': sha(git('diff', main, ev, '--', *tests)), 'note': 'The test files are the subject; no product file differs between base and the evidence commit.'},
     'productFilesChanged': [p for p in changed if not p.startswith('docs/evidence/syzygy-bpyt-4-5/') and p not in tests],
-    'resultsRanAt': {'mutants': mutants['tree'], 'censusHead': census_head['commit'], 'daemonEntryHead': de_head['commit'], 'daemonEntryOldTest': de_base['commit'], 'cpuSeparation': sep['tree']},
+    'resultsRanAt': {'mutants': mutants['tree'], 'censusHead': census_head['commit'], 'daemonEntryHead': de_head['commit'], 'daemonEntryOldTest': de_base['commit'], 'daemonEntryPriorTest': de_prior['commit'],
+                     'cpuSeparation': sep['tree'], 'cpuSeparationNode22': sep22['tree']},
     'files': [{'path': os.path.relpath(p, tree), 'sha256': sha(open(p, 'rb').read())} for p in files],
     'ac1Sweep': {'population': {'base': census_base['population'], 'head': census_head['population']},
                  'elapsedFirstMethod': {'base': census_base['summary'].get('elapsed', {}).get('lines', 0), 'head': census_head['summary'].get('elapsed', {}).get('lines', 0),

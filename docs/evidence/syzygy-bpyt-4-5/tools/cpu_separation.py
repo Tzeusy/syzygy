@@ -7,14 +7,16 @@ usage: python3 -I cpu_separation.py TREE CASES.json OUT.json [HEAD_RUNS [MUTANT_
 Defaults: HEAD_RUNS 10, MUTANT_RUNS 10, CAP_MS 60000. CASES.json is tools/mutant-cases.json; each mutant below is named by
 its id there and applied from its `old`/`new` fragments (each `old` must occur exactly once).
 
-Probe. In the test file only, while a run lasts: every `const cpu = process.threadCpuUsage();` line gains a synchronous
+Probe. In the test file only, while a run lasts: every `const cpu = cpuUsage();` line gains a synchronous
 append of {start: line, pid, cpuUs} to the file $CPU_PROBE, and every `expect(cpuMsSince(cpu)).toBeLessThan(NAME);` line is
 replaced by an append of {end: line, pid, cpuMs: cpuMsSince(cpu)}; line numbers are the unprobed file's. The region is the
 code between the two, on the thread that runs the test. A run is `npx vitest run FILE -t TITLE` in its own session.
 
-Cap. While a start has no end, the region's CPU so far is read from /proc/<pid>/task/<pid>/stat (utime + stime: the main
-thread of the process that wrote the start, which in vitest's default forks pool is the thread that runs the test; the
-tool checks that this pid is not the vitest process itself) less the start reading. Past CAP_MS the session is SIGKILLed
+Cap. While a start has no end, the region's CPU so far is read from /proc (utime + stime) less the start reading: from
+/proc/<pid>/task/<pid>/stat, the main thread of the process that wrote the start, which in vitest's default forks pool
+is the thread that runs the test, when the `node` on PATH has process.threadCpuUsage; from /proc/<pid>/stat, the whole
+process, when it has not and the tests' cpuUsage falls back to process.cpuUsage (`cpuSource` in OUT.json). The tool
+checks that this pid is not the vitest process itself. Past CAP_MS the session is SIGKILLed
 and the run counts as `capped` at that reading: the region needed at least that much. A mutant row whose first 3 runs all
 cap stops there, since every further run could only show the same lower bound. A mutant run that ends records its region.
 
@@ -22,7 +24,8 @@ Bound. For each probed line: headMax is the largest region over all head runs an
 is the smallest over the runs of every mutant row that reaches the region (its own smallest run at least 10 x headMax; a
 capped run gives its reading, a lower bound). The proposed bound is their geometric mean rounded down to two significant
 figures, and the line passes when bound / headMax >= 10 and mutantMin / bound >= 10. A mutant row whose smallest run is
-under the proposed bound is recorded as not reached: the bound does not fail it.
+under the proposed bound is recorded as not reached: the bound does not fail it. Each site also records the bound the
+test file holds (`const NAME = N;`) and the same two ratios at it (`fileBound`).
 The tree must be clean before and is checked clean (`git diff --quiet`) after; each run records load1 at its start and end.
 """
 import hashlib, json, math, os, re, signal, subprocess, sys, tempfile, time
@@ -44,7 +47,7 @@ SITES = [
     {'file': TA, 'bound': 'ATTRIBUTE_SCAN_CPU_MS', 'head': 'scans one tag body that is a single word run at the ceiling',
      'mutants': [('junit-attr-regex', 'scans one tag body that is a single word run at the ceiling')]},
 ]
-START = re.compile(r'^(\s*)const cpu = process\.threadCpuUsage\(\);$')
+START = re.compile(r'^(\s*)const cpu = cpuUsage\(\);$')
 END = re.compile(r'^(\s*)expect\(cpuMsSince\(cpu\)\)\.toBeLessThan\((\w+)\);$')
 git = lambda *a: subprocess.run(['git', *a], cwd=tree, capture_output=True, text=True, check=True).stdout
 sha = lambda path: hashlib.sha256(open(path, 'rb').read()).hexdigest()
@@ -63,8 +66,11 @@ def probed(text):
         else: out.append(line)
     return '\n'.join(out)
 
+CPU_SOURCE = 'thread' if subprocess.run(['node', '-p', 'typeof process.threadCpuUsage'], capture_output=True, text=True).stdout.strip() == 'function' else 'process'
+
 def thread_ms(pid):
-    fields = open(f'/proc/{pid}/task/{pid}/stat').read().rsplit(')', 1)[1].split()
+    stat = f'/proc/{pid}/task/{pid}/stat' if CPU_SOURCE == 'thread' else f'/proc/{pid}/stat'
+    fields = open(stat).read().rsplit(')', 1)[1].split()
     return (int(fields[11]) + int(fields[12])) * TICK_MS
 
 def run(file, title, mutations):
@@ -125,15 +131,20 @@ for site in SITES:
     reached = [m for m in mutants if m['min'] >= 10 * head_max]
     mutant_min = min(m['min'] for m in reached) if reached else None
     bound = round_down_2sf(math.sqrt(head_max * mutant_min)) if reached else None
+    held = re.search(rf'^const {site["bound"]} = ([0-9_]+);', open(os.path.join(tree, site['file']), encoding='utf8').read(), re.M)
+    file_bound = int(held.group(1).replace('_', '')) if held else None
     for m in mutants: m['reached'] = bound is not None and m['min'] >= bound
     results.append({'bound': site['bound'], 'file': site['file'], 'lines': lines, 'headRuns': head, 'headMaxMs': head_max,
                     'mutants': mutants, 'mutantMinMs': mutant_min, 'mutantMinIsLowerBound': any(m['cappedRuns'] and m['min'] == mutant_min for m in reached),
                     'proposedBoundMs': bound, 'boundOverHeadMax': round(bound / head_max, 1) if bound else None,
                     'mutantMinOverBound': round(mutant_min / bound, 1) if bound else None,
-                    'separated': bool(bound and bound / head_max >= 10 and mutant_min / bound >= 10)})
+                    'separated': bool(bound and bound / head_max >= 10 and mutant_min / bound >= 10),
+                    'fileBound': {'ms': file_bound, 'overHeadMax': round(file_bound / head_max, 1) if file_bound else None,
+                                  'mutantMinOver': round(mutant_min / file_bound, 1) if file_bound and mutant_min else None,
+                                  'separated': bool(file_bound and mutant_min and file_bound / head_max >= 10 and mutant_min / file_bound >= 10)}})
     print(json.dumps({k: v for k, v in results[-1].items() if k not in ('headRuns', 'mutants')}), flush=True)
 if subprocess.run(['git', 'diff', '--quiet'], cwd=tree).returncode != 0: sys.exit('tree not restored')
 json.dump({'tool': {'name': 'cpu_separation.py', 'sha256': sha(os.path.abspath(__file__))}, 'cases': {'path': os.path.basename(cases_path), 'sha256': sha(cases_path)},
-           'tree': git('rev-parse', 'HEAD').strip(), 'headRuns': head_runs, 'mutantRuns': mutant_runs, 'capMs': cap_ms, 'cpus': os.cpu_count(),
+           'tree': git('rev-parse', 'HEAD').strip(), 'headRuns': head_runs, 'mutantRuns': mutant_runs, 'capMs': cap_ms, 'cpus': os.cpu_count(), 'cpuSource': CPU_SOURCE,
            'node': subprocess.run(['node', '--version'], capture_output=True, text=True).stdout.strip(), 'sites': results},
           open(out_path, 'w', encoding='utf8'), indent=1)

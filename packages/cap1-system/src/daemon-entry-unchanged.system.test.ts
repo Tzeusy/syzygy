@@ -238,17 +238,24 @@ describe('daemon entry: the one changed input, `dossier` as the first argument',
     expect(readFileSync(log, 'utf8').split('\n')).toContain(`${app}dist/polaris-generation/dossier-site.js`);
   });
 
-  // The kept part of the old text pin. A load on a daemon branch the row above never reaches (a start or close failure, a
-  // request-time entry read) shows only in the text, so every line naming the POC app must sit between the first of the
-  // `dossier` and `polaris` branches and the start of the daemon path, where only those two commands run it.
-  it('every line of main.ts naming the POC app sits in the `dossier` and `polaris` branches, before the daemon path', () => {
+  // The kept part of the old text pin. A load the row above never reaches (on a start or close failure, at a request-time
+  // entry read, or behind a variable or a runtime hook the row does not set) shows only in the text. So every line naming
+  // the POC app must sit strictly inside the `dossier` or the `polaris` branch: after the line opening it and before the
+  // first following line that closes it, `  }`. Code between or after the two branches runs on the daemon path.
+  it('every line of main.ts naming the POC app sits inside the `dossier` or the `polaris` branch, before the daemon path', () => {
     const lines = readFileSync(path.join(REPO_ROOT, 'apps/syzygy/src/main.ts'), 'utf8').split('\n');
-    const branches = [lines.indexOf("  if (argv[0] === 'dossier') {"), lines.indexOf("  if (argv[0] === 'polaris') {")];
+    const blocks = ["  if (argv[0] === 'dossier') {", "  if (argv[0] === 'polaris') {"].map((opening) => {
+      const open = lines.indexOf(opening);
+      return { open, close: open === -1 ? -1 : lines.indexOf('  }', open + 1) };
+    });
     const daemon = lines.indexOf('  let parsed = parseCli(process.argv.slice(2), process.env);');
-    expect(Math.min(...branches)).toBeGreaterThan(-1);
-    expect(daemon).toBeGreaterThan(Math.max(...branches));
+    for (const { open, close } of blocks) {
+      expect(open).toBeGreaterThan(-1);
+      expect(close).toBeGreaterThan(open);
+      expect(daemon).toBeGreaterThan(close);
+    }
     const naming = lines.flatMap((text, index) => (text.includes('three-surface-poc-app') ? [index] : []));
     expect(naming.length).toBeGreaterThan(0);
-    expect(naming.filter((index) => index < Math.min(...branches) || index > daemon).map((index) => lines[index])).toEqual([]);
+    expect(naming.filter((index) => !blocks.some(({ open, close }) => index > open && index < close)).map((index) => lines[index])).toEqual([]);
   });
 });

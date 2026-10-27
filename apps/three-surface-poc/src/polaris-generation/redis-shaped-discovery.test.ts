@@ -151,6 +151,8 @@ describe('discovery on a synthetic tree shaped like a large C key-value server',
     const bytesKept = (result: Awaited<ReturnType<typeof discoverAndSelect>>, path: string): number =>
       result.sources.filter(source => source.path === path && !source.exclusion.excluded).reduce((n, source) => n + source.spans.reduce((m, span) => m + Buffer.byteLength(span.text, 'utf8'), 0), 0);
 
+    // The two [Observed] rows keep their exact byte totals (syzygy-bpyt.4.5): each reports what selection measured on this
+    // fixed fixture corpus, so the totals are the observation itself, not a bound; the greedy fill is the row above's property.
     it('[Observed] with the path-and-size prior alone, the three files over 100,000 bytes each take their share and only 6 of 18 core files are read', async () => {
       const capped = await discoverAndSelect(run.corpus.sources, ['q'], DOSSIER_DISCOVERY_BUDGET, { permitted: async () => true });
       const kept = keptPaths(capped);

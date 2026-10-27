@@ -20,8 +20,13 @@ import {
   type OperatorReportedTestArtifactRecord,
 } from './test-artifact-verification.js';
 
-/** CPU milliseconds this thread has spent since `from`: the work done, which neither load on the host nor the pool running the file stretches. */
-const cpuMsSince = (from: NodeJS.CpuUsage): number => { const { user, system } = process.threadCpuUsage(from); return (user + system) / 1000; };
+/** CPU time so far: this thread's (`process.threadCpuUsage`, Node 23.9 and later) or, on the Node 22 releases `engines` admits, the
+ * whole process's (`process.cpuUsage`), which also counts the worker's other threads; each bound keeps its 10x margins under
+ * both (docs/evidence/syzygy-bpyt-4-5/cpu-separation-node22.json). */
+const cpuUsage = (from?: NodeJS.CpuUsage): NodeJS.CpuUsage =>
+  (typeof process.threadCpuUsage === 'function' ? process.threadCpuUsage(from) : process.cpuUsage(from));
+/** CPU milliseconds spent since `from`: the work done, which neither load on the host nor the pool running the file stretches. */
+const cpuMsSince = (from: NodeJS.CpuUsage): number => { const { user, system } = cpuUsage(from); return (user + system) / 1000; };
 // A CPU-time bound sits at the geometric mean of the slowest head run of its region and the fastest run of the quadratic
 // mutant it names, at least 10x from each (docs/evidence/syzygy-bpyt-4-5/cpu-separation.json, syzygy-bpyt.4.5).
 const TAG_SCAN_CPU_MS = 1_500; // the `<testsuite\s+([^>]*?)\/?>` scan 169e38db replaced
@@ -92,20 +97,22 @@ describe('parseJUnitRootTotals', () => {
   // Round-1 finding 2: the old `/<testsuite\s+([^>]*?)\/?>/i` took 30.7 s
   // on 960 KB of unterminated tags, and `(\w+)="…"` is quadratic over a
   // long word run. Each crafted input below sits just under the ceiling.
+  // The near-miss tag-names case has no mutant of its own under TAG_SCAN_CPU_MS: the replaced scan is linear on it too
+  // (docs/evidence/syzygy-bpyt-4-5/cpu-separation.json), so its bound is the other two cases' (syzygy-bpyt.4.5).
   it.each([
     ['unterminated opening tags', '<testsuite a'],
     ['unterminated plural tags', '<testsuites a'],
     ['near-miss tag names', '<testsuitex '],
   ])('scans %s at the ceiling in linear time', (_label, unit) => {
     const crafted = unit.repeat(Math.floor(MAX_JUNIT_ARTIFACT_BYTES / unit.length));
-    const cpu = process.threadCpuUsage();
+    const cpu = cpuUsage();
     expect(parseJUnitRootTotals(crafted)).toBeNull();
     expect(cpuMsSince(cpu)).toBeLessThan(TAG_SCAN_CPU_MS);
   });
 
   it('scans one tag body that is a single word run at the ceiling in linear time', () => {
     const crafted = `<testsuite ${'a'.repeat(MAX_JUNIT_ARTIFACT_BYTES - 32)} tests="1">`;
-    const cpu = process.threadCpuUsage();
+    const cpu = cpuUsage();
     expect(parseJUnitRootTotals(crafted)).toEqual({ tests: 1, failures: 0, errors: 0, skipped: 0, time: null });
     expect(cpuMsSince(cpu)).toBeLessThan(ATTRIBUTE_SCAN_CPU_MS);
   });
