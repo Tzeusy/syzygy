@@ -97,6 +97,9 @@ describe('the shared workspace resolver', () => {
     ['a .tar dependency', 'dossier', { dependencies: { dossier: 'lib-0.0.0.tar' } }, {}],
     ['a .tar.gz dependency', 'dossier', { dependencies: { dossier: 'lib-0.0.0.tar.gz' } }, {}],
     ['a remote tarball URL dependency', 'dossier', { dependencies: { dossier: 'https://example.com/lib-1.0.0.tgz' } }, {}],
+    ['a remote http tarball URL dependency', 'dossier', { dependencies: { dossier: 'http://example.com/lib-1.0.0.tar.gz' } }, {}],
+    ['an npm: alias of a registry package', 'dossier', { dependencies: { dossier: 'npm:typescript@^5.5.0' } }, {}],
+    ['a dependency on its parent directory', 'dossier', { dependencies: { dossier: '..' } }, {}],
     ['a file: dependency of another package', 'dossier', {}, { dependencies: { dossier: 'file:../../apps/app' } }],
   ])('reads a bare name declared as %s as naming no module', (_form, specifier, app, lib) => {
     expect(resolveIn(workspace({}, undefined, app, lib), 'apps/app/src/main.ts', specifier)).toBeUndefined();
@@ -116,6 +119,12 @@ describe('the shared workspace resolver', () => {
 
   it("reads the workspace root's manifest beside the packages'", () => {
     expect(WORKSPACE.manifests.get('syzygy-workspace')).toEqual({ dir: '.', ...JSON.parse(readFileSync(join(ROOT, 'package.json'), 'utf8')) });
+  });
+
+  it("reads a bare name the workspace root's manifest declares as a local dependency as naming no module", () => {
+    const { manifests, isFile } = workspace({});
+    const root: Manifest = { name: 'root', dir: '.', devDependencies: { dossier: './packages/lib' } };
+    expect(resolveIn({ manifests: new Map([...manifests, [root.name, root]]), isFile }, 'apps/app/src/main.ts', 'dossier')).toBeUndefined();
   });
 
   it('resolves an export whose conditions other than types all name one target', () => {

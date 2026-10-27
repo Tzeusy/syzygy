@@ -61,9 +61,11 @@ function moduleIn(workspace: Workspace, dir: string, target: string): string | u
  *   as a directory or a file;
  * - `link:` and `workspace:`: npm does not install them at all (npm-package-arg 12.0.2 throws EUNSUPPORTEDPROTOCOL), and other
  *   package managers link them locally;
- * - `npm:`: an alias of another package, which may be a workspace package's name. An alias of a registry package is refused too,
+ * - `npm:`: an alias. npm installs it from the registry (npm-package-arg 12.0.2 accepts only a registry spec after `npm:`), but
+ *   its target may carry a workspace package's name, which other package managers can link locally; every alias is refused,
  *   failing closed.
- * The tarball arm also matches a tarball URL (`https://…/x.tgz`), which npm types as `remote`; it is refused too, failing closed.
+ * The tarball arm also matches a tarball URL (`https://…/x.tgz`), which npm types as `remote`, and a git spec whose text ends in a
+ * tarball extension (`github:someone/dossier#v1.tar`), which npm types as `git`; both are refused too, failing closed.
  * Residual (syzygy-bpyt.8.38): npm also reads a directory spec with no leading `./`, `../`, `/` or `~/` (`packages/polaris-dossier/`,
  * `.hidden-lib`, `a/b/c`) as a directory. Those still read as outside the workspace; widening the pattern to them changes what the
  * guards refuse and needs a GP-Q0 ruling first. */
