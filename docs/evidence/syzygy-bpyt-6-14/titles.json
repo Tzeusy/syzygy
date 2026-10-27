@@ -5,13 +5,17 @@
   "packages/three-surface-poc-core/src/owner-act-drafter.test.ts"
  ],
  "baseCommit": "f7ea858480b30ffc4407154a84d1d03f3fe4a549",
- "headCommit": "3b04b1cd6a283fea7d269e01aaf4849289aa477f",
+ "headCommit": "6249951432d6d0c0608f8dfb93e525f706159c5a",
  "base": 18,
- "head": 37,
+ "head": 42,
  "added": [
   [
    "packages/polaris-dossier/src/no-egress.test.ts",
    "the S10 bundle takes each workspace package from the source its entry names (syzygy-bpyt.6.14) > aliases every workspace package entry to the src module its exports, or its main, names"
+  ],
+  [
+   "packages/polaris-dossier/src/no-egress.test.ts",
+   "the S10 bundle takes each workspace package from the source its entry names (syzygy-bpyt.6.14) > bundles the driver only under the guard: an alias that leaves the sources fails it"
   ],
   [
    "packages/polaris-dossier/src/no-egress.test.ts",
@@ -23,7 +27,15 @@
   ],
   [
    "packages/support/src/support-purity.test.ts",
+   "@syzygy/support stays a pure leaf > assigns to no property in any source, so no allowed global is rewritten"
+  ],
+  [
+   "packages/support/src/support-purity.test.ts",
    "@syzygy/support stays a pure leaf > exports exactly the \".\" entry, index.js, so no other module is an entry"
+  ],
+  [
+   "packages/support/src/support-purity.test.ts",
+   "@syzygy/support stays a pure leaf > lists a module at any depth and with any extension, and skips only the tests and the testkit"
   ],
   [
    "packages/support/src/support-purity.test.ts",
@@ -40,6 +52,14 @@
   [
    "packages/support/src/support-purity.test.ts",
    "@syzygy/support stays a pure leaf > scans every source module under src, at any depth, not an empty list"
+  ],
+  [
+   "packages/support/src/support-purity.test.ts",
+   "@syzygy/support stays a pure leaf > takes only createHash from node:crypto, by its own name, and re-exports nothing from it"
+  ],
+  [
+   "packages/support/src/support-purity.test.ts",
+   "the forbidden-token list both guards stand on > is the literal list, so a narrowed token fails here"
   ],
   [
    "packages/support/src/support-purity.test.ts",
@@ -117,11 +137,11 @@
  "perFile": {
   "packages/polaris-dossier/src/no-egress.test.ts": {
    "base": 2,
-   "head": 5
+   "head": 6
   },
   "packages/support/src/support-purity.test.ts": {
    "base": 13,
-   "head": 29
+   "head": 33
   },
   "packages/three-surface-poc-core/src/owner-act-drafter.test.ts": {
    "base": 3,

@@ -7,9 +7,9 @@
   "sha256": "7799aa73bae9a4790b75b85a597c57bf07aab4bb4dab6c67570e69af7535128e"
  },
  "subject": {
-  "commit": "3b04b1cd6a283fea7d269e01aaf4849289aa477f",
+  "commit": "6249951432d6d0c0608f8dfb93e525f706159c5a",
   "file": "packages/polaris-dossier/src/no-egress.test.ts",
-  "fileSha256": "84b4cddbdb087b27cfd07fc1f5909303aeac2e8c766b210b16998e9d93df9c39",
+  "fileSha256": "ba0be19f571e3179f1b1a998560fb3e9013f64411c0b5cc358b3b17203a32e91",
   "testkit": "packages/polaris-generation-consent/src/recorder-fixtures.testkit.ts",
   "testkitSha256": "3576a99df9c6da7cec515632b362f237d59028069d5f239e983bc337b31e6fc3"
  },
@@ -22,49 +22,54 @@
  "runs": [
   {
    "index": 1,
-   "startedAt": "2026-10-27T15:10:45+00:00",
+   "startedAt": "2026-10-27T19:02:05+00:00",
    "command": "npx vitest run --project @syzygy/polaris-dossier packages/polaris-dossier/src/no-egress.test.ts --reporter=json --outputFile=<tmp> --testTimeout=600000 --hookTimeout=600000",
    "exitCode": 0,
-   "wallSeconds": 9.8,
+   "wallSeconds": 13.0,
    "load1": {
-    "start": 27.98,
-    "end": 31.43,
-    "min": 27.98,
-    "max": 28.94,
-    "samples": 2
+    "start": 30.9,
+    "end": 32.82,
+    "min": 30.9,
+    "max": 32.82,
+    "samples": 3
    },
    "suiteTotals": {
-    "numTotalTests": 6,
-    "numPassedTests": 5,
+    "numTotalTests": 7,
+    "numPassedTests": 6,
     "numFailedTests": 0,
     "numPendingTests": 1
    },
-   "fileTests": 6,
+   "fileTests": 7,
    "tests": [
     {
      "name": "no provider call and no transmission (S10): an operating-system capture of a full fixture run creates no Internet-family socket over the whole run, from preflight to close",
      "status": "passed",
-     "durationMs": 1790
+     "durationMs": 1491
     },
     {
      "name": "no provider call and no transmission (S10): an operating-system capture of a full fixture run sees the canary: one loopback datagram sent before the same run is in the capture",
      "status": "passed",
-     "durationMs": 1252
+     "durationMs": 1479
     },
     {
      "name": "the S10 bundle takes each workspace package from the source its entry names (syzygy-bpyt.6.14) aliases every workspace package entry to the src module its exports, or its main, names",
      "status": "passed",
-     "durationMs": 2
+     "durationMs": 1
     },
     {
      "name": "the S10 bundle takes each workspace package from the source its entry names (syzygy-bpyt.6.14) bundles the driver with every @syzygy specifier inside packages/*/src or apps/*/src",
      "status": "passed",
-     "durationMs": 527
+     "durationMs": 535
+    },
+    {
+     "name": "the S10 bundle takes each workspace package from the source its entry names (syzygy-bpyt.6.14) bundles the driver only under the guard: an alias that leaves the sources fails it",
+     "status": "passed",
+     "durationMs": 790
     },
     {
      "name": "the S10 bundle takes each workspace package from the source its entry names (syzygy-bpyt.6.14) fails the bundle when an @syzygy specifier resolves outside them",
      "status": "passed",
-     "durationMs": 15
+     "durationMs": 10
     },
     {
      "name": "no provider call and no transmission (S10), without strace is not proved on this host: strace is unavailable, so the capture is skipped, never reported as passed",
@@ -75,44 +80,49 @@
   },
   {
    "index": 2,
-   "startedAt": "2026-10-27T15:10:55+00:00",
+   "startedAt": "2026-10-27T19:02:18+00:00",
    "command": "npx vitest run --project @syzygy/polaris-dossier packages/polaris-dossier/src/no-egress.test.ts --reporter=json --outputFile=<tmp> --testTimeout=600000 --hookTimeout=600000",
    "exitCode": 0,
-   "wallSeconds": 10.3,
+   "wallSeconds": 10.5,
    "load1": {
-    "start": 31.43,
-    "end": 32.08,
-    "min": 31.43,
-    "max": 32.52,
+    "start": 32.82,
+    "end": 32.16,
+    "min": 32.16,
+    "max": 32.82,
     "samples": 3
    },
    "suiteTotals": {
-    "numTotalTests": 6,
-    "numPassedTests": 5,
+    "numTotalTests": 7,
+    "numPassedTests": 6,
     "numFailedTests": 0,
     "numPendingTests": 1
    },
-   "fileTests": 6,
+   "fileTests": 7,
    "tests": [
     {
      "name": "no provider call and no transmission (S10): an operating-system capture of a full fixture run creates no Internet-family socket over the whole run, from preflight to close",
      "status": "passed",
-     "durationMs": 1334
+     "durationMs": 1417
     },
     {
      "name": "no provider call and no transmission (S10): an operating-system capture of a full fixture run sees the canary: one loopback datagram sent before the same run is in the capture",
      "status": "passed",
-     "durationMs": 1456
+     "durationMs": 1231
     },
     {
      "name": "the S10 bundle takes each workspace package from the source its entry names (syzygy-bpyt.6.14) aliases every workspace package entry to the src module its exports, or its main, names",
      "status": "passed",
-     "durationMs": 6
+     "durationMs": 2
     },
     {
      "name": "the S10 bundle takes each workspace package from the source its entry names (syzygy-bpyt.6.14) bundles the driver with every @syzygy specifier inside packages/*/src or apps/*/src",
      "status": "passed",
-     "durationMs": 1210
+     "durationMs": 893
+    },
+    {
+     "name": "the S10 bundle takes each workspace package from the source its entry names (syzygy-bpyt.6.14) bundles the driver only under the guard: an alias that leaves the sources fails it",
+     "status": "passed",
+     "durationMs": 426
     },
     {
      "name": "the S10 bundle takes each workspace package from the source its entry names (syzygy-bpyt.6.14) fails the bundle when an @syzygy specifier resolves outside them",
@@ -128,49 +138,54 @@
   },
   {
    "index": 3,
-   "startedAt": "2026-10-27T15:11:05+00:00",
+   "startedAt": "2026-10-27T19:02:28+00:00",
    "command": "npx vitest run --project @syzygy/polaris-dossier packages/polaris-dossier/src/no-egress.test.ts --reporter=json --outputFile=<tmp> --testTimeout=600000 --hookTimeout=600000",
    "exitCode": 0,
-   "wallSeconds": 7.6,
+   "wallSeconds": 9.9,
    "load1": {
-    "start": 32.08,
-    "end": 30.41,
-    "min": 31.75,
-    "max": 32.08,
+    "start": 32.16,
+    "end": 31.56,
+    "min": 31.34,
+    "max": 32.16,
     "samples": 2
    },
    "suiteTotals": {
-    "numTotalTests": 6,
-    "numPassedTests": 5,
+    "numTotalTests": 7,
+    "numPassedTests": 6,
     "numFailedTests": 0,
     "numPendingTests": 1
    },
-   "fileTests": 6,
+   "fileTests": 7,
    "tests": [
     {
      "name": "no provider call and no transmission (S10): an operating-system capture of a full fixture run creates no Internet-family socket over the whole run, from preflight to close",
      "status": "passed",
-     "durationMs": 1152
+     "durationMs": 1119
     },
     {
      "name": "no provider call and no transmission (S10): an operating-system capture of a full fixture run sees the canary: one loopback datagram sent before the same run is in the capture",
      "status": "passed",
-     "durationMs": 1166
+     "durationMs": 1118
     },
     {
      "name": "the S10 bundle takes each workspace package from the source its entry names (syzygy-bpyt.6.14) aliases every workspace package entry to the src module its exports, or its main, names",
      "status": "passed",
-     "durationMs": 4
+     "durationMs": 3
     },
     {
      "name": "the S10 bundle takes each workspace package from the source its entry names (syzygy-bpyt.6.14) bundles the driver with every @syzygy specifier inside packages/*/src or apps/*/src",
      "status": "passed",
-     "durationMs": 343
+     "durationMs": 678
+    },
+    {
+     "name": "the S10 bundle takes each workspace package from the source its entry names (syzygy-bpyt.6.14) bundles the driver only under the guard: an alias that leaves the sources fails it",
+     "status": "passed",
+     "durationMs": 357
     },
     {
      "name": "the S10 bundle takes each workspace package from the source its entry names (syzygy-bpyt.6.14) fails the bundle when an @syzygy specifier resolves outside them",
      "status": "passed",
-     "durationMs": 16
+     "durationMs": 11
     },
     {
      "name": "no provider call and no transmission (S10), without strace is not proved on this host: strace is unavailable, so the capture is skipped, never reported as passed",
@@ -181,49 +196,54 @@
   },
   {
    "index": 4,
-   "startedAt": "2026-10-27T15:11:13+00:00",
+   "startedAt": "2026-10-27T19:02:38+00:00",
    "command": "npx vitest run --project @syzygy/polaris-dossier packages/polaris-dossier/src/no-egress.test.ts --reporter=json --outputFile=<tmp> --testTimeout=600000 --hookTimeout=600000",
    "exitCode": 0,
-   "wallSeconds": 7.5,
+   "wallSeconds": 10.8,
    "load1": {
-    "start": 30.41,
-    "end": 32.46,
-    "min": 30.41,
-    "max": 32.46,
-    "samples": 2
+    "start": 31.56,
+    "end": 33.95,
+    "min": 31.56,
+    "max": 34.56,
+    "samples": 3
    },
    "suiteTotals": {
-    "numTotalTests": 6,
-    "numPassedTests": 5,
+    "numTotalTests": 7,
+    "numPassedTests": 6,
     "numFailedTests": 0,
     "numPendingTests": 1
    },
-   "fileTests": 6,
+   "fileTests": 7,
    "tests": [
     {
      "name": "no provider call and no transmission (S10): an operating-system capture of a full fixture run creates no Internet-family socket over the whole run, from preflight to close",
      "status": "passed",
-     "durationMs": 1086
+     "durationMs": 1204
     },
     {
      "name": "no provider call and no transmission (S10): an operating-system capture of a full fixture run sees the canary: one loopback datagram sent before the same run is in the capture",
      "status": "passed",
-     "durationMs": 1119
+     "durationMs": 1606
     },
     {
      "name": "the S10 bundle takes each workspace package from the source its entry names (syzygy-bpyt.6.14) aliases every workspace package entry to the src module its exports, or its main, names",
      "status": "passed",
-     "durationMs": 2
+     "durationMs": 6
     },
     {
      "name": "the S10 bundle takes each workspace package from the source its entry names (syzygy-bpyt.6.14) bundles the driver with every @syzygy specifier inside packages/*/src or apps/*/src",
      "status": "passed",
-     "durationMs": 365
+     "durationMs": 601
+    },
+    {
+     "name": "the S10 bundle takes each workspace package from the source its entry names (syzygy-bpyt.6.14) bundles the driver only under the guard: an alias that leaves the sources fails it",
+     "status": "passed",
+     "durationMs": 372
     },
     {
      "name": "the S10 bundle takes each workspace package from the source its entry names (syzygy-bpyt.6.14) fails the bundle when an @syzygy specifier resolves outside them",
      "status": "passed",
-     "durationMs": 28
+     "durationMs": 15
     },
     {
      "name": "no provider call and no transmission (S10), without strace is not proved on this host: strace is unavailable, so the capture is skipped, never reported as passed",
@@ -234,34 +254,34 @@
   },
   {
    "index": 5,
-   "startedAt": "2026-10-27T15:11:20+00:00",
+   "startedAt": "2026-10-27T19:02:49+00:00",
    "command": "npx vitest run --project @syzygy/polaris-dossier packages/polaris-dossier/src/no-egress.test.ts --reporter=json --outputFile=<tmp> --testTimeout=600000 --hookTimeout=600000",
    "exitCode": 0,
-   "wallSeconds": 7.9,
+   "wallSeconds": 9.2,
    "load1": {
-    "start": 32.46,
-    "end": 31.87,
-    "min": 32.46,
-    "max": 32.82,
+    "start": 33.95,
+    "end": 31.9,
+    "min": 32.59,
+    "max": 33.95,
     "samples": 2
    },
    "suiteTotals": {
-    "numTotalTests": 6,
-    "numPassedTests": 5,
+    "numTotalTests": 7,
+    "numPassedTests": 6,
     "numFailedTests": 0,
     "numPendingTests": 1
    },
-   "fileTests": 6,
+   "fileTests": 7,
    "tests": [
     {
      "name": "no provider call and no transmission (S10): an operating-system capture of a full fixture run creates no Internet-family socket over the whole run, from preflight to close",
      "status": "passed",
-     "durationMs": 1118
+     "durationMs": 1403
     },
     {
      "name": "no provider call and no transmission (S10): an operating-system capture of a full fixture run sees the canary: one loopback datagram sent before the same run is in the capture",
      "status": "passed",
-     "durationMs": 1426
+     "durationMs": 1141
     },
     {
      "name": "the S10 bundle takes each workspace package from the source its entry names (syzygy-bpyt.6.14) aliases every workspace package entry to the src module its exports, or its main, names",
@@ -271,12 +291,17 @@
     {
      "name": "the S10 bundle takes each workspace package from the source its entry names (syzygy-bpyt.6.14) bundles the driver with every @syzygy specifier inside packages/*/src or apps/*/src",
      "status": "passed",
-     "durationMs": 430
+     "durationMs": 493
+    },
+    {
+     "name": "the S10 bundle takes each workspace package from the source its entry names (syzygy-bpyt.6.14) bundles the driver only under the guard: an alias that leaves the sources fails it",
+     "status": "passed",
+     "durationMs": 494
     },
     {
      "name": "the S10 bundle takes each workspace package from the source its entry names (syzygy-bpyt.6.14) fails the bundle when an @syzygy specifier resolves outside them",
      "status": "passed",
-     "durationMs": 16
+     "durationMs": 22
     },
     {
      "name": "no provider call and no transmission (S10), without strace is not proved on this host: strace is unavailable, so the capture is skipped, never reported as passed",
