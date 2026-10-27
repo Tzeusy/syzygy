@@ -2,10 +2,10 @@
  "bead": "syzygy-bpyt.8.39",
  "base": "d38d7a3ce632a34c2a41bdb77ad323ba0b05b777",
  "first": "308a62f4a48e47b625aeff9cc718b1b2c37161f8",
- "head": "5f0d5547dfe7f89adf3e86310f819ddeebfaae90",
+ "head": "00b7dcf70b764b13017784581bc80a5a3502532f",
  "subject": {
-  "what": "git diff d38d7a3c 5f0d5547 -- packages/polaris-generation-core/src/workspace-reach.test.ts packages/polaris-generation-core/src/workspace-reach.testkit.ts",
-  "sha256": "4a0291695ff094172f09f21ceaf5caf6eb2c844e9d32c799bff9465e4509feb1",
+  "what": "git diff d38d7a3c 00b7dcf7 -- packages/polaris-generation-core/src/workspace-reach.test.ts packages/polaris-generation-core/src/workspace-reach.testkit.ts",
+  "sha256": "60ff6905fdcdf5cfd8ac0842741543dcf543c82ebdf3ec3496ded9ff4f6a2017",
   "files": {
    "packages/polaris-generation-core/src/workspace-reach.test.ts": {
     "base": "a20cdbc84b4e21ee62d6d06eb2abe8c7a21affa03974a35355a812ac89b7cb1e",
@@ -13,14 +13,21 @@
    },
    "packages/polaris-generation-core/src/workspace-reach.testkit.ts": {
     "base": "ed67106fe74333c97f419f4a52f14f75bfaa34bbfa5b41f33c4f1b6545895731",
-    "head": "440209bb6d876b7ae1240a88cd4cf5913b01750a0d9ffa56f90c072be7f76951"
+    "head": "e07c486b52889129547d5edbc4c2cf89250c8c016085501dbc59747e38f5dc73"
    }
   }
  },
- "repair": {
-  "what": "git diff 308a62f4 5f0d5547 -- packages/polaris-generation-core/src/workspace-reach.test.ts packages/polaris-generation-core/src/workspace-reach.testkit.ts",
-  "sha256": "a825177271320866bddbe9ab688d7f0c791b3e4584ee43c4b2add7dd9afefca6"
+ "repairs": {
+  "round1": {
+   "what": "git diff 308a62f4 5f0d5547 -- packages/polaris-generation-core/src/workspace-reach.test.ts packages/polaris-generation-core/src/workspace-reach.testkit.ts",
+   "sha256": "a825177271320866bddbe9ab688d7f0c791b3e4584ee43c4b2add7dd9afefca6"
+  },
+  "round2": {
+   "what": "git diff 5f0d5547 00b7dcf7 -- packages/polaris-generation-core/src/workspace-reach.test.ts packages/polaris-generation-core/src/workspace-reach.testkit.ts",
+   "sha256": "aa09ddcac7467953300bbe5682a04f6ccc5b1ce6cbfea64fb1389b2104da8dbf"
+  }
  },
+ "suiteCommit": "5f0d5547dfe7f89adf3e86310f819ddeebfaae90",
  "productFilesChanged": [],
  "testkitImporters": [
   "packages/polaris-dossier/src/subpath-imports.test.ts",
@@ -152,7 +159,7 @@
  "testkit": {
   "changedLines": {
    "-": 4,
-   "+": 12
+   "+": 13
   },
   "docCommentLines": {
    "base": [
@@ -161,7 +168,7 @@
    ],
    "head": [
     59,
-    77
+    78
    ]
   },
   "emitEqual": true,
@@ -216,11 +223,11 @@
    171
   ],
   "load1": [
-   22.0,
-   22.0,
-   22.3,
-   22.1,
-   22.1
+   25.4,
+   25.4,
+   24.8,
+   24.0,
+   24.6
   ]
  },
  "titles": {
@@ -257,19 +264,24 @@
   "npm": "11.5.1",
   "arborist": "9.1.3",
   "node": "v24.6.0",
-  "cases": 9,
+  "cases": 14,
   "links": [
-   "@syzygy/slib: npm:typescript@*",
-   "wlib: ^1.0.0",
-   "wlib: npm:typescript@*",
-   "wlib: npm:typescript@^1.0.0"
+   "app @syzygy/slib: npm:typescript@*",
+   "app wlib: ^1.0.0",
+   "app wlib: npm:typescript",
+   "app wlib: npm:typescript@*",
+   "app wlib: npm:typescript@^1.0.0",
+   "root @syzygy/slib: npm:typescript@^5.5.0",
+   "root wlib: ^5.5.0",
+   "root wlib: npm:typescript@^5.5.0"
   ],
   "registry": [
-   "dossier: npm:typescript",
-   "dossier: npm:typescript@^5.5.0",
-   "dossier: npm:wlib@*",
-   "wlib: ^5.5.0",
-   "wlib: npm:typescript@^5.5.0"
+   "app dossier: npm:typescript",
+   "app dossier: npm:typescript@^5.5.0",
+   "app dossier: npm:wlib@*",
+   "app wlib: ^5.5.0",
+   "app wlib: npm:typescript@^5.5.0",
+   "root dossier: npm:typescript@^5.5.0"
   ]
  },
  "workspaces": {
@@ -294,9 +306,9 @@
   "repeat.py": "1c87146329e02d971d45eedc8da090c1fd7805dfa8869d0d4cacda99b63572af",
   "comment_only.cjs": "e987f080a7c873907ce5c3bc409bc2752b9c9a1a1d470f502a992a530f86dd8d",
   "npa_probe.cjs": "fd2e2741433b26255e92f42f4b2522f7957570d312617e7057d2926754a695cf",
-  "npm_alias_probe.py": "5960693079918531475f034732be4615a52eef42537dfe73e3c46a3e39123cd9",
+  "npm_alias_probe.py": "656b03bbdfd74890abc25217f4c663be6d38e296a60f2ea97f250a04003fefc4",
   "suite_summary.py": "fab8e5251fd7b2560a2e8cb7cdcfd00d3d63b19cdb7cb91d555b479bce7eae8a",
-  "record.py": "c46565eec2c9a5d6fbf26ec106acb281e2f1e8cb487aeef9d1ac25c751429958"
+  "record.py": "2719faefa51f2ec1c2df9d3ee2b70e951fa90a6e27712a162de769ee80d8dca0"
  },
  "faithfulTree": {
   "manifests": 13,

@@ -1,8 +1,9 @@
 """syzygy-bpyt.8.39: derive summary.json from the raw outputs beside it, checking each against the git objects of the tree given.
 
 The subject is the code commits over BASE (main after PR 487), ending at HEAD: FIRST, the PR 536 review's notes N1, N2 and N4, and
-N3's optional comment clause; then HEAD, the repair of round 1 of this bead's own review (R-GP-IMPL-GUARD-PINS-FOLLOWUP-2-1): F1's
-`npm:` clause, N1's two rows and N2's residual. Inputs (all in this directory):
+N3's optional comment clause; REPAIR1, the repair of round 1 of this bead's own review (R-GP-IMPL-GUARD-PINS-FOLLOWUP-2-1): F1's
+`npm:` clause, N1's two rows and N2's residual; then HEAD, the repair of round 2 (R-GP-IMPL-GUARD-PINS-FOLLOWUP-2-2): F1's six-line
+`npm:` clause and N2's dated count, comment lines only. Inputs (all in this directory):
   rev536-at-base.json, rev536-at-head.json  all 11 of the PR 536 reviewer's mutants, run unchanged from
                        docs/evidence/guard-pins-followup-review-2026-10-27/rev536-specs.json at BASE and at HEAD, with that
                        reviewer's copy of mut.py (the PR 524 reviewer's runner);
@@ -14,7 +15,8 @@ N3's optional comment clause; then HEAD, the repair of round 1 of this bead's ow
   comment-only.json    comment_only.cjs here: the testkit's comment-free emit and comment-free print at BASE and HEAD, with its selftest;
   npa-probe.json       npa_probe.cjs here: npm-package-arg's type for every version form the testkit comment and the rows name;
   npm-alias-probe.json  npm_alias_probe.py here: what npm installs, offline, for an `npm:` alias under a workspace's name or another;
-  suite.json           suite_summary.py here, over Vitest JSON reports of the whole suite in a clean clone at HEAD.
+  suite.json           suite_summary.py here, over Vitest JSON reports of the whole suite in a clean clone at REPAIR1, which differs
+                       from HEAD only in testkit comment lines (checked).
 The test diff must be exactly the PR 536 reviewer's FIX-rows-only edits (rev536-fix-specs.json), then the round-1 reviewer's
 FIX541-rows-only edits (rev541-fix-specs.json here, kept unchanged), applied to BASE.
 repeat-runs.json, titles.json, npa-probe.json and npm-alias-probe.json carry no commit of their own; each is tied to HEAD by its
@@ -32,7 +34,8 @@ HERE_REL = 'docs/evidence/syzygy-bpyt-8-39'
 HERE = TREE / HERE_REL
 BASE = 'd38d7a3ce632a34c2a41bdb77ad323ba0b05b777'
 FIRST = '308a62f4a48e47b625aeff9cc718b1b2c37161f8'
-HEAD = '5f0d5547dfe7f89adf3e86310f819ddeebfaae90'
+REPAIR1 = '5f0d5547dfe7f89adf3e86310f819ddeebfaae90'
+HEAD = '00b7dcf70b764b13017784581bc80a5a3502532f'
 REACH = 'packages/polaris-generation-core/src/workspace-reach.test.ts'
 KIT = 'packages/polaris-generation-core/src/workspace-reach.testkit.ts'
 OLD_KIT = 'packages/polaris-generation-core/src/zz-836-old-testkit.ts'  # island_diff.py's scratch copy of BASE's testkit
@@ -89,21 +92,28 @@ REGISTRY_TYPES = {'range', 'version', 'tag'}
 NOT_REGISTRY_ALIASES = ['npm:./lib', 'npm:file:../lib']
 NAMED_IN_COMMENT = ['`npm:`', '`github:someone/dossier#v1.tar`', '`https://…/x.tgz`', 'npm-package-arg 12.0.2 accepts only a registry spec after `npm:`',
                     'Residual (the review of 8.39, N2): a workspace whose name is not `@syzygy/`-scoped is read by its bare name as outside the',
-                    '0 of the 12 workspaces are unscoped today']
-# The round-1 reviewer's text for the `npm:` clause (F1), which HEAD's testkit must carry verbatim, and the sentence it replaced.
-F1_CLAUSE = (' * - `npm:`: an alias. npm-package-arg 12.0.2 accepts only a registry spec after `npm:`, and npm fetches that spec from the\n'
-          " *   registry unless the alias is declared under a workspace's own name and that workspace's version satisfies it; then npm links\n"
-          " *   the workspace, as for any dependency declared under a workspace's name (every workspace here is `@syzygy/`-scoped, and the\n"
-          " *   `@syzygy/*` branch reads such a name before this pattern). Its target may carry a workspace package's name, which other\n"
-          ' *   package managers can link locally; every alias is refused, failing closed.\n')
-F1_FALSE = 'npm installs it from the registry'
-# What npm_alias_probe.py must observe for each case, as HEAD's `npm:` clause states it: a link to the workspace's directory, or a
-# registry request for the name given (offline, so ENOTCACHED).
+                    'At syzygy-bpyt.8.39, 0 of the 12 workspaces are unscoped']
+# The round-2 reviewer's text for the `npm:` clause (F1, f1-r2-replacement.txt), which HEAD's testkit must carry verbatim, and the
+# phrases of the two texts it replaced: round 0's, and round 1's, which was false for a declaration in the root's manifest.
+F1_CLAUSE = (' * - `npm:`: an alias. npm-package-arg 12.0.2 accepts only a registry spec after `npm:`, and npm 11.5.1 fetches that spec from\n'
+          " *   the registry unless the alias is declared under a workspace's own name and either the root's manifest declares it or the\n"
+          " *   alias's range is `*`, absent or one that workspace's version satisfies; then npm links the workspace, as for a plain range\n"
+          " *   declared under a workspace's name (npm skips any root declaration under a workspace's name, whatever its version). Every\n"
+          ' *   workspace here is `@syzygy/`-scoped, and the `@syzygy/*` branch reads such a name before this pattern. Its target may carry\n'
+          " *   a workspace package's name, which other package managers can link locally; every alias is refused, failing closed.\n")
+F1_CLAUSE_SHA256 = 'e5500fb4ccba0029db729ce63a201113886ae627d2d9bd55258ebfe5c9718e9c'  # f1-r2-replacement.txt, as the round-2 raw cites it
+F1_RETIRED = ['npm installs it from the registry', "as for any dependency declared under a workspace's name"]
+# What npm_alias_probe.py must observe for each case, keyed by the manifest that declares it, as HEAD's `npm:` clause states it: a
+# link to the workspace's directory, or a registry request for the name given (offline, so ENOTCACHED).
 NPM_EXPECTED = {
-    ('dossier', 'npm:typescript@^5.5.0'): ('registry', 'typescript'), ('dossier', 'npm:wlib@*'): ('registry', 'wlib'),
-    ('dossier', 'npm:typescript'): ('registry', 'typescript'), ('wlib', 'npm:typescript@*'): ('link', 'w'),
-    ('wlib', 'npm:typescript@^1.0.0'): ('link', 'w'), ('wlib', 'npm:typescript@^5.5.0'): ('registry', 'typescript'),
-    ('@syzygy/slib', 'npm:typescript@*'): ('link', 's'), ('wlib', '^1.0.0'): ('link', 'w'), ('wlib', '^5.5.0'): ('registry', 'wlib'),
+    ('app', 'dossier', 'npm:typescript@^5.5.0'): ('registry', 'typescript'), ('app', 'dossier', 'npm:wlib@*'): ('registry', 'wlib'),
+    ('app', 'dossier', 'npm:typescript'): ('registry', 'typescript'), ('app', 'wlib', 'npm:typescript@*'): ('link', 'w'),
+    ('app', 'wlib', 'npm:typescript@^1.0.0'): ('link', 'w'), ('app', 'wlib', 'npm:typescript@^5.5.0'): ('registry', 'typescript'),
+    ('app', '@syzygy/slib', 'npm:typescript@*'): ('link', 's'), ('app', 'wlib', '^1.0.0'): ('link', 'w'),
+    ('app', 'wlib', '^5.5.0'): ('registry', 'wlib'), ('app', 'wlib', 'npm:typescript'): ('link', 'w'),
+    # Round 2: npm skips a root declaration under a workspace's name, whatever its version, and links the workspace.
+    ('root', 'wlib', 'npm:typescript@^5.5.0'): ('link', 'w'), ('root', '@syzygy/slib', 'npm:typescript@^5.5.0'): ('link', 's'),
+    ('root', 'wlib', '^5.5.0'): ('link', 'w'), ('root', 'dossier', 'npm:typescript@^5.5.0'): ('registry', 'typescript'),
 }
 NPM_REGISTRY = 'http://127.0.0.1:9/'
 RESIDUAL_FORMS = ['packages/polaris-dossier/', '.hidden-lib', 'a/b/c']
@@ -180,10 +190,10 @@ def check_runs(name, commit, specs, problems):
     return rows
 
 
-def diff_lines(path):
-    """Every changed line of `path`, BASE to HEAD, as (sign, line number on its side, text)."""
+def diff_lines(path, a=BASE, b=HEAD):
+    """Every changed line of `path`, a to b, as (sign, line number on its side, text)."""
     out, old, new = [], None, None
-    for line in git('diff', '-U0', BASE, HEAD, '--', path).splitlines():
+    for line in git('diff', '-U0', a, b, '--', path).splitlines():
         hunk = re.match(r'@@ -(\d+)(?:,\d+)? \+(\d+)(?:,\d+)? @@', line)
         if hunk:
             old, new = int(hunk.group(1)), int(hunk.group(2))
@@ -195,7 +205,7 @@ def diff_lines(path):
         elif line.startswith('+'):
             out.append(['+', new, line[1:]])
             new += 1
-    return hooked(f'lines {path}', out)
+    return hooked(f'lines {path}' if (a, b) == (BASE, HEAD) else f'lines {path} {a[:8]}', out)
 
 
 def doc_comment_span(text):
@@ -338,8 +348,8 @@ def main_summary():
     for words in NAMED_IN_COMMENT:
         if words not in kit:
             problems.append(f'testkit comment: does not name {words}')
-    if kit.count(F1_CLAUSE) != 1 or F1_FALSE in kit:
-        problems.append("testkit comment: the `npm:` clause is not the round-1 reviewer's text, or the false sentence remains")
+    if kit.count(F1_CLAUSE) != 1 or any(words in kit for words in F1_RETIRED) or hooked('f1 sha', sha(F1_CLAUSE)) != F1_CLAUSE_SHA256:
+        problems.append("testkit comment: the `npm:` clause is not the round-2 reviewer's text, or a retired phrase remains")
     workspaces = hooked('workspaces', {p: json.loads(blob(HEAD, p))['name'] for p in manifests if p != 'package.json'})
     if json.loads(blob(HEAD, 'package.json')).get('workspaces') != ['packages/*', 'apps/*'] or len(workspaces) != 12 \
             or [name for name in workspaces.values() if not name.startswith('@syzygy/')]:
@@ -356,23 +366,30 @@ def main_summary():
     npm = load('npm-alias-probe.json')
     if (npm['npm'], npm['registry'], npm['offline'], npm['workspaces']) != ('11.5.1', NPM_REGISTRY, True, {'w': 'wlib', 's': '@syzygy/slib'}):
         problems.append('npm-alias-probe: not npm 11.5.1, offline against the unreachable registry, over the two workspaces')
-    declared = [next(iter(r['declared'].items())) for r in npm['results'] if len(r['declared']) == 1]
+    declared = [(r.get('declaredIn'), *next(iter(r['declared'].items()))) for r in npm['results'] if len(r['declared']) == 1]
     if sorted(declared) != sorted(NPM_EXPECTED) or len(declared) != len(npm['results']):
-        problems.append('npm-alias-probe: the cases are not the nine named here, each once')
-    for r, (name, spec) in zip(npm['results'], declared):
-        kind, what = NPM_EXPECTED.get((name, spec), (None, None))
+        problems.append(f'npm-alias-probe: the cases are not the {len(NPM_EXPECTED)} named here, each once')
+    for r, (where, name, spec) in zip(npm['results'], declared):
+        kind, what = NPM_EXPECTED.get((where, name, spec), (None, None))
         link = r['installedLink'] and posixpath.normpath(posixpath.join(posixpath.dirname(f'node_modules/{name}'), r['installedLink']))
         observed = ('link', what) if (r['lockExit'], r['lockEntry'], r['installExit'], link, r['appLoads']) == (
             0, {'resolved': what, 'link': True}, 0, what, {'packageJson': f'{what}/package.json', 'name': npm['workspaces'].get(what), 'version': '1.0.0'}) \
             else ('registry', r['wouldRequest'][len(NPM_REGISTRY):]) if r['lockExit'] and r['errorCode'] == 'ENOTCACHED' and (r['wouldRequest'] or '').startswith(NPM_REGISTRY) \
             and (r['lockEntry'], r['installExit'], r['installedLink'], r['appLoads']) == (None, None, None, None) else None
         if observed != (kind, what):
-            problems.append(f'npm-alias-probe: {name}: {spec} gives {observed}, not {(kind, what)} as the `npm:` clause states')
+            problems.append(f'npm-alias-probe: {where} {name}: {spec} gives {observed}, not {(kind, what)} as the `npm:` clause states')
 
     suite = load('suite.json')
     whole = {r['label']: r for r in suite['runs']}.get('whole', {})
-    if suite['commit'] != HEAD or not suite['cleanAfter'] or [r['label'] for r in suite['runs']] != ['whole'] or whole.get('command') != WHOLE:
-        problems.append('suite: not one run of the whole suite in a clean tree at HEAD')
+    if suite['commit'] != REPAIR1 or not suite['cleanAfter'] or [r['label'] for r in suite['runs']] != ['whole'] or whole.get('command') != WHOLE:
+        problems.append('suite: not one run of the whole suite in a clean tree at REPAIR1')
+    # The suite ran at REPAIR1; HEAD may differ from it only in ` * ` lines inside the testkit's LOCAL_VERSION doc comment.
+    since = [p for p in git('diff', '--name-only', REPAIR1, HEAD).split() if not p.startswith(f'{HERE_REL}/')]
+    late = diff_lines(KIT, REPAIR1, HEAD)
+    late_spans = {'-': doc_comment_span(blob(REPAIR1, KIT) or ''), '+': spans['+']}
+    if since != [KIT] or not late or any(late_spans[s] is None or not late_spans[s][0] < n <= late_spans[s][1] or not re.match(r' \* ', text)
+                                         for s, n, text in late):
+        problems.append(f'suite: HEAD differs from REPAIR1 beyond testkit comment lines: {since}')
     not_passed = whole.get('notPassed', [])
     if not whole.get('success') or whole.get('failed') or whole.get('total') != whole.get('passed', 0) + whole.get('skipped', 0) \
             or whole.get('skipped') != len(not_passed) or sorted(t['file'] for t in not_passed) != SKIPS or any(t['status'] != 'skipped' for t in not_passed):
@@ -397,7 +414,9 @@ def main_summary():
         'bead': 'syzygy-bpyt.8.39', 'base': BASE, 'first': FIRST, 'head': HEAD,
         'subject': {'what': f'git diff {BASE[:8]} {HEAD[:8]} -- {" ".join(CODE)}', 'sha256': sha(git('diff', BASE, HEAD, '--', *CODE)),
                     'files': {f: {'base': sha(blob(BASE, f)), 'head': sha(blob(HEAD, f))} for f in CODE}},
-        'repair': {'what': f'git diff {FIRST[:8]} {HEAD[:8]} -- {" ".join(CODE)}', 'sha256': sha(git('diff', FIRST, HEAD, '--', *CODE))},
+        'repairs': {f'round{i}': {'what': f'git diff {a[:8]} {b[:8]} -- {" ".join(CODE)}', 'sha256': sha(git('diff', a, b, '--', *CODE))}
+                    for i, (a, b) in ((1, (FIRST, REPAIR1)), (2, (REPAIR1, HEAD)))},
+        'suiteCommit': REPAIR1,
         'productFilesChanged': [f for f in changed if f not in CODE],
         'testkitImporters': importers,
         'mutRunnerSha256': runner,
@@ -421,8 +440,8 @@ def main_summary():
                    'line': f'Tests: +{len(added)} ~0 -{titles["removed"]}'},
         'npaProbe': {'npaVersion': probe['npaVersion'], 'node': probe['node'], 'forms': len(probe['comment']) + len(probe['rows'])},
         'npmAliasProbe': {'npm': npm['npm'], 'arborist': npm['arborist'], 'node': npm['node'], 'cases': len(npm['results']),
-                          'links': sorted(f'{n}: {s}' for (n, s), (k, _) in NPM_EXPECTED.items() if k == 'link'),
-                          'registry': sorted(f'{n}: {s}' for (n, s), (k, _) in NPM_EXPECTED.items() if k == 'registry')},
+                          'links': sorted(f'{w} {n}: {s}' for (w, n, s), (k, _) in NPM_EXPECTED.items() if k == 'link'),
+                          'registry': sorted(f'{w} {n}: {s}' for (w, n, s), (k, _) in NPM_EXPECTED.items() if k == 'registry')},
         'workspaces': {'count': len(workspaces), 'unscoped': [n for n in workspaces.values() if not n.startswith('@syzygy/')]},
         'suite': {r['label']: {k: r[k] for k in ('command', 'files', 'total', 'passed', 'failed', 'skipped', 'load1Before', 'load1After')} for r in suite['runs']},
         'tools': {**{name: sha(blob(HEAD, path) or '') for name, path in TOOLS.items()},
@@ -446,8 +465,8 @@ def run(d, label):
     return next(r for r in d['runs'] if r['label'] == label)
 
 
-def case(d, name, spec):
-    return next(r for r in d['results'] if r['declared'] == {name: spec})
+def case(d, where, name, spec):
+    return next(r for r in d['results'] if (r['declaredIn'], r['declared']) == (where, {name: spec}))
 
 
 SELFTEST = {
@@ -477,10 +496,14 @@ SELFTEST = {
     'a line removed from the test file': {f'@lines {REACH}': lambda lines: [*lines, ['-', 90, "    ['a ./ path dependency', ..."]]},
     'a code line changed in the testkit': {f'@lines {KIT}': lambda lines: [*lines, ['+', 70, 'const LOCAL_VERSION = /^file:/iu;']]},
     'a comment line changed outside the doc comment': {f'@lines {KIT}': lambda lines: [*lines, ['+', 3, ' * x']]},
-    'a changed line on the LOCAL_VERSION line itself': {f'@lines {KIT}': lambda lines: [*lines, ['+', 78, ' * x']]},
+    'a changed line on the LOCAL_VERSION line itself': {f'@lines {KIT}': lambda lines: [*lines, ['+', 79, ' * x']]},
+    'a code line changed since the suite ran': {f'@lines {KIT} {REPAIR1[:8]}': lambda lines: [*lines, ['+', 79, 'const LOCAL_VERSION = /^file:/iu;']]},
+    'a comment line changed since the suite ran on the LOCAL_VERSION line': {f'@lines {KIT} {REPAIR1[:8]}': lambda lines: [*lines, ['+', 79, ' * x']]},
+    "a clause that is not the round-2 reviewer's file": {'@f1 sha': lambda digest: '0' * 64},
+    "a testkit that keeps round 1's rule": {'@kit': lambda kit: kit + "// as for any dependency declared under a workspace's name\n"},
     "a testkit without the reviewer's npm: text": {'@kit': lambda kit: kit.replace('then npm links', 'then npm fetches', 1)},
     'a testkit that keeps the false sentence': {'@kit': lambda kit: kit + '// npm installs it from the registry\n'},
-    'a testkit without the N2 residual count': {'@kit': lambda kit: kit.replace('0 of the 12 workspaces are unscoped today', '', 1)},
+    'a testkit without the N2 residual count': {'@kit': lambda kit: kit.replace('At syzygy-bpyt.8.39, 0 of the 12 workspaces are unscoped', '', 1)},
     'an unscoped workspace': {'@workspaces': lambda names: {**names, 'packages/plainlib/package.json': 'plainlib'}},
     'a comment-free emit that differs': {'comment-only.json': lambda d: (d.update(emitEqual=False), d)[1]},
     'a comment-only check of another blob': {'comment-only.json': lambda d: (d.update(headSha256='0' * 64), d)[1]},
@@ -500,16 +523,19 @@ SELFTEST = {
     'an alias of a non-registry spec': {'npa-probe.json': lambda d: (next(r for r in d['rows'] if r['spec'] == 'npm:typescript@^5.5.0').update(aliasOf='git'), d)[1]},
     'a residual the pattern refuses': {'npa-probe.json': lambda d: (next(r for r in d['comment'] if r['spec'] == 'a/b/c').update(local=True), d)[1]},
     'a row version on the wrong side': {'npa-probe.json': lambda d: (next(r for r in d['rows'] if r['spec'] == '..').update(local=False), d)[1]},
-    'an npm case that links where the clause says registry': {'npm-alias-probe.json': lambda d: (case(d, 'wlib', 'npm:typescript@^5.5.0').update(
+    'an npm case that links where the clause says registry': {'npm-alias-probe.json': lambda d: (case(d, 'app', 'wlib', 'npm:typescript@^5.5.0').update(
         lockExit=0, errorCode=None, wouldRequest=None, lockEntry={'resolved': 'w', 'link': True}, installExit=0, installedLink='../w',
         appLoads={'packageJson': 'w/package.json', 'name': 'wlib', 'version': '1.0.0'}), d)[1]},
-    'an npm case that fetches where the clause says link': {'npm-alias-probe.json': lambda d: (case(d, 'wlib', 'npm:typescript@*').update(
+    'an npm case that fetches where the clause says link': {'npm-alias-probe.json': lambda d: (case(d, 'app', 'wlib', 'npm:typescript@*').update(
         lockExit=1, errorCode='ENOTCACHED', wouldRequest='http://127.0.0.1:9/typescript', lockEntry=None, installExit=None, installedLink=None, appLoads=None), d)[1]},
-    'an npm registry case that requests another name': {'npm-alias-probe.json': lambda d: (case(d, 'dossier', 'npm:wlib@*').update(wouldRequest='http://127.0.0.1:9/typescript'), d)[1]},
-    'an npm link to another workspace': {'npm-alias-probe.json': lambda d: (case(d, '@syzygy/slib', 'npm:typescript@*').update(installedLink='../../w'), d)[1]},
-    'an npm case where Node loads another package': {'npm-alias-probe.json': lambda d: (case(d, 'wlib', '^1.0.0')['appLoads'].update(name='typescript'), d)[1]},
+    'an npm registry case that requests another name': {'npm-alias-probe.json': lambda d: (case(d, 'app', 'dossier', 'npm:wlib@*').update(wouldRequest='http://127.0.0.1:9/typescript'), d)[1]},
+    'an npm link to another workspace': {'npm-alias-probe.json': lambda d: (case(d, 'app', '@syzygy/slib', 'npm:typescript@*').update(installedLink='../../w'), d)[1]},
+    'an npm case where Node loads another package': {'npm-alias-probe.json': lambda d: (case(d, 'app', 'wlib', '^1.0.0')['appLoads'].update(name='typescript'), d)[1]},
     'an npm probe against a reachable registry': {'npm-alias-probe.json': lambda d: (d.update(registry='https://registry.npmjs.org/'), d)[1]},
     'an npm probe missing a case': {'npm-alias-probe.json': lambda d: (d.update(results=d['results'][:-1]), d)[1]},
+    'a root case that fetches where the clause says link': {'npm-alias-probe.json': lambda d: (case(d, 'root', 'wlib', 'npm:typescript@^5.5.0').update(
+        lockExit=1, errorCode='ENOTCACHED', wouldRequest='http://127.0.0.1:9/typescript', lockEntry=None, installExit=None, installedLink=None, appLoads=None), d)[1]},
+    'a root case read as declared in app': {'npm-alias-probe.json': lambda d: (case(d, 'root', '@syzygy/slib', 'npm:typescript@^5.5.0').update(declaredIn='app'), d)[1]},
     'a suite at another commit': {'suite.json': lambda d: (d.update(commit=BASE), d)[1]},
     'a whole suite with a failure': {'suite.json': lambda d: (run(d, 'whole').update(success=False, failed=1, passed=run(d, 'whole')['passed'] - 1), d)[1]},
     'a whole suite that skips another test': {'suite.json': lambda d: (run(d, 'whole')['notPassed'].append({'file': REACH, 'name': 'y', 'status': 'skipped', 'ms': None, 'error': ''}),
