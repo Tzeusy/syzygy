@@ -7,3 +7,4 @@
 export { sha256 } from './sha256.js';
 export { deepFreeze } from './deep-freeze.js';
 export { decodeUtf8 } from './decode-utf8.js';
+export { isRecord } from './is-record.js';

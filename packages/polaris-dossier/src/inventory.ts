@@ -2,7 +2,7 @@ import * as fs from 'node:fs';
 import * as path from 'node:path';
 import { UNKNOWN_REASONS } from '@syzygy/cap1-core';
 import { parseBoundedJson } from '@syzygy/polaris-generation-core/live';
-import { sha256 } from '@syzygy/support';
+import { isRecord, sha256 } from '@syzygy/support';
 import { QUOTATION_RULE } from './brief.js';
 import {
   briefIssuedAt, checkSubject, declaredSessionId, type CheckDeps, type CheckFinding, type CheckRecord, type CheckRefusal, type CheckedRevision,
@@ -74,7 +74,6 @@ const RECORD_JSON_LIMITS = Object.freeze({ maxBytes: 262_144, maxNodes: 4096, ma
 const DRAFT_JSON_LIMITS = Object.freeze({ maxBytes: 4 * 1024 * 1024, maxNodes: 500_000, maxDepth: 16 });
 
 const isoOf = (instant: number): string => new Date(instant).toISOString();
-const isObj = (value: unknown): value is Readonly<Record<string, unknown>> => value !== null && typeof value === 'object' && !Array.isArray(value);
 export const errno = (cause: unknown): string => (cause as NodeJS.ErrnoException).code ?? 'unknown-error';
 
 /** A run step's common opening: the run directory, the pinned revision verified again, a brief issued and its deadline not passed.
@@ -116,7 +115,7 @@ export function latestInventorySession(run: string): number {
 export function readRecord(file: string): Readonly<Record<string, unknown>> | undefined {
   try {
     const value = parseBoundedJson(fs.readFileSync(file, 'utf8'), RECORD_JSON_LIMITS);
-    return isObj(value) ? value : undefined;
+    return isRecord(value) ? value : undefined;
   } catch { return undefined; }
 }
 
@@ -276,7 +275,7 @@ export function inventoryRules(pinned: string): SubjectRules {
     schema: localInventorySchema({ pinnedRevision: pinned }),
     maxQuestions: null,
     structural: () => undefined,
-    blocks: (doc) => (Array.isArray(doc['entries']) ? doc['entries'] : []).flatMap((entry, i): SubjectBlock[] => (isObj(entry) ? [{
+    blocks: (doc) => (Array.isArray(doc['entries']) ? doc['entries'] : []).flatMap((entry, i): SubjectBlock[] => (isRecord(entry) ? [{
       at: `$.entries[${i}]`, value: entry, textKey: 'statement', allowed: ['inferred', 'unknown'], quotable: 'inferred',
       unquotable: 'only an inferred entry carries quotations; give this one its own inferred entry with a citation',
     }] : [])),
@@ -339,7 +338,7 @@ const INVENTORY_PLAN: SubjectPlan<InventoryCheckRecord, { readonly session: numb
     const authoring = authoringSessionIds(run);
     if (authoring.frozen === 0) return { ok: false, stage: 'authoring-session', reason: 'no draft revision is frozen, so the authoring session has declared no identifier and the inventory\'s distinctness from it cannot be checked; nothing is frozen' };
     if (authoring.ids.size === 0) return { ok: false, stage: 'authoring-session', reason: 'no frozen draft revision declares a session identifier, so the inventory\'s distinctness from the authoring session cannot be checked; nothing is frozen' };
-    const declared = isObj(doc) && typeof doc['sessionId'] === 'string' ? doc['sessionId'] : null;
+    const declared = isRecord(doc) && typeof doc['sessionId'] === 'string' ? doc['sessionId'] : null;
     if (declared !== null && authoring.ids.has(declared)) {
       return { ok: false, stage: 'session-identity', reason: 'the inventory declares the authoring session\'s identifier: an inventory from the authoring session is refused, and nothing is frozen' };
     }
@@ -416,8 +415,8 @@ export async function inventoryOfRecord(runDir: string, recheck: { readonly sour
   const check = readRecord(path.join(run, INVENTORY_CHECKS, `rev-${revision}.json`));
   if (check === undefined || check['format'] !== INVENTORY_CHECK_FORMAT || check['revision'] !== revision) return no(`the result of inventory revision ${revision} cannot be read`);
   if (check['outcome'] !== 'passed') return no(`inventory revision ${revision} has open findings`);
-  const inventory = isObj(check['inventory']) ? check['inventory'] : {};
-  const session = isObj(check['session']) ? check['session'] : {};
+  const inventory = isRecord(check['inventory']) ? check['inventory'] : {};
+  const session = isRecord(check['session']) ? check['session'] : {};
   const number = session['number'], sessionId = session['sessionId'];
   if (typeof number !== 'number' || !Number.isSafeInteger(number) || number < 1) return no(`the result of inventory revision ${revision} names no session`);
   if (typeof sessionId !== 'string' || declaredSessionId({ sessionId }) === null) return no(`inventory revision ${revision} declares no session identifier`);
@@ -431,7 +430,7 @@ export async function inventoryOfRecord(runDir: string, recheck: { readonly sour
   if (promptSha === undefined || prompt!['promptSha256'] !== promptSha) return no(`the prompt record of inventory session ${number} cannot be read or does not match its own digest`);
   const launch = readRecord(path.join(run, RUN_LAYOUT.inventory, launchRecordName(number)));
   if (launch === undefined) return no(`no launch form is recorded for inventory session ${number}: run \`syzygy dossier launch-form ${run} inventory terminal|bang\` with the operator's answer`);
-  const form = isObj(launch['form']) ? launch['form'] : {};
+  const form = isRecord(launch['form']) ? launch['form'] : {};
   const formRefusal = launchFormRefusal(run, form);
   if (formRefusal !== null || launch['role'] !== 'inventory' || launch['session'] !== number || launch['promptSha256'] !== promptSha) {
     return no(`the launch-form record of inventory session ${number} is not ${expectedLaunch(launchedMarkerState(run))} of that session's prompt`);

@@ -1,4 +1,4 @@
-import { sha256 } from '@syzygy/support';
+import { isRecord, sha256 } from '@syzygy/support';
 
 import type { PublicSourceContentClass } from './public-source-classification.js';
 
@@ -31,8 +31,6 @@ import type { PublicSourceContentClass } from './public-source-classification.js
  * The pinned credential-bearing URL pattern uses exact linear recognition, including failed searches and retained-text re-screening; other declared regexes have no nested ambiguous quantifier. The length limit still bounds overlapping successful suffix matches. Not repaired here (the policy's own residuals):
  * a secret no detector matches, beyond the guard lines or continuing past
  * them, is admitted; the whole body's digest and object id stay recorded and can check a guess at a short withheld line. */
-
-const isObject = (value: unknown): value is Readonly<Record<string, unknown>> => value !== null && typeof value === 'object' && !Array.isArray(value);
 
 /** sha256 of each text this module implements, UTF-8 (the version-4 bytes approved 2026-10-20). */
 const REDACTION_TEXTS = {
@@ -70,9 +68,9 @@ export type SecretRedactionRead = { readonly ok: true; readonly redaction: Secre
  * that names none of them refuses. Any malformed or unrecognised field refuses. */
 export function readSecretRedaction(scope: unknown, detectorIds: readonly string[]): SecretRedactionRead {
   const refuse = (why: string): SecretRedactionRead => ({ ok: false, why: `its secret redaction ${why}` });
-  if (!isObject(scope) || !Object.hasOwn(scope, 'secretRedaction')) return { ok: true, redaction: null };
+  if (!isRecord(scope) || !Object.hasOwn(scope, 'secretRedaction')) return { ok: true, redaction: null };
   const red = scope['secretRedaction'];
-  if (!isObject(red)) return refuse('is not an object');
+  if (!isRecord(red)) return refuse('is not an object');
   const keys = Object.keys(red);
   if (keys.length !== REDACTION_KEYS.length || REDACTION_KEYS.some(key => !keys.includes(key))) return refuse(`carries the fields ${keys.join(', ')}, not exactly ${REDACTION_KEYS.join(', ')}`);
   for (const key of Object.keys(REDACTION_TEXTS) as (keyof typeof REDACTION_TEXTS)[]) {

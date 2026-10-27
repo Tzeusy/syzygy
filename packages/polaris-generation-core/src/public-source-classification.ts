@@ -1,4 +1,4 @@
-import { sha256 } from '@syzygy/support';
+import { isRecord, sha256 } from '@syzygy/support';
 
 /** The public-source screening scope's `project-documentation` class (policy version 2, `publicSourceScope.contentClassification`,
  * the rule whose `class` is `project-documentation`; RFC5-14 as amended 2026-10-07), shared by the any-repo reader's screen and the
@@ -53,7 +53,6 @@ export interface ProjectDocumentationRule {
 /** `rule` is null when the policy has no project-documentation rule (version 1). */
 export type ProjectDocumentationRead = { readonly ok: true; readonly rule: ProjectDocumentationRule | null } | { readonly ok: false; readonly why: string };
 
-const isObject = (value: unknown): value is Readonly<Record<string, unknown>> => value !== null && typeof value === 'object' && !Array.isArray(value);
 // Never matchable against a folded path: an A-Z letter (folded away), a separator of segments, or a backslash (matches nothing).
 const unmatchable = (entry: string): boolean => /[A-Z/\\]/u.test(entry);
 const names = (value: unknown, minimum: number, valid: (entry: string) => boolean): value is readonly string[] =>
@@ -66,7 +65,7 @@ const segment = (entry: string): boolean => entry.length > 0 && entry !== '.' &&
 /** Reads the project-documentation rule from a policy's content-classification rules. Any malformed field refuses. */
 export function readProjectDocumentationRule(rules: readonly unknown[], sourceExtensions: readonly string[]): ProjectDocumentationRead {
   const refuse = (why: string): ProjectDocumentationRead => ({ ok: false, why: `its project-documentation rule ${why}` });
-  const found = rules.filter(rule => isObject(rule) && rule['class'] === 'project-documentation');
+  const found = rules.filter(rule => isRecord(rule) && rule['class'] === 'project-documentation');
   if (found.length === 0) return { ok: true, rule: null };
   if (found.length > 1) return refuse('appears more than once');
   const rule = found[0] as Readonly<Record<string, unknown>>;
@@ -76,12 +75,12 @@ export function readProjectDocumentationRule(rules: readonly unknown[], sourceEx
   }
   const pathRules = rule['pathRules'];
   if (!Array.isArray(pathRules) || pathRules.length !== PATH_RULE_IDS.length
-    || !pathRules.every((pathRule: unknown, index) => isObject(pathRule) && pathRule['id'] === PATH_RULE_IDS[index] && typeof pathRule['rule'] === 'string'
+    || !pathRules.every((pathRule: unknown, index) => isRecord(pathRule) && pathRule['id'] === PATH_RULE_IDS[index] && typeof pathRule['rule'] === 'string'
       && sha256(pathRule['rule']) === IMPLEMENTED_TEXTS[PATH_RULE_IDS[index]!])) {
     return refuse('path rules are not the three this screen implements (root-document, docs-tree, licenses-tree, in that order and text)');
   }
   const prefix = rule['rootStemNumericPrefix'];
-  if (!isObject(prefix) || !Number.isSafeInteger(prefix['digitCount']) || (prefix['digitCount'] as number) < 1
+  if (!isRecord(prefix) || !Number.isSafeInteger(prefix['digitCount']) || (prefix['digitCount'] as number) < 1
     || typeof prefix['digits'] !== 'string' || !/^[\x21-\x7e]+$/u.test(prefix['digits']) || unmatchable(prefix['digits']) || new Set(prefix['digits']).size !== prefix['digits'].length
     || typeof prefix['separator'] !== 'string' || !/^[\x21-\x7e]+$/u.test(prefix['separator']) || unmatchable(prefix['separator'])
     || typeof prefix['optional'] !== 'boolean' || typeof prefix['note'] !== 'string' || sha256(prefix['note']) !== IMPLEMENTED_TEXTS.rootStemNumericPrefixNote) {
@@ -202,10 +201,10 @@ export type CodeContentExemptionRead = { readonly ok: true; readonly exemption: 
 /** Reads the exemption from a policy's `publicSourceScope`. Any malformed or unrecognised field refuses. */
 export function readCodeContentExemption(scope: unknown, sourceExtensions: readonly string[]): CodeContentExemptionRead {
   const refuse = (why: string): CodeContentExemptionRead => ({ ok: false, why: `its code-content exemption ${why}` });
-  const active = isObject(scope) ? scope['activeContent'] : undefined;
-  if (!isObject(active) || !Object.hasOwn(active, 'codeContentExemption')) return { ok: true, exemption: null };
+  const active = isRecord(scope) ? scope['activeContent'] : undefined;
+  if (!isRecord(active) || !Object.hasOwn(active, 'codeContentExemption')) return { ok: true, exemption: null };
   const exemption = active['codeContentExemption'];
-  if (!isObject(exemption)) return refuse('is not an object');
+  if (!isRecord(exemption)) return refuse('is not an object');
   const keys = Object.keys(exemption);
   if (keys.length !== EXEMPTION_KEYS.length || EXEMPTION_KEYS.some(key => !keys.includes(key))) return refuse(`carries the fields ${keys.join(', ')}, not exactly ${EXEMPTION_KEYS.join(', ')}`);
   const applies = exemption['appliesTo'];

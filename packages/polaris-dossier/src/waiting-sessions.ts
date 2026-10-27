@@ -1,7 +1,7 @@
 import * as fs from 'node:fs';
 import * as path from 'node:path';
 import { parseBoundedJson } from '@syzygy/polaris-generation-core/live';
-import { sha256 } from '@syzygy/support';
+import { isRecord, sha256 } from '@syzygy/support';
 import { DRAFT_MAX_BYTES, type CheckDeps } from './check.js';
 import { RECORDS_WITHIN_REACH, type GateSources } from './gate-sources.js';
 import {
@@ -68,7 +68,6 @@ const DECISIONS = path.join('.syzygy', 'governance', 'decisions');
 const DELIVERY_JSON_LIMITS = Object.freeze({ maxBytes: 65_536, maxNodes: 256, maxDepth: 4 });
 
 const isoOf = (instant: number): string => new Date(instant).toISOString();
-const isObj = (value: unknown): value is Readonly<Record<string, unknown>> => value !== null && typeof value === 'object' && !Array.isArray(value);
 
 const SIGNOFF_PACKAGE = 'polaris-dossier-local-agent-mode';
 const AGGREGATE = 'ACCEPTANCE-ACT-RECORD.md';
@@ -265,7 +264,7 @@ export function continuationOf(run: string, kind: ReviewKind, session: number, n
   const earlierVerdicts: number[] = [];
   for (let n = 0; n < number; n++) {
     const check = readRecord(path.join(run, REVIEW_CHECKS, verdictFileName(kind, n)));
-    const recorded = check !== undefined && isObj(check['session']) ? check['session']['sessionId'] : undefined;
+    const recorded = check !== undefined && isRecord(check['session']) ? check['session']['sessionId'] : undefined;
     if (recorded === sessionId) earlierVerdicts.push(n);
   }
   const continuing = earlierRounds.length > 0 || earlierVerdicts.length > 0;
@@ -485,7 +484,7 @@ export async function awaitSession(directoryArg: string, request: AwaitRequest, 
   if (role.role === 'inventory') {
     if (round !== 1) return refuse('usage', 'an inventory session has one round: its brief, delivered when it was started');
     const brief = prompt['brief'];
-    const expected = isObj(brief) && typeof brief['sha256'] === 'string' ? brief['sha256'] : undefined;
+    const expected = isRecord(brief) && typeof brief['sha256'] === 'string' ? brief['sha256'] : undefined;
     let bytes: Uint8Array;
     try { bytes = new Uint8Array(fs.readFileSync(path.join(directory, INVENTORY_BRIEF_FILE))); } catch (cause) { return refuse('rehash', `the inventory brief cannot be read (${errno(cause)})`); }
     if (expected === undefined || sha256(bytes) !== expected) return refuse('rehash', `${INVENTORY_BRIEF_FILE} does not hash to the digest Syzygy recorded when it wrote it; stop, and tell the operator`);
@@ -536,7 +535,7 @@ export async function awaitSession(directoryArg: string, request: AwaitRequest, 
   } catch (cause) { return refuse('rehash', `round ${round} cannot be read (${errno(cause)}); stop, and tell the operator`); }
   const record = readRecord(path.join(run, RUN_LAYOUT.reviews, deliveryRecordName(role.kind, role.session, round)));
   const actual = sha256(packetBytes);
-  const named = isObj(delivery) && delivery['round'] === round && delivery['kind'] === role.kind && delivery['session'] === role.session ? delivery['packetSha256'] : undefined;
+  const named = isRecord(delivery) && delivery['round'] === round && delivery['kind'] === role.kind && delivery['session'] === role.session ? delivery['packetSha256'] : undefined;
   if (named !== actual || digestLine !== `${actual}  ${PACKET_FILE}\n` || record === undefined || record['packetSha256'] !== actual) {
     logStep(run, 'await', at, { outcome: 'refused', stage: 'rehash', role: 'review', kind: role.kind, session: role.session, round });
     return refuse('rehash', `round ${round}'s ${PACKET_FILE} does not hash to the digest in ${DELIVERY_FILE}, ${PACKET_DIGEST_FILE} and the delivery record Syzygy wrote; do not read it: stop, and tell the operator`);

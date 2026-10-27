@@ -1,5 +1,6 @@
 import * as path from 'node:path';
 import { BoundedJsonError, parseBoundedJson } from '@syzygy/polaris-generation-core/live';
+import { isRecord } from '@syzygy/support';
 import { dossierRepositoryUrl } from './github-url.js';
 import type { GovernedKind } from './governed.js';
 import { validateRunConfig, type RunConfig, type RunConfigRefusal } from './run-config.js';
@@ -133,7 +134,6 @@ export function readRunRecord(text: string): ReadRunRecordResult {
 }
 
 type Fields = Readonly<Record<string, unknown>>;
-const isObject = (value: unknown): value is Fields => value !== null && typeof value === 'object' && !Array.isArray(value);
 const hasKeys = (value: Fields, keys: readonly string[]): boolean => Object.keys(value).sort().join(',') === [...keys].sort().join(',');
 const isText = (value: unknown): value is string => typeof value === 'string' && value.trim() !== '' && value.length <= 512;
 const INSTANT = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d{3})?Z$/;
@@ -141,24 +141,24 @@ const GOVERNED_KINDS: readonly GovernedKind[] = ['governed', 'non-governed', 'un
 
 /** The subject block, validated in full; a description of the first fault otherwise. */
 function readSubject(value: unknown): RunSubject | string {
-  if (!isObject(value) || !hasKeys(value, ['repository', 'clone', 'pinnedRevision', 'startGates', 'governed', 'providerStatement', 'workItem'])) return 'it must carry exactly repository, clone, pinnedRevision, startGates, governed, providerStatement and workItem';
+  if (!isRecord(value) || !hasKeys(value, ['repository', 'clone', 'pinnedRevision', 'startGates', 'governed', 'providerStatement', 'workItem'])) return 'it must carry exactly repository, clone, pinnedRevision, startGates, governed, providerStatement and workItem';
   const { repository, clone, pinnedRevision, startGates, governed, providerStatement, workItem } = value;
-  if (!isObject(repository) || !hasKeys(repository, ['url', 'repositoryId']) || !isText(repository['url']) || !isText(repository['repositoryId'])) return 'repository must carry a url and a repositoryId';
+  if (!isRecord(repository) || !hasKeys(repository, ['url', 'repositoryId']) || !isText(repository['url']) || !isText(repository['repositoryId'])) return 'repository must carry a url and a repositoryId';
   const url = dossierRepositoryUrl(repository['url']);
   if (!url.ok || url.url !== repository['url'] || !/^[a-z0-9][a-z0-9-]*$/.test(repository['repositoryId'])) return 'repository url or repositoryId is malformed';
-  if (!isObject(clone) || !hasKeys(clone, ['path', 'declaredBy', 'label', 'use']) || clone['declaredBy'] !== 'operator' || clone['label'] !== 'Inferred' || clone['use'] !== 'read') return 'clone must carry its path, declared by the operator, labelled Inferred, for reading only';
+  if (!isRecord(clone) || !hasKeys(clone, ['path', 'declaredBy', 'label', 'use']) || clone['declaredBy'] !== 'operator' || clone['label'] !== 'Inferred' || clone['use'] !== 'read') return 'clone must carry its path, declared by the operator, labelled Inferred, for reading only';
   if (typeof clone['path'] !== 'string' || clone['path'].length > 4096 || path.resolve(clone['path']) !== clone['path'] || clone['path'].includes('\0')) return 'the clone path is not an absolute, normalised path';
-  if (!isObject(pinnedRevision) || !hasKeys(pinnedRevision, ['commit', 'label', 'consentRecord', 'pinnedAt'])) return 'pinnedRevision must carry commit, label, consentRecord and pinnedAt';
+  if (!isRecord(pinnedRevision) || !hasKeys(pinnedRevision, ['commit', 'label', 'consentRecord', 'pinnedAt'])) return 'pinnedRevision must carry commit, label, consentRecord and pinnedAt';
   if (typeof pinnedRevision['commit'] !== 'string' || !/^(?:[0-9a-f]{40}|[0-9a-f]{64})$/.test(pinnedRevision['commit'])) return 'the pinned commit is not a full commit identifier';
   if (!isText(pinnedRevision['label']) || !isText(pinnedRevision['consentRecord'])) return 'the pinned revision must name its label and consent record';
   if (typeof pinnedRevision['pinnedAt'] !== 'string' || !INSTANT.test(pinnedRevision['pinnedAt']) || Number.isNaN(Date.parse(pinnedRevision['pinnedAt']))) return 'pinnedAt is not a UTC instant';
-  if (!isObject(startGates) || !hasKeys(startGates, ['registryEntry', 'screeningPolicy']) || !isText(startGates['registryEntry']) || !isText(startGates['screeningPolicy'])) return 'startGates must cite the registry entry and screening policy records';
-  if (!isObject(governed) || !hasKeys(governed, ['kind', 'because']) || !GOVERNED_KINDS.includes(governed['kind'] as GovernedKind)
+  if (!isRecord(startGates) || !hasKeys(startGates, ['registryEntry', 'screeningPolicy']) || !isText(startGates['registryEntry']) || !isText(startGates['screeningPolicy'])) return 'startGates must cite the registry entry and screening policy records';
+  if (!isRecord(governed) || !hasKeys(governed, ['kind', 'because']) || !GOVERNED_KINDS.includes(governed['kind'] as GovernedKind)
     || !Array.isArray(governed['because']) || governed['because'].length === 0 || !governed['because'].every(isText)) return 'governed must carry a kind and its reasons';
   const kind = governed['kind'] as GovernedKind;
   if (providerStatement !== null && !isText(providerStatement)) return 'providerStatement must be a record citation or null';
   if (kind !== 'non-governed' && providerStatement === null) return `${kind === 'unstated' ? 'an unstated' : 'a governed'} subject must cite the per-project statement it relies on`;
-  if (!isObject(workItem) || !hasKeys(workItem, ['identity', 'reason']) || workItem['identity'] !== null || workItem['reason'] !== NO_WORK_ITEM_REASON) return 'workItem must record an absent identity with its reason';
+  if (!isRecord(workItem) || !hasKeys(workItem, ['identity', 'reason']) || workItem['identity'] !== null || workItem['reason'] !== NO_WORK_ITEM_REASON) return 'workItem must record an absent identity with its reason';
   return {
     repository: { url: repository['url'], repositoryId: repository['repositoryId'] },
     clone: { path: clone['path'], declaredBy: 'operator', label: 'Inferred', use: 'read' },

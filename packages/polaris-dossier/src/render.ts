@@ -7,7 +7,7 @@ import {
   type LocalDisclosureItem, type LocalDraftLayer, type LocalPage, type LocalPageItem, type LocalRenderInput, type LocalSegment,
   type DossierDraft, type DraftBlock, type DraftParagraph,
 } from '@syzygy/polaris-generation-core/live';
-import { sha256 } from '@syzygy/support';
+import { isRecord, sha256 } from '@syzygy/support';
 import { collectBlocks, deriveFindings, draftRules, type Derived } from './check.js';
 import { CREDENTIAL_CHECK_DISCLOSURE, credentialStepCheck, storedBriefArm, type CredentialStepResult } from './credential-probe.js';
 import { UNDERSTANDING_ITEMS } from './draft-schema.js';
@@ -118,7 +118,6 @@ const DISCLOSURES = [
   'Every value the pages show from Syzygy\'s stored records rather than re-deriving it is labelled Inferred.',
 ];
 
-const isObj = (value: unknown): value is Readonly<Record<string, unknown>> => value !== null && typeof value === 'object' && !Array.isArray(value);
 const list = (value: unknown): readonly unknown[] => (Array.isArray(value) ? value : []);
 const text = (value: unknown): string | undefined => (typeof value === 'string' ? value : undefined);
 const SUBJECT_JSON_LIMITS = Object.freeze({ maxBytes: 4 * 1024 * 1024, maxNodes: 500_000, maxDepth: 16 });
@@ -149,7 +148,7 @@ export async function renderRun(runDir: string, deps: RenderDeps): Promise<Rende
   let doc: Readonly<Record<string, unknown>>;
   try {
     const parsed: unknown = JSON.parse(new TextDecoder('utf-8', { fatal: true }).decode(draftRev.bytes));
-    if (!isObj(parsed) || draftRev.bytes.byteLength > SUBJECT_JSON_LIMITS.maxBytes) throw new Error('not an object');
+    if (!isRecord(parsed) || draftRev.bytes.byteLength > SUBJECT_JSON_LIMITS.maxBytes) throw new Error('not an object');
     doc = parsed;
   } catch {
     return refuse('draft', `draft revision ${draftRev.revision} is not one bounded JSON object`);
@@ -337,7 +336,7 @@ export function buildLocalInput(inputs: BuildInputs): Built {
       : piece.spans.some(span => { const [start, end] = generationSpanRange(piece, span); return byte >= start && byte < end; }));
   };
   const citedSources = (value: Readonly<Record<string, unknown>>): string[] => [...new Set(list(value['citations']).flatMap((citation) => {
-    if (!isObj(citation)) return [];
+    if (!isRecord(citation)) return [];
     const cited = text(citation['path']);
     const blob = cited === undefined ? undefined : admitted.get(cited);
     const piece = blob === undefined ? undefined : pieceAt(cited!, blob.lineByteOffsets?.[(typeof citation['startLine'] === 'number' ? citation['startLine'] : 1) - 1] ?? byteOf(blob.raw, typeof citation['startLine'] === 'number' ? citation['startLine'] : 1));
@@ -356,7 +355,7 @@ export function buildLocalInput(inputs: BuildInputs): Built {
   const verified = new Map(derived.quotations.filter((quotation) => !withheldClass.has(quotation.path)).map((quotation) => [`${quotation.blockId}\u0000${quotation.index}`, quotation]));
   const classOf = new Map(derived.quotations.filter((quotation) => withheldClass.has(quotation.path)).map((quotation) => [`${quotation.blockId}\u0000${quotation.index}`, withheldClass.get(quotation.path)!]));
   const excluded = new Set([...derived.excludedContent.map((quotation) => `${quotation.blockId}\u0000${quotation.index}`), ...classOf.keys()]);
-  const executions = new Map(list(doc['executions']).flatMap((entry) => (isObj(entry) && text(entry['id']) !== undefined ? [[text(entry['id'])!, clean(text(entry['command']) ?? '')] as const] : [])));
+  const executions = new Map(list(doc['executions']).flatMap((entry) => (isRecord(entry) && text(entry['id']) !== undefined ? [[text(entry['id'])!, clean(text(entry['command']) ?? '')] as const] : [])));
   const support = review.counts ? review.verdict.blockSupport : {};
   const blocks = new Map<string, LocalBlock>();
   for (const block of collectBlocks(doc).filter((candidate) => candidate.textKey === 'text')) {
@@ -412,12 +411,12 @@ export function buildLocalInput(inputs: BuildInputs): Built {
     return joined === '' ? '[no text]' : joined;
   };
   const paragraph = (value: unknown): DraftParagraph => {
-    const record = isObj(value) ? value : {};
+    const record = isRecord(value) ? value : {};
     return { id: text(record['id'])!, text: plain(text(record['id'])!), sourceIds: record['label'] === 'non-normative' ? [] : citedSources(record) };
   };
-  const tree = (values: unknown): DraftBlock[] => list(values).map((value) => ({ ...paragraph(value), children: list(isObj(value) ? value['children'] : []).map(paragraph) }));
+  const tree = (values: unknown): DraftBlock[] => list(values).map((value) => ({ ...paragraph(value), children: list(isRecord(value) ? value['children'] : []).map(paragraph) }));
   const disposition = (value: unknown): DossierDraft['sections'][number]['disposition'] => {
-    const record = isObj(value) ? value : {};
+    const record = isRecord(value) ? value : {};
     if (record['kind'] === 'produced') return { kind: 'produced', assetIds: list(record['assetIds']).filter((id): id is string => typeof id === 'string') };
     return { kind: record['kind'] === 'omitted' ? 'omitted' : 'unresolved', reason: clean(text(record['reason']) ?? ''), references: citedSources(record) };
   };
@@ -425,21 +424,21 @@ export function buildLocalInput(inputs: BuildInputs): Built {
   const draft: DossierDraft = {
     title: title(doc['title']),
     introduction: paragraph(doc['introduction']),
-    sections: list(doc['sections']).filter(isObj).map((section) => ({ id: text(section['id'])!, title: title(section['title']), paragraphs: tree(section['paragraphs']), disposition: disposition(section['disposition']) })),
-    diagrams: list(doc['diagrams']).filter(isObj).map((diagram) => ({
+    sections: list(doc['sections']).filter(isRecord).map((section) => ({ id: text(section['id'])!, title: title(section['title']), paragraphs: tree(section['paragraphs']), disposition: disposition(section['disposition']) })),
+    diagrams: list(doc['diagrams']).filter(isRecord).map((diagram) => ({
       id: text(diagram['id'])!, title: title(diagram['title']), sectionId: text(diagram['sectionId'])!, kind: diagram['kind'] as DossierDraft['diagrams'][number]['kind'], relationship: title(diagram['relationship']),
-      nodes: list(diagram['nodes']).filter(isObj).map((node) => ({ id: text(node['id'])!, label: title(node['label']), sourceIds: citedSources(node), epistemic: node['epistemic'] === 'inferred' ? 'inferred' as const : 'unknown' as const })),
-      edges: list(diagram['edges']).filter(isObj).map((edge) => ({ id: text(edge['id'])!, from: text(edge['from'])!, to: text(edge['to'])!, label: title(edge['label']), sourceIds: citedSources(edge), epistemic: edge['epistemic'] === 'inferred' ? 'inferred' as const : 'unknown' as const })),
+      nodes: list(diagram['nodes']).filter(isRecord).map((node) => ({ id: text(node['id'])!, label: title(node['label']), sourceIds: citedSources(node), epistemic: node['epistemic'] === 'inferred' ? 'inferred' as const : 'unknown' as const })),
+      edges: list(diagram['edges']).filter(isRecord).map((edge) => ({ id: text(edge['id'])!, from: text(edge['from'])!, to: text(edge['to'])!, label: title(edge['label']), sourceIds: citedSources(edge), epistemic: edge['epistemic'] === 'inferred' ? 'inferred' as const : 'unknown' as const })),
       disposition: disposition(diagram['disposition']),
     })),
-    deepDives: list(doc['deepDives']).filter(isObj).map((dive) => ({ id: text(dive['id'])!, title: title(dive['title']), sectionId: text(dive['sectionId'])!, paragraphs: tree(dive['paragraphs']), disposition: disposition(dive['disposition']) })),
-    unresolved: list(doc['unresolved']).filter(isObj).map((item) => ({ question: title(item['question']), reason: title(item['reason']), references: citedSources(item) })),
+    deepDives: list(doc['deepDives']).filter(isRecord).map((dive) => ({ id: text(dive['id'])!, title: title(dive['title']), sectionId: text(dive['sectionId'])!, paragraphs: tree(dive['paragraphs']), disposition: disposition(dive['disposition']) })),
+    unresolved: list(doc['unresolved']).filter(isRecord).map((item) => ({ question: title(item['question']), reason: title(item['reason']), references: citedSources(item) })),
   };
 
   // The run's own pages.
-  const understanding = isObj(doc['understanding']) ? doc['understanding'] : {};
+  const understanding = isRecord(doc['understanding']) ? doc['understanding'] : {};
   const understandingItem = (prefix: string, value: unknown): LocalPageItem => {
-    const record = isObj(value) ? value : {};
+    const record = isRecord(value) ? value : {};
     const unknown = record['label'] === 'unknown';
     return {
       id: `${prefix}/${text(record['id'])!}`, marking: unknown ? 'unknown' : 'inferred', unknownReason: unknown ? text(record['reason']) ?? 'missing-evidence' : null,
@@ -452,8 +451,8 @@ export function buildLocalInput(inputs: BuildInputs): Built {
     intro: 'The agent\'s understanding record, which it reports forming before it drafted the argument (that order is its own report). Every item is its self-reported understanding: Inferred where it cites the files it rests on, Unknown with its reason where it could not be established.',
     groups: UNDERSTANDING_ITEMS.map((key) => ({ id: `understanding-${key}`, heading: UNDERSTANDING_HEADINGS[key], note: 'Self-reported by the agent; Inferred or Unknown.', empty: 'No entry.', items: list(understanding[key]).map((value) => understandingItem('understanding', value)) })),
   };
-  const discovery = isObj(doc['discovery']) ? doc['discovery'] : {};
-  const reported = (part: string): LocalPageItem[] => list(discovery[part]).filter(isObj).map((entry, i) => ({
+  const discovery = isRecord(doc['discovery']) ? doc['discovery'] : {};
+  const reported = (part: string): LocalPageItem[] => list(discovery[part]).filter(isRecord).map((entry, i) => ({
     id: `discovery/${part}/${i + 1}`, marking: 'inferred', unknownReason: null, title: shownPath(text(entry['path']) ?? ''), text: clean(text(entry['reason']) ?? ''), details: [], sourceIds: [],
   }));
   const inspected = list(discovery['inspected']).filter((entry): entry is string => typeof entry === 'string');
@@ -483,13 +482,13 @@ export function buildLocalInput(inputs: BuildInputs): Built {
   const clarificationsPage: LocalPage = {
     path: 'clarifications.html', title: 'Clarifications',
     intro: 'The questions the agent asked and the answers it records, each attributed to the operator. That the operator gave the answer is the agent\'s record: Inferred.',
-    groups: [{ id: 'clarifications-asked', heading: 'Questions and answers', note: 'As the draft records them; Inferred.', empty: 'The agent recorded no question.', items: list(doc['clarifications']).filter(isObj).map((entry) => ({
+    groups: [{ id: 'clarifications-asked', heading: 'Questions and answers', note: 'As the draft records them; Inferred.', empty: 'The agent recorded no question.', items: list(doc['clarifications']).filter(isRecord).map((entry) => ({
       id: `clarification/${text(entry['id'])!}`, marking: 'inferred' as const, unknownReason: null, title: clean(text(entry['question']) ?? ''), text: clean(text(entry['answer']) ?? ''),
       details: [`Answer kind: ${text(entry['answerKind']) ?? ''}`, `Consequence: ${clean(text(entry['consequence']) ?? '')}`, ...list(entry['options']).flatMap((option) => (typeof option === 'string' ? [`Option: ${clean(option)}`] : [])), 'Answered by the operator, as the agent records it'],
       sourceIds: citedSources({ citations: entry['evidence'] }),
     })) }],
   };
-  const executionList = list(doc['executions']).filter(isObj);
+  const executionList = list(doc['executions']).filter(isRecord);
   const flags = executionFlags(executionList, subject.clone.path, storedBriefArm(run));
   const executionsPage: LocalPage = {
     path: 'executions.html', title: 'Executions',
@@ -577,7 +576,7 @@ function disclosureItems(inputs: {
   const { opened, draftLayer, executionList, flags, quotationCount, credential, clean, run } = inputs;
   const { subject, declared } = opened;
   const brief = readRecord(path.join(run, RUN_LAYOUT.briefRecord));
-  const rule = isObj(brief) && isObj(brief['executionRule']) ? brief['executionRule'] : {};
+  const rule = isRecord(brief) && isRecord(brief['executionRule']) ? brief['executionRule'] : {};
   const commands = executionList.map((entry) => clean(text(entry['command']) ?? ''));
   const items: LocalDisclosureItem[] = [
     { id: 'mode', text: 'Authoring mode: operator-agent. The operator\'s own agent session read the clone and wrote the draft; Syzygy pinned the revision, checked the draft and rendered these pages.', label: null },
@@ -585,7 +584,7 @@ function disclosureItems(inputs: {
     { id: 'unrestricted-reading', text: 'The agent read the clone without restriction: neither the content classes a per-project statement names nor the observing project\'s classification and screening policies bound what it read or sent to its provider. They bind only what Syzygy reads, stores and renders.', label: null },
     { id: 'read-account', text: 'The agent\'s account of what it read is its own report (Discovery): self-reported, never complete or verified.', label: 'Inferred' },
     rule['arm'] === 'permitting'
-      ? { id: 'execution-rule', text: `The brief permitted building and running the observed project from the authoring session, under the owner's execution choice it names (who entered the choice is the operator's declaration). What that costs, as D9 states: ${isObj(rule['cost']) ? text(rule['cost']['text']) ?? '' : ''}`, label: 'Inferred' }
+      ? { id: 'execution-rule', text: `The brief permitted building and running the observed project from the authoring session, under the owner's execution choice it names (who entered the choice is the operator's declaration). What that costs, as D9 states: ${isRecord(rule['cost']) ? text(rule['cost']['text']) ?? '' : ''}`, label: 'Inferred' }
       : { id: 'execution-rule', text: 'The brief carried SEC-3\'s rule: no building or running of the observed project outside an explicit, opt-in execution profile, and it granted none.', label: 'Inferred' },
     { id: 'reported-commands', text: commands.length === 0 ? 'The agent reports building or running nothing.' : `The agent reports running ${commands.length} command(s), whether or not a claim rests on them: ${commands.join('; ')}. This is its own report, not complete and not observed.`, label: 'Inferred' },
     ...(flags.applies ? [{ id: 'execution-flags', text: `Flagged reported commands: ${flags.flagged} of ${flags.commands.length}, each flag shown beside its command on the Executions page: a command without a reported working directory, with one outside the clone, or that the agent states falls outside the owner's execution choice. ${EXECUTION_FLAGS_BASIS}`, label: 'Inferred' as const }] : []),

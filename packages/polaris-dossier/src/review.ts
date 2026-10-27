@@ -1,7 +1,7 @@
 import * as fs from 'node:fs';
 import * as path from 'node:path';
 import { bodyLines, leadInQuotations, locateQuote, normaliseTracked, parseBoundedJson, retainedWithMarkers, reviewVerdict, spanTouchesWithheld, type TrackedText } from '@syzygy/polaris-generation-core/live';
-import { sha256 } from '@syzygy/support';
+import { isRecord, sha256 } from '@syzygy/support';
 import { expectedLaunch, launchFormRefusal, launchedMarkerState } from './launched.js';
 import { CHECK_RECORD_FORMAT, collectBlocks, collectCitations, declaredSessionId, nextRevision } from './check.js';
 import { DEFICIENT_SUBJECTS, LOCAL_FIDELITY_VERDICT_SCHEMA_VERSION, VERDICT_QUOTATION_FORM, checkDraftShape, localVerdictSchema, verdictSchemaDocument } from './draft-schema.js';
@@ -58,7 +58,6 @@ const SUBJECT_JSON_LIMITS = Object.freeze({ maxBytes: 4 * 1024 * 1024, maxNodes:
 const VERDICT_MAX_BYTES = 4 * 1024 * 1024;
 const BLOB_MODES: ReadonlySet<string> = new Set(['100644', '100755', '120000']);
 const isoOf = (instant: number): string => new Date(instant).toISOString();
-const isObj = (value: unknown): value is Readonly<Record<string, unknown>> => value !== null && typeof value === 'object' && !Array.isArray(value);
 const list = (value: unknown): readonly unknown[] => (Array.isArray(value) ? value : []);
 const text = (value: unknown): string | undefined => (typeof value === 'string' ? value : undefined);
 
@@ -123,12 +122,12 @@ export function latestPassedDraft(run: string): { readonly ok: true; readonly re
   if (revision < 0) return { ok: false, reason: 'no draft revision has been checked' };
   let check: unknown;
   try { check = parseBoundedJson(fs.readFileSync(path.join(run, RUN_LAYOUT.checks, `rev-${revision}.json`), 'utf8'), SUBJECT_JSON_LIMITS); } catch { check = undefined; }
-  if (!isObj(check) || check['format'] !== CHECK_RECORD_FORMAT || check['revision'] !== revision) return { ok: false, reason: `the check result of draft revision ${revision} cannot be read` };
+  if (!isRecord(check) || check['format'] !== CHECK_RECORD_FORMAT || check['revision'] !== revision) return { ok: false, reason: `the check result of draft revision ${revision} cannot be read` };
   if (check['outcome'] !== 'passed') return { ok: false, reason: `draft revision ${revision}, the latest checked, has open findings; only a passed revision is reviewed` };
   const frozen = path.join(RUN_LAYOUT.drafts, `rev-${revision}.json`);
   let bytes: Uint8Array;
   try { bytes = new Uint8Array(fs.readFileSync(path.join(run, frozen))); } catch (cause) { return { ok: false, reason: `the frozen draft ${frozen} cannot be read (${errno(cause)})` }; }
-  const draft = isObj(check['draft']) ? check['draft'] : {};
+  const draft = isRecord(check['draft']) ? check['draft'] : {};
   if (draft['file'] !== frozen || draft['sha256'] !== sha256(bytes)) return { ok: false, reason: `the frozen draft ${frozen} is not the bytes its check recorded` };
   return { ok: true, revision, bytes };
 }
@@ -136,7 +135,7 @@ export function latestPassedDraft(run: string): { readonly ok: true; readonly re
 const parseSubject = (bytes: Uint8Array): Readonly<Record<string, unknown>> | undefined => {
   try {
     const value = parseBoundedJson(new TextDecoder('utf-8', { fatal: true }).decode(bytes), SUBJECT_JSON_LIMITS);
-    return isObj(value) ? value : undefined;
+    return isRecord(value) ? value : undefined;
   } catch { return undefined; }
 };
 
@@ -508,7 +507,7 @@ function nextVerdictNumber(reviews: string, kind: ReviewKind): number {
 
 /** Whether the verdict's own rows block readiness. */
 function derivedBlocking(verdict: Readonly<Record<string, unknown>>): boolean {
-  const rows = (key: string): Readonly<Record<string, unknown>>[] => list(verdict[key]).filter(isObj);
+  const rows = (key: string): Readonly<Record<string, unknown>>[] => list(verdict[key]).filter(isRecord);
   return rows('findings').some((row) => row['severity'] === 'blocking')
     || rows('inventoryCoverage').some((row) => row['disposition'] !== 'represented' && row['disposition'] !== 'justified-omission')
     || rows('inventoryAccuracy').some((row) => row['accuracy'] !== 'accurate')
@@ -529,7 +528,7 @@ export function validateVerdict(verdict: Readonly<Record<string, unknown>>, buil
   if (sessionId !== null && authoringIds.has(sessionId)) add('session-identity', '$.sessionId', 'the verdict declares the authoring session\'s identifier: a review by the authoring session does not count');
   if (sessionId !== null && sessionId === built.inventory.sessionId) add('session-identity', '$.sessionId', 'the verdict declares the inventory session\'s identifier: the review session must differ from the session whose inventory it reviews');
 
-  const entryIds = list(built.inventory.doc['entries']).flatMap((entry) => (isObj(entry) && text(entry['id']) !== undefined ? [text(entry['id'])!] : []));
+  const entryIds = list(built.inventory.doc['entries']).flatMap((entry) => (isRecord(entry) && text(entry['id']) !== undefined ? [text(entry['id'])!] : []));
   const claimBlocks = collectBlocks(built.draft.doc).filter((block) => block.textKey === 'text');
   const blockIds = claimBlocks.flatMap((block) => (text(block.value['id']) === undefined ? [] : [text(block.value['id'])!]));
   const inferredBlocks = new Set(claimBlocks.filter((block) => block.value['label'] === 'inferred').map((block) => text(block.value['id'])));
@@ -537,7 +536,7 @@ export function validateVerdict(verdict: Readonly<Record<string, unknown>>, buil
   const complete = (key: string, idKey: string, expected: readonly string[], kind: ReviewProblemKind, noun: string): void => {
     const seen = new Set<string>();
     list(verdict[key]).forEach((row, i) => {
-      const id = isObj(row) ? text(row[idKey]) : undefined;
+      const id = isRecord(row) ? text(row[idKey]) : undefined;
       if (id === undefined) return;
       if (!expected.includes(id)) add('unresolved-reference', `$.${key}[${i}].${idKey}`, `no ${noun} in the packet has the identity ${JSON.stringify(id)}`);
       else if (seen.has(id)) add('duplicate-entry', `$.${key}[${i}].${idKey}`, `the ${noun} ${JSON.stringify(id)} has more than one row`);
@@ -549,13 +548,13 @@ export function validateVerdict(verdict: Readonly<Record<string, unknown>>, buil
   complete('inventoryAccuracy', 'entryId', entryIds, 'accuracy-incomplete', 'inventory entry');
   complete('blockSupport', 'blockId', blockIds, 'support-incomplete', 'claim block');
   list(verdict['inventoryCoverage']).forEach((row, i) => {
-    list(isObj(row) ? row['blockIds'] : []).forEach((id, k) => {
+    list(isRecord(row) ? row['blockIds'] : []).forEach((id, k) => {
       if (typeof id === 'string' && !blockIds.includes(id)) add('unresolved-reference', `$.inventoryCoverage[${i}].blockIds[${k}]`, `no claim block of the draft has the identity ${JSON.stringify(id)}`);
     });
   });
   for (const key of ['inventoryAccuracy', 'blockSupport'] as const) {
     list(verdict[key]).forEach((row, i) => {
-      list(isObj(row) ? row['spanIds'] : []).forEach((id, k) => {
+      list(isRecord(row) ? row['spanIds'] : []).forEach((id, k) => {
         if (typeof id === 'string' && !spans.has(id)) add('unresolved-reference', `$.${key}[${i}].spanIds[${k}]`, `the packet has no span ${JSON.stringify(id)}`);
       });
     });
@@ -565,7 +564,7 @@ export function validateVerdict(verdict: Readonly<Record<string, unknown>>, buil
   const tracked = new Map<string, TrackedText>();
   for (const [key, field] of [['inventoryCoverage', 'reason'], ['inventoryAccuracy', 'reason'], ['blockSupport', 'reason'], ['findings', 'message']] as const) {
     list(verdict[key]).forEach((row, i) => {
-      if (!isObj(row)) return;
+      if (!isRecord(row)) return;
       const at = `$.${key}[${i}]`;
       const quotes = leadInQuotations(text(row[field]) ?? '');
       const namedSpans = list(row['quotations']);
@@ -589,13 +588,13 @@ export function validateVerdict(verdict: Readonly<Record<string, unknown>>, buil
   // Consistency: the shared verdict rule, then no readiness beside a blocking row. Only a verdict of the right shape is judged. The
   // shared rule's support rows are the inferred blocks': an unknown or non-normative block cites nothing it claims, so its support row
   // judges its label and names no span.
-  const supportRows = list(verdict['blockSupport']).filter(isObj).filter((row) => inferredBlocks.has(text(row['blockId'])));
+  const supportRows = list(verdict['blockSupport']).filter(isRecord).filter((row) => inferredBlocks.has(text(row['blockId'])));
   if (!problems.some((problem) => problem.kind === 'schema') && supportRows.length > 0) {
     try {
       reviewVerdict({
-        inventoryCoverage: list(verdict['inventoryCoverage']).filter(isObj).map((row) => ({ entryId: row['entryId'], disposition: row['disposition'], blockIds: row['blockIds'], reason: row['reason'] })),
+        inventoryCoverage: list(verdict['inventoryCoverage']).filter(isRecord).map((row) => ({ entryId: row['entryId'], disposition: row['disposition'], blockIds: row['blockIds'], reason: row['reason'] })),
         blockSupport: supportRows.map((row) => ({ blockId: row['blockId'], verdict: row['verdict'], sourceIds: row['spanIds'], reason: row['reason'] })),
-        findings: list(verdict['findings']).filter(isObj).map((row) => ({ severity: row['severity'], message: row['message'], target: row['target'] })),
+        findings: list(verdict['findings']).filter(isRecord).map((row) => ({ severity: row['severity'], message: row['message'], target: row['target'] })),
       });
     } catch (cause) {
       add('inconsistent', '$', `the verdict is inconsistent: ${(cause as Error).message} (a represented entry names a block, a supported inferred block names a span)`);
@@ -646,13 +645,13 @@ async function latestCheckedVerdict(
   const frozen = path.join(RUN_LAYOUT.reviews, verdictFileName(kind, number));
   let bytes: Uint8Array;
   try { bytes = new Uint8Array(fs.readFileSync(path.join(run, frozen))); } catch (cause) { return no(`the frozen verdict ${frozen} cannot be read (${errno(cause)})`); }
-  const recorded = isObj(check['verdict']) ? check['verdict'] : {};
+  const recorded = isRecord(check['verdict']) ? check['verdict'] : {};
   if (recorded['file'] !== frozen || recorded['sha256'] !== sha256(bytes)) return no(`the frozen verdict ${frozen} is not the bytes its check recorded`);
   const verdict = parseSubject(bytes);
   if (verdict === undefined) return no(`the frozen verdict ${frozen} is not one bounded JSON object`);
   const stale = packetCheck(verdict, number);
   if (stale !== undefined) return no(stale);
-  const sessionRecord = isObj(check['session']) ? check['session'] : {};
+  const sessionRecord = isRecord(check['session']) ? check['session'] : {};
   const session = sessionRecord['number'];
   if (typeof session !== 'number' || !Number.isSafeInteger(session) || session < 1) return no(`the result of ${kind} verdict ${number} names no session`);
   const prompt = readRecord(path.join(run, RUN_LAYOUT.reviews, reviewPromptRecordName(kind, session)));
@@ -660,7 +659,7 @@ async function latestCheckedVerdict(
   if (promptSha === undefined || prompt!['promptSha256'] !== promptSha) return no(`the prompt record of ${kind} session ${session} cannot be read or does not match its own digest`);
   const launch = readRecord(path.join(run, RUN_LAYOUT.reviews, reviewLaunchRecordName(kind, session)));
   if (launch === undefined) return no(`no launch form is recorded for ${kind} session ${session}: run \`syzygy dossier launch-form ${run} review terminal|bang${kind === 'design' ? ' --kind design' : ''}\` with the operator's answer`);
-  const form = isObj(launch['form']) ? launch['form'] : {};
+  const form = isRecord(launch['form']) ? launch['form'] : {};
   const formRefusal = launchFormRefusal(run, form);
   if (formRefusal !== null || launch['role'] !== 'review' || launch['kind'] !== kind || launch['session'] !== session || launch['promptSha256'] !== promptSha) {
     return no(`the launch-form record of ${kind} session ${session} is not ${expectedLaunch(launchedMarkerState(run))} of that session's prompt`);
@@ -688,7 +687,7 @@ export async function reviewOfRecord(opened: Extract<OpenedRun, { ok: true }>, d
     counts: true, kind: 'fidelity', number, session, packetSha256: built.sha256,
     verdict: {
       readiness: verdict['readiness'] as 'ready' | 'not-ready', blocking: derivedBlocking(verdict),
-      blockSupport: Object.fromEntries(list(verdict['blockSupport']).filter(isObj).map((row) => [row['blockId'] as string, row['verdict'] as 'supported' | 'anchor-does-not-support' | 'unresolved'])),
+      blockSupport: Object.fromEntries(list(verdict['blockSupport']).filter(isRecord).map((row) => [row['blockId'] as string, row['verdict'] as 'supported' | 'anchor-does-not-support' | 'unresolved'])),
       declaredBy: 'the review session', label: 'Inferred',
     },
     sessionId: { value: declaredSessionId(verdict)!, declaredBy: 'the review session', label: 'Inferred' },
