@@ -19,7 +19,6 @@
  * Nothing here stores requirement, scenario, doctrine or non-goal text: the
  * verbatim reader is a render-time parameter and production passes none.
  */
-import { createHash } from 'node:crypto';
 
 import {
   UNKNOWN_REASON_ROUTES,
@@ -30,6 +29,7 @@ import {
   type ProposedWork,
   type ProposedWorkCurrentAuthority,
 } from '@syzygy/three-surface-poc-core';
+import { sha256 } from '@syzygy/support';
 
 const DEEP_DIVE_BANDS = ['argument', 'contract', 'reality'] as const;
 export type DeepDiveBand = (typeof DEEP_DIVE_BANDS)[number];
@@ -216,7 +216,7 @@ function notRendered(reason: UnknownReason, detail: string): VerbatimResolution 
 
 function identityMatches(identity: string, bytes: Uint8Array): boolean | undefined {
   if (identity.startsWith('sha256:')) {
-    return createHash('sha256').update(bytes).digest('hex') === identity.slice('sha256:'.length);
+    return sha256(bytes) === identity.slice('sha256:'.length);
   }
   const hash = identity.lastIndexOf('#');
   if (hash === -1) return undefined;

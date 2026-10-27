@@ -1,6 +1,6 @@
-import { createHash } from 'node:crypto';
 import { readFile as nodeReadFile, readdir as nodeReaddir } from 'node:fs/promises';
 import path from 'node:path';
+import { sha256 } from '@syzygy/support';
 import { AdmissionRecordError, COMMIT_OBJECT_ID, type AdmissionRecord, type AdmissionRecordReader } from './admission-record.js';
 import { inForceRecords, notInForceRecords, type NotInForce } from './in-force.js';
 import { CITATION_ALLOWLIST } from './citation-allowlist.js';
@@ -54,7 +54,6 @@ export interface PackageReaderFs {
 const nodeFs: PackageReaderFs = { readdir: dir => nodeReaddir(dir), readFile: file => nodeReadFile(file, 'utf8') };
 
 const refuse = (): never => { throw new AdmissionRecordError('invalid-records'); };
-const sha256 = (text: string): string => createHash('sha256').update(text, 'utf8').digest('hex');
 
 /** The text with every fenced code block and every HTML comment blanked. Fences follow CommonMark: one opens on a line of three or
  * more backticks or tildes, up to three spaces in (a backtick opener's info string holds no backtick), and closes only on a run of

@@ -1,7 +1,7 @@
-import { createHash } from 'node:crypto';
 import * as fs from 'node:fs';
 import * as path from 'node:path';
 import { bodyLines, leadInQuotations, locateQuote, normaliseTracked, parseBoundedJson, retainedWithMarkers, reviewVerdict, spanTouchesWithheld, type TrackedText } from '@syzygy/polaris-generation-core/live';
+import { sha256 } from '@syzygy/support';
 import { expectedLaunch, launchFormRefusal, launchedMarkerState } from './launched.js';
 import { CHECK_RECORD_FORMAT, collectBlocks, collectCitations, declaredSessionId, nextRevision } from './check.js';
 import { DEFICIENT_SUBJECTS, LOCAL_FIDELITY_VERDICT_SCHEMA_VERSION, VERDICT_QUOTATION_FORM, checkDraftShape, localVerdictSchema, verdictSchemaDocument } from './draft-schema.js';
@@ -61,7 +61,6 @@ const isoOf = (instant: number): string => new Date(instant).toISOString();
 const isObj = (value: unknown): value is Readonly<Record<string, unknown>> => value !== null && typeof value === 'object' && !Array.isArray(value);
 const list = (value: unknown): readonly unknown[] => (Array.isArray(value) ? value : []);
 const text = (value: unknown): string | undefined => (typeof value === 'string' ? value : undefined);
-const sha256 = (bytes: string | Uint8Array): string => createHash('sha256').update(bytes).digest('hex');
 
 /** The highest review session number of a kind with a prompt record, or 0. */
 export function latestReviewSession(run: string, kind: ReviewKind): number {

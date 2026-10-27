@@ -1,7 +1,7 @@
-import { createHash } from 'node:crypto';
 import * as fs from 'node:fs';
 import * as path from 'node:path';
 import { parseBoundedJson } from '@syzygy/polaris-generation-core/live';
+import { sha256 } from '@syzygy/support';
 import { CREDENTIAL_CHECK_DISCLOSURE, credentialStepCheck, storedBriefArm, type CredentialStepResult } from './credential-probe.js';
 import { executionFlags } from './execution-flags.js';
 import type { CredentialProbe } from './execution-rule.js';
@@ -86,7 +86,6 @@ const DISCLOSURES = [
 const isObj = (value: unknown): value is Readonly<Record<string, unknown>> => value !== null && typeof value === 'object' && !Array.isArray(value);
 const text = (value: unknown): string | undefined => (typeof value === 'string' ? value : undefined);
 const isoOf = (instant: number): string => new Date(instant).toISOString();
-const sha256 = (bytes: string | Uint8Array): string => createHash('sha256').update(bytes).digest('hex');
 
 /** A declared usage figure: a positive integer, written in decimal without sign or leading zero; a description of the fault otherwise. */
 export function parseUsageFigure(name: string, value: string | undefined): number | null | string {
