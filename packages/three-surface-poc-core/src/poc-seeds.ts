@@ -1,3 +1,4 @@
+import { deepFreeze } from '@syzygy/support';
 import type { OrreryDeclaredMapping } from './orrery-projection.js';
 import type { PocEntity, PocRelationship, PocSurface } from './model.js';
 import type { WorkerChangeSeam } from './worker-change-observation.js';
@@ -82,17 +83,6 @@ export interface PocSeedInput {
   readonly relationships: readonly PocSeedRelationship[];
   readonly surfaces: readonly PocSurface[];
   readonly orreryMappings: readonly OrreryDeclaredMapping[];
-}
-
-function deepFreeze<T>(value: T): T {
-  if (typeof value !== 'object' || value === null || Object.isFrozen(value)) {
-    return value;
-  }
-  Object.freeze(value);
-  for (const child of Object.values(value as Record<string, unknown>)) {
-    deepFreeze(child);
-  }
-  return value;
 }
 
 /**

@@ -1,5 +1,3 @@
-import { createHash } from 'node:crypto';
-
 import { renderPolarisMarkdown } from './polaris-markdown.js';
 import { projectReading, type ProjectReading, type ReadingFigure } from './polaris-reading.js';
 import { escapeHtml } from '@syzygy/http-host';
@@ -33,6 +31,7 @@ import {
   type ReasonCounts,
   type RootSummaryDisclosure,
 } from '@syzygy/three-surface-poc-core';
+import { sha256 } from '@syzygy/support';
 
 import {
   DEFAULT_READING_MODE,
@@ -728,7 +727,7 @@ function capabilityGuide(shape: Extract<ProjectShape, { kind: 'observed' }>): st
   return `<section class="capability-guide" id="polaris-capability-guide">
     <p class="guide-intro"${copyAttr('label.guide-intro')}>${copy('label.guide-intro')} <a href="#polaris-class-catalog-entry"${copyAttr('label.complete-catalog')}>${copy('label.complete-catalog')}</a></p>
     <div class="guide-grid">${entries.map(([context, members]) => {
-      const guideId = `polaris-guide-context-${sourceSlug(context)}-${createHash('sha256').update(context).digest('hex').slice(0, 12)}`;
+      const guideId = `polaris-guide-context-${sourceSlug(context)}-${sha256(context).slice(0, 12)}`;
       const example = members.find((item) => item.claim.epistemic.label === 'Observed' && item.statement !== undefined);
       if (example === undefined) return `<section class="guide-entry"><h3 id="${escapeHtml(guideId)}"${FACT}>${escapeHtml(context)}</h3><p${SCOPE}>${copy('label.complete-catalog')}</p></section>`;
       const block = shapeClaimBlock(example.claim, shape.identity.revision, 'evidence', `guide:${example.claim.claimId}`);

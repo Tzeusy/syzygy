@@ -1,5 +1,3 @@
-import { createHash } from 'node:crypto';
-
 import { DESIGN_TOKENS_CSS } from '../design-tokens.js';
 
 import {
@@ -8,6 +6,7 @@ import {
   type DossierDraft, type DossierManifest, type DraftBlock, type DraftDiagram, type DraftParagraph, type EpistemicMarking, type GenerationSource, type LocalPageItem,
   type LocalRenderInput, type LocalSegment, type OwnerTopic, type QuoteFinding,
 } from '@syzygy/polaris-generation-core/live';
+import { sha256 } from '@syzygy/support';
 import { renderDiagramSvg } from './diagram-layout.js';
 import { LOCAL_CSS, LOCAL_MACHINE_VIEW, anchorAttributes, anchorDetails, disclosureMarkup, regionMarkup } from './dossier-render-local.js';
 import { DRAFT_PREVIEW_CSP_META, DRAFT_PREVIEW_CSS, MARKING_LABEL, escapeHtml as escape } from './draft-preview.js';
@@ -83,13 +82,11 @@ export class DossierRenderError extends Error {
   }
 }
 
-const digest = (value: string): string => createHash('sha256').update(value).digest('hex');
-
 // Test seam: exported for the tests; production code reaches it only inside this file.
 /** The page a quotable source's exact text lives on, from its anchor alone. */
 export function sourceRoute(source: Pick<GenerationSource, 'spans' | 'redaction'>): string {
   if (source.spans.length === 0 || (source.redaction === undefined && source.spans.length !== 1)) throw new DossierRenderError('ambiguous-source-anchor');
-  return `sources/${digest(source.spans.map(span => span.anchorId).join('\n')).slice(0, 24)}.html`;
+  return `sources/${sha256(source.spans.map(span => span.anchorId).join('\n')).slice(0, 24)}.html`;
 }
 
 const deepDivePath = (id: string): string => `deep-dives/${id.replace(/[^A-Za-z0-9_.-]/gu, '_')}.html`;

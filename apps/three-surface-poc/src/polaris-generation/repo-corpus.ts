@@ -1,13 +1,11 @@
-import { createHash } from 'node:crypto';
-
 import { DOSSIER_READER_QUESTIONS, DOSSIER_REQUESTED_ASSETS, SOURCE_TEXT_MAX_LENGTH, generationSourceIdentity, generationSourcesForBody, generationSourcesForRedactedBody, gitBlobObjectId, validateGenerationSources, verifiedRedactedBody, validateReaderQuestions, validateRequestedAssets,
   type GenerationBudget, type GenerationExclusionReason, type ReaderQuestion, type GenerationSource, type GenerationStage, type PipelineRequest, type RequestedAsset } from '@syzygy/polaris-generation-core';
+import { sha256 } from '@syzygy/support';
 
 import { isolatedGit } from './isolated-git.js';
 import { excludedSourceId, keyedDigest, newGenerationRunKey } from './run-key.js';
 import { readGitBlobsBatch, type ReadGitBlobs } from '../git-blob-batch.js';
 
-const sha256 = (value: string): string => createHash('sha256').update(value).digest('hex');
 const git = isolatedGit;
 const BLOB_BATCH = 200;
 const STAGES: readonly GenerationStage[] = ['inventory', 'plan', 'author', 'edit', 'fidelity', 'repair'];

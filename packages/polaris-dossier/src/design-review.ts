@@ -1,7 +1,7 @@
-import { createHash } from 'node:crypto';
 import * as fs from 'node:fs';
 import * as path from 'node:path';
 import { REVIEW_STATUS_REGION, isDossierPagePath, leadInQuotations, withoutReviewStatusRegion } from '@syzygy/polaris-generation-core/live';
+import { sha256 } from '@syzygy/support';
 import { declaredSessionId } from './check.js';
 import { DEFICIENT_SUBJECTS, checkDraftShape, designVerdictSchemaDocument, localDesignVerdictSchema } from './draft-schema.js';
 import { errno } from './inventory.js';
@@ -28,7 +28,6 @@ const SITE_MAX_BYTES = 64 * 1024 * 1024;
 const isObj = (value: unknown): value is Readonly<Record<string, unknown>> => value !== null && typeof value === 'object' && !Array.isArray(value);
 const list = (value: unknown): readonly unknown[] => (Array.isArray(value) ? value : []);
 const text = (value: unknown): string | undefined => (typeof value === 'string' ? value : undefined);
-const sha256 = (bytes: string | Uint8Array): string => createHash('sha256').update(bytes).digest('hex');
 const byCodeUnit = (a: string, b: string): number => (a < b ? -1 : a > b ? 1 : 0);
 
 export type SiteRead =

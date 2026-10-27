@@ -15,6 +15,7 @@ import type {
   ProjectShapeSupport,
   ProposedWork,
 } from '@syzygy/three-surface-poc-core';
+import { deepFreeze } from '@syzygy/support';
 
 import type { DeepDiveMachineForm } from './capability-detail.js';
 
@@ -127,14 +128,6 @@ export function capturedStateOf(claim: ProjectShapeClaim): CapturedTargetState {
   const epistemic = claim.epistemic;
   const reason = 'reasons' in epistemic ? epistemic.reasons.primary : 'basis' in epistemic ? epistemic.basis : 'none';
   return { label: epistemic.label, tier: epistemic.tier ?? 'unstated', reason };
-}
-
-function deepFreeze<T>(value: T): T {
-  if (value !== null && typeof value === 'object') {
-    for (const inner of Object.values(value as Record<string, unknown>)) deepFreeze(inner);
-    Object.freeze(value);
-  }
-  return value;
 }
 
 /** Collects the blocks one render emits. Blocks are cloned and deep-frozen at

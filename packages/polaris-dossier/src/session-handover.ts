@@ -1,6 +1,6 @@
-import { createHash } from 'node:crypto';
 import * as fs from 'node:fs';
 import * as path from 'node:path';
+import { sha256 } from '@syzygy/support';
 import { RECORDS_WITHIN_REACH, providerStatementGate, statementContentClasses, type GateSources } from './gate-sources.js';
 import {
   INVENTORY_BRIEF_FILE, LAUNCH_FORMS, buildInventoryBrief, errno, latestInventorySession, launchRecordName, logStep, openRun, promptRecordName,
@@ -42,7 +42,6 @@ export const LAUNCH_FORM_FORMAT = 'polaris-dossier-launch-form/1';
 const CONTEXT_TEXT = /^[^\u0000-\u001f\u007f]{1,200}$/u;
 
 const isoOf = (instant: number): string => new Date(instant).toISOString();
-const sha256 = (text: string): string => createHash('sha256').update(text, 'utf8').digest('hex');
 
 /** One shell word: the text in single quotes, each single quote closed, escaped and reopened. */
 export const shellQuote = (text: string): string => `'${text.replace(/'/gu, `'\\''`)}'`;

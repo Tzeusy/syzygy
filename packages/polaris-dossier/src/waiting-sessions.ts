@@ -1,7 +1,7 @@
-import { createHash } from 'node:crypto';
 import * as fs from 'node:fs';
 import * as path from 'node:path';
 import { parseBoundedJson } from '@syzygy/polaris-generation-core/live';
+import { sha256 } from '@syzygy/support';
 import { DRAFT_MAX_BYTES, type CheckDeps } from './check.js';
 import { RECORDS_WITHIN_REACH, type GateSources } from './gate-sources.js';
 import {
@@ -69,7 +69,6 @@ const DELIVERY_JSON_LIMITS = Object.freeze({ maxBytes: 65_536, maxNodes: 256, ma
 
 const isoOf = (instant: number): string => new Date(instant).toISOString();
 const isObj = (value: unknown): value is Readonly<Record<string, unknown>> => value !== null && typeof value === 'object' && !Array.isArray(value);
-const sha256 = (bytes: string | Uint8Array): string => createHash('sha256').update(bytes).digest('hex');
 
 const SIGNOFF_PACKAGE = 'polaris-dossier-local-agent-mode';
 const AGGREGATE = 'ACCEPTANCE-ACT-RECORD.md';

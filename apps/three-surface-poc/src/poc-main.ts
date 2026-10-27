@@ -1,4 +1,3 @@
-import { createHash } from 'node:crypto';
 import { realpathSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join, resolve } from 'node:path';
@@ -9,6 +8,7 @@ import {
   PocObservationError,
   type PocModel,
 } from '@syzygy/three-surface-poc-core';
+import { sha256 } from '@syzygy/support';
 
 import { parsePocCli, type PocCliConfig } from './cli.js';
 import {
@@ -160,7 +160,7 @@ async function serveBoundRepository(repoRoot: string, config: PocCliConfig, io: 
   const stateDir = resolve(config.stateDir ?? join(
     tmpdir(),
     'syzygy-three-surface-poc',
-    createHash('sha256').update(repoRoot).digest('hex').slice(0, 16),
+    sha256(repoRoot).slice(0, 16),
   ));
   const buildModel = (currentCapture: PocRuntimeCapture): PocModel => deps.buildProductionPocModel({
     capture: currentCapture,

@@ -24,7 +24,7 @@
 // the PWB-REQ-005 gate admits, and only for the paths listed in
 // `phaseAReads`. Rules 3 and 4 use tree metadata alone.
 
-import { createHash } from 'node:crypto';
+import { deepFreeze, sha256 } from '@syzygy/support';
 
 import {
   indexGitTree,
@@ -339,7 +339,7 @@ export function canonicalManifestJson(manifest: Omit<ProjectShapeSourceManifest,
 }
 
 function digestOf(manifest: Omit<ProjectShapeSourceManifest, 'digest'>): string {
-  return `sha256:${createHash('sha256').update(canonicalManifestJson(manifest)).digest('hex')}`;
+  return `sha256:${sha256(canonicalManifestJson(manifest))}`;
 }
 
 // The registry's `project-shape-source-manifest` output identity:
@@ -516,12 +516,4 @@ export function deriveProjectShapeManifest(input: DeriveManifestInput): DeriveMa
     phaseAReads,
   };
   return { kind: 'manifest', manifest: deepFreeze({ ...body, digest: digestOf(body) }) };
-}
-
-function deepFreeze<T>(value: T): T {
-  if (value !== null && typeof value === 'object' && !Object.isFrozen(value)) {
-    Object.freeze(value);
-    for (const inner of Object.values(value as Record<string, unknown>)) deepFreeze(inner);
-  }
-  return value;
 }
