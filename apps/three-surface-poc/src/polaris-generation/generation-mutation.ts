@@ -38,8 +38,8 @@ export function applyLiteralMutation(source: string, mutation: LiteralMutation):
   return source.replace(mutation.from, mutation.to);
 }
 
-// Hand-listed semantic mutations, three per subject file, each disabling one
-// fail-closed guard the existing test suites already exercise.
+// Hand-listed semantic mutations, grouped by the file they target, each
+// disabling one fail-closed guard the existing test suites already exercise.
 export const GENERATION_LITERAL_MUTATIONS: readonly LiteralMutation[] = [
   // canonical-json.ts
   {
