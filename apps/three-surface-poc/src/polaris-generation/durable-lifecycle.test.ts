@@ -54,6 +54,23 @@ describe('durable scripted lifecycle port', () => {
     expect(resumed.receipts.map(receipt => receipt.model)).toEqual(Array(5).fill('scripted-v1'));
   }, JOURNAL_TIMEOUT_MS);
 
+  // Expected names: 'attempt-' plus the SHA-256 of request id, stage and ordinal joined by NUL, for run-one and the five stages; the
+  // ordinal is the pipeline's count of calls so far (inventory 0, plan 1, author 2, edit 3, fidelity 4). Taken with hashlib
+  // (docs/evidence/syzygy-bpyt-6-13/derive-literals.py), typed in stage order. The name is the dispatch claim: a different derivation
+  // finds no prior record, so a crash after a claim would no longer refuse the replay (review R-GP-IMPL-SUPPORT-LEAF-1 N2, mutant R9).
+  it('names each dispatch claim by the SHA-256 of its request, stage and ordinal', async () => {
+    const stateDir = scratch();
+    expect((await runGenerationPipeline(request(), fixture(stateDir, []), new AbortController().signal)).status).toBe('awaiting-rendered-review');
+    const claims = [
+      'attempt-2d73d341dd806d637cda3d16ea17971e3eb0b3df269be93af23b0195e4e9083b', // inventory
+      'attempt-4b08f68df0a8e991bfd9d15524d628b465673ec61326ff8347668c60f7f76b19', // plan
+      'attempt-34c4e90aa2d760f16dccf424cac01292deaa4a5edec50ade7213a18ca710e039', // author
+      'attempt-ffd130e87e2d4fcd4b436d3fb65d4a7f2135e6179a3b1a6598ecd2389735b697', // edit
+      'attempt-ce7b75ceb155b4a2460d6953f938c8d2674bb3ed6245a0d3e5e57a9c066cec88', // fidelity
+    ];
+    expect(readdirSync(stateDir).filter(name => name.endsWith('.json')).sort()).toEqual(claims.map(claim => `${claim}.json`).sort());
+  }, JOURNAL_TIMEOUT_MS);
+
   it('refuses changed request, route or current permission and a forged completed artifact', async () => {
     const stateDir = scratch();
     const sends: string[] = [];

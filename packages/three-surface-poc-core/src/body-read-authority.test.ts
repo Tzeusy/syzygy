@@ -33,6 +33,7 @@ import {
   type BodyReadAuthorityInputs,
 } from './body-read-authority.js';
 import { PWB_ADMISSION_FAILURE_MAPPING, observeProjectShape } from './project-shape-observer.js';
+import { frozenCensus } from './test-frozen.js';
 
 // ---------------------------------------------------------------------
 // Literal fixtures.
@@ -763,6 +764,21 @@ describe('PWB-REQ-005 absence and mechanics', () => {
     expect(() => {
       (history[0] as { admits: boolean }).admits = false;
     }).toThrow();
+  });
+
+  // `appendEvaluation` freezes what it appends, so a frozen history entry says nothing about the evaluator: census the result itself
+  // (syzygy-bpyt.6.13, review R-GP-IMPL-SUPPORT-LEAF-1 N2).
+  it('hands out an evaluation frozen all the way down, admitting or rejecting, before any history appends it', () => {
+    const admitting = evaluateBodyReadAuthority(inputs());
+    const rejecting = evaluateBodyReadAuthority(inputs({ consent: { record: { omit: ['Project identity:'] } } }));
+    expect([admitting.admits, rejecting.admits]).toEqual([true, false]);
+    expect(rejecting.contradiction).toBeDefined();
+    for (const evaluation of [admitting, rejecting]) {
+      const { visited, unfrozen } = frozenCensus(evaluation);
+      expect(unfrozen).toEqual([]);
+      // The evaluation and its three authority states at least; a census of nothing would also report no path.
+      expect(visited).toBeGreaterThanOrEqual(4);
+    }
   });
 
   it('the state-(1) disclosure constant is exactly the PWB-REQ-005 sentence', () => {
