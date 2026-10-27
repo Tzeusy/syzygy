@@ -5,26 +5,36 @@
 //   links       indexLinkTargets (project-shape-manifest.ts, stripFences): the index-link grammar's fences and code spans.
 //   extraction  extractClass (project-shape-extraction.ts, parseDoc): headings, list items and tables outside fences.
 //   renderer    renderPolarisMarkdown (polaris-markdown.ts): the presentation of admitted text.
-// A fifth, outsideFences in polaris-generation-consent, is private; docs/evidence/syzygy-bpyt-6-3/fence-probe.mjs measures it.
+// A fifth, outsideFences in polaris-generation-consent, is private; docs/evidence/syzygy-bpyt-6-3/fence-probe.mjs measures it and
+// packages/polaris-generation-consent/src/package-reader.test.ts pins its opener, its closer and its CR-blindness through the public
+// admission reader.
 //
 // This file pins what each reader does today, so that merging or "fixing" a rule is a visible decision and not an accident.
 // It decides nothing: the readers differ on purpose or by silence, and the record
 // docs/evidence/syzygy-bpyt-6-3/dc3-fence-rules-2026-10-25.json says, per reader, which clause governs it and where it departs.
 // Changing a row below changes what a gate accepts or refuses, which needs the owner (GP-Q0), and the record changes with it.
+// The rows named GAP pin a departure the record reports: G1 (the CRLF opener) is ruled by the owner and syzygy-bpyt.16 fixes it;
+// G2 (the extractor) and G3 (the link reader) are open owner questions, and a fix to either flips the rows that name it.
 //
 // A row is one case: its lines, then one string per reader. A string has one letter for each place a probe line can be
 // inserted (before line 0, before line 1, ... after the last): V the probe line is outside every fence the reader
 // recognizes, H it is inside one, M the profile calls the whole text malformed (an unclosed fence or span, or a backtick
 // fence whose info string holds a backtick), X the active-content gate excludes a source with a script element at that
-// place, A it admits it. The *Crlf columns give the same text with CRLF after every line. Expected values are literals.
+// place, A it admits it. The *Crlf columns give the same text with CRLF after every line. `whole` is the profile's reading of the
+// case with no probe line: well formed, or malformed with its reason (WF, UF, BI, US below). Expected values are literals.
 import { describe, expect, it } from 'vitest';
-import { extractClass, indexLinkTargets, maskMarkdownCodeContexts, scanActiveContent } from '@syzygy/three-surface-poc-core';
+import { extractClass, extractSource, indexLinkTargets, maskMarkdownCodeContexts, scanActiveContent } from '@syzygy/three-surface-poc-core';
 import { renderPolarisMarkdown } from './polaris-markdown.js';
 
 const B = '```';
 const T = '~~~';
 const PROBE = '## PROBE [p](probe.md)';
 const PAYLOAD = '<script>x</script>';
+// The profile's reading of a case with no probe line, as maskMarkdownCodeContexts reports it: well formed, or malformed with a reason.
+const WF = 'well-formed';
+const UF = 'malformed:unclosed-fence';
+const BI = 'malformed:backtick-fence-with-backtick-in-info-string';
+const US = 'malformed:unclosed-inline-span';
 
 interface FenceCase {
   readonly id: string;
@@ -36,42 +46,44 @@ interface FenceCase {
   readonly profileCrlf: string;
   readonly gate: string;
   readonly gateCrlf: string;
+  readonly whole: string;
+  readonly wholeCrlf: string;
 }
 
 const CASES: readonly FenceCase[] = [
-  { id: 'backtick-col0', lines: [B, 'x', B], profile: 'VHHV', links: 'VHHV', extraction: 'VHHV', renderer: 'VHHV', profileCrlf: 'VHHV', gate: 'XAAX', gateCrlf: 'XAAX' },
-  { id: 'backtick-indent1', lines: [' ```', 'x', ' ```'], profile: 'VHHV', links: 'VHHV', extraction: 'VVVV', renderer: 'VHHV', profileCrlf: 'VHHV', gate: 'XAAX', gateCrlf: 'XAAX' },
-  { id: 'backtick-indent2', lines: ['  ```', 'x', '  ```'], profile: 'VHHV', links: 'VHHV', extraction: 'VVVV', renderer: 'VHHV', profileCrlf: 'VHHV', gate: 'XAAX', gateCrlf: 'XAAX' },
-  { id: 'backtick-indent3', lines: ['   ```', 'x', '   ```'], profile: 'VHHV', links: 'VHHV', extraction: 'VVVV', renderer: 'VHHV', profileCrlf: 'VHHV', gate: 'XAAX', gateCrlf: 'XAAX' },
-  { id: 'backtick-indent4', lines: ['    ```', 'x', '    ```'], profile: 'VHHV', links: 'VVVV', extraction: 'VVVV', renderer: 'VVVV', profileCrlf: 'VHHV', gate: 'XAAX', gateCrlf: 'XAAX' },
-  { id: 'backtick-tab', lines: ['\t```', 'x', '\t```'], profile: 'VHHV', links: 'VHHV', extraction: 'VVVV', renderer: 'VVVV', profileCrlf: 'VHHV', gate: 'XAAX', gateCrlf: 'XAAX' },
-  { id: 'tilde-col0', lines: [T, 'x', T], profile: 'VHHV', links: 'VHHV', extraction: 'VHHV', renderer: 'VHHV', profileCrlf: 'VVVV', gate: 'XAAX', gateCrlf: 'XXXX' },
-  { id: 'tilde-indent3', lines: ['   ~~~', 'x', '   ~~~'], profile: 'VHHV', links: 'VHHV', extraction: 'VVVV', renderer: 'VHHV', profileCrlf: 'VVVV', gate: 'XAAX', gateCrlf: 'XXXX' },
-  { id: 'tilde-indent4', lines: ['    ~~~', 'x', '    ~~~'], profile: 'VVVV', links: 'VVVV', extraction: 'VVVV', renderer: 'VVVV', profileCrlf: 'VVVV', gate: 'XXXX', gateCrlf: 'XXXX' },
-  { id: 'opener-four-closer-three', lines: ['````', 'x', B, 'y', '````'], profile: 'VHHHHV', links: 'VHHHHV', extraction: 'VHHHHV', renderer: 'VHHHHV', profileCrlf: 'VHHHHV', gate: 'XAAAAX', gateCrlf: 'XAAAAX' },
-  { id: 'closer-longer', lines: [B, 'x', '````'], profile: 'VHHV', links: 'VHHV', extraction: 'VHHV', renderer: 'VHHV', profileCrlf: 'MMMM', gate: 'XAAX', gateCrlf: 'XXXX' },
-  { id: 'closer-indent1', lines: [B, 'x', ' ```', 'y'], profile: 'VHHVV', links: 'VHHVV', extraction: 'VHHHH', renderer: 'VHHVV', profileCrlf: 'VHHVV', gate: 'XAAXX', gateCrlf: 'XAAXX' },
-  { id: 'closer-indent3', lines: [B, 'x', '   ```', 'y'], profile: 'VHHVV', links: 'VHHVV', extraction: 'VHHHH', renderer: 'VHHVV', profileCrlf: 'VHHVV', gate: 'XAAXX', gateCrlf: 'XAAXX' },
-  { id: 'closer-indent4', lines: [B, 'x', '    ```', 'y', B], profile: 'VHHHHV', links: 'VHHHHV', extraction: 'VHHHHV', renderer: 'VHHHHV', profileCrlf: 'MMMMMM', gate: 'XAAAAX', gateCrlf: 'XXXXXX' },
-  { id: 'closer-trailing-space', lines: [B, 'x', '``` '], profile: 'VHHV', links: 'VHHV', extraction: 'VHHV', renderer: 'VHHV', profileCrlf: 'VHHV', gate: 'XAAX', gateCrlf: 'XAAX' },
-  { id: 'closer-trailing-tab', lines: [B, 'x', '```\t'], profile: 'MMMM', links: 'VHHV', extraction: 'VHHV', renderer: 'VHHV', profileCrlf: 'VHHV', gate: 'XXXX', gateCrlf: 'XAAX' },
-  { id: 'closer-trailing-tab-then-closer', lines: [B, 'x', '```\t', 'y', B], profile: 'VHHHHV', links: 'VHHVVH', extraction: 'VHHVVH', renderer: 'VHHVVH', profileCrlf: 'MMMMMM', gate: 'XAAAAX', gateCrlf: 'XXXXXX' },
-  { id: 'closer-with-info', lines: [B, 'x', '```js', 'y', B], profile: 'VHHHHV', links: 'VHHVVH', extraction: 'VHHHHV', renderer: 'VHHHHV', profileCrlf: 'MMMMMM', gate: 'XAAAAX', gateCrlf: 'XXXXXX' },
-  { id: 'closer-longer-with-info', lines: [B, '````js', 'y', B], profile: 'VHHHV', links: 'VHVVH', extraction: 'VHHHV', renderer: 'VHHHV', profileCrlf: 'VHHHV', gate: 'XAAAX', gateCrlf: 'XAAAX' },
-  { id: 'closer-with-text', lines: [B, 'x', '``` text', 'y', B], profile: 'VHHHHV', links: 'VHHVVH', extraction: 'VHHHHV', renderer: 'VHHHHV', profileCrlf: 'MMMMMM', gate: 'XAAAAX', gateCrlf: 'XXXXXX' },
-  { id: 'closer-other-char', lines: [B, 'x', T, 'y', B], profile: 'VHHHHV', links: 'VHHHHV', extraction: 'VHHHHV', renderer: 'VHHHHV', profileCrlf: 'VHHHHV', gate: 'XAAAAX', gateCrlf: 'XAAAAX' },
-  { id: 'tilde-fence-backtick-line', lines: [T, 'x', B, 'y', T], profile: 'VHHHHV', links: 'VHHHHV', extraction: 'VHHHHV', renderer: 'VHHHHV', profileCrlf: 'MMMMMM', gate: 'XAAAAX', gateCrlf: 'XXXXXX' },
-  { id: 'tilde-opener-four-closer-three', lines: ['~~~~', 'x', T, 'y', '~~~~'], profile: 'VHHHHV', links: 'VHHHHV', extraction: 'VHHHHV', renderer: 'VHHHHV', profileCrlf: 'VVVVVV', gate: 'XAAAAX', gateCrlf: 'XXXXXX' },
-  { id: 'info-string', lines: ['```js', 'x', B], profile: 'VHHV', links: 'VHHV', extraction: 'VHHV', renderer: 'VHHV', profileCrlf: 'VHHV', gate: 'XAAX', gateCrlf: 'XAAX' },
-  { id: 'info-string-space', lines: ['``` js', 'x', B], profile: 'VHHV', links: 'VHHV', extraction: 'VHHV', renderer: 'VHHV', profileCrlf: 'VHHV', gate: 'XAAX', gateCrlf: 'XAAX' },
-  { id: 'backtick-info-with-backtick', lines: ['```a`b', 'x', B], profile: 'MMMM', links: 'VHHV', extraction: 'VHHV', renderer: 'VHHV', profileCrlf: 'VHHV', gate: 'XXXX', gateCrlf: 'XAAX' },
-  { id: 'tilde-info-with-backtick', lines: ['~~~a`b', 'x', T], profile: 'VHHV', links: 'VHHV', extraction: 'VHHV', renderer: 'VHHV', profileCrlf: 'MMMM', gate: 'XAAX', gateCrlf: 'XXXX' },
-  { id: 'unclosed', lines: [B, 'x'], profile: 'MMM', links: 'VHH', extraction: 'VHH', renderer: 'VHH', profileCrlf: 'MMM', gate: 'XXX', gateCrlf: 'XXX' },
-  { id: 'empty-fence', lines: [B, B], profile: 'VHV', links: 'VHV', extraction: 'VHV', renderer: 'VHV', profileCrlf: 'VHV', gate: 'XAX', gateCrlf: 'XAX' },
-  { id: 'two-backticks', lines: ['``', 'x', '``'], profile: 'VHHV', links: 'VVVV', extraction: 'VVVV', renderer: 'VVVV', profileCrlf: 'VHHV', gate: 'XAAX', gateCrlf: 'XAAX' },
-  { id: 'blockquote', lines: ['> ```', '> x', '> ```'], profile: 'VHHV', links: 'VVVV', extraction: 'VVVV', renderer: 'VVVV', profileCrlf: 'VHHV', gate: 'XAAX', gateCrlf: 'XAAX' },
-  { id: 'list-item', lines: ['- ```', '  x', '  ```'], profile: 'MMMM', links: 'VVVH', extraction: 'VVVV', renderer: 'VVVV', profileCrlf: 'VHHV', gate: 'XXXX', gateCrlf: 'XAAX' },
-  { id: 'two-fences', lines: [B, 'x', B, T, 'y', T], profile: 'VHHVHHV', links: 'VHHVHHV', extraction: 'VHHVHHV', renderer: 'VHHVHHV', profileCrlf: 'VHHVVVV', gate: 'XAAXAAX', gateCrlf: 'XAAXXXX' },
+  { id: 'backtick-col0', lines: [B, 'x', B], profile: 'VHHV', links: 'VHHV', extraction: 'VHHV', renderer: 'VHHV', profileCrlf: 'VHHV', gate: 'XAAX', gateCrlf: 'XAAX', whole: WF, wholeCrlf: WF },
+  { id: 'backtick-indent1', lines: [' ```', 'x', ' ```'], profile: 'VHHV', links: 'VHHV', extraction: 'VVVV', renderer: 'VHHV', profileCrlf: 'VHHV', gate: 'XAAX', gateCrlf: 'XAAX', whole: WF, wholeCrlf: WF },
+  { id: 'backtick-indent2', lines: ['  ```', 'x', '  ```'], profile: 'VHHV', links: 'VHHV', extraction: 'VVVV', renderer: 'VHHV', profileCrlf: 'VHHV', gate: 'XAAX', gateCrlf: 'XAAX', whole: WF, wholeCrlf: WF },
+  { id: 'backtick-indent3', lines: ['   ```', 'x', '   ```'], profile: 'VHHV', links: 'VHHV', extraction: 'VVVV', renderer: 'VHHV', profileCrlf: 'VHHV', gate: 'XAAX', gateCrlf: 'XAAX', whole: WF, wholeCrlf: WF },
+  { id: 'backtick-indent4', lines: ['    ```', 'x', '    ```'], profile: 'VHHV', links: 'VVVV', extraction: 'VVVV', renderer: 'VVVV', profileCrlf: 'VHHV', gate: 'XAAX', gateCrlf: 'XAAX', whole: WF, wholeCrlf: WF },
+  { id: 'backtick-tab', lines: ['\t```', 'x', '\t```'], profile: 'VHHV', links: 'VHHV', extraction: 'VVVV', renderer: 'VVVV', profileCrlf: 'VHHV', gate: 'XAAX', gateCrlf: 'XAAX', whole: WF, wholeCrlf: WF },
+  { id: 'tilde-col0', lines: [T, 'x', T], profile: 'VHHV', links: 'VHHV', extraction: 'VHHV', renderer: 'VHHV', profileCrlf: 'VVVV', gate: 'XAAX', gateCrlf: 'XXXX', whole: WF, wholeCrlf: WF },
+  { id: 'tilde-indent3', lines: ['   ~~~', 'x', '   ~~~'], profile: 'VHHV', links: 'VHHV', extraction: 'VVVV', renderer: 'VHHV', profileCrlf: 'VVVV', gate: 'XAAX', gateCrlf: 'XXXX', whole: WF, wholeCrlf: WF },
+  { id: 'tilde-indent4', lines: ['    ~~~', 'x', '    ~~~'], profile: 'VVVV', links: 'VVVV', extraction: 'VVVV', renderer: 'VVVV', profileCrlf: 'VVVV', gate: 'XXXX', gateCrlf: 'XXXX', whole: WF, wholeCrlf: WF },
+  { id: 'opener-four-closer-three', lines: ['````', 'x', B, 'y', '````'], profile: 'VHHHHV', links: 'VHHHHV', extraction: 'VHHHHV', renderer: 'VHHHHV', profileCrlf: 'VHHHHV', gate: 'XAAAAX', gateCrlf: 'XAAAAX', whole: WF, wholeCrlf: WF },
+  { id: 'closer-longer', lines: [B, 'x', '````'], profile: 'VHHV', links: 'VHHV', extraction: 'VHHV', renderer: 'VHHV', profileCrlf: 'MMMM', gate: 'XAAX', gateCrlf: 'XXXX', whole: WF, wholeCrlf: US },
+  { id: 'closer-indent1', lines: [B, 'x', ' ```', 'y'], profile: 'VHHVV', links: 'VHHVV', extraction: 'VHHHH', renderer: 'VHHVV', profileCrlf: 'VHHVV', gate: 'XAAXX', gateCrlf: 'XAAXX', whole: WF, wholeCrlf: WF },
+  { id: 'closer-indent3', lines: [B, 'x', '   ```', 'y'], profile: 'VHHVV', links: 'VHHVV', extraction: 'VHHHH', renderer: 'VHHVV', profileCrlf: 'VHHVV', gate: 'XAAXX', gateCrlf: 'XAAXX', whole: WF, wholeCrlf: WF },
+  { id: 'closer-indent4', lines: [B, 'x', '    ```', 'y', B], profile: 'VHHHHV', links: 'VHHHHV', extraction: 'VHHHHV', renderer: 'VHHHHV', profileCrlf: 'MMMMMM', gate: 'XAAAAX', gateCrlf: 'XXXXXX', whole: WF, wholeCrlf: US },
+  { id: 'closer-trailing-space', lines: [B, 'x', '``` '], profile: 'VHHV', links: 'VHHV', extraction: 'VHHV', renderer: 'VHHV', profileCrlf: 'VHHV', gate: 'XAAX', gateCrlf: 'XAAX', whole: WF, wholeCrlf: WF },
+  { id: 'closer-trailing-tab', lines: [B, 'x', '```\t'], profile: 'MMMM', links: 'VHHV', extraction: 'VHHV', renderer: 'VHHV', profileCrlf: 'VHHV', gate: 'XXXX', gateCrlf: 'XAAX', whole: UF, wholeCrlf: WF },
+  { id: 'closer-trailing-tab-then-closer', lines: [B, 'x', '```\t', 'y', B], profile: 'VHHHHV', links: 'VHHVVH', extraction: 'VHHVVH', renderer: 'VHHVVH', profileCrlf: 'MMMMMM', gate: 'XAAAAX', gateCrlf: 'XXXXXX', whole: WF, wholeCrlf: US },
+  { id: 'closer-with-info', lines: [B, 'x', '```js', 'y', B], profile: 'VHHHHV', links: 'VHHVVH', extraction: 'VHHHHV', renderer: 'VHHHHV', profileCrlf: 'MMMMMM', gate: 'XAAAAX', gateCrlf: 'XXXXXX', whole: WF, wholeCrlf: US },
+  { id: 'closer-longer-with-info', lines: [B, '````js', 'y', B], profile: 'VHHHV', links: 'VHVVH', extraction: 'VHHHV', renderer: 'VHHHV', profileCrlf: 'VHHHV', gate: 'XAAAX', gateCrlf: 'XAAAX', whole: WF, wholeCrlf: WF },
+  { id: 'closer-with-text', lines: [B, 'x', '``` text', 'y', B], profile: 'VHHHHV', links: 'VHHVVH', extraction: 'VHHHHV', renderer: 'VHHHHV', profileCrlf: 'MMMMMM', gate: 'XAAAAX', gateCrlf: 'XXXXXX', whole: WF, wholeCrlf: US },
+  { id: 'closer-other-char', lines: [B, 'x', T, 'y', B], profile: 'VHHHHV', links: 'VHHHHV', extraction: 'VHHHHV', renderer: 'VHHHHV', profileCrlf: 'VHHHHV', gate: 'XAAAAX', gateCrlf: 'XAAAAX', whole: WF, wholeCrlf: WF },
+  { id: 'tilde-fence-backtick-line', lines: [T, 'x', B, 'y', T], profile: 'VHHHHV', links: 'VHHHHV', extraction: 'VHHHHV', renderer: 'VHHHHV', profileCrlf: 'MMMMMM', gate: 'XAAAAX', gateCrlf: 'XXXXXX', whole: WF, wholeCrlf: US },
+  { id: 'tilde-opener-four-closer-three', lines: ['~~~~', 'x', T, 'y', '~~~~'], profile: 'VHHHHV', links: 'VHHHHV', extraction: 'VHHHHV', renderer: 'VHHHHV', profileCrlf: 'VVVVVV', gate: 'XAAAAX', gateCrlf: 'XXXXXX', whole: WF, wholeCrlf: WF },
+  { id: 'info-string', lines: ['```js', 'x', B], profile: 'VHHV', links: 'VHHV', extraction: 'VHHV', renderer: 'VHHV', profileCrlf: 'VHHV', gate: 'XAAX', gateCrlf: 'XAAX', whole: WF, wholeCrlf: WF },
+  { id: 'info-string-space', lines: ['``` js', 'x', B], profile: 'VHHV', links: 'VHHV', extraction: 'VHHV', renderer: 'VHHV', profileCrlf: 'VHHV', gate: 'XAAX', gateCrlf: 'XAAX', whole: WF, wholeCrlf: WF },
+  { id: 'backtick-info-with-backtick', lines: ['```a`b', 'x', B], profile: 'MMMM', links: 'VHHV', extraction: 'VHHV', renderer: 'VHHV', profileCrlf: 'VHHV', gate: 'XXXX', gateCrlf: 'XAAX', whole: BI, wholeCrlf: WF },
+  { id: 'tilde-info-with-backtick', lines: ['~~~a`b', 'x', T], profile: 'VHHV', links: 'VHHV', extraction: 'VHHV', renderer: 'VHHV', profileCrlf: 'MMMM', gate: 'XAAX', gateCrlf: 'XXXX', whole: WF, wholeCrlf: US },
+  { id: 'unclosed', lines: [B, 'x'], profile: 'MMM', links: 'VHH', extraction: 'VHH', renderer: 'VHH', profileCrlf: 'MMM', gate: 'XXX', gateCrlf: 'XXX', whole: UF, wholeCrlf: US },
+  { id: 'empty-fence', lines: [B, B], profile: 'VHV', links: 'VHV', extraction: 'VHV', renderer: 'VHV', profileCrlf: 'VHV', gate: 'XAX', gateCrlf: 'XAX', whole: WF, wholeCrlf: WF },
+  { id: 'two-backticks', lines: ['``', 'x', '``'], profile: 'VHHV', links: 'VVVV', extraction: 'VVVV', renderer: 'VVVV', profileCrlf: 'VHHV', gate: 'XAAX', gateCrlf: 'XAAX', whole: WF, wholeCrlf: WF },
+  { id: 'blockquote', lines: ['> ```', '> x', '> ```'], profile: 'VHHV', links: 'VVVV', extraction: 'VVVV', renderer: 'VVVV', profileCrlf: 'VHHV', gate: 'XAAX', gateCrlf: 'XAAX', whole: WF, wholeCrlf: WF },
+  { id: 'list-item', lines: ['- ```', '  x', '  ```'], profile: 'MMMM', links: 'VVVH', extraction: 'VVVV', renderer: 'VVVV', profileCrlf: 'VHHV', gate: 'XXXX', gateCrlf: 'XAAX', whole: US, wholeCrlf: WF },
+  { id: 'two-fences', lines: [B, 'x', B, T, 'y', T], profile: 'VHHVHHV', links: 'VHHVHHV', extraction: 'VHHVHHV', renderer: 'VHHVHHV', profileCrlf: 'VHHVVVV', gate: 'XAAXAAX', gateCrlf: 'XAAXXXX', whole: WF, wholeCrlf: WF },
 ];
 
 // Inline code spans on one line, for the two readers that have a rule for them: V the link is outside a span, H inside one,
@@ -88,6 +100,10 @@ const INLINE_SPANS: readonly { readonly id: string; readonly line: string; reado
 ];
 
 const joined = (lines: readonly string[], eol: string): string => lines.map((line) => line + eol).join('');
+const wholeReading = (text: string): string => {
+  const mask = maskMarkdownCodeContexts(text);
+  return mask.kind === 'malformed' ? `malformed:${mask.reason}` : WF;
+};
 const atLine = (text: string, k: number): boolean => (text.split('\n')[k] ?? '').replace(/\r$/, '') === PROBE;
 
 type Read = (text: string, k: number) => string;
@@ -121,8 +137,10 @@ describe('Markdown fence recognizers: what each reader treats as inside a fence'
       profileCrlf: vector(readers.profile, PROBE, c.lines, '\r\n'),
       gate: vector(gate, PAYLOAD, c.lines, '\n'),
       gateCrlf: vector(gate, PAYLOAD, c.lines, '\r\n'),
+      whole: wholeReading(joined(c.lines, '\n')),
+      wholeCrlf: wholeReading(joined(c.lines, '\r\n')),
     };
-    for (const key of ['profile', 'links', 'extraction', 'renderer', 'profileCrlf', 'gate', 'gateCrlf'] as const) expect(read[key], `${c.id} ${key}`).toBe(c[key]);
+    for (const key of ['profile', 'links', 'extraction', 'renderer', 'profileCrlf', 'gate', 'gateCrlf', 'whole', 'wholeCrlf'] as const) expect(read[key], `${c.id} ${key}`).toBe(c[key]);
   });
 
   it('the cases cover the population this file claims: 33 cases, 152 insertion places per reader', () => {
@@ -138,7 +156,6 @@ describe('Markdown fence recognizers: what each reader treats as inside a fence'
         expect(vector(readers[name], PROBE, c.lines, '\r\n'), `${c.id} ${name}`).toBe(c[name]);
       }
     }
-    expect(CASES.filter((c) => c.profileCrlf !== c.profile).map((c) => c.id)).toHaveLength(14);
   });
 
   it.each(INLINE_SPANS)('inline span: $id', (c) => {
@@ -153,17 +170,98 @@ describe('Markdown fence recognizers: what each reader treats as inside a fence'
     expect(renderPolarisMarkdown('text\n    ' + B + '\nx')).toBe('<p>text\n    ' + B + '\nx</p>');
   });
 
+  it('renderer: a fence line indented with a tab does not end a paragraph', () => {
+    expect(renderPolarisMarkdown('text\n\t' + B + '\nx')).toBe('<p>text\n\t' + B + '\nx</p>');
+  });
+
   it('renderer: a closed fence does not hide the heading after it from the fragment root', () => {
     expect(renderPolarisMarkdown('### A\n\n' + B + '\nx\n' + B + '\n\n# B')).toBe('<h4>A</h4>\n<pre><code>x</code></pre>\n<h4>B</h4>');
   });
 
-  // A gap, recorded and not decided: a line "```a`b" is a fence opener whether the CR counts as part of the line or as its
-  // terminator, and a backtick opener's info text may hold no backtick, so the LF text is malformed and excluded. The opener
-  // regex ends in `(.*)$`, `.` does not match CR, and the CRLF text is read as an inline span that hides the script element.
-  // Changing this changes what a gate accepts; it needs the owner (GP-Q0) and this test changes with the decision.
+  // G1, recorded and ruled: a line "```a`b" is a fence opener whether the CR counts as part of the line or as its terminator, and a
+  // backtick opener's info text may hold no backtick, so the LF text is malformed and excluded. The opener regex ends in `(.*)$`,
+  // `.` does not match CR, and the CRLF text is read as an inline span that hides the script element. The owner has ruled this
+  // (decision bead syzygy-bpyt.1.14: a CRLF or CR text gets exactly the decision its LF form gets) and syzygy-bpyt.16 fixes it, in
+  // the commit that rewrites this test and the *Crlf columns above. Until then the test pins today's behaviour.
   it('GAP: a CRLF source is admitted where the same LF source is excluded as a malformed code context', () => {
     const body = '```a`b\n<script>alert(1)</script>\n```\n';
     expect(scanActiveContent(body).map((f) => f.form)).toEqual(['malformed-code-context']);
     expect(scanActiveContent(body.replace(/\n/g, '\r\n'))).toEqual([]);
+  });
+
+  // G2, recorded and not decided (an open owner question: is "fenced code" in the heading rule the profile's fenced block?). The
+  // extractor's closer is `trimEnd() === fence`, so a closer indented one to three spaces never closes, and a closer-shaped line
+  // ending in a tab closes where the profile does not. What follows is hidden from it. The source is not failed: the denominator
+  // is known and counts only what the extractor still sees, against what the profile (and a reader) sees as declared. A fix
+  // flips the two rows below, and the denominators in them are what the owner is shown.
+  describe('GAP G2: the extractor keeps its own fence closer', () => {
+    const SOURCE = { path: 'vision.md', extractionClasses: ['principle'] } as const;
+    const vision = (fence: readonly string[]): string => ['# Vision', '', '## Non-Negotiable Rules', '', '1. **First.** one', '', ...fence, '', '2. **Second.** two', '', '3. **Third.** three', ''].join('\n');
+    const principles = (text: string): { readonly kind: string; readonly denominators: unknown; readonly keys: readonly string[] } => {
+      const result = extractSource(SOURCE, text);
+      return result.kind === 'extracted' ? { kind: result.kind, denominators: result.denominators, keys: result.items.map((item) => item.key) } : { kind: result.kind, denominators: null, keys: [] };
+    };
+
+    it('a plain closer: the control, three principles declared and three extracted', () => {
+      const text = vision([B, 'code', B]);
+      expect(maskMarkdownCodeContexts(text).kind).toBe('masked');
+      expect(principles(text)).toEqual({ kind: 'extracted', denominators: { principle: 3 }, keys: ['First.', 'Second.', 'Third.'] });
+    });
+
+    it.each([['one space', ' ' + B], ['three spaces', '   ' + B]])('a closer indented %s: the profile closes the fence, the extractor never does, and the denominator is 1 of 3', (_name, closer) => {
+      const text = vision([B, 'code', closer]);
+      expect(maskMarkdownCodeContexts(text).kind).toBe('masked');
+      expect(principles(text)).toEqual({ kind: 'extracted', denominators: { principle: 1 }, keys: ['First.'] });
+    });
+
+    it('a closer-shaped line ending in a tab: the profile keeps the fence open to the plain closer, the extractor closes early and the plain closer then hides the rest', () => {
+      const text = vision([B, 'code', B + '\t', 'more code', B]);
+      expect(maskMarkdownCodeContexts(text).kind).toBe('masked');
+      expect(principles(text)).toEqual({ kind: 'extracted', denominators: { principle: 1 }, keys: ['First.'] });
+    });
+  });
+
+  // G3, recorded and not decided (an open owner question: what does the plan's "outside fenced blocks and code spans" mean for the
+  // index-link grammar?). stripFences strips inline code one line at a time, so (a) a link on a line inside a span that opens and
+  // closes on other lines is indexed, and the profile hides it; and (b) a closer-shaped line the profile does not take as a closer
+  // closes the link reader's fence early, so the real closer opens a fence to the end of the text and hides every later link.
+  // The probe lines of the vector corpus are headings, which end a CommonMark paragraph and so never sit inside a span there; these
+  // rows carry a link on a line of its own. A fix flips them.
+  describe('GAP G3: the link reader keeps its own fence and span rules', () => {
+    const LINK = '[p](probe.md)';
+    const SPANS = [
+      { id: 'double-backtick-span-over-three-lines', lines: ['``', LINK, '``'], rendered: '<p><code>\n[p](probe.md)\n</code></p>' },
+      { id: 'single-backtick-span-over-three-lines', lines: ['`', LINK, '`'], rendered: '<p><code>\n[p](probe.md)\n</code></p>' },
+      { id: 'span-opened-mid-line', lines: ['see `a', LINK, 'b` end'], rendered: '<p>see <code>a\n[p](probe.md)\nb</code> end</p>' },
+    ];
+    const visible = (text: string, link: string): boolean => {
+      const mask = maskMarkdownCodeContexts(text);
+      return mask.kind === 'masked' && mask.masked.includes(link);
+    };
+
+    it.each(SPANS)('a link on a line inside a span that runs across lines is indexed, though the profile hides it: $id', (c) => {
+      const text = joined(c.lines, '\n');
+      expect(visible(text, LINK)).toBe(false);
+      expect(indexLinkTargets(text)).toEqual(['probe.md']);
+      expect(renderPolarisMarkdown(text)).toBe(c.rendered);
+    });
+
+    it('a single-line span is stripped: the control for the rows above', () => {
+      expect(indexLinkTargets(joined(['`' + LINK + '`'], '\n'))).toEqual([]);
+    });
+
+    it('a closer-shaped line with an info string closes the fence early, and the real closer hides every later link', () => {
+      const text = joined([B, 'x', B + 'js', 'y', B, '', '[a](a.md)'], '\n');
+      expect(visible(text, '[a](a.md)')).toBe(true);
+      expect(indexLinkTargets(text)).toEqual([]);
+      expect(indexLinkTargets(joined([B, 'x', 'y', B, '', '[a](a.md)'], '\n'))).toEqual(['a.md']);
+    });
+
+    it('a closer-shaped line ending in a tab, on a text the profile reads as well formed, mints the link inside the fence and hides the one after it', () => {
+      const text = joined([B, 'x', B + '\t', '[inside](mint.md)', B, '[after](hide.md)'], '\n');
+      expect(visible(text, '[inside](mint.md)')).toBe(false);
+      expect(visible(text, '[after](hide.md)')).toBe(true);
+      expect(indexLinkTargets(text)).toEqual(['mint.md']);
+    });
   });
 });
