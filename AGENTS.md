@@ -329,8 +329,9 @@ sweep lessons added 2026-09-23; the raw-head digest lesson the same day.
   still emits two kits a reader takes from `dist` (`full-run.testkit.ts` for
   `scripts/dossier_scale_measure.mjs`, `recorder-fixtures.testkit.ts` for the
   consent package's `./testing` entry). TypeScript emits any module a built
-  one imports, so no built module may import a test or test support
-  (`product-build.test.ts` lists the excludes per project).
+  one imports, so no other built module may import a test or test support
+  (`product-build.test.ts` lists the excludes per project and pins the one
+  import edge into test support, the consent `testing.ts`).
 - Ledger semantics: a refused read is not a counted pass; phase-B breaches
   are typed findings and do not set the degradation state; catalog
   extraction keys off the basename `v1.md`. The tailnet mount is detected
