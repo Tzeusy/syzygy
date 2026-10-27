@@ -32,9 +32,10 @@ const fifoHoldingTheMarker = (dir: string): void => {
   fs.closeSync(writer);
 };
 /** What the test sees of a run's marker without asking the reader: its lstat (mode, inode, size, change time), a link's target, the
- * bytes of a regular file the test can read, followed through a link, and the change time of a regular file a link leads to. It opens
- * no FIFO or device, so it drains no pipe. Times are left out except the change time: a read moves only the access time, and any write,
- * truncate, chmod, rename or link of the marker moves the change time, even one that puts back what it changed. */
+ * bytes of a regular file the test can read, followed through a link, and the inode, mode and change time of a regular file a link
+ * leads to. It opens no FIFO or device, so it drains no pipe. Times are left out except the change time: a read moves only the access
+ * time, and any write of at least one byte, truncate, chmod, rename to another name or link of the marker moves the change time, even one
+ * that puts back what it changed. */
 const markerSnapshot = (dir: string): Readonly<Record<string, unknown>> | null => {
   const stat = fs.lstatSync(marker(dir), { bigint: true, throwIfNoEntry: false });
   if (stat === undefined) return null;
@@ -46,6 +47,8 @@ const markerSnapshot = (dir: string): Readonly<Record<string, unknown>> | null =
   return {
     mode: stat.mode, ino: stat.ino, size: stat.size, ctimeNs: stat.ctimeNs, link: stat.isSymbolicLink() ? fs.readlinkSync(marker(dir)) : null, bytes,
     targetCtimeNs: followed?.isFile() ? followed.ctimeNs : null,
+    targetIno: followed?.isFile() ? followed.ino : null,
+    targetMode: followed?.isFile() ? followed.mode : null,
   };
 };
 
@@ -66,8 +69,15 @@ const PRESENT_BUT_NOT_THE_MARKER: readonly [string, (dir: string) => void][] = [
   ['a FIFO', (dir) => execFileSync('mkfifo', [marker(dir)])],
   ['a FIFO holding the marker\'s bytes', fifoHoldingTheMarker],
   ['a marker of 4097 bytes, one past the bound', (dir) => fs.writeFileSync(marker(dir), padded(4097))],
-  ['a file its reader may not read', (dir) => { fs.writeFileSync(marker(dir), '{"format": "polaris-dossier-launched/1"}'); fs.chmodSync(marker(dir), 0o000); }],
 ];
+// A uid of 0 can read a mode-000 file, so under root the reader takes this plant for the marker; its two rows skip there (8.32 review, N7).
+const isRoot = process.getuid?.() === 0;
+const MODE_000: readonly [string, (dir: string) => void] = ['a file its reader may not read', (dir) => { fs.writeFileSync(marker(dir), '{"format": "polaris-dossier-launched/1"}'); fs.chmodSync(marker(dir), 0o000); }];
+/** One row per plant, in the table's order with the mode-000 plant last. */
+const eachPlant = (title: string, body: (name: string, plant: (dir: string) => void) => void): void => {
+  it.each(PRESENT_BUT_NOT_THE_MARKER)(title, body);
+  it.skipIf(isRoot).each([MODE_000])(title, body);
+};
 
 describe('launchedMarkerState', () => {
   it('is absent when no file of that name exists, and when the run directory itself is missing', () => {
@@ -95,7 +105,7 @@ describe('launchedMarkerState', () => {
     expect(launchedMarkerState(dir)).toBe('launched');
   });
 
-  it.each(PRESENT_BUT_NOT_THE_MARKER)('is unreadable for %s', (_name, plant) => {
+  eachPlant('is unreadable for %s', (_name, plant) => {
     const dir = runDir();
     plant(dir);
     expect(launchedMarkerState(dir)).toBe('unreadable');
@@ -131,7 +141,7 @@ describe('launchedMarkerState', () => {
 });
 
 describe('launch forms in a run whose marker is unreadable', () => {
-  it.each(PRESENT_BUT_NOT_THE_MARKER)('count neither a declared form nor a syzygy-launched one: %s', (_name, plant) => {
+  eachPlant('count neither a declared form nor a syzygy-launched one: %s', (_name, plant) => {
     // Each form is asked of a run planted afresh, so a reader that drains a FIFO on one form cannot leave the next an empty pipe.
     const planted = (): string => { const dir = runDir(); plant(dir); return dir; };
     // Each ask must leave the marker as the test saw it before the ask, by a snapshot that asks no reader, and the run unreadable. So a
