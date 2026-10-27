@@ -1,6 +1,6 @@
 {
  "base": "f7ea858480b30ffc4407154a84d1d03f3fe4a549",
- "head": "6249951432d6d0c0608f8dfb93e525f706159c5a",
+ "head": "191d82779ea07f45be612b00ff3cafc9aa7446b8",
  "copies": {
   "support-base": {
    "commit": "f7ea858480b30ffc4407154a84d1d03f3fe4a549",
@@ -29,7 +29,7 @@
    "sha256": "658e42166798af806fa1820df3dfa82add4e0058abd4b678f760c210a1d170b9"
   },
   "testkit-head": {
-   "commit": "6249951432d6d0c0608f8dfb93e525f706159c5a",
+   "commit": "191d82779ea07f45be612b00ff3cafc9aa7446b8",
    "path": "packages/support/src/purity.testkit.ts",
    "blob": "d8e3e714864097df611eb7e49c43ce840380befa",
    "filter": "source.split('\\n').filter((line) => !line.trimStart().startsWith('//')).join('\\n')",

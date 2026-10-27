@@ -1,5 +1,5 @@
 {
- "commit": "6249951432d6d0c0608f8dfb93e525f706159c5a",
+ "commit": "191d82779ea07f45be612b00ff3cafc9aa7446b8",
  "side": "head",
  "dist": "absent",
  "distDirs": [],
@@ -12,8 +12,8 @@
  "reviewerR1Record": "2ff98a8d5624ffcd7c073a39857ff23b5f7c69f8b189ec8f326bc5db0159c977",
  "node": "v24.6.0",
  "summary": {
-  "rows": 49,
-  "asExpected": 49,
+  "rows": 52,
+  "asExpected": 52,
   "unexpected": []
  },
  "statusAfter": "",
@@ -58,19 +58,19 @@
    "failedTests": [
     {
      "name": "@syzygy/support stays a pure leaf names no module but node:crypto and a module beside it in any literal specifier of any source",
-     "message": "AssertionError: expected [ { file: 'index.ts', \u2026(1) } ] to deeply equal []\n    at /tmp/la-545r/c1/packages/support/src/support-purity.test.ts:72:83\n    at file:///tmp/la-545r/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///tmp/la-545r/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26\n    at file:///tmp/la-545r/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:1897"
+     "message": "AssertionError: expected [ { file: 'index.ts', \u2026(1) } ] to deeply equal []\n    at /tmp/la-545s/c1/packages/support/src/support-purity.test.ts:72:83\n    at file:///tmp/la-545s/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///tmp/la-545s/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26\n    at file:///tmp/la-545s/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:1897"
     },
     {
      "name": "@syzygy/support stays a pure leaf names no identifier outside its literal list in any source",
-     "message": "AssertionError: expected [ 'index.ts: readFileSync' ] to deeply equal []\n    at /tmp/la-545r/c1/packages/support/src/support-purity.test.ts:78:155\n    at file:///tmp/la-545r/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///tmp/la-545r/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26\n    at file:///tmp/la-545r/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:1897:"
+     "message": "AssertionError: expected [ 'index.ts: readFileSync' ] to deeply equal []\n    at /tmp/la-545s/c1/packages/support/src/support-purity.test.ts:78:155\n    at file:///tmp/la-545s/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///tmp/la-545s/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26\n    at file:///tmp/la-545s/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:1897:"
     },
     {
      "name": "@syzygy/support stays a pure leaf takes only createHash from node:crypto, by its own name, and re-exports nothing from it",
-     "message": "AssertionError: expected [ \u2026(2) ] to deeply equal [ Array(1) ]\n    at /tmp/la-545r/c1/packages/support/src/support-purity.test.ts:85:22\n    at file:///tmp/la-545r/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///tmp/la-545r/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26\n    at file:///tmp/la-545r/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:1897:20\n    at n"
+     "message": "AssertionError: expected [ \u2026(2) ] to deeply equal [ Array(1) ]\n    at /tmp/la-545s/c1/packages/support/src/support-purity.test.ts:85:22\n    at file:///tmp/la-545s/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///tmp/la-545s/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26\n    at file:///tmp/la-545s/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:1897:20\n    at n"
     },
     {
      "name": "@syzygy/support stays a pure leaf names none of the forbidden tokens it shares with the owner-act drafter in any source",
-     "message": "AssertionError: index.ts /\\b(?:node:)?(?:fs|net|http|https|child_process|os)['\"`]/: expected '// Internal helpers that more than on\u2026' not to match /\\b(?:node:)?(?:fs|net|http|https|chil\u2026/\n    at /tmp/la-545r/c1/packages/support/src/support-purity.test.ts:105:93\n    at file:///tmp/la-545r/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///tmp/la-545r/c1/node_modules/@vitest/ru"
+     "message": "AssertionError: index.ts /\\b(?:node:)?(?:fs|net|http|https|child_process|os)['\"`]/: expected '// Internal helpers that more than on\u2026' not to match /\\b(?:node:)?(?:fs|net|http|https|chil\u2026/\n    at /tmp/la-545s/c1/packages/support/src/support-purity.test.ts:105:93\n    at file:///tmp/la-545s/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///tmp/la-545s/c1/node_modules/@vitest/ru"
     }
    ]
   },
@@ -98,7 +98,7 @@
    "failedTests": [
     {
      "name": "@syzygy/support stays a pure leaf names no identifier outside its literal list in any source",
-     "message": "AssertionError: expected [ 'sha256.ts: HOME', \u2026(2) ] to deeply equal []\n    at /tmp/la-545r/c1/packages/support/src/support-purity.test.ts:78:155\n    at file:///tmp/la-545r/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///tmp/la-545r/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26\n    at file:///tmp/la-545r/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:1897:2"
+     "message": "AssertionError: expected [ 'sha256.ts: HOME', \u2026(2) ] to deeply equal []\n    at /tmp/la-545s/c1/packages/support/src/support-purity.test.ts:78:155\n    at file:///tmp/la-545s/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///tmp/la-545s/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26\n    at file:///tmp/la-545s/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:1897:2"
     }
    ]
   },
@@ -126,7 +126,7 @@
    "failedTests": [
     {
      "name": "@syzygy/support stays a pure leaf names no identifier outside its literal list in any source",
-     "message": "AssertionError: expected [ 'deep-freeze.ts: console', \u2026(1) ] to deeply equal []\n    at /tmp/la-545r/c1/packages/support/src/support-purity.test.ts:78:155\n    at file:///tmp/la-545r/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///tmp/la-545r/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26\n    at file:///tmp/la-545r/c1/node_modules/@vitest/runner/dist/chunk-hooks.j"
+     "message": "AssertionError: expected [ 'deep-freeze.ts: console', \u2026(1) ] to deeply equal []\n    at /tmp/la-545s/c1/packages/support/src/support-purity.test.ts:78:155\n    at file:///tmp/la-545s/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///tmp/la-545s/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26\n    at file:///tmp/la-545s/c1/node_modules/@vitest/runner/dist/chunk-hooks.j"
     }
    ]
   },
@@ -154,19 +154,19 @@
    "failedTests": [
     {
      "name": "@syzygy/support stays a pure leaf names no module but node:crypto and a module beside it in any literal specifier of any source",
-     "message": "AssertionError: expected [ { file: 'sha256.ts', \u2026(1) } ] to deeply equal []\n    at /tmp/la-545r/c1/packages/support/src/support-purity.test.ts:72:83\n    at file:///tmp/la-545r/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///tmp/la-545r/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26\n    at file:///tmp/la-545r/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:189"
+     "message": "AssertionError: expected [ { file: 'sha256.ts', \u2026(1) } ] to deeply equal []\n    at /tmp/la-545s/c1/packages/support/src/support-purity.test.ts:72:83\n    at file:///tmp/la-545s/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///tmp/la-545s/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26\n    at file:///tmp/la-545s/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:189"
     },
     {
      "name": "@syzygy/support stays a pure leaf names no identifier outside its literal list in any source",
-     "message": "AssertionError: expected [ 'sha256.ts: createRequire', \u2026(4) ] to deeply equal []\n    at /tmp/la-545r/c1/packages/support/src/support-purity.test.ts:78:155\n    at file:///tmp/la-545r/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///tmp/la-545r/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26\n    at file:///tmp/la-545r/c1/node_modules/@vitest/runner/dist/chunk-hooks."
+     "message": "AssertionError: expected [ 'sha256.ts: createRequire', \u2026(4) ] to deeply equal []\n    at /tmp/la-545s/c1/packages/support/src/support-purity.test.ts:78:155\n    at file:///tmp/la-545s/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///tmp/la-545s/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26\n    at file:///tmp/la-545s/c1/node_modules/@vitest/runner/dist/chunk-hooks."
     },
     {
      "name": "@syzygy/support stays a pure leaf takes only createHash from node:crypto, by its own name, and re-exports nothing from it",
-     "message": "AssertionError: expected [ \u2026(2) ] to deeply equal [ Array(1) ]\n    at /tmp/la-545r/c1/packages/support/src/support-purity.test.ts:85:22\n    at file:///tmp/la-545r/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///tmp/la-545r/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26\n    at file:///tmp/la-545r/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:1897:20\n    at n"
+     "message": "AssertionError: expected [ \u2026(2) ] to deeply equal [ Array(1) ]\n    at /tmp/la-545s/c1/packages/support/src/support-purity.test.ts:85:22\n    at file:///tmp/la-545s/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///tmp/la-545s/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26\n    at file:///tmp/la-545s/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:1897:20\n    at n"
     },
     {
      "name": "@syzygy/support stays a pure leaf names none of the forbidden tokens it shares with the owner-act drafter in any source",
-     "message": "AssertionError: sha256.ts /\\b(?:node:)?(?:fs|net|http|https|child_process|os)['\"`]/: expected 'import { createHash } from \\'node:cry\u2026' not to match /\\b(?:node:)?(?:fs|net|http|https|chil\u2026/\n    at /tmp/la-545r/c1/packages/support/src/support-purity.test.ts:105:93\n    at file:///tmp/la-545r/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///tmp/la-545r/c1/node_modules/@vitest/r"
+     "message": "AssertionError: sha256.ts /\\b(?:node:)?(?:fs|net|http|https|child_process|os)['\"`]/: expected 'import { createHash } from \\'node:cry\u2026' not to match /\\b(?:node:)?(?:fs|net|http|https|chil\u2026/\n    at /tmp/la-545s/c1/packages/support/src/support-purity.test.ts:105:93\n    at file:///tmp/la-545s/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///tmp/la-545s/c1/node_modules/@vitest/r"
     }
    ]
   },
@@ -194,7 +194,7 @@
    "failedTests": [
     {
      "name": "@syzygy/support stays a pure leaf names no identifier outside its literal list in any source",
-     "message": "AssertionError: expected [ 'sha256.ts: WebSocket', \u2026(2) ] to deeply equal []\n    at /tmp/la-545r/c1/packages/support/src/support-purity.test.ts:78:155\n    at file:///tmp/la-545r/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///tmp/la-545r/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26\n    at file:///tmp/la-545r/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:1"
+     "message": "AssertionError: expected [ 'sha256.ts: WebSocket', \u2026(2) ] to deeply equal []\n    at /tmp/la-545s/c1/packages/support/src/support-purity.test.ts:78:155\n    at file:///tmp/la-545s/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///tmp/la-545s/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26\n    at file:///tmp/la-545s/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:1"
     }
    ]
   },
@@ -222,7 +222,7 @@
    "failedTests": [
     {
      "name": "@syzygy/support stays a pure leaf names no identifier outside its literal list in any source",
-     "message": "AssertionError: expected [ 'sha256.ts: HOST', \u2026(5) ] to deeply equal []\n    at /tmp/la-545r/c1/packages/support/src/support-purity.test.ts:78:155\n    at file:///tmp/la-545r/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///tmp/la-545r/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26\n    at file:///tmp/la-545r/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:1897:2"
+     "message": "AssertionError: expected [ 'sha256.ts: HOST', \u2026(5) ] to deeply equal []\n    at /tmp/la-545s/c1/packages/support/src/support-purity.test.ts:78:155\n    at file:///tmp/la-545s/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///tmp/la-545s/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26\n    at file:///tmp/la-545s/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:1897:2"
     }
    ]
   },
@@ -250,7 +250,7 @@
    "failedTests": [
     {
      "name": "@syzygy/support stays a pure leaf names no identifier outside its literal list in any source",
-     "message": "AssertionError: expected [ 'sha256.ts: now', \u2026(2) ] to deeply equal []\n    at /tmp/la-545r/c1/packages/support/src/support-purity.test.ts:78:155\n    at file:///tmp/la-545r/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///tmp/la-545r/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26\n    at file:///tmp/la-545r/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:1897:20"
+     "message": "AssertionError: expected [ 'sha256.ts: now', \u2026(2) ] to deeply equal []\n    at /tmp/la-545s/c1/packages/support/src/support-purity.test.ts:78:155\n    at file:///tmp/la-545s/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///tmp/la-545s/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26\n    at file:///tmp/la-545s/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:1897:20"
     }
    ]
   },
@@ -278,11 +278,11 @@
    "failedTests": [
     {
      "name": "@syzygy/support stays a pure leaf names no identifier outside its literal list in any source",
-     "message": "AssertionError: expected [ 'sha256.ts: SALT', \u2026(2) ] to deeply equal []\n    at /tmp/la-545r/c1/packages/support/src/support-purity.test.ts:78:155\n    at file:///tmp/la-545r/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///tmp/la-545r/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26\n    at file:///tmp/la-545r/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:1897:2"
+     "message": "AssertionError: expected [ 'sha256.ts: SALT', \u2026(2) ] to deeply equal []\n    at /tmp/la-545s/c1/packages/support/src/support-purity.test.ts:78:155\n    at file:///tmp/la-545s/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///tmp/la-545s/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26\n    at file:///tmp/la-545s/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:1897:2"
     },
     {
      "name": "@syzygy/support stays a pure leaf takes only createHash from node:crypto, by its own name, and re-exports nothing from it",
-     "message": "AssertionError: expected [ Array(1) ] to deeply equal [ Array(1) ]\n    at /tmp/la-545r/c1/packages/support/src/support-purity.test.ts:85:22\n    at file:///tmp/la-545r/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///tmp/la-545r/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26\n    at file:///tmp/la-545r/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:1897:20\n    "
+     "message": "AssertionError: expected [ Array(1) ] to deeply equal [ Array(1) ]\n    at /tmp/la-545s/c1/packages/support/src/support-purity.test.ts:85:22\n    at file:///tmp/la-545s/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///tmp/la-545s/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26\n    at file:///tmp/la-545s/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:1897:20\n    "
     }
    ]
   },
@@ -310,15 +310,15 @@
    "failedTests": [
     {
      "name": "@syzygy/support stays a pure leaf names no module but node:crypto and a module beside it in any literal specifier of any source",
-     "message": "AssertionError: expected [ { file: 'sha256.ts', \u2026(1) } ] to deeply equal []\n    at /tmp/la-545r/c1/packages/support/src/support-purity.test.ts:72:83\n    at file:///tmp/la-545r/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///tmp/la-545r/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26\n    at file:///tmp/la-545r/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:189"
+     "message": "AssertionError: expected [ { file: 'sha256.ts', \u2026(1) } ] to deeply equal []\n    at /tmp/la-545s/c1/packages/support/src/support-purity.test.ts:72:83\n    at file:///tmp/la-545s/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///tmp/la-545s/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26\n    at file:///tmp/la-545s/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:189"
     },
     {
      "name": "@syzygy/support stays a pure leaf names no identifier outside its literal list in any source",
-     "message": "AssertionError: expected [ 'sha256.ts: F', 'sha256.ts: fs' ] to deeply equal []\n    at /tmp/la-545r/c1/packages/support/src/support-purity.test.ts:78:155\n    at file:///tmp/la-545r/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///tmp/la-545r/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26\n    at file:///tmp/la-545r/c1/node_modules/@vitest/runner/dist/chunk-hooks.j"
+     "message": "AssertionError: expected [ 'sha256.ts: F', 'sha256.ts: fs' ] to deeply equal []\n    at /tmp/la-545s/c1/packages/support/src/support-purity.test.ts:78:155\n    at file:///tmp/la-545s/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///tmp/la-545s/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26\n    at file:///tmp/la-545s/c1/node_modules/@vitest/runner/dist/chunk-hooks.j"
     },
     {
      "name": "@syzygy/support stays a pure leaf names none of the forbidden tokens it shares with the owner-act drafter in any source",
-     "message": "AssertionError: sha256.ts /\\brequire\\(/: expected 'import { createHash } from \\'node:cry\u2026' not to match /\\brequire\\(/\n    at /tmp/la-545r/c1/packages/support/src/support-purity.test.ts:105:93\n    at file:///tmp/la-545r/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///tmp/la-545r/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26\n    at file:///tmp/la-545r/c1/node_mod"
+     "message": "AssertionError: sha256.ts /\\brequire\\(/: expected 'import { createHash } from \\'node:cry\u2026' not to match /\\brequire\\(/\n    at /tmp/la-545s/c1/packages/support/src/support-purity.test.ts:105:93\n    at file:///tmp/la-545s/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///tmp/la-545s/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26\n    at file:///tmp/la-545s/c1/node_mod"
     }
    ]
   },
@@ -351,19 +351,19 @@
    "failedTests": [
     {
      "name": "@syzygy/support stays a pure leaf names no module but node:crypto and a module beside it in any literal specifier of any source",
-     "message": "AssertionError: expected [ { file: 'index.ts', \u2026(1) }, \u2026(1) ] to deeply equal []\n    at /tmp/la-545r/c1/packages/support/src/support-purity.test.ts:72:83\n    at file:///tmp/la-545r/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///tmp/la-545r/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26\n    at file:///tmp/la-545r/c1/node_modules/@vitest/runner/dist/chunk-hooks.j"
+     "message": "AssertionError: expected [ { file: 'index.ts', \u2026(1) }, \u2026(1) ] to deeply equal []\n    at /tmp/la-545s/c1/packages/support/src/support-purity.test.ts:72:83\n    at file:///tmp/la-545s/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///tmp/la-545s/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26\n    at file:///tmp/la-545s/c1/node_modules/@vitest/runner/dist/chunk-hooks.j"
     },
     {
      "name": "@syzygy/support stays a pure leaf names no identifier outside its literal list in any source",
-     "message": "AssertionError: expected [ 'io/read.ts: p', \u2026(2) ] to deeply equal []\n    at /tmp/la-545r/c1/packages/support/src/support-purity.test.ts:78:155\n    at file:///tmp/la-545r/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///tmp/la-545r/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26\n    at file:///tmp/la-545r/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:1897:20\n"
+     "message": "AssertionError: expected [ 'io/read.ts: p', \u2026(2) ] to deeply equal []\n    at /tmp/la-545s/c1/packages/support/src/support-purity.test.ts:78:155\n    at file:///tmp/la-545s/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///tmp/la-545s/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26\n    at file:///tmp/la-545s/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:1897:20\n"
     },
     {
      "name": "@syzygy/support stays a pure leaf takes only createHash from node:crypto, by its own name, and re-exports nothing from it",
-     "message": "AssertionError: expected [ \u2026(2) ] to deeply equal [ Array(1) ]\n    at /tmp/la-545r/c1/packages/support/src/support-purity.test.ts:85:22\n    at file:///tmp/la-545r/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///tmp/la-545r/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26\n    at file:///tmp/la-545r/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:1897:20\n    at n"
+     "message": "AssertionError: expected [ \u2026(2) ] to deeply equal [ Array(1) ]\n    at /tmp/la-545s/c1/packages/support/src/support-purity.test.ts:85:22\n    at file:///tmp/la-545s/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///tmp/la-545s/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26\n    at file:///tmp/la-545s/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:1897:20\n    at n"
     },
     {
      "name": "@syzygy/support stays a pure leaf names none of the forbidden tokens it shares with the owner-act drafter in any source",
-     "message": "AssertionError: io/read.ts /\\b(?:node:)?(?:fs|net|http|https|child_process|os)['\"`]/: expected 'import { readFileSync } from \\'node:f\u2026' not to match /\\b(?:node:)?(?:fs|net|http|https|chil\u2026/\n    at /tmp/la-545r/c1/packages/support/src/support-purity.test.ts:105:93\n    at file:///tmp/la-545r/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///tmp/la-545r/c1/node_modules/@vitest/"
+     "message": "AssertionError: io/read.ts /\\b(?:node:)?(?:fs|net|http|https|child_process|os)['\"`]/: expected 'import { readFileSync } from \\'node:f\u2026' not to match /\\b(?:node:)?(?:fs|net|http|https|chil\u2026/\n    at /tmp/la-545s/c1/packages/support/src/support-purity.test.ts:105:93\n    at file:///tmp/la-545s/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///tmp/la-545s/c1/node_modules/@vitest/"
     }
    ]
   },
@@ -396,19 +396,19 @@
    "failedTests": [
     {
      "name": "@syzygy/support stays a pure leaf names no module but node:crypto and a module beside it in any literal specifier of any source",
-     "message": "AssertionError: expected [ { file: 'index.ts', \u2026(1) }, \u2026(1) ] to deeply equal []\n    at /tmp/la-545r/c1/packages/support/src/support-purity.test.ts:72:83\n    at file:///tmp/la-545r/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///tmp/la-545r/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26\n    at file:///tmp/la-545r/c1/node_modules/@vitest/runner/dist/chunk-hooks.j"
+     "message": "AssertionError: expected [ { file: 'index.ts', \u2026(1) }, \u2026(1) ] to deeply equal []\n    at /tmp/la-545s/c1/packages/support/src/support-purity.test.ts:72:83\n    at file:///tmp/la-545s/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///tmp/la-545s/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26\n    at file:///tmp/la-545s/c1/node_modules/@vitest/runner/dist/chunk-hooks.j"
     },
     {
      "name": "@syzygy/support stays a pure leaf names no identifier outside its literal list in any source",
-     "message": "AssertionError: expected [ 'net.mts: N' ] to deeply equal []\n    at /tmp/la-545r/c1/packages/support/src/support-purity.test.ts:78:155\n    at file:///tmp/la-545r/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///tmp/la-545r/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26\n    at file:///tmp/la-545r/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:1897:20\n    at ne"
+     "message": "AssertionError: expected [ 'net.mts: N' ] to deeply equal []\n    at /tmp/la-545s/c1/packages/support/src/support-purity.test.ts:78:155\n    at file:///tmp/la-545s/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///tmp/la-545s/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26\n    at file:///tmp/la-545s/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:1897:20\n    at ne"
     },
     {
      "name": "@syzygy/support stays a pure leaf takes only createHash from node:crypto, by its own name, and re-exports nothing from it",
-     "message": "AssertionError: expected [ \u2026(2) ] to deeply equal [ Array(1) ]\n    at /tmp/la-545r/c1/packages/support/src/support-purity.test.ts:85:22\n    at file:///tmp/la-545r/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///tmp/la-545r/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26\n    at file:///tmp/la-545r/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:1897:20\n    at n"
+     "message": "AssertionError: expected [ \u2026(2) ] to deeply equal [ Array(1) ]\n    at /tmp/la-545s/c1/packages/support/src/support-purity.test.ts:85:22\n    at file:///tmp/la-545s/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///tmp/la-545s/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26\n    at file:///tmp/la-545s/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:1897:20\n    at n"
     },
     {
      "name": "@syzygy/support stays a pure leaf names none of the forbidden tokens it shares with the owner-act drafter in any source",
-     "message": "AssertionError: net.mts /\\b(?:node:)?(?:fs|net|http|https|child_process|os)['\"`]/: expected 'import \\'node:http\\';\\nexport const N\u2026' not to match /\\b(?:node:)?(?:fs|net|http|https|chil\u2026/\n    at /tmp/la-545r/c1/packages/support/src/support-purity.test.ts:105:93\n    at file:///tmp/la-545r/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///tmp/la-545r/c1/node_modules/@vitest/run"
+     "message": "AssertionError: net.mts /\\b(?:node:)?(?:fs|net|http|https|child_process|os)['\"`]/: expected 'import \\'node:http\\';\\nexport const N\u2026' not to match /\\b(?:node:)?(?:fs|net|http|https|chil\u2026/\n    at /tmp/la-545s/c1/packages/support/src/support-purity.test.ts:105:93\n    at file:///tmp/la-545s/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///tmp/la-545s/c1/node_modules/@vitest/run"
     }
    ]
   },
@@ -436,7 +436,7 @@
    "failedTests": [
     {
      "name": "@syzygy/support stays a pure leaf names no identifier outside its literal list in any source",
-     "message": "AssertionError: expected [ 'sha256.ts: Promise', \u2026(2) ] to deeply equal []\n    at /tmp/la-545r/c1/packages/support/src/support-purity.test.ts:78:155\n    at file:///tmp/la-545r/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///tmp/la-545r/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26\n    at file:///tmp/la-545r/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:189"
+     "message": "AssertionError: expected [ 'sha256.ts: Promise', \u2026(2) ] to deeply equal []\n    at /tmp/la-545s/c1/packages/support/src/support-purity.test.ts:78:155\n    at file:///tmp/la-545s/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///tmp/la-545s/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26\n    at file:///tmp/la-545s/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:189"
     }
    ]
   },
@@ -464,7 +464,7 @@
    "failedTests": [
     {
      "name": "@syzygy/support stays a pure leaf names no identifier outside its literal list in any source",
-     "message": "AssertionError: expected [ 'deep-freeze.ts: Promise', \u2026(6) ] to deeply equal []\n    at /tmp/la-545r/c1/packages/support/src/support-purity.test.ts:78:155\n    at file:///tmp/la-545r/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///tmp/la-545r/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26\n    at file:///tmp/la-545r/c1/node_modules/@vitest/runner/dist/chunk-hooks.j"
+     "message": "AssertionError: expected [ 'deep-freeze.ts: Promise', \u2026(6) ] to deeply equal []\n    at /tmp/la-545s/c1/packages/support/src/support-purity.test.ts:78:155\n    at file:///tmp/la-545s/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///tmp/la-545s/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26\n    at file:///tmp/la-545s/c1/node_modules/@vitest/runner/dist/chunk-hooks.j"
     }
    ]
   },
@@ -497,23 +497,23 @@
    "failedTests": [
     {
      "name": "@syzygy/support stays a pure leaf names no module but node:crypto and a module beside it in any literal specifier of any source",
-     "message": "AssertionError: expected [ { file: 'io/read.ts', \u2026(1) } ] to deeply equal []\n    at /tmp/la-545r/c1/packages/support/src/support-purity.test.ts:72:83\n    at file:///tmp/la-545r/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///tmp/la-545r/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26\n    at file:///tmp/la-545r/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:18"
+     "message": "AssertionError: expected [ { file: 'io/read.ts', \u2026(1) } ] to deeply equal []\n    at /tmp/la-545s/c1/packages/support/src/support-purity.test.ts:72:83\n    at file:///tmp/la-545s/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///tmp/la-545s/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26\n    at file:///tmp/la-545s/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:18"
     },
     {
      "name": "@syzygy/support stays a pure leaf names no identifier outside its literal list in any source",
-     "message": "AssertionError: expected [ 'io/read.ts: p', \u2026(2) ] to deeply equal []\n    at /tmp/la-545r/c1/packages/support/src/support-purity.test.ts:78:155\n    at file:///tmp/la-545r/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///tmp/la-545r/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26\n    at file:///tmp/la-545r/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:1897:20\n"
+     "message": "AssertionError: expected [ 'io/read.ts: p', \u2026(2) ] to deeply equal []\n    at /tmp/la-545s/c1/packages/support/src/support-purity.test.ts:78:155\n    at file:///tmp/la-545s/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///tmp/la-545s/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26\n    at file:///tmp/la-545s/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:1897:20\n"
     },
     {
      "name": "@syzygy/support stays a pure leaf takes only createHash from node:crypto, by its own name, and re-exports nothing from it",
-     "message": "AssertionError: expected [ \u2026(2) ] to deeply equal [ Array(1) ]\n    at /tmp/la-545r/c1/packages/support/src/support-purity.test.ts:85:22\n    at file:///tmp/la-545r/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///tmp/la-545r/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26\n    at file:///tmp/la-545r/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:1897:20\n    at n"
+     "message": "AssertionError: expected [ \u2026(2) ] to deeply equal [ Array(1) ]\n    at /tmp/la-545s/c1/packages/support/src/support-purity.test.ts:85:22\n    at file:///tmp/la-545s/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///tmp/la-545s/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26\n    at file:///tmp/la-545s/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:1897:20\n    at n"
     },
     {
      "name": "@syzygy/support stays a pure leaf names none of the forbidden tokens it shares with the owner-act drafter in any source",
-     "message": "AssertionError: io/read.ts /\\b(?:node:)?(?:fs|net|http|https|child_process|os)['\"`]/: expected 'import { readFileSync } from \\'node:f\u2026' not to match /\\b(?:node:)?(?:fs|net|http|https|chil\u2026/\n    at /tmp/la-545r/c1/packages/support/src/support-purity.test.ts:105:93\n    at file:///tmp/la-545r/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///tmp/la-545r/c1/node_modules/@vitest/"
+     "message": "AssertionError: io/read.ts /\\b(?:node:)?(?:fs|net|http|https|child_process|os)['\"`]/: expected 'import { readFileSync } from \\'node:f\u2026' not to match /\\b(?:node:)?(?:fs|net|http|https|chil\u2026/\n    at /tmp/la-545s/c1/packages/support/src/support-purity.test.ts:105:93\n    at file:///tmp/la-545s/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///tmp/la-545s/c1/node_modules/@vitest/"
     },
     {
      "name": "@syzygy/support stays a pure leaf exports exactly the \".\" entry, index.js, so no other module is an entry",
-     "message": "AssertionError: expected { '.': { \u2026(3) }, './io': { \u2026(2) } } to deeply equal { '.': { \u2026(3) } }\n    at /tmp/la-545r/c1/packages/support/src/support-purity.test.ts:118:33\n    at file:///tmp/la-545r/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///tmp/la-545r/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26\n    at file:///tmp/la-545r/c1/node_modules/@vitest/runner/dis"
+     "message": "AssertionError: expected { '.': { \u2026(3) }, './io': { \u2026(2) } } to deeply equal { '.': { \u2026(3) } }\n    at /tmp/la-545s/c1/packages/support/src/support-purity.test.ts:118:33\n    at file:///tmp/la-545s/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///tmp/la-545s/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26\n    at file:///tmp/la-545s/c1/node_modules/@vitest/runner/dis"
     }
    ]
   },
@@ -541,7 +541,7 @@
    "failedTests": [
     {
      "name": "@syzygy/support stays a pure leaf names no identifier outside its literal list in any source",
-     "message": "AssertionError: expected [ 'sha256.ts: catch', \u2026(2) ] to deeply equal []\n    at /tmp/la-545r/c1/packages/support/src/support-purity.test.ts:78:155\n    at file:///tmp/la-545r/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///tmp/la-545r/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26\n    at file:///tmp/la-545r/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:1897:"
+     "message": "AssertionError: expected [ 'sha256.ts: catch', \u2026(2) ] to deeply equal []\n    at /tmp/la-545s/c1/packages/support/src/support-purity.test.ts:78:155\n    at file:///tmp/la-545s/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///tmp/la-545s/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26\n    at file:///tmp/la-545s/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:1897:"
     }
    ]
   },
@@ -569,7 +569,7 @@
    "failedTests": [
     {
      "name": "@syzygy/support stays a pure leaf names no identifier outside its literal list in any source",
-     "message": "AssertionError: expected [ 'sha256.ts: HOME', \u2026(3) ] to deeply equal []\n    at /tmp/la-545r/c1/packages/support/src/support-purity.test.ts:78:155\n    at file:///tmp/la-545r/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///tmp/la-545r/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26\n    at file:///tmp/la-545r/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:1897:2"
+     "message": "AssertionError: expected [ 'sha256.ts: HOME', \u2026(3) ] to deeply equal []\n    at /tmp/la-545s/c1/packages/support/src/support-purity.test.ts:78:155\n    at file:///tmp/la-545s/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///tmp/la-545s/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26\n    at file:///tmp/la-545s/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:1897:2"
     }
    ]
   },
@@ -597,11 +597,11 @@
    "failedTests": [
     {
      "name": "@syzygy/support stays a pure leaf names no identifier outside its literal list in any source",
-     "message": "AssertionError: expected [ 'deep-freeze.ts: catch', \u2026(2) ] to deeply equal []\n    at /tmp/la-545r/c1/packages/support/src/support-purity.test.ts:78:155\n    at file:///tmp/la-545r/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///tmp/la-545r/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26\n    at file:///tmp/la-545r/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:"
+     "message": "AssertionError: expected [ 'deep-freeze.ts: catch', \u2026(2) ] to deeply equal []\n    at /tmp/la-545s/c1/packages/support/src/support-purity.test.ts:78:155\n    at file:///tmp/la-545s/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///tmp/la-545s/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26\n    at file:///tmp/la-545s/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:"
     },
     {
      "name": "@syzygy/support stays a pure leaf names none of the forbidden tokens it shares with the owner-act drafter in any source",
-     "message": "AssertionError: deep-freeze.ts /\\bfetch\\(/: expected '/**\\n * Freezes the value and everyth\u2026' not to match /\\bfetch\\(/\n    at /tmp/la-545r/c1/packages/support/src/support-purity.test.ts:105:93\n    at file:///tmp/la-545r/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///tmp/la-545r/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26\n    at file:///tmp/la-545r/c1/node_mo"
+     "message": "AssertionError: deep-freeze.ts /\\bfetch\\(/: expected '/**\\n * Freezes the value and everyth\u2026' not to match /\\bfetch\\(/\n    at /tmp/la-545s/c1/packages/support/src/support-purity.test.ts:105:93\n    at file:///tmp/la-545s/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///tmp/la-545s/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26\n    at file:///tmp/la-545s/c1/node_mo"
     }
    ]
   },
@@ -629,7 +629,7 @@
    "failedTests": [
     {
      "name": "@syzygy/support stays a pure leaf names no identifier outside its literal list in any source",
-     "message": "AssertionError: expected [ 'deep-freeze.ts: console', \u2026(1) ] to deeply equal []\n    at /tmp/la-545r/c1/packages/support/src/support-purity.test.ts:78:155\n    at file:///tmp/la-545r/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///tmp/la-545r/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26\n    at file:///tmp/la-545r/c1/node_modules/@vitest/runner/dist/chunk-hooks.j"
+     "message": "AssertionError: expected [ 'deep-freeze.ts: console', \u2026(1) ] to deeply equal []\n    at /tmp/la-545s/c1/packages/support/src/support-purity.test.ts:78:155\n    at file:///tmp/la-545s/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///tmp/la-545s/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26\n    at file:///tmp/la-545s/c1/node_modules/@vitest/runner/dist/chunk-hooks.j"
     }
    ]
   },
@@ -657,7 +657,7 @@
    "failedTests": [
     {
      "name": "@syzygy/support stays a pure leaf names no identifier outside its literal list in any source",
-     "message": "AssertionError: expected [ 'sha256.ts: catch', \u2026(2) ] to deeply equal []\n    at /tmp/la-545r/c1/packages/support/src/support-purity.test.ts:78:155\n    at file:///tmp/la-545r/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///tmp/la-545r/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26\n    at file:///tmp/la-545r/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:1897:"
+     "message": "AssertionError: expected [ 'sha256.ts: catch', \u2026(2) ] to deeply equal []\n    at /tmp/la-545s/c1/packages/support/src/support-purity.test.ts:78:155\n    at file:///tmp/la-545s/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///tmp/la-545s/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26\n    at file:///tmp/la-545s/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:1897:"
     }
    ]
   },
@@ -685,11 +685,11 @@
    "failedTests": [
     {
      "name": "@syzygy/support stays a pure leaf names no identifier outside its literal list in any source",
-     "message": "AssertionError: expected [ 'sha256.ts: WebSocket', \u2026(2) ] to deeply equal []\n    at /tmp/la-545r/c1/packages/support/src/support-purity.test.ts:78:155\n    at file:///tmp/la-545r/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///tmp/la-545r/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26\n    at file:///tmp/la-545r/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:1"
+     "message": "AssertionError: expected [ 'sha256.ts: WebSocket', \u2026(2) ] to deeply equal []\n    at /tmp/la-545s/c1/packages/support/src/support-purity.test.ts:78:155\n    at file:///tmp/la-545s/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///tmp/la-545s/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26\n    at file:///tmp/la-545s/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:1"
     },
     {
      "name": "@syzygy/support stays a pure leaf assigns to no property in any source, so no allowed global is rewritten",
-     "message": "AssertionError: expected [ 'sha256.ts: ws.onerror = () => {}' ] to deeply equal []\n    at /tmp/la-545r/c1/packages/support/src/support-purity.test.ts:99:20\n    at file:///tmp/la-545r/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///tmp/la-545r/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26\n    at file:///tmp/la-545r/c1/node_modules/@vitest/runner/dist/chunk-hooks"
+     "message": "AssertionError: expected [ 'sha256.ts: ws.onerror = () => {}' ] to deeply equal []\n    at /tmp/la-545s/c1/packages/support/src/support-purity.test.ts:99:20\n    at file:///tmp/la-545s/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///tmp/la-545s/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26\n    at file:///tmp/la-545s/c1/node_modules/@vitest/runner/dist/chunk-hooks"
     }
    ]
   },
@@ -717,7 +717,7 @@
    "failedTests": [
     {
      "name": "@syzygy/support stays a pure leaf names no identifier outside its literal list in any source",
-     "message": "AssertionError: expected [ 'sha256.ts: HOST', \u2026(5) ] to deeply equal []\n    at /tmp/la-545r/c1/packages/support/src/support-purity.test.ts:78:155\n    at file:///tmp/la-545r/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///tmp/la-545r/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26\n    at file:///tmp/la-545r/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:1897:2"
+     "message": "AssertionError: expected [ 'sha256.ts: HOST', \u2026(5) ] to deeply equal []\n    at /tmp/la-545s/c1/packages/support/src/support-purity.test.ts:78:155\n    at file:///tmp/la-545s/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///tmp/la-545s/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26\n    at file:///tmp/la-545s/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:1897:2"
     }
    ]
   },
@@ -745,19 +745,19 @@
    "failedTests": [
     {
      "name": "@syzygy/support stays a pure leaf names no module but node:crypto and a module beside it in any literal specifier of any source",
-     "message": "AssertionError: expected [ { file: 'io/read.ts', \u2026(1) } ] to deeply equal []\n    at /tmp/la-545r/c1/packages/support/src/support-purity.test.ts:72:83\n    at file:///tmp/la-545r/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///tmp/la-545r/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26\n    at file:///tmp/la-545r/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:18"
+     "message": "AssertionError: expected [ { file: 'io/read.ts', \u2026(1) } ] to deeply equal []\n    at /tmp/la-545s/c1/packages/support/src/support-purity.test.ts:72:83\n    at file:///tmp/la-545s/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///tmp/la-545s/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26\n    at file:///tmp/la-545s/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:18"
     },
     {
      "name": "@syzygy/support stays a pure leaf names no identifier outside its literal list in any source",
-     "message": "AssertionError: expected [ 'io/read.ts: p', \u2026(2) ] to deeply equal []\n    at /tmp/la-545r/c1/packages/support/src/support-purity.test.ts:78:155\n    at file:///tmp/la-545r/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///tmp/la-545r/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26\n    at file:///tmp/la-545r/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:1897:20\n"
+     "message": "AssertionError: expected [ 'io/read.ts: p', \u2026(2) ] to deeply equal []\n    at /tmp/la-545s/c1/packages/support/src/support-purity.test.ts:78:155\n    at file:///tmp/la-545s/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///tmp/la-545s/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26\n    at file:///tmp/la-545s/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:1897:20\n"
     },
     {
      "name": "@syzygy/support stays a pure leaf takes only createHash from node:crypto, by its own name, and re-exports nothing from it",
-     "message": "AssertionError: expected [ \u2026(2) ] to deeply equal [ Array(1) ]\n    at /tmp/la-545r/c1/packages/support/src/support-purity.test.ts:85:22\n    at file:///tmp/la-545r/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///tmp/la-545r/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26\n    at file:///tmp/la-545r/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:1897:20\n    at n"
+     "message": "AssertionError: expected [ \u2026(2) ] to deeply equal [ Array(1) ]\n    at /tmp/la-545s/c1/packages/support/src/support-purity.test.ts:85:22\n    at file:///tmp/la-545s/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///tmp/la-545s/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26\n    at file:///tmp/la-545s/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:1897:20\n    at n"
     },
     {
      "name": "@syzygy/support stays a pure leaf names none of the forbidden tokens it shares with the owner-act drafter in any source",
-     "message": "AssertionError: io/read.ts /\\b(?:node:)?(?:fs|net|http|https|child_process|os)['\"`]/: expected 'import { readFileSync } from \\'node:f\u2026' not to match /\\b(?:node:)?(?:fs|net|http|https|chil\u2026/\n    at /tmp/la-545r/c1/packages/support/src/support-purity.test.ts:105:93\n    at file:///tmp/la-545r/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///tmp/la-545r/c1/node_modules/@vitest/"
+     "message": "AssertionError: io/read.ts /\\b(?:node:)?(?:fs|net|http|https|child_process|os)['\"`]/: expected 'import { readFileSync } from \\'node:f\u2026' not to match /\\b(?:node:)?(?:fs|net|http|https|chil\u2026/\n    at /tmp/la-545s/c1/packages/support/src/support-purity.test.ts:105:93\n    at file:///tmp/la-545s/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///tmp/la-545s/c1/node_modules/@vitest/"
     }
    ]
   },
@@ -785,7 +785,7 @@
    "failedTests": [
     {
      "name": "@syzygy/support stays a pure leaf exports exactly the \".\" entry, index.js, so no other module is an entry",
-     "message": "AssertionError: expected { '.': { \u2026(3) } } to deeply equal { '.': { \u2026(3) } }\n    at /tmp/la-545r/c1/packages/support/src/support-purity.test.ts:118:33\n    at file:///tmp/la-545r/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///tmp/la-545r/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26\n    at file:///tmp/la-545r/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:1"
+     "message": "AssertionError: expected { '.': { \u2026(3) } } to deeply equal { '.': { \u2026(3) } }\n    at /tmp/la-545s/c1/packages/support/src/support-purity.test.ts:118:33\n    at file:///tmp/la-545s/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///tmp/la-545s/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26\n    at file:///tmp/la-545s/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:1"
     }
    ]
   },
@@ -813,7 +813,7 @@
    "failedTests": [
     {
      "name": "@syzygy/support stays a pure leaf exports exactly the \".\" entry, index.js, so no other module is an entry",
-     "message": "AssertionError: expected { '.': { \u2026(3) }, \u2026(1) } to deeply equal { '.': { \u2026(3) } }\n    at /tmp/la-545r/c1/packages/support/src/support-purity.test.ts:118:33\n    at file:///tmp/la-545r/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///tmp/la-545r/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26\n    at file:///tmp/la-545r/c1/node_modules/@vitest/runner/dist/chunk-hook"
+     "message": "AssertionError: expected { '.': { \u2026(3) }, \u2026(1) } to deeply equal { '.': { \u2026(3) } }\n    at /tmp/la-545s/c1/packages/support/src/support-purity.test.ts:118:33\n    at file:///tmp/la-545s/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///tmp/la-545s/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26\n    at file:///tmp/la-545s/c1/node_modules/@vitest/runner/dist/chunk-hook"
     }
    ]
   },
@@ -841,11 +841,11 @@
    "failedTests": [
     {
      "name": "the specifier reader this guard stands on reads \"const fs = await import('node:fs');\"",
-     "message": "AssertionError: expected [] to deeply equal [ 'node:fs' ]\n    at /tmp/la-545r/c1/packages/support/src/support-purity.test.ts:136:34\n    at file:///tmp/la-545r/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:861:59\n    at file:///tmp/la-545r/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///tmp/la-545r/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26\n    at file:/"
+     "message": "AssertionError: expected [] to deeply equal [ 'node:fs' ]\n    at /tmp/la-545s/c1/packages/support/src/support-purity.test.ts:136:34\n    at file:///tmp/la-545s/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:861:59\n    at file:///tmp/la-545s/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///tmp/la-545s/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26\n    at file:/"
     },
     {
      "name": "the specifier reader this guard stands on reads \"const fs = require('node:fs');\"",
-     "message": "AssertionError: expected [] to deeply equal [ 'node:fs' ]\n    at /tmp/la-545r/c1/packages/support/src/support-purity.test.ts:136:34\n    at file:///tmp/la-545r/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:861:59\n    at file:///tmp/la-545r/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///tmp/la-545r/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26\n    at file:/"
+     "message": "AssertionError: expected [] to deeply equal [ 'node:fs' ]\n    at /tmp/la-545s/c1/packages/support/src/support-purity.test.ts:136:34\n    at file:///tmp/la-545s/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:861:59\n    at file:///tmp/la-545s/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///tmp/la-545s/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26\n    at file:/"
     }
    ]
   },
@@ -873,11 +873,11 @@
    "failedTests": [
     {
      "name": "the forbidden-token list both guards stand on is the literal list, so a narrowed token fails here",
-     "message": "AssertionError: expected [ '/\\brequire\\(/', \u2026(7) ] to deeply equal [ '/\\brequire\\(/', \u2026(8) ]\n    at /tmp/la-545r/c1/packages/support/src/support-purity.test.ts:142:35\n    at file:///tmp/la-545r/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///tmp/la-545r/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26\n    at file:///tmp/la-545r/c1/node_modules/@vitest/runner/dist/"
+     "message": "AssertionError: expected [ '/\\brequire\\(/', \u2026(7) ] to deeply equal [ '/\\brequire\\(/', \u2026(8) ]\n    at /tmp/la-545s/c1/packages/support/src/support-purity.test.ts:142:35\n    at file:///tmp/la-545s/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///tmp/la-545s/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26\n    at file:///tmp/la-545s/c1/node_modules/@vitest/runner/dist/"
     },
     {
      "name": "the forbidden-token list both guards stand on refuses \"mkdirSync(p);\"",
-     "message": "AssertionError: expected [] to have a length of 1 but got +0\n    at Proxy.<anonymous> (file:///tmp/la-545r/c1/node_modules/@vitest/expect/dist/index.js:1257:20)\n    at Proxy.<anonymous> (file:///tmp/la-545r/c1/node_modules/@vitest/expect/dist/index.js:1029:14)\n    at Proxy.methodWrapper (file:///tmp/la-545r/c1/node_modules/chai/index.js:1686:25)\n    at /tmp/la-545r/c1/packages/support/src/support-"
+     "message": "AssertionError: expected [] to have a length of 1 but got +0\n    at Proxy.<anonymous> (file:///tmp/la-545s/c1/node_modules/@vitest/expect/dist/index.js:1257:20)\n    at Proxy.<anonymous> (file:///tmp/la-545s/c1/node_modules/@vitest/expect/dist/index.js:1029:14)\n    at Proxy.methodWrapper (file:///tmp/la-545s/c1/node_modules/chai/index.js:1686:25)\n    at /tmp/la-545s/c1/packages/support/src/support-"
     }
    ]
   },
@@ -905,7 +905,7 @@
    "failedTests": [
     {
      "name": "the identifier reader the allowlist stands on reads \"class K { #p = 1; m<T>(v: T): T { return v; } }\"",
-     "message": "AssertionError: expected [ 'K', 'T', 'm', 'v' ] to deeply equal [ '#p', 'K', 'T', 'm', 'v' ]\n    at /tmp/la-545r/c1/packages/support/src/support-purity.test.ts:167:46\n    at file:///tmp/la-545r/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:861:59\n    at file:///tmp/la-545r/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///tmp/la-545r/c1/node_modules/@vitest/runner/dist/"
+     "message": "AssertionError: expected [ 'K', 'T', 'm', 'v' ] to deeply equal [ '#p', 'K', 'T', 'm', 'v' ]\n    at /tmp/la-545s/c1/packages/support/src/support-purity.test.ts:167:46\n    at file:///tmp/la-545s/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:861:59\n    at file:///tmp/la-545s/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///tmp/la-545s/c1/node_modules/@vitest/runner/dist/"
     }
    ]
   },
@@ -938,7 +938,7 @@
    "failedTests": [
     {
      "name": "@syzygy/support stays a pure leaf lists a module at any depth and with any extension, and skips only the tests and the testkit",
-     "message": "AssertionError: expected [ 'a.ts', 'c.mts', 'd.cjs' ] to deeply equal [ 'a.ts', 'c.mts', 'd.cjs', 'io/b.ts' ]\n    at /tmp/la-545r/c1/packages/support/src/support-purity.test.ts:64:54\n    at file:///tmp/la-545r/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///tmp/la-545r/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26\n    at file:///tmp/la-545r/c1/node_modules/@vit"
+     "message": "AssertionError: expected [ 'a.ts', 'c.mts', 'd.cjs', \u2026(3) ] to deeply equal [ 'a.ts', 'c.mts', 'd.cjs', \u2026(5) ]\n    at /tmp/la-545s/c1/packages/support/src/support-purity.test.ts:64:54\n    at file:///tmp/la-545s/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///tmp/la-545s/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26\n    at file:///tmp/la-545s/c1/node_modules/@vi"
     }
    ]
   },
@@ -966,7 +966,7 @@
    "failedTests": [
     {
      "name": "@syzygy/support stays a pure leaf takes only createHash from node:crypto, by its own name, and re-exports nothing from it",
-     "message": "AssertionError: expected [ \u2026(2) ] to deeply equal [ Array(1) ]\n    at /tmp/la-545r/c1/packages/support/src/support-purity.test.ts:85:22\n    at file:///tmp/la-545r/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///tmp/la-545r/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26\n    at file:///tmp/la-545r/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:1897:20\n    at n"
+     "message": "AssertionError: expected [ \u2026(2) ] to deeply equal [ Array(1) ]\n    at /tmp/la-545s/c1/packages/support/src/support-purity.test.ts:85:22\n    at file:///tmp/la-545s/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///tmp/la-545s/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26\n    at file:///tmp/la-545s/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:1897:20\n    at n"
     }
    ]
   },
@@ -994,7 +994,7 @@
    "failedTests": [
     {
      "name": "@syzygy/support stays a pure leaf takes only createHash from node:crypto, by its own name, and re-exports nothing from it",
-     "message": "AssertionError: expected [ \u2026(2) ] to deeply equal [ Array(1) ]\n    at /tmp/la-545r/c1/packages/support/src/support-purity.test.ts:85:22\n    at file:///tmp/la-545r/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///tmp/la-545r/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26\n    at file:///tmp/la-545r/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:1897:20\n    at n"
+     "message": "AssertionError: expected [ \u2026(2) ] to deeply equal [ Array(1) ]\n    at /tmp/la-545s/c1/packages/support/src/support-purity.test.ts:85:22\n    at file:///tmp/la-545s/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///tmp/la-545s/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26\n    at file:///tmp/la-545s/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:1897:20\n    at n"
     }
    ]
   },
@@ -1022,7 +1022,7 @@
    "failedTests": [
     {
      "name": "@syzygy/support stays a pure leaf takes only createHash from node:crypto, by its own name, and re-exports nothing from it",
-     "message": "AssertionError: expected [ \u2026(2) ] to deeply equal [ Array(1) ]\n    at /tmp/la-545r/c1/packages/support/src/support-purity.test.ts:85:22\n    at file:///tmp/la-545r/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///tmp/la-545r/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26\n    at file:///tmp/la-545r/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:1897:20\n    at n"
+     "message": "AssertionError: expected [ \u2026(2) ] to deeply equal [ Array(1) ]\n    at /tmp/la-545s/c1/packages/support/src/support-purity.test.ts:85:22\n    at file:///tmp/la-545s/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///tmp/la-545s/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26\n    at file:///tmp/la-545s/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:1897:20\n    at n"
     }
    ]
   },
@@ -1050,7 +1050,7 @@
    "failedTests": [
     {
      "name": "@syzygy/support stays a pure leaf takes only createHash from node:crypto, by its own name, and re-exports nothing from it",
-     "message": "AssertionError: expected [ Array(1) ] to deeply equal [ Array(1) ]\n    at /tmp/la-545r/c1/packages/support/src/support-purity.test.ts:85:22\n    at file:///tmp/la-545r/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///tmp/la-545r/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26\n    at file:///tmp/la-545r/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:1897:20\n    "
+     "message": "AssertionError: expected [ Array(1) ] to deeply equal [ Array(1) ]\n    at /tmp/la-545s/c1/packages/support/src/support-purity.test.ts:85:22\n    at file:///tmp/la-545s/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///tmp/la-545s/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26\n    at file:///tmp/la-545s/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:1897:20\n    "
     }
    ]
   },
@@ -1078,7 +1078,7 @@
    "failedTests": [
     {
      "name": "@syzygy/support stays a pure leaf takes only createHash from node:crypto, by its own name, and re-exports nothing from it",
-     "message": "AssertionError: expected [ \u2026(2) ] to deeply equal [ Array(1) ]\n    at /tmp/la-545r/c1/packages/support/src/support-purity.test.ts:85:22\n    at file:///tmp/la-545r/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///tmp/la-545r/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26\n    at file:///tmp/la-545r/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:1897:20\n    at n"
+     "message": "AssertionError: expected [ \u2026(2) ] to deeply equal [ Array(1) ]\n    at /tmp/la-545s/c1/packages/support/src/support-purity.test.ts:85:22\n    at file:///tmp/la-545s/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///tmp/la-545s/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26\n    at file:///tmp/la-545s/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:1897:20\n    at n"
     }
    ]
   },
@@ -1114,7 +1114,7 @@
    "failedTests": [
     {
      "name": "@syzygy/support stays a pure leaf takes only createHash from node:crypto, by its own name, and re-exports nothing from it",
-     "message": "AssertionError: expected [ \u2026(2) ] to deeply equal [ Array(1) ]\n    at /tmp/la-545r/c1/packages/support/src/support-purity.test.ts:85:22\n    at file:///tmp/la-545r/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///tmp/la-545r/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26\n    at file:///tmp/la-545r/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:1897:20\n    at n"
+     "message": "AssertionError: expected [ \u2026(2) ] to deeply equal [ Array(1) ]\n    at /tmp/la-545s/c1/packages/support/src/support-purity.test.ts:85:22\n    at file:///tmp/la-545s/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///tmp/la-545s/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26\n    at file:///tmp/la-545s/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:1897:20\n    at n"
     }
    ]
   },
@@ -1150,7 +1150,7 @@
    "failedTests": [
     {
      "name": "the forbidden-token list both guards stand on is the literal list, so a narrowed token fails here",
-     "message": "AssertionError: expected [ '/\\brequire\\(/', \u2026(8) ] to deeply equal [ '/\\brequire\\(/', \u2026(8) ]\n    at /tmp/la-545r/c1/packages/support/src/support-purity.test.ts:142:35\n    at file:///tmp/la-545r/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///tmp/la-545r/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26\n    at file:///tmp/la-545r/c1/node_modules/@vitest/runner/dist/"
+     "message": "AssertionError: expected [ '/\\brequire\\(/', \u2026(8) ] to deeply equal [ '/\\brequire\\(/', \u2026(8) ]\n    at /tmp/la-545s/c1/packages/support/src/support-purity.test.ts:142:35\n    at file:///tmp/la-545s/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///tmp/la-545s/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26\n    at file:///tmp/la-545s/c1/node_modules/@vitest/runner/dist/"
     }
    ]
   },
@@ -1178,7 +1178,91 @@
    "failedTests": [
     {
      "name": "@syzygy/support stays a pure leaf assigns to no property in any source, so no allowed global is rewritten",
-     "message": "AssertionError: expected [ Array(1) ] to deeply equal []\n    at /tmp/la-545r/c1/packages/support/src/support-purity.test.ts:99:20\n    at file:///tmp/la-545r/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///tmp/la-545r/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26\n    at file:///tmp/la-545r/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:1897:20\n    at new Pro"
+     "message": "AssertionError: expected [ Array(1) ] to deeply equal []\n    at /tmp/la-545s/c1/packages/support/src/support-purity.test.ts:99:20\n    at file:///tmp/la-545s/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///tmp/la-545s/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26\n    at file:///tmp/la-545s/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:1897:20\n    at new Pro"
+    }
+   ]
+  },
+  {
+   "id": "W5-filter-drops-the-x-forms",
+   "test": "packages/support/src/support-purity.test.ts",
+   "edits": [
+    {
+     "path": "packages/support/src/support-purity.test.ts",
+     "old": "/\\.[cm]?[jt]sx?$/u.test(name)",
+     "new": "/\\.[cm]?[jt]s$/u.test(name)"
+    }
+   ],
+   "expected": "killed",
+   "observed": "killed",
+   "exit": 1,
+   "passed": 32,
+   "failed": 1,
+   "pending": 0,
+   "total": 33,
+   "failedFiles": [
+    "packages/support/src/support-purity.test.ts"
+   ],
+   "fileMessages": [],
+   "failedTests": [
+    {
+     "name": "@syzygy/support stays a pure leaf lists a module at any depth and with any extension, and skips only the tests and the testkit",
+     "message": "AssertionError: expected [ 'a.ts', 'c.mts', 'd.cjs', \u2026(3) ] to deeply equal [ 'a.ts', 'c.mts', 'd.cjs', \u2026(5) ]\n    at /tmp/la-545s/c1/packages/support/src/support-purity.test.ts:64:54\n    at file:///tmp/la-545s/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///tmp/la-545s/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26\n    at file:///tmp/la-545s/c1/node_modules/@vi"
+    }
+   ]
+  },
+  {
+   "id": "W6-test-exclusion-broadened-to-any-test-substring",
+   "test": "packages/support/src/support-purity.test.ts",
+   "edits": [
+    {
+     "path": "packages/support/src/support-purity.test.ts",
+     "old": "!name.endsWith('.test.ts')",
+     "new": "!name.includes('test')"
+    }
+   ],
+   "expected": "killed",
+   "observed": "killed",
+   "exit": 1,
+   "passed": 32,
+   "failed": 1,
+   "pending": 0,
+   "total": 33,
+   "failedFiles": [
+    "packages/support/src/support-purity.test.ts"
+   ],
+   "fileMessages": [],
+   "failedTests": [
+    {
+     "name": "@syzygy/support stays a pure leaf lists a module at any depth and with any extension, and skips only the tests and the testkit",
+     "message": "AssertionError: expected [ 'a.ts', 'c.mts', 'd.cjs', \u2026(3) ] to deeply equal [ 'a.ts', 'c.mts', 'd.cjs', \u2026(5) ]\n    at /tmp/la-545s/c1/packages/support/src/support-purity.test.ts:64:54\n    at file:///tmp/la-545s/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///tmp/la-545s/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26\n    at file:///tmp/la-545s/c1/node_modules/@vi"
+    }
+   ]
+  },
+  {
+   "id": "W7-testkit-exclusion-broadened-to-any-depth",
+   "test": "packages/support/src/support-purity.test.ts",
+   "edits": [
+    {
+     "path": "packages/support/src/support-purity.test.ts",
+     "old": "name !== 'purity.testkit.ts'",
+     "new": "!name.endsWith('purity.testkit.ts')"
+    }
+   ],
+   "expected": "killed",
+   "observed": "killed",
+   "exit": 1,
+   "passed": 32,
+   "failed": 1,
+   "pending": 0,
+   "total": 33,
+   "failedFiles": [
+    "packages/support/src/support-purity.test.ts"
+   ],
+   "fileMessages": [],
+   "failedTests": [
+    {
+     "name": "@syzygy/support stays a pure leaf lists a module at any depth and with any extension, and skips only the tests and the testkit",
+     "message": "AssertionError: expected [ 'a.ts', 'c.mts', 'd.cjs', \u2026(4) ] to deeply equal [ 'a.ts', 'c.mts', 'd.cjs', \u2026(5) ]\n    at /tmp/la-545s/c1/packages/support/src/support-purity.test.ts:64:54\n    at file:///tmp/la-545s/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///tmp/la-545s/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26\n    at file:///tmp/la-545s/c1/node_modules/@vi"
     }
    ]
   },
@@ -1263,7 +1347,7 @@
    "failedTests": [
     {
      "name": "owner-act drafter (M4 slice 7) is pure: it imports no filesystem, network or process module and names no write",
-     "message": "AssertionError: /\\bDate\\b/: expected '// Owner-act drafter \u2014 claims sharing\u2026' not to match /\\bDate\\b/\n    at /tmp/la-545r/c1/packages/three-surface-poc-core/src/owner-act-drafter.test.ts:60:45\n    at file:///tmp/la-545r/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///tmp/la-545r/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26\n    at file:///tmp/la-545r/c1/node_mo"
+     "message": "AssertionError: /\\bDate\\b/: expected '// Owner-act drafter \u2014 claims sharing\u2026' not to match /\\bDate\\b/\n    at /tmp/la-545s/c1/packages/three-surface-poc-core/src/owner-act-drafter.test.ts:60:45\n    at file:///tmp/la-545s/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///tmp/la-545s/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26\n    at file:///tmp/la-545s/c1/node_mo"
     }
    ]
   },
@@ -1291,7 +1375,7 @@
    "failedTests": [
     {
      "name": "owner-act drafter (M4 slice 7) is pure: it imports no filesystem, network or process module and names no write",
-     "message": "AssertionError: expected [ '@syzygy/cap1-core', \u2026(2) ] to deeply equal [ '@syzygy/cap1-core', \u2026(1) ]\n    at /tmp/la-545r/c1/packages/three-surface-poc-core/src/owner-act-drafter.test.ts:57:55\n    at file:///tmp/la-545r/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///tmp/la-545r/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26\n    at file:///tmp/la-545r/c1/node_mod"
+     "message": "AssertionError: expected [ '@syzygy/cap1-core', \u2026(2) ] to deeply equal [ '@syzygy/cap1-core', \u2026(1) ]\n    at /tmp/la-545s/c1/packages/three-surface-poc-core/src/owner-act-drafter.test.ts:57:55\n    at file:///tmp/la-545s/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///tmp/la-545s/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26\n    at file:///tmp/la-545s/c1/node_mod"
     }
    ]
   },
@@ -1339,11 +1423,11 @@
    "failedTests": [
     {
      "name": "no provider call and no transmission (S10): an operating-system capture of a full fixture run creates no Internet-family socket over the whole run, from preflight to close",
-     "message": "AssertionError: expected [ \u2026(2) ] to deeply equal []\n    at /tmp/la-545r/c1/packages/polaris-dossier/src/no-egress.test.ts:120:68\n    at processTicksAndRejections (node:internal/process/task_queues:105:5)\n    at file:///tmp/la-545r/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:752:20"
+     "message": "AssertionError: expected [ \u2026(2) ] to deeply equal []\n    at /tmp/la-545s/c1/packages/polaris-dossier/src/no-egress.test.ts:120:68\n    at processTicksAndRejections (node:internal/process/task_queues:105:5)\n    at file:///tmp/la-545s/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:752:20"
     },
     {
      "name": "the S10 bundle takes each workspace package from the source its entry names (syzygy-bpyt.6.14) aliases every workspace package entry to the src module its exports, or its main, names",
-     "message": "AssertionError: expected { \u2026(18) } to deeply equal { \u2026(18) }\n    at /tmp/la-545r/c1/packages/polaris-dossier/src/no-egress.test.ts:138:22\n    at file:///tmp/la-545r/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///tmp/la-545r/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26\n    at file:///tmp/la-545r/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:1897:20\n    at"
+     "message": "AssertionError: expected { \u2026(18) } to deeply equal { \u2026(18) }\n    at /tmp/la-545s/c1/packages/polaris-dossier/src/no-egress.test.ts:138:22\n    at file:///tmp/la-545s/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///tmp/la-545s/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26\n    at file:///tmp/la-545s/c1/node_modules/@vitest/runner/dist/chunk-hooks.js:1897:20\n    at"
     }
    ]
   },
@@ -1484,7 +1568,7 @@
    "failedTests": [
     {
      "name": "the S10 bundle takes each workspace package from the source its entry names (syzygy-bpyt.6.14) bundles the driver only under the guard: an alias that leaves the sources fails it",
-     "message": "AssertionError: expected [Function] to throw error including '@syzygy/support resolves outside pack\u2026' but got 'Build failed with 41 errors:\\napps/th\u2026'\n    at _Assertion.<anonymous> (file:///tmp/la-545r/c1/node_modules/@vitest/expect/dist/index.js:1420:16)\n    at _Assertion.<anonymous> (file:///tmp/la-545r/c1/node_modules/@vitest/expect/dist/index.js:1029:14)\n    at _Assertion.methodWrapper (file:/"
+     "message": "AssertionError: expected [Function] to throw error including '@syzygy/support resolves outside pack\u2026' but got 'Build failed with 41 errors:\\napps/th\u2026'\n    at _Assertion.<anonymous> (file:///tmp/la-545s/c1/node_modules/@vitest/expect/dist/index.js:1420:16)\n    at _Assertion.<anonymous> (file:///tmp/la-545s/c1/node_modules/@vitest/expect/dist/index.js:1029:14)\n    at _Assertion.methodWrapper (file:/"
     }
    ]
   },
@@ -1512,7 +1596,7 @@
    "failedTests": [
     {
      "name": "the S10 bundle takes each workspace package from the source its entry names (syzygy-bpyt.6.14) bundles the driver only under the guard: an alias that leaves the sources fails it",
-     "message": "AssertionError: expected [Function] to throw error including '@syzygy/support resolves outside pack\u2026' but got 'Build failed with 41 errors:\\napps/th\u2026'\n    at _Assertion.<anonymous> (file:///tmp/la-545r/c1/node_modules/@vitest/expect/dist/index.js:1420:16)\n    at _Assertion.<anonymous> (file:///tmp/la-545r/c1/node_modules/@vitest/expect/dist/index.js:1029:14)\n    at _Assertion.methodWrapper (file:/"
+     "message": "AssertionError: expected [Function] to throw error including '@syzygy/support resolves outside pack\u2026' but got 'Build failed with 41 errors:\\napps/th\u2026'\n    at _Assertion.<anonymous> (file:///tmp/la-545s/c1/node_modules/@vitest/expect/dist/index.js:1420:16)\n    at _Assertion.<anonymous> (file:///tmp/la-545s/c1/node_modules/@vitest/expect/dist/index.js:1029:14)\n    at _Assertion.methodWrapper (file:/"
     }
    ]
   }

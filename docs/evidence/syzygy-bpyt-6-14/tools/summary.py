@@ -3,7 +3,8 @@
 
 The subject is HEAD (the code commit) over BASE (main at f7ea8584, after PRs 534, 537 and 542): the PR 530 round-2 review's N9 (the support-leaf purity test)
 and N10 (the S10 alias map), with the PR 545 round-1 review's repairs (R-GP-IMPL-SUPPORT-LEAF-GUARDS-1: F1 and N1-N4, its fix texts
-verbatim). HEAD was 3b04b1cd before those repairs; every head record was re-run at the repair commit. Inputs (all in
+verbatim) and the round-2 review's F2 (R-GP-IMPL-SUPPORT-LEAF-GUARDS-2). HEAD was 3b04b1cd before round 1's repairs and 62499514
+before round 2's; every head record was re-run at the repair commit. Inputs (all in
 docs/evidence/syzygy-bpyt-6-14/):
   mutants-{head,base}-{absent,present}.json  tools/mutants.py in a clean clone at each commit, with every dist/ absent and with
                          all twelve built; the reviewer's fragments are read from the committed round-2 records, and the PR 545
@@ -31,7 +32,7 @@ from pathlib import Path
 TREE = Path(sys.argv[1]).resolve()
 HERE = TREE / 'docs/evidence/syzygy-bpyt-6-14'
 BASE = 'f7ea858480b30ffc4407154a84d1d03f3fe4a549'
-HEAD = '6249951432d6d0c0608f8dfb93e525f706159c5a'
+HEAD = '191d82779ea07f45be612b00ff3cafc9aa7446b8'
 SUBJECT = sorted(['packages/polaris-dossier/src/no-egress.test.ts', 'packages/support/src/purity.testkit.ts',
                   'packages/support/src/support-purity.test.ts', 'packages/three-surface-poc-core/src/owner-act-drafter.test.ts'])
 RUNS = [('head', 'absent'), ('head', 'present'), ('base', 'absent'), ('base', 'present')]
@@ -41,7 +42,8 @@ ROUND2 = 'docs/evidence/support-leaf-review-2026-10-27/round-2'
 S10 = 'the S10 bundle takes each workspace package from the source its entry names (syzygy-bpyt.6.14)'
 BUNDLE_TEST = f'{S10} bundles the driver with every @syzygy specifier inside packages/*/src or apps/*/src'
 # The PR 545 round-1 review: the four records its fragments were copied from, by the digests its section 8 lists, and the one row
-# each of its mutants must fail at HEAD, in both dist/ states, and no other (each row is the fix that review proposed for it).
+# each of its mutants (and round 2's W5-W7) must fail at HEAD, in both dist/ states, and no other (each row is the fix the review
+# proposed for it).
 ROUND1_PR545 = 'docs/evidence/syzygy-bpyt-6-14/reviewer-r1-fragments.json'
 ROUND1_RECORDS = {
     'rev-mutants-head-present.json': '04961acfcac6cfae905f979c8d13e7096fef4e0651eb36d5ebf32211df53014d',
@@ -55,7 +57,7 @@ N2_ROW = 'the forbidden-token list both guards stand on is the literal list, so 
 N3_ROW = '@syzygy/support stays a pure leaf assigns to no property in any source, so no allowed global is rewritten'
 N4_ROW = f'{S10} bundles the driver only under the guard: an alias that leaves the sources fails it'
 KILLED_BY = {**{p: [F1_ROW] for p in ['Y7', 'Y9', 'Y10', 'Y11', 'Y12', 'Y14']}, 'K4': [N2_ROW], 'Y6': [N3_ROW], 'T1': [N1_ROW],
-             'M5': [N4_ROW], 'G0': [N4_ROW]}
+             'M5': [N4_ROW], 'G0': [N4_ROW], **{p: [N1_ROW] for p in ['W5', 'W6', 'W7']}}
 RESIDUALS = ['R1', 'R2', 'Y3', 'Y5b', 'Y5c', 'Z7']
 
 

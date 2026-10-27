@@ -1,7 +1,7 @@
 {
  "bead": "syzygy-bpyt.6.14",
  "base": "f7ea858480b30ffc4407154a84d1d03f3fe4a549",
- "head": "6249951432d6d0c0608f8dfb93e525f706159c5a",
+ "head": "191d82779ea07f45be612b00ff3cafc9aa7446b8",
  "subject": [
   "packages/polaris-dossier/src/no-egress.test.ts",
   "packages/support/src/purity.testkit.ts",
@@ -11,7 +11,7 @@
  "subjectSha256": {
   "packages/polaris-dossier/src/no-egress.test.ts": "ba0be19f571e3179f1b1a998560fb3e9013f64411c0b5cc358b3b17203a32e91",
   "packages/support/src/purity.testkit.ts": "0af24d0b46f9718b07b5e580da33b97b914ff59e35e43e08d68ade0df51c1439",
-  "packages/support/src/support-purity.test.ts": "1f18118b991bb148699bc8495ed5ce6902347d636873ba1a02a0c791f858945f",
+  "packages/support/src/support-purity.test.ts": "5a923028b13c1496d0917084e08d3748d186cd83a18269980aa3061783bec51a",
   "packages/three-surface-poc-core/src/owner-act-drafter.test.ts": "a4ac19c5de9dc7a107320bcaaed5547e37058a82761aa3c8f50a7fd7e8024120"
  },
  "required": [
@@ -70,6 +70,15 @@
   ],
   "G0": [
    "the S10 bundle takes each workspace package from the source its entry names (syzygy-bpyt.6.14) bundles the driver only under the guard: an alias that leaves the sources fails it"
+  ],
+  "W5": [
+   "@syzygy/support stays a pure leaf lists a module at any depth and with any extension, and skips only the tests and the testkit"
+  ],
+  "W6": [
+   "@syzygy/support stays a pure leaf lists a module at any depth and with any extension, and skips only the tests and the testkit"
+  ],
+  "W7": [
+   "@syzygy/support stays a pure leaf lists a module at any depth and with any extension, and skips only the tests and the testkit"
   ]
  },
  "round1Records": {
@@ -411,6 +420,27 @@
    ],
    "head-present": "killed"
   },
+  "W5-filter-drops-the-x-forms": {
+   "head-absent": "killed",
+   "killedAtHeadBy": [
+    "@syzygy/support stays a pure leaf lists a module at any depth and with any extension, and skips only the tests and the testkit"
+   ],
+   "head-present": "killed"
+  },
+  "W6-test-exclusion-broadened-to-any-test-substring": {
+   "head-absent": "killed",
+   "killedAtHeadBy": [
+    "@syzygy/support stays a pure leaf lists a module at any depth and with any extension, and skips only the tests and the testkit"
+   ],
+   "head-present": "killed"
+  },
+  "W7-testkit-exclusion-broadened-to-any-depth": {
+   "head-absent": "killed",
+   "killedAtHeadBy": [
+    "@syzygy/support stays a pure leaf lists a module at any depth and with any extension, and skips only the tests and the testkit"
+   ],
+   "head-present": "killed"
+  },
   "D0-drafter-unmutated": {
    "head-absent": "pass",
    "head-present": "pass",
@@ -507,14 +537,14 @@
  },
  "counts": {
   "head-absent": {
-   "rows": 49,
-   "killed": 44,
+   "rows": 52,
+   "killed": 47,
    "survives": 2,
    "pass": 3
   },
   "head-present": {
-   "rows": 49,
-   "killed": 44,
+   "rows": 52,
+   "killed": 47,
    "survives": 2,
    "pass": 3
   },
@@ -544,7 +574,7 @@
    "sha256": "18172eb2e96de6bb703c3c7110d61d5896853d2c865c2a609e9703dca79b3340"
   },
   {
-   "commit": "6249951432d6d0c0608f8dfb93e525f706159c5a",
+   "commit": "191d82779ea07f45be612b00ff3cafc9aa7446b8",
    "distDirs": 12,
    "bytes": 935757,
    "sha256": "18172eb2e96de6bb703c3c7110d61d5896853d2c865c2a609e9703dca79b3340"
@@ -679,7 +709,7 @@
   ]
  },
  "suite": {
-  "commit": "6249951432d6d0c0608f8dfb93e525f706159c5a",
+  "commit": "191d82779ea07f45be612b00ff3cafc9aa7446b8",
   "distDirs": [
    "apps/syzygy/dist",
    "apps/three-surface-poc/dist",
@@ -710,30 +740,30 @@
  ],
  "bundleTestMs": {
   "runs": [
-   535,
-   893,
-   678,
-   601,
-   493
+   456,
+   696,
+   368,
+   381,
+   345
   ],
-  "load1Max": 34.56
+  "load1Max": 28.77
  },
  "guardRowMs": [
-  790,
-  426,
-  357,
-  372,
-  494
+  364,
+  499,
+  265,
+  430,
+  290
  ],
  "beforeAllMs": {
   "runs": [
-   886,
-   607,
-   775,
-   1228,
-   874
+   576,
+   825,
+   614,
+   992,
+   951
   ],
-  "load1Max": 36.33
+  "load1Max": 28.32
  },
  "checksFailed": []
 }
