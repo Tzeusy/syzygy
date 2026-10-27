@@ -18,7 +18,8 @@
   "population-audit.py": "88d6cfe98a60cd12b05419dd355bbdf75782799ecce329666bff90583c25d299",
   "egress-alias-check.py": "c269c00c5bcbb8490aaa1b47885060b626675156c5fb0005e586526023f1d14a",
   "support-purity-mutants.py": "c8aa9b6f629d5906b600ff7609470caad71de2e862f06b6299f0afeddc5a5e09",
-  "narrative-freeze-probe.mjs": "53901b679882b360621442c1e29e7f6aa981d2185a6ca5fb912d27983d2fd660"
+  "narrative-freeze-probe.mjs": "53901b679882b360621442c1e29e7f6aa981d2185a6ca5fb912d27983d2fd660",
+  "merge-resolution-check.py": "e304c819a5695e2ad71a5423351904a72c8f8852aa2b178a397e8ab6ac12ae9d"
  },
  "tools": {
   "sweep.py": "counts the helper copies from committed bytes; second method is git grep -F -c",
@@ -33,7 +34,8 @@
   "population-audit.py": "the basename rule of sweep.py audited: test-*.ts files, their importers and their sites, at two population rules (--selftest holds 8 cases)",
   "egress-alias-check.py": "the S10 no-egress proof in four arms of one built clone: dist present or absent, support source clean or binding a loopback UDP socket",
   "support-purity-mutants.py": "rule-6 mutants for support-purity.test.ts: 10 package mutants, 4 reader mutants, a control and two harmless additions",
-  "narrative-freeze-probe.mjs": "the variant deepFreeze of polaris-narrative.ts at the base against the package, case by case"
+  "narrative-freeze-probe.mjs": "the variant deepFreeze of polaris-narrative.ts at the base against the package, case by case",
+  "merge-resolution-check.py": "a merge commit against git merge-tree --write-tree of its parents: every path equal except the hand-resolved conflict regions (--selftest holds 8 cases)"
  },
  "liveDiffHarnessSha256": "eedf318b7e44b39f0b1467b6ca95914a9b39ae7c6e223adc982fd1f9d6c4edaa",
  "registryBound": [
@@ -2002,6 +2004,102 @@
     ]
    },
    "reading": "a non-empty typed array makes Object.freeze throw a TypeError in both, and they leave different partial states: the old one (children first) has frozen 1 of 3 objects, the package (parent first) 2 of 3; an empty typed array freezes in both and does not differ. [Inferred] unreachable at the three call sites of polaris-narrative.ts: the file names no typed-array type (git grep at the base) and its call sites freeze a structuredClone of a form, a fresh literal and the registered block; the probe does not trace those values' contents"
+  }
+ },
+ "mergeOfMain": {
+  "mergeCommit": "767588d4e1be3916839d57de5a976fe69885d6f7",
+  "parents": {
+   "branch": "094cc542c127bdf672f9b676f959f44867c222ab",
+   "main": "546f1ff066e2ffef749c757cdb4621336039113b"
+  },
+  "mergeBase": "c104771ff90f47ffd070f2339c36010458679c71",
+  "whyNow": "PR 529 (@syzygy/http-host) landed on main first and shares wiring paths with this branch",
+  "pathsChangedByBothSides": [
+   "AGENTS.md",
+   "apps/three-surface-poc/package.json",
+   "apps/three-surface-poc/src/git-observation.ts",
+   "apps/three-surface-poc/src/poc-main.ts",
+   "apps/three-surface-poc/src/polaris.ts",
+   "apps/three-surface-poc/tsconfig.json",
+   "package-lock.json",
+   "package.json",
+   "packages/polaris-dossier/src/no-egress.test.ts",
+   "vitest.config.ts"
+  ],
+  "check": {
+   "merge": "767588d4e1be3916839d57de5a976fe69885d6f7",
+   "parents": [
+    "094cc542c127bdf672f9b676f959f44867c222ab",
+    "546f1ff066e2ffef749c757cdb4621336039113b"
+   ],
+   "computedTree": "f6b5e1da2b5e6b0f5e1c6f64c365493baa610501",
+   "mergeTree": "e49bd8c1b34e3d53207acfc4c517ce7791aad11f",
+   "mergeTreeExit": 1,
+   "paths": 5098,
+   "pathsEqualToGitsMerge": 5097,
+   "conflictedPathsResolvedByHand": [
+    {
+     "path": "package.json",
+     "regions": [
+      {
+       "ours": "    \"build\": \"tsc -b packages/support packages/cap1-core packages/cap1-daemon packages/cap1-conformance packages/three-surface-poc-core apps/syzygy apps/three-surface-poc packages/cap1-system packages/polaris-generation-core packages/polaris-generation-consent packages/polaris-dossier\",\n    \"build:poc\": \"tsc -b --force packages/support packages/cap1-core packages/cap1-daemon packages/three-surface-poc-core packages/polaris-generation-core apps/three-surface-poc\",\n",
+       "base": "    \"build\": \"tsc -b packages/cap1-core packages/cap1-daemon packages/cap1-conformance packages/three-surface-poc-core apps/syzygy apps/three-surface-poc packages/cap1-system packages/polaris-generation-core packages/polaris-generation-consent packages/polaris-dossier\",\n    \"build:poc\": \"tsc -b --force packages/cap1-core packages/cap1-daemon packages/three-surface-poc-core packages/polaris-generation-core apps/three-surface-poc\",\n",
+       "theirs": "    \"build\": \"tsc -b packages/cap1-core packages/http-host packages/cap1-daemon packages/cap1-conformance packages/three-surface-poc-core apps/syzygy apps/three-surface-poc packages/cap1-system packages/polaris-generation-core packages/polaris-generation-consent packages/polaris-dossier\",\n    \"build:poc\": \"tsc -b --force packages/cap1-core packages/http-host packages/cap1-daemon packages/three-surface-poc-core packages/polaris-generation-core apps/three-surface-poc\",\n",
+       "resolution": "    \"build\": \"tsc -b packages/support packages/cap1-core packages/http-host packages/cap1-daemon packages/cap1-conformance packages/three-surface-poc-core apps/syzygy apps/three-surface-poc packages/cap1-system packages/polaris-generation-core packages/polaris-generation-consent packages/polaris-dossier\",\n    \"build:poc\": \"tsc -b --force packages/support packages/cap1-core packages/http-host packages/cap1-daemon packages/three-surface-poc-core packages/polaris-generation-core apps/three-surface-poc\",\n"
+      },
+      {
+       "ours": "    \"typecheck\": \"tsc -b packages/support packages/cap1-core packages/cap1-daemon packages/cap1-conformance packages/three-surface-poc-core apps/syzygy apps/three-surface-poc packages/cap1-system packages/polaris-generation-core packages/polaris-generation-consent packages/polaris-dossier\",\n",
+       "base": "    \"typecheck\": \"tsc -b packages/cap1-core packages/cap1-daemon packages/cap1-conformance packages/three-surface-poc-core apps/syzygy apps/three-surface-poc packages/cap1-system packages/polaris-generation-core packages/polaris-generation-consent packages/polaris-dossier\",\n",
+       "theirs": "    \"typecheck\": \"tsc -b packages/cap1-core packages/http-host packages/cap1-daemon packages/cap1-conformance packages/three-surface-poc-core apps/syzygy apps/three-surface-poc packages/cap1-system packages/polaris-generation-core packages/polaris-generation-consent packages/polaris-dossier\",\n",
+       "resolution": "    \"typecheck\": \"tsc -b packages/support packages/cap1-core packages/http-host packages/cap1-daemon packages/cap1-conformance packages/three-surface-poc-core apps/syzygy apps/three-surface-poc packages/cap1-system packages/polaris-generation-core packages/polaris-generation-consent packages/polaris-dossier\",\n"
+      }
+     ]
+    }
+   ],
+   "pathsThatDifferWithoutBeingAResolvedConflict": []
+  },
+  "checkTool": "merge-resolution-check.py <repo> <merge commit>",
+  "mutationControl": {
+   "change": "a copy of the merge whose apps/three-surface-poc/package.json lacks the line '    \"@syzygy/http-host\": \"0.0.0\",\\n'",
+   "result": {
+    "pathsEqualToGitsMerge": 5096,
+    "paths": 5098,
+    "pathsThatDiffer": [
+     "apps/three-surface-poc/package.json"
+    ]
+   },
+   "reading": "the check reports a change outside the conflict region; a hand resolution inside a region is free text by design, and is for the reader to check against the two sides listed in check.conflictedPathsResolvedByHand"
+  },
+  "sweepAtTheMerge": {
+   "tool": "sweep.py <repo> <merge commit> and population-audit.py <repo> <merge commit>",
+   "population": {
+    "files": 241,
+    "lines": 52425,
+    "namesSha256": "094b7823facd8256be46e2e343291cc0a77a9f368278900dafe7d92c16c8da47"
+   },
+   "sha256Sites": 6,
+   "localCopies": {
+    "sha256": 1,
+    "deepFreeze": 1
+   },
+   "supportImporters": {
+    "apps/three-surface-poc": 21,
+    "packages/polaris-dossier": 14,
+    "packages/polaris-generation-consent": 2,
+    "packages/polaris-generation-core": 8,
+    "packages/three-surface-poc-core": 10
+   },
+   "secondMethod": {
+    "sha256-single-quoted": 6,
+    "deepFreeze-definitions": 1
+   },
+   "reachabilityRule": {
+    "files": 245,
+    "createHashSha256Sites": 8,
+    "localSha256Definitions": 2,
+    "localDeepFreezeDefinitions": 1
+   },
+   "reading": "the figures equal those of the measured head; the population grew from 236 to 241 files because @syzygy/http-host brings five production files, none of which holds a hash or freeze site"
   }
  }
 }
