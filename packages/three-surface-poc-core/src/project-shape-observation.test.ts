@@ -518,6 +518,14 @@ describe('observeProjectShapeSources — determinism', () => {
     expect(reordered.observationDigest).toBe(first.observationDigest);
   });
 
+  // Expected value derived outside this module: Python's json.dumps(sort_keys=True, separators=(',', ':'), ensure_ascii=False) over the
+  // observation without `observationDigest`, its top-level `capturedAt` and each source stamp's `capturedAt`, then SHA-256
+  // (docs/evidence/syzygy-bpyt-6-13/derive-literals.py). A change to the fixture, the observer identity, the limits or the
+  // observation shape moves it, on purpose: the observation digest is an identity (class 3).
+  it('digests the observation without its capture instants: the fixture observation has this digest', () => {
+    expect(observed().observation.observationDigest).toBe('sha256:adeac2c5388357ea3b14ab865f65cb6864753a95f98553fe5fdce0b1f03cb428');
+  });
+
   it('a changed seed body, revision or limit changes the digest', () => {
     const base = observed().observation;
     const changedBody = encoder.encode('- [Vision](vision.md)\n- [Missing](missing.md)\n\n');
@@ -668,6 +676,25 @@ describe('the seed reader widens phase A only after a validated root index (syzy
     expect(read({ path: 'about/README.md', objectId })).toEqual({ kind: 'unavailable', reason: 'phase A source excluded: secret-matched' });
     expect(read(seedOf('about/heart-and-soul/README.md', tree))).toEqual({ kind: 'unavailable', reason: 'phase A read refused: not-a-phase-a-seed-path' });
     expect(reads.map((record) => record.outcome)).toEqual(['secret-matched', 'refused']);
+  });
+
+  it('a seed with a leading byte-order mark is read without it', () => {
+    // EF BB BF is the UTF-8 byte-order mark; the decoded text starts at the byte after it.
+    const bytes = Uint8Array.from([0xef, 0xbb, 0xbf, 0x61, 0x0a]);
+    const objectId = sha1Blob(bytes);
+    const tree = TREE.map((entry) => entry.path === 'about/README.md' ? { ...entry, objectId, sizeBytes: bytes.byteLength } : entry);
+    const { read, reads } = reader({ tree, blobOverrides: { [objectId]: bytes } });
+    expect(read({ path: 'about/README.md', objectId })).toMatchObject({ kind: 'text', text: 'a\n' });
+    expect(reads).toEqual([{ path: 'about/README.md', objectId, outcome: 'read', bytes: 5 }]);
+  });
+
+  it('a seed whose bytes are not UTF-8 is refused with its reason and a not-utf-8 read record', () => {
+    const bytes = Uint8Array.from([0x23, 0x20, 0xff, 0xfe, 0x0a]);
+    const objectId = sha1Blob(bytes);
+    const tree = TREE.map((entry) => entry.path === 'about/README.md' ? { ...entry, objectId, sizeBytes: bytes.byteLength } : entry);
+    const { read, reads } = reader({ tree, blobOverrides: { [objectId]: bytes } });
+    expect(read({ path: 'about/README.md', objectId })).toEqual({ kind: 'unavailable', reason: 'seed is not valid UTF-8' });
+    expect(reads).toEqual([{ path: 'about/README.md', objectId, outcome: 'not-utf-8', bytes: 5 }]);
   });
 
   it('a root index that fails NUL validation declares nothing either', () => {

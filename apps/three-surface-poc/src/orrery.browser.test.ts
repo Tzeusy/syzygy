@@ -21,7 +21,7 @@ describe.skipIf(executable === undefined)('Orrery rendered geometry', () => {
 
   beforeAll(async () => {
     browser = await launchBrowser(executable as string);
-  }, 60_000);
+  });
 
   afterAll(async () => {
     await browser?.close();

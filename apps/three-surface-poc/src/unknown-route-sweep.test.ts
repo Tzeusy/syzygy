@@ -170,7 +170,7 @@ beforeAll(() => {
       runWorkItemQuery: (_root, sql) => sql.includes('WHERE id LIKE') ? JSON.stringify(rows) : JSON.stringify([{ revision: 'dolt-rev-2' }]),
     }));
   }
-}, 60_000);
+});
 
 afterAll(() => {
   for (const directory of cleanups.splice(0)) rmSync(directory, { recursive: true, force: true });

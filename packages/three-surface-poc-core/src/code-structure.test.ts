@@ -2,7 +2,7 @@ import { execFileSync } from 'node:child_process';
 import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { dirname, join } from 'node:path';
-import { afterEach, describe, expect, it } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import { observeCodeStructure } from './code-structure.js';
 
@@ -169,6 +169,47 @@ describe('code-structure observer', () => {
     } finally {
       process.env['PATH'] = path;
     }
+  });
+
+  // A `git` on PATH that prints `printfFormat` (a printf format, so a byte is written as an octal escape), for the default runner.
+  function observeWithFakeGit(printfFormat: string) {
+    const bin = mkdtempSync(join(tmpdir(), 'syzygy-poc-fake-git-'));
+    cleanups.push(bin);
+    writeFileSync(join(bin, 'git'), `#!/bin/sh\nprintf '${printfFormat}'\n`, { mode: 0o755 });
+    const path = process.env['PATH'];
+    process.env['PATH'] = `${bin}:${path ?? ''}`;
+    try {
+      return observeCodeStructure({ repoRoot: '/unused', revision: 'r', capturedAt: '2026-10-21T00:00:00Z' });
+    } finally {
+      process.env['PATH'] = path;
+    }
+  }
+  const OK_RECORD = `100644 blob ${'1'.repeat(40)}      12\\tok.ts\\000`;
+
+  it('drops one leading byte-order mark from git\'s listing before parsing it', () => {
+    // EF BB BF as octal escapes. Real git never starts a listing with one; this pins the decode, not git.
+    expect(observeWithFakeGit(`\\357\\273\\277${OK_RECORD}`)).toMatchObject({ kind: 'observed', files: [{ path: 'ok.ts' }] });
+  });
+
+  it('reports a gitlink filter that cannot allocate its copy as it reports bytes it cannot decode', () => {
+    // Control: the same listing observes. The filter's only way to throw is a failed Buffer.concat (it copies the kept records);
+    // this injects that failure on the one concat that holds a blob record, with the message V8 gives a failed allocation.
+    expect(observeWithFakeGit(OK_RECORD)).toMatchObject({ kind: 'observed', files: [{ path: 'ok.ts' }] });
+    const concat = Buffer.concat.bind(Buffer);
+    let injected = 0;
+    const spy = vi.spyOn(Buffer, 'concat').mockImplementation(((list: readonly Uint8Array[], length?: number) => {
+      if (list.some((part) => Buffer.from(part.buffer, part.byteOffset, Math.min(part.byteLength, 7)).toString('latin1') === '100644 ')) {
+        injected += 1;
+        throw new RangeError('Array buffer allocation failed');
+      }
+      return concat(list, length);
+    }) as typeof Buffer.concat);
+    try {
+      expect(observeWithFakeGit(OK_RECORD)).toEqual({ kind: 'unknown', reason: 'code-structure observation produced a path that is not valid UTF-8' });
+    } finally {
+      spy.mockRestore();
+    }
+    expect(injected).toBe(1);
   });
 
   it('skips every submodule gitlink, whatever its path, and keeps the files beside it (R-GP-IMPL-CODE-STRUCTURE-2 N2)', () => {

@@ -46,7 +46,7 @@ describe('zero-egress Syzygy self-corpus proof', () => {
     expect(report.networkCalls).toBe(0);
     expect(report.realProjectProof).toBe(false);
     expect(report.unmetReq014).toContain('two separately admitted real projects');
-  }, 30_000);
+  }, 30_000); // the self-corpus proof over the real tree: timed out at the 5 s default in 2 of 5 full-suite runs at load1 38-71, up to 4.6 s in the others (docs/evidence/syzygy-bpyt-4-31/full-runs.json)
 
   it('refuses a requested pinned commit that is unavailable rather than substituting HEAD', () => {
     expect(() => readSelfCorpus(process.cwd(), '0'.repeat(40))).toThrow();

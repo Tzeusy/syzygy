@@ -281,6 +281,17 @@ describe('exact object reads', () => {
     expect(r.read('binary/latin1.md').record.outcome).toBe('not-utf-8');
   });
 
+  it('drops one leading byte-order mark from the decoded text and keeps a second', () => {
+    // Typed here from the Unicode rule the decoder follows (UTF-8 BOM EF BB BF), not read back from the module.
+    const readBytes = (bytes: Uint8Array) => {
+      const path = 'notes/bom.md';
+      const tree = indexGitTree([{ mode: '100644', type: 'blob', objectId: sha1Blob(bytes), sizeBytes: bytes.byteLength, path }]);
+      return createExactObjectReader({ runGit: () => bytes, tree, resourceLimits: PWB_RESOURCE_LIMITS }).read(path);
+    };
+    expect(readBytes(Uint8Array.from([0xef, 0xbb, 0xbf, 0x61, 0x0a]))).toMatchObject({ kind: 'text', text: 'a\n', record: { outcome: 'read' } });
+    expect(readBytes(Uint8Array.from([0xef, 0xbb, 0xbf, 0xef, 0xbb, 0xbf, 0x61]))).toMatchObject({ kind: 'text', text: '\uFEFFa', record: { outcome: 'read' } });
+  });
+
   it('a Git failure is recorded, not thrown', () => {
     const { reader: r } = reader({}, { blobOverrides: { [oidOf('about/README.md')]: 'throw' } });
     const result = r.read('about/README.md');

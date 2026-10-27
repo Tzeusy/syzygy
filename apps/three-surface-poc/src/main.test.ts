@@ -6,7 +6,7 @@ import { PassThrough, Writable } from 'node:stream';
 
 import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest';
 
-import type { DaemonOptions, DaemonStart, Route } from '@syzygy/cap1-daemon';
+import type { DaemonOptions, DaemonStart, Route } from '@syzygy/http-host';
 import { PocObservationError, type PocModel } from '@syzygy/three-surface-poc-core';
 
 import type { GitObservation } from './git-observation.js';

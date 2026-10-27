@@ -172,7 +172,7 @@ export type DeriveManifestResult =
 // line start. Images (`![...]`) are not links. Fragments and queries are
 // dropped. Nothing else in an index names a file.
 
-function stripFences(text: string, stripInlineCode = true): readonly string[] {
+function stripFences(text: string, stripInlineCode = true): readonly string[] { // not the PWB-REQ-006 profile; one of five fence rules: docs/evidence/syzygy-bpyt-6-3/dc3-fence-rules-2026-10-25.json
   const kept: string[] = [];
   let fence: string | undefined;
   for (const line of text.split('\n')) {
@@ -329,7 +329,7 @@ function canonicalize(value: unknown): unknown {
 }
 
 // Key-sorted JSON with `undefined` members dropped; the one canonical form
-// every PWB sha256 identity (manifest, resource limits, observation) uses.
+// every PWB sha256 identity (manifest, resource limits, observation) uses. Not the Polaris generation encoder: the two differ on purpose (docs/evidence/syzygy-bpyt-6-3/dc3-decode-and-canonical-json-2026-10-25.json).
 export function canonicalJson(value: unknown): string {
   return JSON.stringify(canonicalize(value));
 }
