@@ -13,6 +13,7 @@
     "@syzygy/http-host": "0.0.0",
     "@syzygy/three-surface-poc-core": "0.0.0",
     "@syzygy/polaris-generation-consent": "0.0.0",
-    "@syzygy/polaris-generation-core": "0.0.0"
+    "@syzygy/polaris-generation-core": "0.0.0",
+    "@syzygy/support": "0.0.0"
   }
 }

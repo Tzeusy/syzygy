@@ -20,6 +20,9 @@
     },
     {
       "path": "../../packages/polaris-generation-consent"
+    },
+    {
+      "path": "../../packages/support"
     }
   ]
 }

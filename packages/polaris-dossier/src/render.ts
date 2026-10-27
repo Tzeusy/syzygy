@@ -7,6 +7,7 @@ import {
   type LocalDisclosureItem, type LocalDraftLayer, type LocalPage, type LocalPageItem, type LocalRenderInput, type LocalSegment,
   type DossierDraft, type DraftBlock, type DraftParagraph,
 } from '@syzygy/polaris-generation-core/live';
+import { sha256 } from '@syzygy/support';
 import { collectBlocks, deriveFindings, draftRules, type Derived } from './check.js';
 import { CREDENTIAL_CHECK_DISCLOSURE, credentialStepCheck, storedBriefArm, type CredentialStepResult } from './credential-probe.js';
 import { UNDERSTANDING_ITEMS } from './draft-schema.js';
@@ -120,7 +121,6 @@ const DISCLOSURES = [
 const isObj = (value: unknown): value is Readonly<Record<string, unknown>> => value !== null && typeof value === 'object' && !Array.isArray(value);
 const list = (value: unknown): readonly unknown[] => (Array.isArray(value) ? value : []);
 const text = (value: unknown): string | undefined => (typeof value === 'string' ? value : undefined);
-const sha256 = (value: string | Uint8Array): string => createHash('sha256').update(value).digest('hex');
 const SUBJECT_JSON_LIMITS = Object.freeze({ maxBytes: 4 * 1024 * 1024, maxNodes: 500_000, maxDepth: 16 });
 
 const EXCLUSION_REASON: Readonly<Record<ScreenExclusion, GenerationExclusionReason>> = {

@@ -1,4 +1,4 @@
-import { createHash } from 'node:crypto';
+import { sha256 } from '@syzygy/support';
 
 import { digestCanonicalJson } from './canonical-json.js';
 import { parseBoundedJson } from './parse-json.js';
@@ -507,8 +507,6 @@ export interface DossierEvaluationInput {
   /** Absent: the reader test is not run and every topic stays declared-only or Unknown. */
   readonly readers?: ReaderPortFactory;
 }
-
-const sha256 = (bytes: Uint8Array | string): string => createHash('sha256').update(bytes).digest('hex');
 
 /** Canonical digest over the admitted population: each source's identity,
  * segment, exclusion and a SHA-256 of its body, in source-id order. */

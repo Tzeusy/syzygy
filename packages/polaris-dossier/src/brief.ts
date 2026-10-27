@@ -1,8 +1,8 @@
-import { createHash } from 'node:crypto';
 import * as fs from 'node:fs';
 import * as path from 'node:path';
 import { UNKNOWN_REASONS } from '@syzygy/cap1-core';
 import { DOSSIER_READER_QUESTIONS, DOSSIER_REQUESTED_ASSETS, OWNER_TOPICS } from '@syzygy/polaris-generation-core/live';
+import { sha256 } from '@syzygy/support';
 import { readSec3 } from './doctrine-quote.js';
 import { CLARIFICATION_ANSWER_KINDS, LOCAL_DRAFT_SCHEMA_VERSION, QUOTATION_FORM, SESSION_ID_RULE, UNDERSTANDING_ITEMS, draftSchemaDocument } from './draft-schema.js';
 import { PERMITTING_ARM_ENABLED, decideExecutionRule, executionRuleSection, type ExecutionRule, type PermittingArm } from './execution-rule.js';
@@ -198,8 +198,6 @@ const DISCLOSURES = [
 ];
 
 type ReverifyFailure = Extract<ReverifyResult, { readonly ok: false }>;
-
-const sha256 = (text: string): string => createHash('sha256').update(text, 'utf8').digest('hex');
 
 export async function issueBrief(runDir: string, deps: BriefDeps): Promise<BriefResult> {
   const run = path.resolve(runDir);

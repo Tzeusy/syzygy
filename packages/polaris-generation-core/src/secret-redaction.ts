@@ -1,4 +1,4 @@
-import { createHash } from 'node:crypto';
+import { sha256 } from '@syzygy/support';
 
 import type { PublicSourceContentClass } from './public-source-classification.js';
 
@@ -32,7 +32,6 @@ import type { PublicSourceContentClass } from './public-source-classification.js
  * a secret no detector matches, beyond the guard lines or continuing past
  * them, is admitted; the whole body's digest and object id stay recorded and can check a guess at a short withheld line. */
 
-const sha256 = (text: string): string => createHash('sha256').update(text, 'utf8').digest('hex');
 const isObject = (value: unknown): value is Readonly<Record<string, unknown>> => value !== null && typeof value === 'object' && !Array.isArray(value);
 
 /** sha256 of each text this module implements, UTF-8 (the version-4 bytes approved 2026-10-20). */
