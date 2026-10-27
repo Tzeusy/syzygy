@@ -15,6 +15,7 @@ import type { BodyReadAuthorityEvaluation } from './body-read-authority.js';
 import type { OperatorReportedTestArtifactRecord } from './test-artifact-verification.js';
 import { walkthroughEvaluationIdentity } from './walkthrough-readiness.js';
 import { removeFixtureDirectory } from './test-cleanup.js';
+import { frozenCensus } from './test-frozen.js';
 
 const cleanups: string[] = [];
 
@@ -323,6 +324,45 @@ describe('three-surface Butlers POC model', () => {
     );
     const changedBytes = buildPocModel(input);
     expect(changedBytes.evaluation.snapshot).not.toBe(first.evaluation.snapshot);
+  });
+
+  // Expected values are SHA-256 of the five fixture files' bytes above, taken with hashlib and agreeing with `sha256sum` over the same
+  // bytes (docs/evidence/syzygy-bpyt-6-13/derive-literals.py), never read back from the model (review R-GP-IMPL-SUPPORT-LEAF-1 N2).
+  it('records each required artifact under the SHA-256 of its own bytes', () => {
+    const model = buildPocModel({
+      seeds: BUTLERS_POC_SEEDS,
+      repoRoot: butlersFixture(),
+      repositoryRevision: 'c13894238989d3bebb24094730992970b31fe546',
+      observerRevision: 'bfdb7963e4ff5628d0d1ec0f59e831d7e8209abe',
+      evaluation: { snapshot: 'butlers@c1389423', asOf: '2026-08-29T12:00:00Z' },
+    });
+    const digestsBySource = new Map<string, Set<string>>();
+    for (const entity of model.entities) {
+      for (const provenance of entity.provenance) {
+        if (provenance.kind === 'repository-file') digestsBySource.set(provenance.source, (digestsBySource.get(provenance.source) ?? new Set<string>()).add(provenance.digest ?? '(no digest)'));
+      }
+    }
+    expect(Object.fromEntries([...digestsBySource].map(([source, digests]) => [source, [...digests]]))).toEqual({
+      'docs/superpowers/specs/2026-08-24-whatsapp-identity-reconciliation-design.md': ['sha256:2479e75d520a16460f9e3e1d01e16211d93d9e5d7f05a1f79792466bd7159c48'],
+      'openspec/changes/repair-whatsapp-identity-reconciliation/proposal.md': ['sha256:964230e52c4cba3cc029e7f984d5230a1c3502ad5ae5a421d7126e4ef3c7aaea'],
+      'openspec/changes/repair-whatsapp-identity-reconciliation/specs/switchboard-identity/spec.md': ['sha256:6eb3621053cab988df848b46e269a9e6dbd7779703a19404d6eb5a8762dd8ce9'],
+      'src/butlers/identity.py': ['sha256:c17f6c25cbb53eba69017e09605aa474a8ce296313d13aceee622e753d950981'],
+      'tests/core/test_identity.py': ['sha256:2c40033f352b040a0193ee8b2856e93a63cf0ae1c057a84a75f9887de42bc5e9'],
+    });
+  });
+
+  it('hands out the resource headroom block frozen all the way down', () => {
+    const model = buildPocModel({
+      seeds: BUTLERS_POC_SEEDS,
+      repoRoot: butlersFixture(),
+      repositoryRevision: 'c13894238989d3bebb24094730992970b31fe546',
+      observerRevision: 'bfdb7963e4ff5628d0d1ec0f59e831d7e8209abe',
+      evaluation: { snapshot: 'butlers@c1389423', asOf: '2026-08-29T12:00:00Z' },
+    });
+    const { visited, unfrozen } = frozenCensus(model.resourceHeadroom);
+    expect(unfrozen).toEqual([]);
+    // The block, its entries list and one entry per declared limit (seven) at least; a census of nothing would also report no path.
+    expect(visited).toBeGreaterThanOrEqual(9);
   });
 
   it('carries the project shape on the one model: not-evaluated without an authority evaluation, observed with an admitting one (PWB 2.7)', () => {

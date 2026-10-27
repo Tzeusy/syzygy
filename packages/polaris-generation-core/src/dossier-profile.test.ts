@@ -45,6 +45,18 @@ describe('REQ-031 clarification', () => {
     expect(openQuestions([file('README.md'), deferredRow('src/x.c')], true)[0]!.question).toContain('1 file(s)');
   });
 
+  // Expected values: SHA-256 of JSON.stringify([id, question, scope, reason]) for each question, typed here from the question text above
+  // and taken with hashlib (docs/evidence/syzygy-bpyt-6-13/derive-literals.py). The digest is the identity a prior disposition carries
+  // between passes, so a change to the tuple or its order moves it (class 3; review R-GP-IMPL-SUPPORT-LEAF-1 N2, mutant R3).
+  it('digests each question by the exact tuple of its id, text, scope and reason', () => {
+    expect(openQuestions(mechanicsOnly).map(q => [q.id, q.contentDigest])).toEqual([
+      ['purpose', '57dd4d0707afa807a435bea0758bd4ac0a6e95c854b636b8b562556eba6ec2c6'],
+      ['audience', 'a3e9d7308d9fb44eaabca2d484b5a9a5e58ac6bbe6435f31d9dc231510f37e5e'],
+    ]);
+    const scope = openQuestions([...mechanicsOnly, file('docs/overview.md'), deferredRow('src/x.c'), deferredRow('src/y.c')], true);
+    expect(scope.map(q => [q.id, q.contentDigest])).toEqual([['scope', '8c1a2eaa83b70cdc42cb42559da868f6737aef974fe248f3c64a11dd9335a5b2']]);
+  });
+
   it('zero-interaction mode asks nothing, records what it would have asked, and accounts for every question', async () => {
     const ask = vi.fn();
     const record = await clarify({ sources: mechanicsOnly, mode: 'zero-interaction', ask });
