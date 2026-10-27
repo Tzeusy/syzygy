@@ -1695,3 +1695,21 @@ ADOPT POLARIS BUTLERS PROJECT-SHAPE OBSERVER REGISTRY ENTRY: f2b3573cfe35169f449
 
 [Observed] The bounded owner selection is recorded. Implementation, gate
 admission and private response measurement require their separate evidence.
+
+<!-- versioned-signoff:three-surface-poc-governedby-reference-amendment:v1.0 -->
+## Versioned sign-off — three-surface-poc-governedby-reference-amendment — v1.0 — recorded 2026-10-27
+
+The owner signed off version 1.0 by selecting an option in a structured
+question naming this package and version (quoted in the dedicated record).
+
+| | |
+|---|---|
+| Project / owner | `project:syzygy` / Tzeusy |
+| Kind | specification amendment |
+| Review outcome | `docs/reviews/R-P115-GOVERNEDBY-REFERENCE-4-RAW.md`: `CONFIRM WITH EXCEPTIONS`; disposition: `.syzygy/governance/contracts/candidates/three-surface-poc-governedby-reference-amendment/ROUND-4-DISPOSITIONS.md` |
+| Recording | `.syzygy/governance/decisions/THREE-SURFACE-POC-GOVERNEDBY-REFERENCE-AMENDMENT-SIGNOFF-v1.0.md`; annotated tag `three-surface-poc-governedby-reference-amendment-v1.0` on the commit carrying these records and the applied result |
+| Direction | `.syzygy/governance/decisions/OWNER-DIRECTION-VERSIONED-SIGNOFF-SCOPE-A-2026-10-02.md`, extended by `.syzygy/governance/decisions/OWNER-DIRECTION-SCOPE-A-POC-AMENDMENTS-2026-10-14.md` |
+
+This sign-off authorizes no implementation, widens no consent, read, write or
+egress, and a later version of the package is signed separately.
+<!-- /versioned-signoff:three-surface-poc-governedby-reference-amendment:v1.0 -->

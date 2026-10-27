@@ -106,8 +106,12 @@ Since the 2026-10-03 tree-framing sign-off moved `spec.md` past the pinned
 row, the case also replays `spec.md` as the pinned bytes (the re-pin
 builder's `spec_at_pin`, every later signed patch reversed): R6 must read
 zero over that tree, and R2, R3 and R4, which then see bytes no act binds,
-must fail exactly. On the tree itself R6 reports both pins until their own
-re-pin act. The strict case `pins-after-tree-framing-repin-acts` does the
+must fail exactly. After the P115 sign-off, replaying its governing PWB
+input must additionally produce exactly the P115 R1 refusal. The fixture
+requires the complete signed transaction to validate when only PWB is
+restored, so the early input refusal cannot hide another record defect.
+The unsigned fixture retains the exact R2/R3/R4 expectation. On the tree
+itself R6 reports both pins until their own re-pin act. The strict case `pins-after-tree-framing-repin-acts` does the
 same for the `syzygy-2g0d` package, which re-pins both to the tree-framing
 `spec.md` row: with its proposed bytes in place of both subjects, R6 must
 examine both pins and report zero, and no other predicate may fail.
@@ -491,6 +495,23 @@ def check_digest_act(act, tag, aggregate, record, manifest_bytes, r1, r2):
     return table
 
 
+def poc_reference():
+    import prepare_three_surface_poc_governedby_reference_recording as reference
+    return reference
+
+
+def successors_for(root, child):
+    successors = child.get("successors", ())
+    reference = poc_reference()
+    if child["key"] == "poc" and reference.transaction_present(root):
+        return successors + ({
+            "kind": "versioned", "package": reference.KEY, "version": reference.VERSION,
+            "record": reference.RECORD.as_posix(), "manifest": reference.MANIFEST.as_posix(),
+            "proposed": (reference.CANDIDATE / "proposed").as_posix(),
+        },)
+    return successors
+
+
 DATE_LINE = re.compile(r"^Date: (\d{4}-\d{2}-\d{2})$", re.M)
 DIFF_TARGET = re.compile(r"^\+\+\+ b/(\S[^\n]*)$", re.M)
 
@@ -538,14 +559,15 @@ def package_patches(root, proposed):
     return out
 
 
-def reverse_apply(root, patch_rel, target_rel, body):
+def reverse_apply(root, patch_rel, target_rel, body, *, zero_context=False):
     """`body` with the patch reversed, or None when it does not reverse."""
     with tempfile.TemporaryDirectory() as tmp:
         dest = Path(tmp) / target_rel
         dest.parent.mkdir(parents=True, exist_ok=True)
         dest.write_bytes(body)
+        options = ["--unidiff-zero"] if zero_context else []
         done = subprocess.run(
-            ["git", "apply", "-R", "--whitespace=nowarn",
+            ["git", "apply", "-R", "--whitespace=nowarn", *options,
              str((root / patch_rel).resolve())],
             cwd=tmp, capture_output=True)
         return dest.read_bytes() if done.returncode == 0 else None
@@ -559,7 +581,10 @@ def bytes_at(root, path, after):
     for later in reversed(after):
         found = package_patches(root, later["proposed"]).get(path, [])
         if body is not None and len(found) == 1:
-            body = reverse_apply(root, found[0], path, body)
+            reference = later.get("package") == poc_reference().KEY
+            if reference and not poc_reference().is_signed(root):
+                return None
+            body = reverse_apply(root, found[0], path, body, zero_context=reference)
     return body
 
 
@@ -587,7 +612,8 @@ def compose_versioned(root, later, ltag, rows, r2, after=()):
                       f"`{path}`")
         elif found:
             current = bytes_at(root, path, after)
-            prior = (reverse_apply(root, found[0], path, current)
+            prior = (reverse_apply(root, found[0], path, current,
+                                   zero_context=later.get("package") == poc_reference().KEY)
                      if current is not None and sha(current) == succ else None)
             if prior is None or sha(prior) != rows[path]:
                 r2.append(f"{ltag}: broken chain — reversing `{found[0]}` "
@@ -604,7 +630,7 @@ def check_outcomes(root, report):
     r1, r2, subjects_seen, records = [], [], 0, 0
     for child in CHILDREN:
         tag = f"{child['key']} ({child['bead']})"
-        records += 1 + len(child.get("successors", ()))
+        records += 1 + len(successors_for(root, child))
         record = read_text(root, child["record"])
         manifest_bytes = read_bytes(root, child["manifest"])
         if record is None:
@@ -628,7 +654,7 @@ def check_outcomes(root, report):
         # A digest act carries an act instant and no `Date:` line; its date
         # is the instant's, so a versioned successor can follow it.
         dates = DATE_LINE.findall(record) or [i[:10] for i in reached]
-        successors = child.get("successors", ())
+        successors = successors_for(root, child)
         for index, later in enumerate(successors):
             name = Path(later["record"]).name
             ltag = f"{tag} successor {name}"
@@ -642,6 +668,13 @@ def check_outcomes(root, report):
                 r1.append(f"{ltag}: package manifest `{later['manifest']}` "
                           "missing")
                 continue
+            if later.get("package") == poc_reference().KEY:
+                expected = [p.as_posix() for p in poc_reference().SUBJECTS]
+                if [p for _sha, p in ROW.findall(lmanifest.decode())] != expected:
+                    r2.append(f"{ltag}: manifest is not exactly the six P115 subjects")
+                if not poc_reference().is_signed(root):
+                    r1.append(f"{ltag}: incomplete or invalid exact P115 sign-off transaction")
+                    continue
             if later.get("kind", "digest") == "versioned":
                 # No act instant: order is the append-only aggregate record
                 # (strictly after the act before it) and a date on or after.
@@ -1108,7 +1141,10 @@ def check_census(root, report):
     pop, findings = census(root)
     examined = 0
     p_req, p_scen, p_ids = polaris_expected(root, findings)
+    signed_reference = poc_reference().is_signed(root)
     totals = dict(EXPECTED_TOTALS, POLARIS=(p_req, p_scen))
+    if signed_reference:
+        totals["POC"] = (26, 34)
     for family, (n_req, n_scen) in totals.items():
         reqs = pop.get(family, {})
         got = (len(reqs), sum(len(r["scenarios"]) for r in reqs.values()))
@@ -1117,6 +1153,8 @@ def check_census(root, report):
             findings.append(f"{family}: {got[0]} requirements / {got[1]} "
                             f"scenarios, expected {n_req} / {n_scen}")
         literal = EXPECTED.get(family)
+        if family == "POC" and signed_reference:
+            literal = {**literal, "014": 8}
         if literal is not None:
             prefix = f"{family}-REQ-"
             have = {k[len(prefix):]: len(v["scenarios"]) for k, v in reqs.items()}
@@ -1266,7 +1304,7 @@ def check_routes(root, pop, report):
         findings.append(f"`{OPENSPEC_README}`: row for untracked `{extra}`")
     for child in CHILDREN:
         for record in (child["record"], *(later["record"] for later in
-                                          child.get("successors", ()))):
+                                          successors_for(root, child))):
             examined += 2
             name = Path(record).name
             if not any(name in line for line in rows.get(child["change"], [])):
@@ -1426,7 +1464,7 @@ def inputs(root):
     paths = {AGGREGATE, CENSUS, STATUS, REGISTRY, POLICY, *ROUTE_PAGES}
     for child in CHILDREN:
         paths |= {child["record"], child["manifest"]}
-        for later in child.get("successors", ()):
+        for later in successors_for(root, child):
             paths |= {later["record"], later["manifest"]}
             if "proposed" in later:
                 paths |= set(tracked(root, later["proposed"]))
@@ -1439,6 +1477,7 @@ def inputs(root):
         paths |= {r for r, _t, _v in addition_terminals(root, change)}
         if change in ADOPTED_ADDITIONS:
             paths.add(adopted_binding(ADOPTED_ADDITIONS[change][1])[1])
+    paths |= poc_reference().validation_inputs(root)
     return sorted(paths)
 
 
@@ -2084,6 +2123,39 @@ def _selftest_cases(tmp, commit, witnesses, failures, witness_path, base, clean,
             allowed = set(filter(None, tail.split(",")))
             failed_ok = (got.failed == allowed if applied
                          else got.failed <= allowed)
+            if name == "pins-after-repin-acts" and applied:
+                reference = poc_reference()
+                if reference.transaction_present(start):
+                    original_pwb = (start / FAMILY_SPECS["PWB"]).read_bytes()
+                    replayed_pwb = (tree / FAMILY_SPECS["PWB"]).read_bytes()
+                    if not reference.is_signed(start):
+                        failed_ok = False
+                    elif replayed_pwb != original_pwb:
+                        # Rewinding this governing input must invalidate
+                        # P115, with exactly this refusal and no other R1.
+                        required = allowed | {"R1"}
+                        expect = f"{rid}=0|" + ",".join(sorted(required))
+                        expected_r1 = [
+                            "poc (syzygy-73e.5.2) successor "
+                            "THREE-SURFACE-POC-GOVERNEDBY-REFERENCE-"
+                            "AMENDMENT-SIGNOFF-v1.0.md: incomplete or "
+                            "invalid exact P115 sign-off transaction"]
+                        failed_ok = (
+                            got.failed == required
+                            and got.findings.get("R1") == expected_r1
+                            and reference.binding_findings(tree) == [
+                                "current P115 governing input differs: "
+                                + FAMILY_SPECS["PWB"]])
+                        if failed_ok:
+                            # The early input refusal can hide a second
+                            # record defect. Restoring only PWB must make
+                            # the complete signed transaction valid again.
+                            target = tree / FAMILY_SPECS["PWB"]
+                            try:
+                                target.write_bytes(original_pwb)
+                                failed_ok = reference.is_signed(tree)
+                            finally:
+                                target.write_bytes(replayed_pwb)
             caught = (got.findings.get(rid) == [] and failed_ok
                       and any(int(m.group(1)) > 0 for m in (
                           re.match(rf"OK +{rid}  .* — (\d+) examined", line)
