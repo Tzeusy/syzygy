@@ -144,7 +144,7 @@ describe('proposal disclosure row (syzygy-dov.3.2; P-70 M3 slice 6)', () => {
         expect(runtime.legendRows, name).toBe(1);
       }
     });
-  }, 45_000);
+  }, 45_000); // two rendered pages in a real browser: worst 8.3 s over 5 alone runs at load1 59-69 (docs/evidence/syzygy-bpyt-4-31/durations/proposal-disclosure.test.tests.json)
 });
 
 async function browserProposals(page: BrowserPage): Promise<{ sections: number; walkedSections: number; legendRows: number; failures: string[] }> {
