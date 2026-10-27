@@ -4,12 +4,12 @@ import { DESIGN_TOKENS_CSS } from '../design-tokens.js';
 
 import {
   diagramToMermaid, validateGenerationSources,
-  type EpistemicMarking, type GenerationSource, type ProviderBlock, type ProviderDiagram, type ProviderDraft, type ProviderParagraph,
-} from '@syzygy/polaris-generation-core';
+  type EpistemicMarking, type GenerationSource, type DossierDraft, type DraftBlock, type DraftDiagram, type DraftParagraph,
+} from '@syzygy/polaris-generation-core/live';
 import { renderDiagramSvg } from './diagram-layout.js';
 import { assertInertSvg } from './svg-inert.js';
 
-export interface DraftPreviewOptions {
+interface DraftPreviewOptions {
   /** The inert-SVG boundary. Injectable for tests only; defaults to `assertInertSvg`. */
   readonly assertSvg?: (svg: string) => void;
 }
@@ -23,14 +23,14 @@ const MARKING_LABEL: Record<EpistemicMarking, string> = { observed: 'Observed', 
 
 const escape = (value: string): string => value.replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]!);
 
-function dispositionNotice(asset: { readonly id: string; readonly disposition: ProviderDiagram['disposition'] }): string {
+function dispositionNotice(asset: { readonly id: string; readonly disposition: DraftDiagram['disposition'] }): string {
   if (asset.disposition.kind === 'produced') return '';
   const refs = asset.disposition.references.join(', ');
   return `<aside class="unresolved-asset" data-asset-disposition="${asset.disposition.kind}" id="unresolved-${escape(asset.id)}"><strong>${escape(asset.id)}</strong>: ${escape(asset.disposition.reason)} <span class="asset-references">(${escape(refs)})</span></aside>`;
 }
 
 /** Intermediate editorial preview only; no adoption, source admission or review verdict. */
-export function renderDraftPreview(draft: ProviderDraft, sources: readonly GenerationSource[], routeForAnchor?: (source: GenerationSource, anchorId: string) => string, options: DraftPreviewOptions = {}): string {
+export function renderDraftPreview(draft: DossierDraft, sources: readonly GenerationSource[], routeForAnchor?: (source: GenerationSource, anchorId: string) => string, options: DraftPreviewOptions = {}): string {
   const assertSvg = options.assertSvg ?? assertInertSvg;
   validateGenerationSources(sources);
   const sourceIndex = new Map(sources.map(source => [source.sourceId, source]));
@@ -56,16 +56,16 @@ export function renderDraftPreview(draft: ProviderDraft, sources: readonly Gener
       return `<a href="${escape(href)}" aria-label="Read source ${escape(id)}">[${escape(id)}]</a>`;
     }).join(' ')}</span>`;
   };
-  const paragraph = (p: ProviderParagraph): string => {
+  const paragraph = (p: DraftParagraph): string => {
     register(p.id);
     return `<p>${escape(p.text)} ${refs(p.sourceIds)}</p>`;
   };
-  const leaf = (p: ProviderParagraph): string => {
+  const leaf = (p: DraftParagraph): string => {
     register(p.id);
     return `<li>${escape(p.text)} ${refs(p.sourceIds)}</li>`;
   };
   // A tree block: the parent paragraph, then its leaf children nested beneath it.
-  const block = (b: ProviderBlock): string => {
+  const block = (b: DraftBlock): string => {
     const parent = paragraph(b);
     return b.children.length === 0 ? parent : `${parent}<ul class="block-children">${b.children.map(leaf).join('')}</ul>`;
   };
@@ -74,7 +74,7 @@ export function renderDraftPreview(draft: ProviderDraft, sources: readonly Gener
   for (const item of [...draft.diagrams, ...draft.deepDives]) {
     if (!sectionIds.has(item.sectionId)) throw new Error('unknown-section');
   }
-  const diagram = (d: ProviderDiagram, index: number): string => {
+  const diagram = (d: DraftDiagram, index: number): string => {
     register(d.id);
     if (d.disposition.kind !== 'produced') return dispositionNotice(d);
     const nodes = new Map(d.nodes.map(node => [node.id, node]));

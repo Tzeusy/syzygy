@@ -1,4 +1,4 @@
-import { escapeHtml } from '@syzygy/cap1-daemon';
+import { escapeHtml } from '@syzygy/http-host';
 import type { PocModel, ProjectShape } from '@syzygy/three-surface-poc-core';
 
 import { resolveVerbatim, type VerbatimLeafReader, type VerbatimResolution } from './capability-detail.js';
@@ -62,7 +62,7 @@ function unescapeAttribute(value: string): string {
   return value.replace(/&quot;/g, '"').replace(/&#39;/g, "'").replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&amp;/g, '&');
 }
 
-export type SourceRouteResolution =
+type SourceRouteResolution =
   | { readonly kind: 'rendered'; readonly path: string; readonly resolution: Extract<VerbatimResolution, { kind: 'rendered' }> }
   | { readonly kind: 'not-rendered'; readonly path: string | undefined; readonly reason: string; readonly route: string; readonly detail: string };
 
@@ -72,6 +72,7 @@ function shapeReason(shape: Exclude<ProjectShape, { kind: 'observed' }>): { read
   return { reason, route: shape.claim.resolutionRoutes[0]?.route ?? 'No route recorded' };
 }
 
+// Test seam: exported for the tests; production code reaches it only inside this file.
 /**
  * Resolves one identity against the evaluation. Only an identity the signed
  * population carries is ever handed to the reader; every other identity is
@@ -95,7 +96,7 @@ export function resolveSourceRoute(model: PocModel, identity: string, reader: Ve
   return { kind: 'not-rendered', path: source.path, reason: resolution.reason, route: resolution.route, detail: resolution.detail };
 }
 
-export interface PolarisSourceRenderInputs {
+interface PolarisSourceRenderInputs {
   readonly verbatim?: VerbatimLeafReader;
 }
 

@@ -1,0 +1,1490 @@
+{
+ "subject": {
+  "oldMain": {
+   "commit": "b7697f6ac82c7fdb47c6858f70b23febdd3f505c",
+   "path": "apps/three-surface-poc/src/main.ts",
+   "sha256": "470ff646cec7a94d3f9bcb0029e082549a7c5769577e4a549d225f6de09e6da2"
+  },
+  "newMain": {
+   "ranAtCommit": "fa79bca6e2aec7ca65c7ff40fe086c40c7c4c0a5",
+   "path": "apps/three-surface-poc/src/poc-main.ts",
+   "sha256": "c5e5dc78cd9107d0e99dc39e32a6d7e4bfa493d527f76bdb26e17f94fe9337c1"
+  },
+  "newEntry": {
+   "ranAtCommit": "fa79bca6e2aec7ca65c7ff40fe086c40c7c4c0a5",
+   "path": "apps/three-surface-poc/src/main.ts",
+   "sha256": "cfb0a4e6d55a6b74e8da99612cf33b25c955877b09155ae89e4f875638137e3d"
+  }
+ },
+ "harness": {
+  "file": "docs/evidence/poc-hygiene-2026-10-22/main-old-vs-new-differential.test.ts.txt",
+  "sha256": "a93c6443d1463c729b9e8ffd62a062d8309cf03af368fb5a8c30fa7d6d14767a",
+  "runner": "docs/evidence/poc-hygiene-2026-10-22/run_differential.py",
+  "runnerSha256": "ac439e16f394c0be5f76d3b0fa55315e2e80cfafd619960746d46702c22fde3f",
+  "reproduce": "python3 run_differential.py <worktree> <base-commit> <transcripts-out.json> [--mutants <out.json>]: it copies the harness to apps/three-surface-poc/src/zz-main-differential.test.ts, writes the base commit main.ts to zz-main-old.ts, runs npx vitest run on the harness, and deletes both afterwards; they are never committed.",
+  "method": "Per scenario the old script runs as a module (top level, process.argv, process.stdout, process.cwd, process.stdin, signals), the new exported main in poc-main.ts runs with a fake PocIo, and the new entry main.ts runs as a module the same way as the old script, all against the same mocked collaborators (git observation, production model builder, daemon). The three transcripts (stdout, stderr, exit code, ordered collaborator calls, daemon options and route list, post-start route responses, close count, thrown error) must be deeply equal.",
+  "scenarios": 42,
+  "identical": 42,
+  "distinctTranscripts": 39,
+  "tests": 44,
+  "testsPassed": 44
+ },
+ "scenarios": [
+  {
+   "name": "help",
+   "exitCode": 0,
+   "thrown": null,
+   "collaboratorCalls": 0,
+   "stdoutBytes": 490,
+   "stderrBytes": 0,
+   "postStartResponses": 0,
+   "oldTranscriptSha256": "95859534004fffffae75b1213937735902d8a1105fed2c27cfadb3ddf2ee284a",
+   "newMainTranscriptSha256": "95859534004fffffae75b1213937735902d8a1105fed2c27cfadb3ddf2ee284a",
+   "newEntryEqualsOld": true
+  },
+  {
+   "name": "help-short",
+   "exitCode": 0,
+   "thrown": null,
+   "collaboratorCalls": 0,
+   "stdoutBytes": 490,
+   "stderrBytes": 0,
+   "postStartResponses": 0,
+   "oldTranscriptSha256": "95859534004fffffae75b1213937735902d8a1105fed2c27cfadb3ddf2ee284a",
+   "newMainTranscriptSha256": "95859534004fffffae75b1213937735902d8a1105fed2c27cfadb3ddf2ee284a",
+   "newEntryEqualsOld": true
+  },
+  {
+   "name": "invalid-unknown-arg",
+   "exitCode": 1,
+   "thrown": null,
+   "collaboratorCalls": 0,
+   "stdoutBytes": 0,
+   "stderrBytes": 529,
+   "postStartResponses": 0,
+   "oldTranscriptSha256": "01d1b0691b3e625e0ca9836d2a7fe986ea5acd488ae21032ac453d68823d8382",
+   "newMainTranscriptSha256": "01d1b0691b3e625e0ca9836d2a7fe986ea5acd488ae21032ac453d68823d8382",
+   "newEntryEqualsOld": true
+  },
+  {
+   "name": "invalid-missing-repo",
+   "exitCode": 1,
+   "thrown": null,
+   "collaboratorCalls": 0,
+   "stdoutBytes": 0,
+   "stderrBytes": 573,
+   "postStartResponses": 0,
+   "oldTranscriptSha256": "52076e2c5306cd565591d36ed12d9f6b0ecf55072c937a0b55658a55f4b2d2bf",
+   "newMainTranscriptSha256": "52076e2c5306cd565591d36ed12d9f6b0ecf55072c937a0b55658a55f4b2d2bf",
+   "newEntryEqualsOld": true
+  },
+  {
+   "name": "invalid-port",
+   "exitCode": 1,
+   "thrown": null,
+   "collaboratorCalls": 0,
+   "stdoutBytes": 0,
+   "stderrBytes": 554,
+   "postStartResponses": 0,
+   "oldTranscriptSha256": "383e171893770e10e9dfecf7b744837f12103e96430b0b0cc93ab8dc2a80a715",
+   "newMainTranscriptSha256": "383e171893770e10e9dfecf7b744837f12103e96430b0b0cc93ab8dc2a80a715",
+   "newEntryEqualsOld": true
+  },
+  {
+   "name": "invalid-twice",
+   "exitCode": 1,
+   "thrown": null,
+   "collaboratorCalls": 0,
+   "stdoutBytes": 0,
+   "stderrBytes": 539,
+   "postStartResponses": 0,
+   "oldTranscriptSha256": "b1efefdf3249bdf57cc5213ecf063080c076e1f0079e1415a2f2c7a841f4b936",
+   "newMainTranscriptSha256": "b1efefdf3249bdf57cc5213ecf063080c076e1f0079e1415a2f2c7a841f4b936",
+   "newEntryEqualsOld": true
+  },
+  {
+   "name": "repo-unreadable",
+   "exitCode": 1,
+   "thrown": null,
+   "collaboratorCalls": 0,
+   "stdoutBytes": 0,
+   "stderrBytes": 50,
+   "postStartResponses": 0,
+   "oldTranscriptSha256": "1db02ea948ec871d738d9196f8476cfb9b3790c77d097dac1bb3fb296ae59f16",
+   "newMainTranscriptSha256": "1db02ea948ec871d738d9196f8476cfb9b3790c77d097dac1bb3fb296ae59f16",
+   "newEntryEqualsOld": true
+  },
+  {
+   "name": "binding-rejected",
+   "exitCode": 1,
+   "thrown": null,
+   "collaboratorCalls": 1,
+   "stdoutBytes": 0,
+   "stderrBytes": 74,
+   "postStartResponses": 0,
+   "oldTranscriptSha256": "650597d605116e051b288ea44c4c84d328cf541d980396f9c75b0b5aec0b30e5",
+   "newMainTranscriptSha256": "650597d605116e051b288ea44c4c84d328cf541d980396f9c75b0b5aec0b30e5",
+   "newEntryEqualsOld": true
+  },
+  {
+   "name": "binding-rejected-other",
+   "exitCode": 1,
+   "thrown": null,
+   "collaboratorCalls": 1,
+   "stdoutBytes": 0,
+   "stderrBytes": 74,
+   "postStartResponses": 0,
+   "oldTranscriptSha256": "c54e07386ce76823d17ab22472b65cf061861e0c6ccc575695644f9bd281da25",
+   "newMainTranscriptSha256": "c54e07386ce76823d17ab22472b65cf061861e0c6ccc575695644f9bd281da25",
+   "newEntryEqualsOld": true
+  },
+  {
+   "name": "repo-git-fails",
+   "exitCode": 1,
+   "thrown": null,
+   "collaboratorCalls": 2,
+   "stdoutBytes": 0,
+   "stderrBytes": 73,
+   "postStartResponses": 0,
+   "oldTranscriptSha256": "43dd5db5a561790f6726a3acad6f584d318e3d998e54622eb471a7e7cb573da5",
+   "newMainTranscriptSha256": "43dd5db5a561790f6726a3acad6f584d318e3d998e54622eb471a7e7cb573da5",
+   "newEntryEqualsOld": true
+  },
+  {
+   "name": "repo-git-fails-no-status",
+   "exitCode": 1,
+   "thrown": null,
+   "collaboratorCalls": 2,
+   "stdoutBytes": 0,
+   "stderrBytes": 78,
+   "postStartResponses": 0,
+   "oldTranscriptSha256": "b450519ee9ed9d766b3f38571b0c4b15619d54f8116a4d2913d264a18f3050e8",
+   "newMainTranscriptSha256": "b450519ee9ed9d766b3f38571b0c4b15619d54f8116a4d2913d264a18f3050e8",
+   "newEntryEqualsOld": true
+  },
+  {
+   "name": "repo-git-status-out-of-range",
+   "exitCode": 1,
+   "thrown": null,
+   "collaboratorCalls": 2,
+   "stdoutBytes": 0,
+   "stderrBytes": 78,
+   "postStartResponses": 0,
+   "oldTranscriptSha256": "b450519ee9ed9d766b3f38571b0c4b15619d54f8116a4d2913d264a18f3050e8",
+   "newMainTranscriptSha256": "b450519ee9ed9d766b3f38571b0c4b15619d54f8116a4d2913d264a18f3050e8",
+   "newEntryEqualsOld": true
+  },
+  {
+   "name": "observer-git-fails",
+   "exitCode": 1,
+   "thrown": null,
+   "collaboratorCalls": 3,
+   "stdoutBytes": 0,
+   "stderrBytes": 71,
+   "postStartResponses": 0,
+   "oldTranscriptSha256": "114bafd096ea831f4e2972d0a084aedfa8f0a6e99751524a340d8da959d122a1",
+   "newMainTranscriptSha256": "114bafd096ea831f4e2972d0a084aedfa8f0a6e99751524a340d8da959d122a1",
+   "newEntryEqualsOld": true
+  },
+  {
+   "name": "observer-dirty",
+   "exitCode": 1,
+   "thrown": null,
+   "collaboratorCalls": 4,
+   "stdoutBytes": 0,
+   "stderrBytes": 56,
+   "postStartResponses": 0,
+   "oldTranscriptSha256": "5199d9d82742f1917394abea06b922d2940f3a8a99acf31a0b63f3d596beff04",
+   "newMainTranscriptSha256": "5199d9d82742f1917394abea06b922d2940f3a8a99acf31a0b63f3d596beff04",
+   "newEntryEqualsOld": true
+  },
+  {
+   "name": "horizon-throws-at-start",
+   "exitCode": 0,
+   "thrown": "Error: horizon exploded",
+   "collaboratorCalls": 5,
+   "stdoutBytes": 0,
+   "stderrBytes": 0,
+   "postStartResponses": 0,
+   "oldTranscriptSha256": "8b9f4efe9a4c5f24347bb0701ea3224e4df46b8ae2ff471a63b4170815bffd8f",
+   "newMainTranscriptSha256": "8b9f4efe9a4c5f24347bb0701ea3224e4df46b8ae2ff471a63b4170815bffd8f",
+   "newEntryEqualsOld": true
+  },
+  {
+   "name": "model-throws-poc-observation-error",
+   "exitCode": 1,
+   "thrown": null,
+   "collaboratorCalls": 6,
+   "stdoutBytes": 0,
+   "stderrBytes": 90,
+   "postStartResponses": 0,
+   "oldTranscriptSha256": "f1cc47acd5f3e8754c8c1c4f7e092324fd626dce29984907f94f180380ec2b3e",
+   "newMainTranscriptSha256": "f1cc47acd5f3e8754c8c1c4f7e092324fd626dce29984907f94f180380ec2b3e",
+   "newEntryEqualsOld": true
+  },
+  {
+   "name": "model-throws-poc-observation-error-bare",
+   "exitCode": 1,
+   "thrown": null,
+   "collaboratorCalls": 6,
+   "stdoutBytes": 0,
+   "stderrBytes": 52,
+   "postStartResponses": 0,
+   "oldTranscriptSha256": "5cf3095fed182e8caea499c3a162d0bc37c9cf7db82de2870af821577cce5258",
+   "newMainTranscriptSha256": "5cf3095fed182e8caea499c3a162d0bc37c9cf7db82de2870af821577cce5258",
+   "newEntryEqualsOld": true
+  },
+  {
+   "name": "model-throws-type-error",
+   "exitCode": 1,
+   "thrown": null,
+   "collaboratorCalls": 6,
+   "stdoutBytes": 0,
+   "stderrBytes": 76,
+   "postStartResponses": 0,
+   "oldTranscriptSha256": "9c90b239d2809bc9b1a41018e62e63a95d22c48f2d3bc998b9122de30a1939b0",
+   "newMainTranscriptSha256": "9c90b239d2809bc9b1a41018e62e63a95d22c48f2d3bc998b9122de30a1939b0",
+   "newEntryEqualsOld": true
+  },
+  {
+   "name": "model-throws-custom-error",
+   "exitCode": 1,
+   "thrown": null,
+   "collaboratorCalls": 6,
+   "stdoutBytes": 0,
+   "stderrBytes": 85,
+   "postStartResponses": 0,
+   "oldTranscriptSha256": "f35e467532ef7b49bdf34638353ce8a79d9717eb64bf5256ed1da59bbbb3cc11",
+   "newMainTranscriptSha256": "f35e467532ef7b49bdf34638353ce8a79d9717eb64bf5256ed1da59bbbb3cc11",
+   "newEntryEqualsOld": true
+  },
+  {
+   "name": "model-throws-string",
+   "exitCode": 1,
+   "thrown": null,
+   "collaboratorCalls": 6,
+   "stdoutBytes": 0,
+   "stderrBytes": 85,
+   "postStartResponses": 0,
+   "oldTranscriptSha256": "f35e467532ef7b49bdf34638353ce8a79d9717eb64bf5256ed1da59bbbb3cc11",
+   "newMainTranscriptSha256": "f35e467532ef7b49bdf34638353ce8a79d9717eb64bf5256ed1da59bbbb3cc11",
+   "newEntryEqualsOld": true
+  },
+  {
+   "name": "daemon-bind-failed",
+   "exitCode": 1,
+   "thrown": null,
+   "collaboratorCalls": 8,
+   "stdoutBytes": 0,
+   "stderrBytes": 73,
+   "postStartResponses": 0,
+   "oldTranscriptSha256": "2981ab54469c02fbeae45e5d009d9bb62053b4067fd138eb0e307c2b546acb99",
+   "newMainTranscriptSha256": "2981ab54469c02fbeae45e5d009d9bb62053b4067fd138eb0e307c2b546acb99",
+   "newEntryEqualsOld": true
+  },
+  {
+   "name": "daemon-bind-failed-nocode",
+   "exitCode": 1,
+   "thrown": null,
+   "collaboratorCalls": 8,
+   "stdoutBytes": 0,
+   "stderrBytes": 81,
+   "postStartResponses": 0,
+   "oldTranscriptSha256": "2e1b1cc84a76a3020ebc4476311a8bef73fe00aac982051fd12745b9e0382412",
+   "newMainTranscriptSha256": "2e1b1cc84a76a3020ebc4476311a8bef73fe00aac982051fd12745b9e0382412",
+   "newEntryEqualsOld": true
+  },
+  {
+   "name": "daemon-credential",
+   "exitCode": 1,
+   "thrown": null,
+   "collaboratorCalls": 8,
+   "stdoutBytes": 0,
+   "stderrBytes": 97,
+   "postStartResponses": 0,
+   "oldTranscriptSha256": "05c091e2abef600f9d8fc3a13a908ef7cf425df8a7ca785838c82a9554ede363",
+   "newMainTranscriptSha256": "05c091e2abef600f9d8fc3a13a908ef7cf425df8a7ca785838c82a9554ede363",
+   "newEntryEqualsOld": true
+  },
+  {
+   "name": "daemon-duplicate-route",
+   "exitCode": 1,
+   "thrown": null,
+   "collaboratorCalls": 8,
+   "stdoutBytes": 0,
+   "stderrBytes": 93,
+   "postStartResponses": 0,
+   "oldTranscriptSha256": "ab0b3c4c1cc74fc154b4625c5159df2500a207750045c491f212ca3f45c3341b",
+   "newMainTranscriptSha256": "ab0b3c4c1cc74fc154b4625c5159df2500a207750045c491f212ca3f45c3341b",
+   "newEntryEqualsOld": true
+  },
+  {
+   "name": "daemon-duplicate-route-odd",
+   "exitCode": 1,
+   "thrown": null,
+   "collaboratorCalls": 8,
+   "stdoutBytes": 0,
+   "stderrBytes": 100,
+   "postStartResponses": 0,
+   "oldTranscriptSha256": "2be80ecd38fdef9e07d4f71b88480d9c36f571b39fbc01b8eaaf7fd1107e13dc",
+   "newMainTranscriptSha256": "2be80ecd38fdef9e07d4f71b88480d9c36f571b39fbc01b8eaaf7fd1107e13dc",
+   "newEntryEqualsOld": true
+  },
+  {
+   "name": "daemon-throws",
+   "exitCode": 1,
+   "thrown": null,
+   "collaboratorCalls": 8,
+   "stdoutBytes": 0,
+   "stderrBytes": 77,
+   "postStartResponses": 0,
+   "oldTranscriptSha256": "6270eba6ad0e8912109b378d6076b3c33b8a969f893e0e7651b61953268166aa",
+   "newMainTranscriptSha256": "6270eba6ad0e8912109b378d6076b3c33b8a969f893e0e7651b61953268166aa",
+   "newEntryEqualsOld": true
+  },
+  {
+   "name": "happy-default-state-dir",
+   "exitCode": 0,
+   "thrown": null,
+   "collaboratorCalls": 8,
+   "stdoutBytes": 353,
+   "stderrBytes": 0,
+   "postStartResponses": 0,
+   "oldTranscriptSha256": "44eedcd0d02b3e2aec6917efb6b09ca89d417a3a333bf6250c58eadbf8885aff",
+   "newMainTranscriptSha256": "44eedcd0d02b3e2aec6917efb6b09ca89d417a3a333bf6250c58eadbf8885aff",
+   "newEntryEqualsOld": true
+  },
+  {
+   "name": "happy-relative-state-dir",
+   "exitCode": 0,
+   "thrown": null,
+   "collaboratorCalls": 8,
+   "stdoutBytes": 353,
+   "stderrBytes": 0,
+   "postStartResponses": 0,
+   "oldTranscriptSha256": "0010aed8fcc2e6afe7f881bc75a5c7c99fae72b983070fbf9bb6e226cc0dc20a",
+   "newMainTranscriptSha256": "0010aed8fcc2e6afe7f881bc75a5c7c99fae72b983070fbf9bb6e226cc0dc20a",
+   "newEntryEqualsOld": true
+  },
+  {
+   "name": "happy-sigterm",
+   "exitCode": 0,
+   "thrown": null,
+   "collaboratorCalls": 8,
+   "stdoutBytes": 354,
+   "stderrBytes": 0,
+   "postStartResponses": 0,
+   "oldTranscriptSha256": "dd8d28a840da361b07b23263adaba781592dac6ed753941d897e6bb2187e977e",
+   "newMainTranscriptSha256": "dd8d28a840da361b07b23263adaba781592dac6ed753941d897e6bb2187e977e",
+   "newEntryEqualsOld": true
+  },
+  {
+   "name": "happy-double-signal",
+   "exitCode": 0,
+   "thrown": null,
+   "collaboratorCalls": 8,
+   "stdoutBytes": 353,
+   "stderrBytes": 0,
+   "postStartResponses": 0,
+   "oldTranscriptSha256": "d5a5020d0dc12f093ede34533ab01551cd13984bbf041ec19db08e09308ca3d5",
+   "newMainTranscriptSha256": "d5a5020d0dc12f093ede34533ab01551cd13984bbf041ec19db08e09308ca3d5",
+   "newEntryEqualsOld": true
+  },
+  {
+   "name": "happy-reused",
+   "exitCode": 0,
+   "thrown": null,
+   "collaboratorCalls": 8,
+   "stdoutBytes": 353,
+   "stderrBytes": 0,
+   "postStartResponses": 0,
+   "oldTranscriptSha256": "e24890e7465ff4610706749438b92e5e8c557ab99bda9ba963972cb7a91a2a0a",
+   "newMainTranscriptSha256": "e24890e7465ff4610706749438b92e5e8c557ab99bda9ba963972cb7a91a2a0a",
+   "newEntryEqualsOld": true
+  },
+  {
+   "name": "happy-pages",
+   "exitCode": 0,
+   "thrown": null,
+   "collaboratorCalls": 8,
+   "stdoutBytes": 353,
+   "stderrBytes": 0,
+   "postStartResponses": 4,
+   "oldTranscriptSha256": "8cdf859c4ab761b08baae98685ac8fed63c55f3c9f44a6a7622c903fac25c277",
+   "newMainTranscriptSha256": "8cdf859c4ab761b08baae98685ac8fed63c55f3c9f44a6a7622c903fac25c277",
+   "newEntryEqualsOld": true
+  },
+  {
+   "name": "reobserve-ok",
+   "exitCode": 0,
+   "thrown": null,
+   "collaboratorCalls": 15,
+   "stdoutBytes": 353,
+   "stderrBytes": 0,
+   "postStartResponses": 2,
+   "oldTranscriptSha256": "77dd1a8f0aa058a9532fbe4276d547f80b59c576e980f03fa9d072fc27a2fb3c",
+   "newMainTranscriptSha256": "77dd1a8f0aa058a9532fbe4276d547f80b59c576e980f03fa9d072fc27a2fb3c",
+   "newEntryEqualsOld": true
+  },
+  {
+   "name": "reobserve-dirty",
+   "exitCode": 0,
+   "thrown": null,
+   "collaboratorCalls": 11,
+   "stdoutBytes": 353,
+   "stderrBytes": 0,
+   "postStartResponses": 2,
+   "oldTranscriptSha256": "a2a3542f14af64a7798ab0b8423cb2fe3dd192d5ba81db9dbfb75b2c918edb42",
+   "newMainTranscriptSha256": "a2a3542f14af64a7798ab0b8423cb2fe3dd192d5ba81db9dbfb75b2c918edb42",
+   "newEntryEqualsOld": true
+  },
+  {
+   "name": "reobserve-git-fails",
+   "exitCode": 0,
+   "thrown": null,
+   "collaboratorCalls": 9,
+   "stdoutBytes": 345,
+   "stderrBytes": 0,
+   "postStartResponses": 1,
+   "oldTranscriptSha256": "1d3d8f79976595377eabf8a65bcf8b2d12b8208202d2066846caf52214d4c177",
+   "newMainTranscriptSha256": "1d3d8f79976595377eabf8a65bcf8b2d12b8208202d2066846caf52214d4c177",
+   "newEntryEqualsOld": true
+  },
+  {
+   "name": "reobserve-horizon-fails",
+   "exitCode": 0,
+   "thrown": null,
+   "collaboratorCalls": 12,
+   "stdoutBytes": 353,
+   "stderrBytes": 0,
+   "postStartResponses": 1,
+   "oldTranscriptSha256": "e3d8717d56c07586f283bb7c4c1551327fd4eb3a4d45280ce56ff9e642bbab33",
+   "newMainTranscriptSha256": "e3d8717d56c07586f283bb7c4c1551327fd4eb3a4d45280ce56ff9e642bbab33",
+   "newEntryEqualsOld": true
+  },
+  {
+   "name": "reobserve-model-fails",
+   "exitCode": 0,
+   "thrown": null,
+   "collaboratorCalls": 13,
+   "stdoutBytes": 353,
+   "stderrBytes": 0,
+   "postStartResponses": 1,
+   "oldTranscriptSha256": "c3bd07b302fbc71e46024e1d42b8979d330e5445f5ef47732215d427724165ed",
+   "newMainTranscriptSha256": "c3bd07b302fbc71e46024e1d42b8979d330e5445f5ef47732215d427724165ed",
+   "newEntryEqualsOld": true
+  },
+  {
+   "name": "cwd-differs",
+   "exitCode": 0,
+   "thrown": null,
+   "collaboratorCalls": 8,
+   "stdoutBytes": 353,
+   "stderrBytes": 0,
+   "postStartResponses": 0,
+   "oldTranscriptSha256": "5184a6a70abb42af4015e4d9db081a649ffd6c23bb3f73759783b499371604a3",
+   "newMainTranscriptSha256": "5184a6a70abb42af4015e4d9db081a649ffd6c23bb3f73759783b499371604a3",
+   "newEntryEqualsOld": true
+  },
+  {
+   "name": "happy-evaluated-readiness",
+   "exitCode": 0,
+   "thrown": null,
+   "collaboratorCalls": 8,
+   "stdoutBytes": 467,
+   "stderrBytes": 0,
+   "postStartResponses": 0,
+   "oldTranscriptSha256": "adccd1ee6aa587cab56dd876a92aaed56bb74688627a75063fdf481fe0f34267",
+   "newMainTranscriptSha256": "adccd1ee6aa587cab56dd876a92aaed56bb74688627a75063fdf481fe0f34267",
+   "newEntryEqualsOld": true
+  },
+  {
+   "name": "watch-enter-reobserves",
+   "exitCode": 0,
+   "thrown": null,
+   "collaboratorCalls": 15,
+   "stdoutBytes": 864,
+   "stderrBytes": 0,
+   "postStartResponses": 1,
+   "oldTranscriptSha256": "6e7dc25f47dfa859a5f503b70e30883c9b4aa6247f46aded288769417930d41a",
+   "newMainTranscriptSha256": "6e7dc25f47dfa859a5f503b70e30883c9b4aa6247f46aded288769417930d41a",
+   "newEntryEqualsOld": true
+  },
+  {
+   "name": "watch-enter-dirty",
+   "exitCode": 0,
+   "thrown": null,
+   "collaboratorCalls": 11,
+   "stdoutBytes": 711,
+   "stderrBytes": 0,
+   "postStartResponses": 1,
+   "oldTranscriptSha256": "44d5937716bf6857e212c673ade998a390441e96773a3e11bcb411412cc9d9d8",
+   "newMainTranscriptSha256": "44d5937716bf6857e212c673ade998a390441e96773a3e11bcb411412cc9d9d8",
+   "newEntryEqualsOld": true
+  },
+  {
+   "name": "watch-no-enter",
+   "exitCode": 0,
+   "thrown": null,
+   "collaboratorCalls": 8,
+   "stdoutBytes": 454,
+   "stderrBytes": 0,
+   "postStartResponses": 0,
+   "oldTranscriptSha256": "bd58dd4810f15ab6293b1911477f1270f64f2644562229d5169943d49051fb17",
+   "newMainTranscriptSha256": "bd58dd4810f15ab6293b1911477f1270f64f2644562229d5169943d49051fb17",
+   "newEntryEqualsOld": true
+  }
+ ],
+ "rule6": {
+  "ranAtCommit": "fa79bca6e2aec7ca65c7ff40fe086c40c7c4c0a5",
+  "command": "npx vitest run apps/three-surface-poc/src/zz-main-differential.test.ts --reporter=json --outputFile=/tmp/zz-mutate-main-w6x3li2d/report.json",
+  "mutatedFile": "apps/three-surface-poc/src/poc-main.ts",
+  "mutatedFileSha256AtCommit": "c5e5dc78cd9107d0e99dc39e32a6d7e4bfa493d527f76bdb26e17f94fe9337c1",
+  "mutants": 27,
+  "killed": 24,
+  "results": [
+   {
+    "id": "launcher-gate-bypassed",
+    "old": "  const launch = await launchAfterPwbRepositoryBinding(\n    repoRoot,\n    deps.resolveBinding,\n    (boundRepoRoot) => serveBoundRepository(boundRepoRoot, parsed.config, io, deps),\n  );",
+    "new": "  const launch = { kind: 'launched' as const, result: await serveBoundRepository(repoRoot, parsed.config, io, deps) };",
+    "outcome": "killed",
+    "testsRun": 44,
+    "failing": [
+     {
+      "test": "old script vs new main(): identical transcripts scenario binding-rejected",
+      "firstErrorLine": "AssertionError: expected { \u2026(7) } to deeply equal { stdout: '', \u2026(6) }"
+     },
+     {
+      "test": "old script vs new main(): identical transcripts scenario binding-rejected-other",
+      "firstErrorLine": "AssertionError: expected { \u2026(7) } to deeply equal { stdout: '', \u2026(6) }"
+     },
+     {
+      "test": "old script vs new main(): identical transcripts scenario repo-git-fails",
+      "firstErrorLine": "AssertionError: expected { stdout: '', \u2026(6) } to deeply equal { stdout: '', \u2026(6) }"
+     },
+     {
+      "test": "old script vs new main(): identical transcripts scenario repo-git-fails-no-status",
+      "firstErrorLine": "AssertionError: expected { stdout: '', \u2026(6) } to deeply equal { stdout: '', \u2026(6) }"
+     },
+     {
+      "test": "old script vs new main(): identical transcripts scenario repo-git-status-out-of-range",
+      "firstErrorLine": "AssertionError: expected { stdout: '', \u2026(6) } to deeply equal { stdout: '', \u2026(6) }"
+     },
+     {
+      "test": "old script vs new main(): identical transcripts scenario observer-git-fails",
+      "firstErrorLine": "AssertionError: expected { stdout: '', \u2026(6) } to deeply equal { stdout: '', \u2026(6) }"
+     },
+     {
+      "test": "old script vs new main(): identical transcripts scenario observer-dirty",
+      "firstErrorLine": "AssertionError: expected { stdout: '', \u2026(6) } to deeply equal { stdout: '', \u2026(6) }"
+     },
+     {
+      "test": "old script vs new main(): identical transcripts scenario horizon-throws-at-start",
+      "firstErrorLine": "AssertionError: expected { stdout: '', stderr: '', \u2026(5) } to deeply equal { stdout: '', stderr: '', \u2026(5) }"
+     },
+     {
+      "test": "old script vs new main(): identical transcripts scenario model-throws-poc-observation-error",
+      "firstErrorLine": "AssertionError: expected { stdout: '', \u2026(6) } to deeply equal { stdout: '', \u2026(6) }"
+     },
+     {
+      "test": "old script vs new main(): identical transcripts scenario model-throws-poc-observation-error-bare",
+      "firstErrorLine": "AssertionError: expected { stdout: '', \u2026(6) } to deeply equal { stdout: '', \u2026(6) }"
+     },
+     {
+      "test": "old script vs new main(): identical transcripts scenario model-throws-type-error",
+      "firstErrorLine": "AssertionError: expected { stdout: '', \u2026(6) } to deeply equal { stdout: '', \u2026(6) }"
+     },
+     {
+      "test": "old script vs new main(): identical transcripts scenario model-throws-custom-error",
+      "firstErrorLine": "AssertionError: expected { stdout: '', \u2026(6) } to deeply equal { stdout: '', \u2026(6) }"
+     },
+     {
+      "test": "old script vs new main(): identical transcripts scenario model-throws-string",
+      "firstErrorLine": "AssertionError: expected { stdout: '', \u2026(6) } to deeply equal { stdout: '', \u2026(6) }"
+     },
+     {
+      "test": "old script vs new main(): identical transcripts scenario daemon-bind-failed",
+      "firstErrorLine": "AssertionError: expected { stdout: '', \u2026(6) } to deeply equal { stdout: '', \u2026(6) }"
+     },
+     {
+      "test": "old script vs new main(): identical transcripts scenario daemon-bind-failed-nocode",
+      "firstErrorLine": "AssertionError: expected { stdout: '', \u2026(6) } to deeply equal { stdout: '', \u2026(6) }"
+     },
+     {
+      "test": "old script vs new main(): identical transcripts scenario daemon-credential",
+      "firstErrorLine": "AssertionError: expected { stdout: '', \u2026(6) } to deeply equal { stdout: '', \u2026(6) }"
+     },
+     {
+      "test": "old script vs new main(): identical transcripts scenario daemon-duplicate-route",
+      "firstErrorLine": "AssertionError: expected { stdout: '', \u2026(6) } to deeply equal { stdout: '', \u2026(6) }"
+     },
+     {
+      "test": "old script vs new main(): identical transcripts scenario daemon-duplicate-route-odd",
+      "firstErrorLine": "AssertionError: expected { stdout: '', \u2026(6) } to deeply equal { stdout: '', \u2026(6) }"
+     },
+     {
+      "test": "old script vs new main(): identical transcripts scenario daemon-throws",
+      "firstErrorLine": "AssertionError: expected { stdout: '', \u2026(6) } to deeply equal { stdout: '', \u2026(6) }"
+     },
+     {
+      "test": "old script vs new main(): identical transcripts scenario happy-default-state-dir",
+      "firstErrorLine": "AssertionError: expected { \u2026(7) } to deeply equal { \u2026(7) }"
+     },
+     {
+      "test": "old script vs new main(): identical transcripts scenario happy-relative-state-dir",
+      "firstErrorLine": "AssertionError: expected { \u2026(7) } to deeply equal { \u2026(7) }"
+     },
+     {
+      "test": "old script vs new main(): identical transcripts scenario happy-sigterm",
+      "firstErrorLine": "AssertionError: expected { \u2026(7) } to deeply equal { \u2026(7) }"
+     },
+     {
+      "test": "old script vs new main(): identical transcripts scenario happy-double-signal",
+      "firstErrorLine": "AssertionError: expected { \u2026(7) } to deeply equal { \u2026(7) }"
+     },
+     {
+      "test": "old script vs new main(): identical transcripts scenario happy-reused",
+      "firstErrorLine": "AssertionError: expected { \u2026(7) } to deeply equal { \u2026(7) }"
+     },
+     {
+      "test": "old script vs new main(): identical transcripts scenario happy-pages",
+      "firstErrorLine": "AssertionError: expected { \u2026(7) } to deeply equal { \u2026(7) }"
+     },
+     {
+      "test": "old script vs new main(): identical transcripts scenario reobserve-ok",
+      "firstErrorLine": "AssertionError: expected { \u2026(7) } to deeply equal { \u2026(7) }"
+     },
+     {
+      "test": "old script vs new main(): identical transcripts scenario reobserve-dirty",
+      "firstErrorLine": "AssertionError: expected { \u2026(7) } to deeply equal { \u2026(7) }"
+     },
+     {
+      "test": "old script vs new main(): identical transcripts scenario reobserve-git-fails",
+      "firstErrorLine": "AssertionError: expected { \u2026(7) } to deeply equal { \u2026(7) }"
+     },
+     {
+      "test": "old script vs new main(): identical transcripts scenario reobserve-horizon-fails",
+      "firstErrorLine": "AssertionError: expected { \u2026(7) } to deeply equal { \u2026(7) }"
+     },
+     {
+      "test": "old script vs new main(): identical transcripts scenario reobserve-model-fails",
+      "firstErrorLine": "AssertionError: expected { \u2026(7) } to deeply equal { \u2026(7) }"
+     },
+     {
+      "test": "old script vs new main(): identical transcripts scenario cwd-differs",
+      "firstErrorLine": "AssertionError: expected { \u2026(7) } to deeply equal { \u2026(7) }"
+     },
+     {
+      "test": "old script vs new main(): identical transcripts scenario happy-evaluated-readiness",
+      "firstErrorLine": "AssertionError: expected { \u2026(7) } to deeply equal { \u2026(7) }"
+     },
+     {
+      "test": "old script vs new main(): identical transcripts scenario watch-enter-reobserves",
+      "firstErrorLine": "AssertionError: expected { \u2026(7) } to deeply equal { \u2026(7) }"
+     },
+     {
+      "test": "old script vs new main(): identical transcripts scenario watch-enter-dirty",
+      "firstErrorLine": "AssertionError: expected { \u2026(7) } to deeply equal { \u2026(7) }"
+     },
+     {
+      "test": "old script vs new main(): identical transcripts scenario watch-no-enter",
+      "firstErrorLine": "AssertionError: expected { \u2026(7) } to deeply equal { \u2026(7) }"
+     }
+    ]
+   },
+   {
+    "id": "help-exit-code",
+    "old": "    io.stdout.write(USAGE);\n    return 0;",
+    "new": "    io.stdout.write(USAGE);\n    return 1;",
+    "outcome": "killed",
+    "testsRun": 44,
+    "failing": [
+     {
+      "test": "old script vs new main(): identical transcripts scenario help",
+      "firstErrorLine": "AssertionError: expected { \u2026(7) } to deeply equal { \u2026(7) }"
+     },
+     {
+      "test": "old script vs new main(): identical transcripts scenario help-short",
+      "firstErrorLine": "AssertionError: expected { \u2026(7) } to deeply equal { \u2026(7) }"
+     }
+    ]
+   },
+   {
+    "id": "invalid-exit-code",
+    "old": "    io.stderr.write(`syzygy POC: ${parsed.detail}\\n\\n${USAGE}`);\n    return 1;",
+    "new": "    io.stderr.write(`syzygy POC: ${parsed.detail}\\n\\n${USAGE}`);\n    return 2;",
+    "outcome": "killed",
+    "testsRun": 44,
+    "failing": [
+     {
+      "test": "old script vs new main(): identical transcripts scenario invalid-unknown-arg",
+      "firstErrorLine": "AssertionError: expected { stdout: '', \u2026(6) } to deeply equal { stdout: '', \u2026(6) }"
+     },
+     {
+      "test": "old script vs new main(): identical transcripts scenario invalid-missing-repo",
+      "firstErrorLine": "AssertionError: expected { stdout: '', \u2026(6) } to deeply equal { stdout: '', \u2026(6) }"
+     },
+     {
+      "test": "old script vs new main(): identical transcripts scenario invalid-port",
+      "firstErrorLine": "AssertionError: expected { stdout: '', \u2026(6) } to deeply equal { stdout: '', \u2026(6) }"
+     },
+     {
+      "test": "old script vs new main(): identical transcripts scenario invalid-twice",
+      "firstErrorLine": "AssertionError: expected { stdout: '', \u2026(6) } to deeply equal { stdout: '', \u2026(6) }"
+     }
+    ]
+   },
+   {
+    "id": "unreadable-repo-message",
+    "old": "configured repository is not readable",
+    "new": "configured repository is unreadable",
+    "outcome": "killed",
+    "testsRun": 44,
+    "failing": [
+     {
+      "test": "old script vs new main(): identical transcripts scenario repo-unreadable",
+      "firstErrorLine": "AssertionError: expected { stdout: '', \u2026(6) } to deeply equal { stdout: '', \u2026(6) }"
+     }
+    ]
+   },
+   {
+    "id": "rejected-binding-exit-code",
+    "old": "authority rejected (${launch.reason})\\n`);\n    return 1;",
+    "new": "authority rejected (${launch.reason})\\n`);\n    return 2;",
+    "outcome": "killed",
+    "testsRun": 44,
+    "failing": [
+     {
+      "test": "old script vs new main(): identical transcripts scenario binding-rejected",
+      "firstErrorLine": "AssertionError: expected { stdout: '', \u2026(6) } to deeply equal { stdout: '', \u2026(6) }"
+     },
+     {
+      "test": "old script vs new main(): identical transcripts scenario binding-rejected-other",
+      "firstErrorLine": "AssertionError: expected { stdout: '', \u2026(6) } to deeply equal { stdout: '', \u2026(6) }"
+     }
+    ]
+   },
+   {
+    "id": "rejected-binding-reason-dropped",
+    "old": "authority rejected (${launch.reason})",
+    "new": "authority rejected",
+    "outcome": "killed",
+    "testsRun": 44,
+    "failing": [
+     {
+      "test": "old script vs new main(): identical transcripts scenario binding-rejected",
+      "firstErrorLine": "AssertionError: expected { stdout: '', \u2026(6) } to deeply equal { stdout: '', \u2026(6) }"
+     },
+     {
+      "test": "old script vs new main(): identical transcripts scenario binding-rejected-other",
+      "firstErrorLine": "AssertionError: expected { stdout: '', \u2026(6) } to deeply equal { stdout: '', \u2026(6) }"
+     }
+    ]
+   },
+   {
+    "id": "initial-dirty-refusal-name",
+    "old": "observeCheckouts('observer-checkout-dirty')",
+    "new": "observeCheckouts('observer-dirty')",
+    "outcome": "killed",
+    "testsRun": 44,
+    "failing": [
+     {
+      "test": "old script vs new main(): identical transcripts scenario observer-dirty",
+      "firstErrorLine": "AssertionError: expected { stdout: '', \u2026(6) } to deeply equal { stdout: '', \u2026(6) }"
+     }
+    ]
+   },
+   {
+    "id": "horizon-inside-startup-try",
+    "old": "  const capture = observeCapture(observed);\n",
+    "new": "  let capture: PocRuntimeCapture;\n  try { capture = observeCapture(observed); } catch (cause) { io.stderr.write(`syzygy POC: ${gitObservationDetail(cause)}\\n`); return 1; }\n",
+    "outcome": "killed",
+    "testsRun": 44,
+    "failing": [
+     {
+      "test": "old script vs new main(): identical transcripts scenario horizon-throws-at-start",
+      "firstErrorLine": "AssertionError: expected { stdout: '', \u2026(6) } to deeply equal { stdout: '', stderr: '', \u2026(5) }"
+     }
+    ]
+   },
+   {
+    "id": "observer-read-at-process-cwd",
+    "old": "const observer = deps.observeGitRepository(io.cwd());",
+    "new": "const observer = deps.observeGitRepository(process.cwd());",
+    "outcome": "SURVIVED",
+    "testsRun": 44,
+    "failing": []
+   },
+   {
+    "id": "model-observer-root-process-cwd",
+    "old": "    observerRoot: io.cwd(),",
+    "new": "    observerRoot: process.cwd(),",
+    "outcome": "SURVIVED",
+    "testsRun": 44,
+    "failing": []
+   },
+   {
+    "id": "observation-instant-from-clock",
+    "old": "buildPocEvaluationEvidence(io.now(),",
+    "new": "buildPocEvaluationEvidence(new Date().toISOString(),",
+    "outcome": "SURVIVED",
+    "testsRun": 44,
+    "failing": []
+   },
+   {
+    "id": "observatory-root",
+    "old": "deps.observeObservatoryDrift(io.cwd(), buildRevision)",
+    "new": "deps.observeObservatoryDrift(repoRoot, buildRevision)",
+    "outcome": "killed",
+    "testsRun": 44,
+    "failing": [
+     {
+      "test": "old script vs new main(): identical transcripts scenario daemon-bind-failed",
+      "firstErrorLine": "AssertionError: expected { stdout: '', \u2026(6) } to deeply equal { stdout: '', \u2026(6) }"
+     },
+     {
+      "test": "old script vs new main(): identical transcripts scenario daemon-bind-failed-nocode",
+      "firstErrorLine": "AssertionError: expected { stdout: '', \u2026(6) } to deeply equal { stdout: '', \u2026(6) }"
+     },
+     {
+      "test": "old script vs new main(): identical transcripts scenario daemon-credential",
+      "firstErrorLine": "AssertionError: expected { stdout: '', \u2026(6) } to deeply equal { stdout: '', \u2026(6) }"
+     },
+     {
+      "test": "old script vs new main(): identical transcripts scenario daemon-duplicate-route",
+      "firstErrorLine": "AssertionError: expected { stdout: '', \u2026(6) } to deeply equal { stdout: '', \u2026(6) }"
+     },
+     {
+      "test": "old script vs new main(): identical transcripts scenario daemon-duplicate-route-odd",
+      "firstErrorLine": "AssertionError: expected { stdout: '', \u2026(6) } to deeply equal { stdout: '', \u2026(6) }"
+     },
+     {
+      "test": "old script vs new main(): identical transcripts scenario daemon-throws",
+      "firstErrorLine": "AssertionError: expected { stdout: '', \u2026(6) } to deeply equal { stdout: '', \u2026(6) }"
+     },
+     {
+      "test": "old script vs new main(): identical transcripts scenario happy-default-state-dir",
+      "firstErrorLine": "AssertionError: expected { \u2026(7) } to deeply equal { \u2026(7) }"
+     },
+     {
+      "test": "old script vs new main(): identical transcripts scenario happy-relative-state-dir",
+      "firstErrorLine": "AssertionError: expected { \u2026(7) } to deeply equal { \u2026(7) }"
+     },
+     {
+      "test": "old script vs new main(): identical transcripts scenario happy-sigterm",
+      "firstErrorLine": "AssertionError: expected { \u2026(7) } to deeply equal { \u2026(7) }"
+     },
+     {
+      "test": "old script vs new main(): identical transcripts scenario happy-double-signal",
+      "firstErrorLine": "AssertionError: expected { \u2026(7) } to deeply equal { \u2026(7) }"
+     },
+     {
+      "test": "old script vs new main(): identical transcripts scenario happy-reused",
+      "firstErrorLine": "AssertionError: expected { \u2026(7) } to deeply equal { \u2026(7) }"
+     },
+     {
+      "test": "old script vs new main(): identical transcripts scenario happy-pages",
+      "firstErrorLine": "AssertionError: expected { \u2026(7) } to deeply equal { \u2026(7) }"
+     },
+     {
+      "test": "old script vs new main(): identical transcripts scenario reobserve-ok",
+      "firstErrorLine": "AssertionError: expected { \u2026(7) } to deeply equal { \u2026(7) }"
+     },
+     {
+      "test": "old script vs new main(): identical transcripts scenario reobserve-dirty",
+      "firstErrorLine": "AssertionError: expected { \u2026(7) } to deeply equal { \u2026(7) }"
+     },
+     {
+      "test": "old script vs new main(): identical transcripts scenario reobserve-git-fails",
+      "firstErrorLine": "AssertionError: expected { \u2026(7) } to deeply equal { \u2026(7) }"
+     },
+     {
+      "test": "old script vs new main(): identical transcripts scenario reobserve-horizon-fails",
+      "firstErrorLine": "AssertionError: expected { \u2026(7) } to deeply equal { \u2026(7) }"
+     },
+     {
+      "test": "old script vs new main(): identical transcripts scenario reobserve-model-fails",
+      "firstErrorLine": "AssertionError: expected { \u2026(7) } to deeply equal { \u2026(7) }"
+     },
+     {
+      "test": "old script vs new main(): identical transcripts scenario cwd-differs",
+      "firstErrorLine": "AssertionError: expected { \u2026(7) } to deeply equal { \u2026(7) }"
+     },
+     {
+      "test": "old script vs new main(): identical transcripts scenario happy-evaluated-readiness",
+      "firstErrorLine": "AssertionError: expected { \u2026(7) } to deeply equal { \u2026(7) }"
+     },
+     {
+      "test": "old script vs new main(): identical transcripts scenario watch-enter-reobserves",
+      "firstErrorLine": "AssertionError: expected { \u2026(7) } to deeply equal { \u2026(7) }"
+     },
+     {
+      "test": "old script vs new main(): identical transcripts scenario watch-enter-dirty",
+      "firstErrorLine": "AssertionError: expected { \u2026(7) } to deeply equal { \u2026(7) }"
+     },
+     {
+      "test": "old script vs new main(): identical transcripts scenario watch-no-enter",
+      "firstErrorLine": "AssertionError: expected { \u2026(7) } to deeply equal { \u2026(7) }"
+     }
+    ]
+   },
+   {
+    "id": "state-dir-digest-width",
+    "old": "slice(0, 16)",
+    "new": "slice(0, 15)",
+    "outcome": "killed",
+    "testsRun": 44,
+    "failing": [
+     {
+      "test": "old script vs new main(): identical transcripts scenario happy-default-state-dir",
+      "firstErrorLine": "AssertionError: expected { \u2026(7) } to deeply equal { \u2026(7) }"
+     }
+    ]
+   },
+   {
+    "id": "daemon-start-failure-exit",
+    "old": "      return 1;\n    }\n    const daemon = start.daemon;",
+    "new": "      return 0;\n    }\n    const daemon = start.daemon;",
+    "outcome": "killed",
+    "testsRun": 44,
+    "failing": [
+     {
+      "test": "old script vs new main(): identical transcripts scenario daemon-bind-failed",
+      "firstErrorLine": "AssertionError: expected { stdout: '', \u2026(6) } to deeply equal { stdout: '', \u2026(6) }"
+     },
+     {
+      "test": "old script vs new main(): identical transcripts scenario daemon-bind-failed-nocode",
+      "firstErrorLine": "AssertionError: expected { stdout: '', \u2026(6) } to deeply equal { stdout: '', \u2026(6) }"
+     },
+     {
+      "test": "old script vs new main(): identical transcripts scenario daemon-credential",
+      "firstErrorLine": "AssertionError: expected { stdout: '', \u2026(6) } to deeply equal { stdout: '', \u2026(6) }"
+     },
+     {
+      "test": "old script vs new main(): identical transcripts scenario daemon-duplicate-route",
+      "firstErrorLine": "AssertionError: expected { stdout: '', \u2026(6) } to deeply equal { stdout: '', \u2026(6) }"
+     },
+     {
+      "test": "old script vs new main(): identical transcripts scenario daemon-duplicate-route-odd",
+      "firstErrorLine": "AssertionError: expected { stdout: '', \u2026(6) } to deeply equal { stdout: '', \u2026(6) }"
+     }
+    ]
+   },
+   {
+    "id": "daemon-start-failure-kind-dropped",
+    "old": "daemon did not start (${start.failure.kind}: ${daemonStartDetail(start.failure)})",
+    "new": "daemon did not start (${daemonStartDetail(start.failure)})",
+    "outcome": "killed",
+    "testsRun": 44,
+    "failing": [
+     {
+      "test": "old script vs new main(): identical transcripts scenario daemon-bind-failed",
+      "firstErrorLine": "AssertionError: expected { stdout: '', \u2026(6) } to deeply equal { stdout: '', \u2026(6) }"
+     },
+     {
+      "test": "old script vs new main(): identical transcripts scenario daemon-bind-failed-nocode",
+      "firstErrorLine": "AssertionError: expected { stdout: '', \u2026(6) } to deeply equal { stdout: '', \u2026(6) }"
+     },
+     {
+      "test": "old script vs new main(): identical transcripts scenario daemon-credential",
+      "firstErrorLine": "AssertionError: expected { stdout: '', \u2026(6) } to deeply equal { stdout: '', \u2026(6) }"
+     },
+     {
+      "test": "old script vs new main(): identical transcripts scenario daemon-duplicate-route",
+      "firstErrorLine": "AssertionError: expected { stdout: '', \u2026(6) } to deeply equal { stdout: '', \u2026(6) }"
+     },
+     {
+      "test": "old script vs new main(): identical transcripts scenario daemon-duplicate-route-odd",
+      "firstErrorLine": "AssertionError: expected { stdout: '', \u2026(6) } to deeply equal { stdout: '', \u2026(6) }"
+     }
+    ]
+   },
+   {
+    "id": "walkthrough-binding-lines-dropped",
+    "old": "        ...walkthroughBindingLines(session.model()),\n",
+    "new": "",
+    "outcome": "killed",
+    "testsRun": 44,
+    "failing": [
+     {
+      "test": "old script vs new main(): identical transcripts scenario happy-evaluated-readiness",
+      "firstErrorLine": "AssertionError: expected { \u2026(7) } to deeply equal { \u2026(7) }"
+     }
+    ]
+   },
+   {
+    "id": "credential-line-dropped",
+    "old": "        `Machine credential (${daemon.credentialProvision}) at: ${daemon.credentialPath}`,\n",
+    "new": "",
+    "outcome": "killed",
+    "testsRun": 44,
+    "failing": [
+     {
+      "test": "old script vs new main(): identical transcripts scenario happy-default-state-dir",
+      "firstErrorLine": "AssertionError: expected { \u2026(7) } to deeply equal { \u2026(7) }"
+     },
+     {
+      "test": "old script vs new main(): identical transcripts scenario happy-relative-state-dir",
+      "firstErrorLine": "AssertionError: expected { \u2026(7) } to deeply equal { \u2026(7) }"
+     },
+     {
+      "test": "old script vs new main(): identical transcripts scenario happy-sigterm",
+      "firstErrorLine": "AssertionError: expected { \u2026(7) } to deeply equal { \u2026(7) }"
+     },
+     {
+      "test": "old script vs new main(): identical transcripts scenario happy-double-signal",
+      "firstErrorLine": "AssertionError: expected { \u2026(7) } to deeply equal { \u2026(7) }"
+     },
+     {
+      "test": "old script vs new main(): identical transcripts scenario happy-reused",
+      "firstErrorLine": "AssertionError: expected { \u2026(7) } to deeply equal { \u2026(7) }"
+     },
+     {
+      "test": "old script vs new main(): identical transcripts scenario happy-pages",
+      "firstErrorLine": "AssertionError: expected { \u2026(7) } to deeply equal { \u2026(7) }"
+     },
+     {
+      "test": "old script vs new main(): identical transcripts scenario reobserve-ok",
+      "firstErrorLine": "AssertionError: expected { \u2026(7) } to deeply equal { \u2026(7) }"
+     },
+     {
+      "test": "old script vs new main(): identical transcripts scenario reobserve-dirty",
+      "firstErrorLine": "AssertionError: expected { \u2026(7) } to deeply equal { \u2026(7) }"
+     },
+     {
+      "test": "old script vs new main(): identical transcripts scenario reobserve-git-fails",
+      "firstErrorLine": "AssertionError: expected { \u2026(7) } to deeply equal { \u2026(7) }"
+     },
+     {
+      "test": "old script vs new main(): identical transcripts scenario reobserve-horizon-fails",
+      "firstErrorLine": "AssertionError: expected { \u2026(7) } to deeply equal { \u2026(7) }"
+     },
+     {
+      "test": "old script vs new main(): identical transcripts scenario reobserve-model-fails",
+      "firstErrorLine": "AssertionError: expected { \u2026(7) } to deeply equal { \u2026(7) }"
+     },
+     {
+      "test": "old script vs new main(): identical transcripts scenario cwd-differs",
+      "firstErrorLine": "AssertionError: expected { \u2026(7) } to deeply equal { \u2026(7) }"
+     },
+     {
+      "test": "old script vs new main(): identical transcripts scenario happy-evaluated-readiness",
+      "firstErrorLine": "AssertionError: expected { \u2026(7) } to deeply equal { \u2026(7) }"
+     },
+     {
+      "test": "old script vs new main(): identical transcripts scenario watch-enter-reobserves",
+      "firstErrorLine": "AssertionError: expected { \u2026(7) } to deeply equal { \u2026(7) }"
+     },
+     {
+      "test": "old script vs new main(): identical transcripts scenario watch-enter-dirty",
+      "firstErrorLine": "AssertionError: expected { \u2026(7) } to deeply equal { \u2026(7) }"
+     },
+     {
+      "test": "old script vs new main(): identical transcripts scenario watch-no-enter",
+      "firstErrorLine": "AssertionError: expected { \u2026(7) } to deeply equal { \u2026(7) }"
+     }
+    ]
+   },
+   {
+    "id": "console-output-stream",
+    "old": "{ input: io.stdin, output: io.stdout }",
+    "new": "{ input: io.stdin, output: io.stderr }",
+    "outcome": "killed",
+    "testsRun": 44,
+    "failing": [
+     {
+      "test": "old script vs new main(): identical transcripts scenario watch-enter-reobserves",
+      "firstErrorLine": "AssertionError: expected { \u2026(7) } to deeply equal { \u2026(7) }"
+     },
+     {
+      "test": "old script vs new main(): identical transcripts scenario watch-enter-dirty",
+      "firstErrorLine": "AssertionError: expected { \u2026(7) } to deeply equal { \u2026(7) }"
+     },
+     {
+      "test": "old script vs new main(): identical transcripts scenario watch-no-enter",
+      "firstErrorLine": "AssertionError: expected { \u2026(7) } to deeply equal { \u2026(7) }"
+     }
+    ]
+   },
+   {
+    "id": "re-observation-refusal-message",
+    "old": "'POC runtime inputs are dirty; re-observation was refused'",
+    "new": "'POC runtime inputs are dirty'",
+    "outcome": "killed",
+    "testsRun": 44,
+    "failing": [
+     {
+      "test": "old script vs new main(): identical transcripts scenario reobserve-dirty",
+      "firstErrorLine": "AssertionError: expected { \u2026(7) } to deeply equal { \u2026(7) }"
+     },
+     {
+      "test": "old script vs new main(): identical transcripts scenario watch-enter-dirty",
+      "firstErrorLine": "AssertionError: expected { \u2026(7) } to deeply equal { \u2026(7) }"
+     }
+    ]
+   },
+   {
+    "id": "shutdown-message",
+    "old": "`syzygy POC: ${signal} received, shutting down\\n`",
+    "new": "`syzygy POC: ${signal} received\\n`",
+    "outcome": "killed",
+    "testsRun": 44,
+    "failing": [
+     {
+      "test": "old script vs new main(): identical transcripts scenario happy-default-state-dir",
+      "firstErrorLine": "AssertionError: expected { \u2026(7) } to deeply equal { \u2026(7) }"
+     },
+     {
+      "test": "old script vs new main(): identical transcripts scenario happy-relative-state-dir",
+      "firstErrorLine": "AssertionError: expected { \u2026(7) } to deeply equal { \u2026(7) }"
+     },
+     {
+      "test": "old script vs new main(): identical transcripts scenario happy-sigterm",
+      "firstErrorLine": "AssertionError: expected { \u2026(7) } to deeply equal { \u2026(7) }"
+     },
+     {
+      "test": "old script vs new main(): identical transcripts scenario happy-double-signal",
+      "firstErrorLine": "AssertionError: expected { \u2026(7) } to deeply equal { \u2026(7) }"
+     },
+     {
+      "test": "old script vs new main(): identical transcripts scenario happy-reused",
+      "firstErrorLine": "AssertionError: expected { \u2026(7) } to deeply equal { \u2026(7) }"
+     },
+     {
+      "test": "old script vs new main(): identical transcripts scenario happy-pages",
+      "firstErrorLine": "AssertionError: expected { \u2026(7) } to deeply equal { \u2026(7) }"
+     },
+     {
+      "test": "old script vs new main(): identical transcripts scenario reobserve-ok",
+      "firstErrorLine": "AssertionError: expected { \u2026(7) } to deeply equal { \u2026(7) }"
+     },
+     {
+      "test": "old script vs new main(): identical transcripts scenario reobserve-dirty",
+      "firstErrorLine": "AssertionError: expected { \u2026(7) } to deeply equal { \u2026(7) }"
+     },
+     {
+      "test": "old script vs new main(): identical transcripts scenario reobserve-git-fails",
+      "firstErrorLine": "AssertionError: expected { \u2026(7) } to deeply equal { \u2026(7) }"
+     },
+     {
+      "test": "old script vs new main(): identical transcripts scenario reobserve-horizon-fails",
+      "firstErrorLine": "AssertionError: expected { \u2026(7) } to deeply equal { \u2026(7) }"
+     },
+     {
+      "test": "old script vs new main(): identical transcripts scenario reobserve-model-fails",
+      "firstErrorLine": "AssertionError: expected { \u2026(7) } to deeply equal { \u2026(7) }"
+     },
+     {
+      "test": "old script vs new main(): identical transcripts scenario cwd-differs",
+      "firstErrorLine": "AssertionError: expected { \u2026(7) } to deeply equal { \u2026(7) }"
+     },
+     {
+      "test": "old script vs new main(): identical transcripts scenario happy-evaluated-readiness",
+      "firstErrorLine": "AssertionError: expected { \u2026(7) } to deeply equal { \u2026(7) }"
+     },
+     {
+      "test": "old script vs new main(): identical transcripts scenario watch-enter-reobserves",
+      "firstErrorLine": "AssertionError: expected { \u2026(7) } to deeply equal { \u2026(7) }"
+     },
+     {
+      "test": "old script vs new main(): identical transcripts scenario watch-enter-dirty",
+      "firstErrorLine": "AssertionError: expected { \u2026(7) } to deeply equal { \u2026(7) }"
+     },
+     {
+      "test": "old script vs new main(): identical transcripts scenario watch-no-enter",
+      "firstErrorLine": "AssertionError: expected { \u2026(7) } to deeply equal { \u2026(7) }"
+     }
+    ]
+   },
+   {
+    "id": "shutdown-guard-removed",
+    "old": "        if (closing) return;\n",
+    "new": "",
+    "outcome": "killed",
+    "testsRun": 44,
+    "failing": [
+     {
+      "test": "old script vs new main(): identical transcripts scenario happy-double-signal",
+      "firstErrorLine": "AssertionError: expected { \u2026(7) } to deeply equal { \u2026(7) }"
+     }
+    ]
+   },
+   {
+    "id": "sigterm-not-handled",
+    "old": "      io.onSignal('SIGTERM', () => shutdown('SIGTERM'));\n",
+    "new": "",
+    "outcome": "killed",
+    "testsRun": 44,
+    "failing": [
+     {
+      "test": "old script vs new main(): identical transcripts scenario happy-sigterm",
+      "firstErrorLine": "Error: STACK_TRACE_ERROR"
+     }
+    ]
+   },
+   {
+    "id": "model-failure-exit-code",
+    "old": "      io.stderr.write(`syzygy POC: observation failed (${unexpectedObservationDetail(cause)})\\n`);\n    }\n    return 1;",
+    "new": "      io.stderr.write(`syzygy POC: observation failed (${unexpectedObservationDetail(cause)})\\n`);\n    }\n    return 2;",
+    "outcome": "killed",
+    "testsRun": 44,
+    "failing": [
+     {
+      "test": "old script vs new main(): identical transcripts scenario model-throws-poc-observation-error",
+      "firstErrorLine": "AssertionError: expected { stdout: '', \u2026(6) } to deeply equal { stdout: '', \u2026(6) }"
+     },
+     {
+      "test": "old script vs new main(): identical transcripts scenario model-throws-poc-observation-error-bare",
+      "firstErrorLine": "AssertionError: expected { stdout: '', \u2026(6) } to deeply equal { stdout: '', \u2026(6) }"
+     },
+     {
+      "test": "old script vs new main(): identical transcripts scenario model-throws-type-error",
+      "firstErrorLine": "AssertionError: expected { stdout: '', \u2026(6) } to deeply equal { stdout: '', \u2026(6) }"
+     },
+     {
+      "test": "old script vs new main(): identical transcripts scenario model-throws-custom-error",
+      "firstErrorLine": "AssertionError: expected { stdout: '', \u2026(6) } to deeply equal { stdout: '', \u2026(6) }"
+     },
+     {
+      "test": "old script vs new main(): identical transcripts scenario model-throws-string",
+      "firstErrorLine": "AssertionError: expected { stdout: '', \u2026(6) } to deeply equal { stdout: '', \u2026(6) }"
+     },
+     {
+      "test": "old script vs new main(): identical transcripts scenario daemon-throws",
+      "firstErrorLine": "AssertionError: expected { stdout: '', \u2026(6) } to deeply equal { stdout: '', \u2026(6) }"
+     }
+    ]
+   },
+   {
+    "id": "observation-error-path-dropped",
+    "old": ".filter((part): part is string => part !== undefined)",
+    "new": ".filter((part): part is string => part !== undefined && part !== cause.artifactPath)",
+    "outcome": "killed",
+    "testsRun": 44,
+    "failing": [
+     {
+      "test": "old script vs new main(): identical transcripts scenario model-throws-poc-observation-error",
+      "firstErrorLine": "AssertionError: expected { stdout: '', \u2026(6) } to deeply equal { stdout: '', \u2026(6) }"
+     }
+    ]
+   },
+   {
+    "id": "suffix-filter-dropped",
+    "old": ".filter((part): part is string => part !== undefined)",
+    "new": ".filter((part): part is string => true)",
+    "outcome": "killed",
+    "testsRun": 44,
+    "failing": [
+     {
+      "test": "old script vs new main(): identical transcripts scenario model-throws-poc-observation-error-bare",
+      "firstErrorLine": "AssertionError: expected { stdout: '', \u2026(6) } to deeply equal { stdout: '', \u2026(6) }"
+     }
+    ]
+   },
+   {
+    "id": "console-attached-without-watch",
+    "old": "void session.startConsole(config.watch,",
+    "new": "void session.startConsole(true,",
+    "outcome": "killed",
+    "testsRun": 44,
+    "failing": [
+     {
+      "test": "old script vs new main(): identical transcripts scenario happy-default-state-dir",
+      "firstErrorLine": "AssertionError: expected { \u2026(7) } to deeply equal { \u2026(7) }"
+     },
+     {
+      "test": "old script vs new main(): identical transcripts scenario happy-relative-state-dir",
+      "firstErrorLine": "AssertionError: expected { \u2026(7) } to deeply equal { \u2026(7) }"
+     },
+     {
+      "test": "old script vs new main(): identical transcripts scenario happy-sigterm",
+      "firstErrorLine": "AssertionError: expected { \u2026(7) } to deeply equal { \u2026(7) }"
+     },
+     {
+      "test": "old script vs new main(): identical transcripts scenario happy-double-signal",
+      "firstErrorLine": "AssertionError: expected { \u2026(7) } to deeply equal { \u2026(7) }"
+     },
+     {
+      "test": "old script vs new main(): identical transcripts scenario happy-reused",
+      "firstErrorLine": "AssertionError: expected { \u2026(7) } to deeply equal { \u2026(7) }"
+     },
+     {
+      "test": "old script vs new main(): identical transcripts scenario happy-pages",
+      "firstErrorLine": "AssertionError: expected { \u2026(7) } to deeply equal { \u2026(7) }"
+     },
+     {
+      "test": "old script vs new main(): identical transcripts scenario reobserve-ok",
+      "firstErrorLine": "AssertionError: expected { \u2026(7) } to deeply equal { \u2026(7) }"
+     },
+     {
+      "test": "old script vs new main(): identical transcripts scenario reobserve-dirty",
+      "firstErrorLine": "AssertionError: expected { \u2026(7) } to deeply equal { \u2026(7) }"
+     },
+     {
+      "test": "old script vs new main(): identical transcripts scenario reobserve-git-fails",
+      "firstErrorLine": "AssertionError: expected { \u2026(7) } to deeply equal { \u2026(7) }"
+     },
+     {
+      "test": "old script vs new main(): identical transcripts scenario reobserve-horizon-fails",
+      "firstErrorLine": "AssertionError: expected { \u2026(7) } to deeply equal { \u2026(7) }"
+     },
+     {
+      "test": "old script vs new main(): identical transcripts scenario reobserve-model-fails",
+      "firstErrorLine": "AssertionError: expected { \u2026(7) } to deeply equal { \u2026(7) }"
+     },
+     {
+      "test": "old script vs new main(): identical transcripts scenario cwd-differs",
+      "firstErrorLine": "AssertionError: expected { \u2026(7) } to deeply equal { \u2026(7) }"
+     },
+     {
+      "test": "old script vs new main(): identical transcripts scenario happy-evaluated-readiness",
+      "firstErrorLine": "AssertionError: expected { \u2026(7) } to deeply equal { \u2026(7) }"
+     }
+    ]
+   },
+   {
+    "id": "pre-gate-state-directory-write",
+    "old": "  const launch = await launchAfterPwbRepositoryBinding(",
+    "new": "  if (parsed.config.stateDir !== undefined) (await import('node:fs')).mkdirSync(parsed.config.stateDir, { recursive: true });\n  const launch = await launchAfterPwbRepositoryBinding(",
+    "outcome": "killed",
+    "testsRun": 44,
+    "failing": [
+     {
+      "test": "old script vs new main(): identical transcripts scenario binding-rejected",
+      "firstErrorLine": "AssertionError: expected { stdout: '', stderr: '', \u2026(5) } to deeply equal { stdout: '', \u2026(6) }"
+     },
+     {
+      "test": "old script vs new main(): identical transcripts scenario repo-git-fails",
+      "firstErrorLine": "AssertionError: expected { stdout: '', stderr: '', \u2026(5) } to deeply equal { stdout: '', \u2026(6) }"
+     },
+     {
+      "test": "old script vs new main(): identical transcripts scenario repo-git-fails-no-status",
+      "firstErrorLine": "AssertionError: expected { stdout: '', stderr: '', \u2026(5) } to deeply equal { stdout: '', \u2026(6) }"
+     },
+     {
+      "test": "old script vs new main(): identical transcripts scenario repo-git-status-out-of-range",
+      "firstErrorLine": "AssertionError: expected { stdout: '', stderr: '', \u2026(5) } to deeply equal { stdout: '', \u2026(6) }"
+     },
+     {
+      "test": "old script vs new main(): identical transcripts scenario observer-git-fails",
+      "firstErrorLine": "AssertionError: expected { stdout: '', stderr: '', \u2026(5) } to deeply equal { stdout: '', \u2026(6) }"
+     },
+     {
+      "test": "old script vs new main(): identical transcripts scenario observer-dirty",
+      "firstErrorLine": "AssertionError: expected { stdout: '', stderr: '', \u2026(5) } to deeply equal { stdout: '', \u2026(6) }"
+     },
+     {
+      "test": "old script vs new main(): identical transcripts scenario horizon-throws-at-start",
+      "firstErrorLine": "AssertionError: expected { stdout: '', stderr: '', \u2026(5) } to deeply equal { stdout: '', stderr: '', \u2026(5) }"
+     },
+     {
+      "test": "old script vs new main(): identical transcripts scenario model-throws-poc-observation-error",
+      "firstErrorLine": "AssertionError: expected { stdout: '', stderr: '', \u2026(5) } to deeply equal { stdout: '', \u2026(6) }"
+     },
+     {
+      "test": "old script vs new main(): identical transcripts scenario model-throws-poc-observation-error-bare",
+      "firstErrorLine": "AssertionError: expected { stdout: '', stderr: '', \u2026(5) } to deeply equal { stdout: '', \u2026(6) }"
+     },
+     {
+      "test": "old script vs new main(): identical transcripts scenario model-throws-type-error",
+      "firstErrorLine": "AssertionError: expected { stdout: '', stderr: '', \u2026(5) } to deeply equal { stdout: '', \u2026(6) }"
+     },
+     {
+      "test": "old script vs new main(): identical transcripts scenario model-throws-custom-error",
+      "firstErrorLine": "AssertionError: expected { stdout: '', stderr: '', \u2026(5) } to deeply equal { stdout: '', \u2026(6) }"
+     },
+     {
+      "test": "old script vs new main(): identical transcripts scenario model-throws-string",
+      "firstErrorLine": "AssertionError: expected { stdout: '', stderr: '', \u2026(5) } to deeply equal { stdout: '', \u2026(6) }"
+     },
+     {
+      "test": "old script vs new main(): identical transcripts scenario daemon-bind-failed",
+      "firstErrorLine": "AssertionError: expected { stdout: '', stderr: '', \u2026(5) } to deeply equal { stdout: '', \u2026(6) }"
+     },
+     {
+      "test": "old script vs new main(): identical transcripts scenario daemon-bind-failed-nocode",
+      "firstErrorLine": "AssertionError: expected { stdout: '', stderr: '', \u2026(5) } to deeply equal { stdout: '', \u2026(6) }"
+     },
+     {
+      "test": "old script vs new main(): identical transcripts scenario daemon-credential",
+      "firstErrorLine": "AssertionError: expected { stdout: '', stderr: '', \u2026(5) } to deeply equal { stdout: '', \u2026(6) }"
+     },
+     {
+      "test": "old script vs new main(): identical transcripts scenario daemon-duplicate-route",
+      "firstErrorLine": "AssertionError: expected { stdout: '', stderr: '', \u2026(5) } to deeply equal { stdout: '', \u2026(6) }"
+     },
+     {
+      "test": "old script vs new main(): identical transcripts scenario daemon-duplicate-route-odd",
+      "firstErrorLine": "AssertionError: expected { stdout: '', stderr: '', \u2026(5) } to deeply equal { stdout: '', \u2026(6) }"
+     },
+     {
+      "test": "old script vs new main(): identical transcripts scenario daemon-throws",
+      "firstErrorLine": "AssertionError: expected { stdout: '', stderr: '', \u2026(5) } to deeply equal { stdout: '', \u2026(6) }"
+     },
+     {
+      "test": "old script vs new main(): identical transcripts scenario happy-sigterm",
+      "firstErrorLine": "AssertionError: expected { stdout: '', stderr: '', \u2026(5) } to deeply equal { \u2026(7) }"
+     },
+     {
+      "test": "old script vs new main(): identical transcripts scenario happy-double-signal",
+      "firstErrorLine": "AssertionError: expected { stdout: '', stderr: '', \u2026(5) } to deeply equal { \u2026(7) }"
+     },
+     {
+      "test": "old script vs new main(): identical transcripts scenario happy-reused",
+      "firstErrorLine": "AssertionError: expected { stdout: '', stderr: '', \u2026(5) } to deeply equal { \u2026(7) }"
+     },
+     {
+      "test": "old script vs new main(): identical transcripts scenario happy-pages",
+      "firstErrorLine": "AssertionError: expected { stdout: '', stderr: '', \u2026(5) } to deeply equal { \u2026(7) }"
+     },
+     {
+      "test": "old script vs new main(): identical transcripts scenario reobserve-ok",
+      "firstErrorLine": "AssertionError: expected { stdout: '', stderr: '', \u2026(5) } to deeply equal { \u2026(7) }"
+     },
+     {
+      "test": "old script vs new main(): identical transcripts scenario reobserve-dirty",
+      "firstErrorLine": "AssertionError: expected { stdout: '', stderr: '', \u2026(5) } to deeply equal { \u2026(7) }"
+     },
+     {
+      "test": "old script vs new main(): identical transcripts scenario reobserve-git-fails",
+      "firstErrorLine": "AssertionError: expected { stdout: '', stderr: '', \u2026(5) } to deeply equal { \u2026(7) }"
+     },
+     {
+      "test": "old script vs new main(): identical transcripts scenario reobserve-horizon-fails",
+      "firstErrorLine": "AssertionError: expected { stdout: '', stderr: '', \u2026(5) } to deeply equal { \u2026(7) }"
+     },
+     {
+      "test": "old script vs new main(): identical transcripts scenario reobserve-model-fails",
+      "firstErrorLine": "AssertionError: expected { stdout: '', stderr: '', \u2026(5) } to deeply equal { \u2026(7) }"
+     },
+     {
+      "test": "old script vs new main(): identical transcripts scenario cwd-differs",
+      "firstErrorLine": "AssertionError: expected { stdout: '', stderr: '', \u2026(5) } to deeply equal { \u2026(7) }"
+     },
+     {
+      "test": "old script vs new main(): identical transcripts scenario happy-evaluated-readiness",
+      "firstErrorLine": "AssertionError: expected { stdout: '', stderr: '', \u2026(5) } to deeply equal { \u2026(7) }"
+     },
+     {
+      "test": "old script vs new main(): identical transcripts scenario watch-enter-reobserves",
+      "firstErrorLine": "AssertionError: expected { stdout: '', stderr: '', \u2026(5) } to deeply equal { \u2026(7) }"
+     },
+     {
+      "test": "old script vs new main(): identical transcripts scenario watch-enter-dirty",
+      "firstErrorLine": "AssertionError: expected { stdout: '', stderr: '', \u2026(5) } to deeply equal { \u2026(7) }"
+     },
+     {
+      "test": "old script vs new main(): identical transcripts scenario watch-no-enter",
+      "firstErrorLine": "AssertionError: expected { stdout: '', stderr: '', \u2026(5) } to deeply equal { \u2026(7) }"
+     }
+    ]
+   }
+  ],
+  "survivorsExplained": {
+   "observer-read-at-process-cwd": "equivalent under the harness: it fixes process.cwd and io.cwd to the same value because the composition root defines io.cwd as process.cwd(); killed by main.test.ts, which gives the two different values",
+   "model-observer-root-process-cwd": "same reason; killed by main.test.ts",
+   "observation-instant-from-clock": "equivalent under the harness: Date is faked to the instant io.now returns, and the composition root defines io.now as new Date().toISOString(); killed by main.test.ts, which injects a distinct clock"
+  }
+ },
+ "transcriptsFile": "main-differential-transcripts-2026-10-22.json"
+}

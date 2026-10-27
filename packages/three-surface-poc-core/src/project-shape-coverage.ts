@@ -75,8 +75,9 @@ export interface Declaration {
 // The registry's closed fact grammar (`observationGrammar.factFamilies`,
 // `factFamilyRows`): every fact belongs to one family, and every family is
 // owned by exactly one layer row of the root index's precedence table.
+// No code reads this list (`FactFamily` below spells the same four kinds); it
+// stays because the registry-currency amendment packet cites it by name.
 export const FACT_FAMILIES = ['item', 'count', 'catalog-count', 'project-account'] as const;
-export type FactFamilyKind = (typeof FACT_FAMILIES)[number];
 
 export type FactFamily =
   | { readonly kind: 'item' | 'count'; readonly class: ExtractionClass }

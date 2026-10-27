@@ -1,3 +1,5 @@
+// Test support: exports with no non-test importer are consumed by tests only, by design.
+
 import { execFileSync } from 'node:child_process';
 import { cpSync, mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
@@ -5,6 +7,7 @@ import { dirname, join } from 'node:path';
 
 import { BUTLERS_POC_SEEDS, buildPocModel, type PocEvaluationEvidence, type PocModel, type ProjectShapeModelInput, type WalkthroughJudgmentInputs } from '@syzygy/three-surface-poc-core';
 
+import { ownedCopyPrefix, ownedTemplatePrefix } from './fixture-directories.js';
 import { pwbReadinessTraversal } from './walkthrough-inputs.js';
 
 function git(root: string, args: readonly string[]): string {
@@ -21,7 +24,7 @@ function git(root: string, args: readonly string[]): string {
   }).trim();
 }
 
-export interface FixtureRepo {
+interface FixtureRepo {
   readonly repoRoot: string;
   readonly revision: string;
 }
@@ -40,7 +43,7 @@ export interface FixtureRepo {
  */
 export function fixtureRepoWithGit(cleanups: string[]): FixtureRepo {
   template ??= committedFixtureRepo();
-  const root = mkdtempSync(join(tmpdir(), 'syzygy-poc-surface-fixture-'));
+  const root = mkdtempSync(join(tmpdir(), ownedCopyPrefix()));
   cleanups.push(root);
   cpSync(template.repoRoot, root, { recursive: true });
   return { repoRoot: root, revision: template.revision };
@@ -62,7 +65,7 @@ function removeAtEndOfFile(root: string): void {
 }
 
 function committedFixtureRepo(): FixtureRepo {
-  const root = mkdtempSync(join(tmpdir(), 'syzygy-poc-surface-fixture-template-'));
+  const root = mkdtempSync(join(tmpdir(), ownedTemplatePrefix()));
   removeAtEndOfFile(root);
   const files: Readonly<Record<string, string>> = {
     'docs/superpowers/specs/2026-08-24-whatsapp-identity-reconciliation-design.md':
@@ -128,7 +131,7 @@ function workItemRow(
 /** Builds one shared model with real, observed code-structure and
  * work-item regions, using an injected work-item query so the fixture
  * needs no live Dolt server. */
-export interface FixtureModelOptions {
+interface FixtureModelOptions {
   /** Supplied → the model's `projectShape` is built through the P1 gate and
    * the injected runner; absent → `not-evaluated`, as the pre-PWB fixture. */
   readonly projectShape?: ProjectShapeModelInput;

@@ -86,6 +86,7 @@ const REOBSERVATION_SOURCES = [
   'apps/three-surface-poc/src/git-observation.ts',
   'apps/three-surface-poc/src/main.ts',
   'apps/three-surface-poc/src/page-shell.ts',
+  'apps/three-surface-poc/src/poc-main.ts',
   'apps/three-surface-poc/src/reevaluation-copy.ts',
   'apps/three-surface-poc/src/reobserve-action.ts',
   'apps/three-surface-poc/src/reobserve-session.ts',

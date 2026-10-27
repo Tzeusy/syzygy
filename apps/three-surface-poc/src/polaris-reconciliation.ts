@@ -13,7 +13,7 @@
  * a single placeholder and substituted after the whole page exists. Nothing
  * here is cached or stored: the figures are derived per render.
  */
-import { escapeHtml } from '@syzygy/cap1-daemon';
+import { escapeHtml } from '@syzygy/http-host';
 import { EXTRACTION_CLASSES, UNKNOWN_REASON_ROUTES, type ExtractionClass, type ProjectShape, type ProjectShapeClaim } from '@syzygy/three-surface-poc-core';
 
 import { copyAttr, copyText, roleAttr, type PolarisCopyId } from './polaris-copy.js';
@@ -27,16 +27,16 @@ const PLACEHOLDER_OPENING = '<!--polaris-catalog-reconciliation';
  * HTML, counted per occurrence — never per distinct claim id. */
 const ITEM_MARKER = /\sdata-polaris-item="/g;
 
-export function countItemMarkers(html: string): number {
+function countItemMarkers(html: string): number {
   return [...html.matchAll(ITEM_MARKER)].length;
 }
 
 /** The reason and route of the remainder: the mapping from markers to
  * machine items is not established by a count, and the route is to make it
  * by claim identity. */
-export const REMAINDER_REASON = 'mapping-coverage-absent';
+const REMAINDER_REASON = 'mapping-coverage-absent';
 
-export type CatalogReconciliation =
+type CatalogReconciliation =
   | {
       readonly kind: 'observed';
       readonly sources: number;

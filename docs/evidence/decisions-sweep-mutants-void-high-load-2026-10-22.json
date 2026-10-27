@@ -1,0 +1,1951 @@
+{
+  "subject": {
+    "commit": "7deb8dfd8f161b9de8471061053fd0b86a33fa6c",
+    "branch": "HEAD",
+    "fileSha256": {
+      "packages/polaris-generation-consent/src/package-reader.ts": "cf6c6e51a149a81533bedb91ac40045437ff2ebd3a1ab71648046e1a958e9a2d"
+    },
+    "testFileSha256": {
+      "packages/polaris-generation-consent/src/act-families.test.ts": "1c449f3143087e4f27d88b6caf7976130dcfb3a593b59ba29938cc685b284708",
+      "packages/polaris-generation-consent/src/consent-ports.test.ts": "544a2986b1b100e60c653fa04cdff2b2d9dfaf5f7fdae7b1b8aed2d562de0697",
+      "packages/polaris-generation-consent/src/decisions-sweep.test.ts": "f2709a3fc80c362dc2d8db9e6f7d0ac58af7c12b6e3eb98654ca9043d5322e83",
+      "packages/polaris-generation-consent/src/digest-bound-act.test.ts": "846f1195c1bec90197ba0a3dd58fa9a99edbcb94c7a4b82ccffb19189c2d925b",
+      "packages/polaris-generation-consent/src/package-reader.test.ts": "ea6aa505e8bd77004c4a5910dbe27a58588c668d370f7978660ba1d738b8b3c8",
+      "packages/polaris-generation-consent/src/real-tree.test.ts": "77cc8a081cea5ba5aee23c8c79ab5e941413da60951c3b9e0a29db2ee034b55d"
+    }
+  },
+  "runnerPath": "scripts/rule6_mutation_runner.py",
+  "runnerSha256": "2bc35be550f0beb6ad355e0fc89719c1ae28320d186f41929af96dd59a376b22",
+  "runner": "single-occurrence textual replacement of `old` by `new` in `file`, then `npx vitest run --project <project> <testFiles>` in the tree; killed = at least one failed test; file restored from git after each run",
+  "project": "@syzygy/polaris-generation-consent",
+  "ranAt": "2026-10-22T01:22:26+00:00",
+  "mutants": [
+    {
+      "id": "M1-slack-from-plain",
+      "file": "packages/polaris-generation-consent/src/package-reader.ts",
+      "old": "slack: () => (slack ??= stemFolds(loose(text)))",
+      "new": "slack: () => (slack ??= stemFolds(text))",
+      "tests": [
+        "packages/polaris-generation-consent/src/decisions-sweep.test.ts",
+        "packages/polaris-generation-consent/src/act-families.test.ts",
+        "packages/polaris-generation-consent/src/digest-bound-act.test.ts",
+        "packages/polaris-generation-consent/src/package-reader.test.ts",
+        "packages/polaris-generation-consent/src/consent-ports.test.ts",
+        "packages/polaris-generation-consent/src/real-tree.test.ts"
+      ],
+      "command": "npx vitest run --project @syzygy/polaris-generation-consent packages/polaris-generation-consent/src/decisions-sweep.test.ts packages/polaris-generation-consent/src/act-families.test.ts packages/polaris-generation-consent/src/digest-bound-act.test.ts packages/polaris-generation-consent/src/package-reader.test.ts packages/polaris-generation-consent/src/consent-ports.test.ts packages/polaris-generation-consent/src/real-tree.test.ts",
+      "outcome": "killed",
+      "failedTests": 3,
+      "totalTests": 489,
+      "failures": [
+        {
+          "test": "each family's sweep names it as its own sweep did before the families shared one the registry stem split by backticks in text",
+          "firstErrorLine": "AssertionError: expected [ 'ok', 'ok', 'ok', 'ok' ] to deeply equal [ 'ok', 'ok', 'ok', 'refused' ]"
+        },
+        {
+          "test": "each swept file is read in its own spellings refuses on a file walked after a file that does not name it: its stem split by backticks, read loosely",
+          "firstErrorLine": "AssertionError: expected { state: 'ok', act: { \u2026(10) }, \u2026(2) } to deeply equal { state: 'refused', \u2026(2) }"
+        },
+        {
+          "test": "the policy port and the strict policy chain agree on every world in the fixture set, at every instant",
+          "firstErrorLine": "Error: STACK_TRACE_ERROR"
+        }
+      ],
+      "note": "The loose arm reads the text as written: a stem split by backticks no longer names a loose-swept act."
+    },
+    {
+      "id": "M2-forms-reused-across-files",
+      "file": "packages/polaris-generation-consent/src/package-reader.ts",
+      "old": "if (namesAct(family.sweep, rel, textForms(await swept(rel, text)))) {",
+      "new": "if (namesAct(family.sweep, rel, ((records as unknown as { forms?: TextForms }).forms ??= textForms(await swept(rel, text))))) {",
+      "tests": [
+        "packages/polaris-generation-consent/src/decisions-sweep.test.ts",
+        "packages/polaris-generation-consent/src/act-families.test.ts",
+        "packages/polaris-generation-consent/src/digest-bound-act.test.ts",
+        "packages/polaris-generation-consent/src/package-reader.test.ts",
+        "packages/polaris-generation-consent/src/consent-ports.test.ts",
+        "packages/polaris-generation-consent/src/real-tree.test.ts"
+      ],
+      "command": "npx vitest run --project @syzygy/polaris-generation-consent packages/polaris-generation-consent/src/decisions-sweep.test.ts packages/polaris-generation-consent/src/act-families.test.ts packages/polaris-generation-consent/src/digest-bound-act.test.ts packages/polaris-generation-consent/src/package-reader.test.ts packages/polaris-generation-consent/src/consent-ports.test.ts packages/polaris-generation-consent/src/real-tree.test.ts",
+      "outcome": "killed",
+      "failedTests": 24,
+      "totalTests": 489,
+      "failures": [
+        {
+          "test": "each family's sweep names it as its own sweep did before the families shared one every family named in the aggregate record's prose",
+          "firstErrorLine": "AssertionError: expected [ 'refused', 'refused', \u2026(2) ] to deeply equal [ 'ok', 'ok', 'ok', 'ok' ]"
+        },
+        {
+          "test": "each family's sweep names it as its own sweep did before the families shared one the same prose in a file of that name elsewhere",
+          "firstErrorLine": "AssertionError: expected [ 'ok', 'ok', 'ok', 'ok' ] to deeply equal [ 'refused', 'refused', \u2026(2) ]"
+        },
+        {
+          "test": "each family's sweep names it as its own sweep did before the families shared one the class identity on a Record ID line and its stem on a Subject line",
+          "firstErrorLine": "AssertionError: expected [ 'ok', 'ok', 'refused', 'ok' ] to deeply equal [ 'ok', 'ok', 'ok', 'ok' ]"
+        },
+        {
+          "test": "each family's sweep names it as its own sweep did before the families shared one a policy act identity on an Artifact identity line",
+          "firstErrorLine": "AssertionError: expected [ 'ok', 'refused', 'ok', 'ok' ] to deeply equal [ 'ok', 'ok', 'ok', 'ok' ]"
+        },
+        {
+          "test": "each family's sweep names it as its own sweep did before the families shared one a quoted policy field line",
+          "firstErrorLine": "AssertionError: expected [ 'ok', 'refused', 'ok', 'ok' ] to deeply equal [ 'ok', 'ok', 'ok', 'ok' ]"
+        },
+        {
+          "test": "each swept file is read in its own spellings refuses on a file walked after a file that does not name it: its stem in prose",
+          "firstErrorLine": "AssertionError: expected { state: 'ok', act: { \u2026(10) }, \u2026(2) } to deeply equal { state: 'refused', \u2026(2) }"
+        },
+        {
+          "test": "each swept file is read in its own spellings refuses on a file walked after a file that does not name it: its stem split by backticks, read loosely",
+          "firstErrorLine": "AssertionError: expected { state: 'ok', act: { \u2026(10) }, \u2026(2) } to deeply equal { state: 'refused', \u2026(2) }"
+        },
+        {
+          "test": "each swept file is read in its own spellings refuses on a file walked after a file that does not name it: its stem on a field line of the aggregate record",
+          "firstErrorLine": "AssertionError: expected { state: 'ok', act: { \u2026(10) }, \u2026(2) } to deeply equal { state: 'refused', \u2026(2) }"
+        },
+        {
+          "test": "each swept file is read in its own spellings reads a file's new bytes in their own spellings when the same file is edited between two reads",
+          "firstErrorLine": "AssertionError: expected { state: 'ok', act: { \u2026(10) }, \u2026(2) } to deeply equal { state: 'refused', \u2026(2) }"
+        },
+        {
+          "test": "the decisions sweep's cost contract folds each swept file's text at most three times in a sweep with nine needles (cost test)",
+          "firstErrorLine": "AssertionError: expected 3 to be greater than or equal to 6"
+        },
+        {
+          "test": "digest-bound act cross-check (RFC3-16(a)) lets the aggregate acceptance record name it in prose",
+          "firstErrorLine": "AssertionError: expected 'refused' to be 'ok' // Object.is equality"
+        },
+        {
+          "test": "public-source policy act refuses a record other than the recorder's that names the policy as its artifact (packets, quotations, other act types)",
+          "firstErrorLine": "Error: promise resolved \"[ { \u2026(4) } ]\" instead of rejecting"
+        },
+        {
+          "test": "egress version 2 record withdrawal and forgery forms the reader does not define refuses a file outside the closed list that names an admission artifact, act identity or record id, in any case, dash spelling or directory",
+          "firstErrorLine": "Error: promise resolved \"[ { \u2026(16) }, { \u2026(16) }, { \u2026(16) } ]\" instead of rejecting"
+        },
+        {
+          "test": "egress version 2 record withdrawal and forgery forms the reader does not define applies the field-line rule to the aggregate acceptance record, which is exempt from the whole-text rule only",
+          "firstErrorLine": "AdmissionRecordError: invalid-records"
+        },
+        {
+          "test": "egress version 2 record withdrawal and forgery forms the reader does not define does not refuse the recorders' other act records or the aggregate acceptance record they append to",
+          "firstErrorLine": "AdmissionRecordError: invalid-records"
+        },
+        {
+          "test": "screening scope version 2 policy act refuses an unlisted record that names the policy: another file, a subdirectory, a loose field spelling, a Unicode-hyphen identity",
+          "firstErrorLine": "Error: promise resolved \"[ { \u2026(4) } ]\" instead of rejecting"
+        },
+        {
+          "test": "strict act reads policy chain: absent without acts; refused for a missing version 1, equal or earlier instants, equal arguments, a supersession that does not name version 1, or other policy bytes",
+          "firstErrorLine": "AssertionError: an unlisted record naming the policy: expected { state: 'ok', v1: { \u2026(10) }, \u2026(6) } to match object { state: 'refused' }"
+        },
+        {
+          "test": "strict act reads class act: ok with the installed module's digest; absent without a record; refused for a mismatch, a bad form, or a file elsewhere naming it",
+          "firstErrorLine": "AssertionError: expected { state: 'ok', act: { \u2026(10) }, \u2026(1) } to match object { state: 'refused' }"
+        },
+        {
+          "test": "every stem counts wherever it sits, save exact tooling citations in an allowlisted file (R-361-1) with no file allowlisted, refuses the reads the pre-#355 reader refused: name REVOCATION.md",
+          "firstErrorLine": "AssertionError: name REVOCATION.md: expected [] to deeply equal [ 'admission', 'egress' ]"
+        },
+        {
+          "test": "every stem counts wherever it sits, save exact tooling citations in an allowlisted file (R-361-1) with no file allowlisted, refuses the reads the pre-#355 reader refused: split files word+cite",
+          "firstErrorLine": "AssertionError: split files word+cite: expected [] to deeply equal [ 'admission', 'egress' ]"
+        },
+        {
+          "test": "every stem counts wherever it sits, save exact tooling citations in an allowlisted file (R-361-1) with no file allowlisted, refuses the reads the pre-#355 reader refused: split files, word file no word in name",
+          "firstErrorLine": "AssertionError: split files, word file no word in name: expected [] to deeply equal [ 'admission', 'egress' ]"
+        },
+        {
+          "test": "every stem counts wherever it sits, save exact tooling citations in an allowlisted file (R-361-1) the same bytes at any other path are not allowlisted",
+          "firstErrorLine": "AssertionError: OWNER-DIRECTION-SITTING-2026-10-07.md beside the allowlisted file: expected [] to deeply equal [ 'admission', 'class', 'egress' ]"
+        },
+        {
+          "test": "the policy port and the strict policy chain agree on every world in the fixture set, at every instant",
+          "firstErrorLine": "Error: STACK_TRACE_ERROR"
+        },
+        {
+          "test": "the readers over this checkout's decisions directory do reach that directory: one added file naming a record or the class act refuses the reads that sweep for it",
+          "firstErrorLine": "Error: promise resolved \"[ { \u2026(16) } ]\" instead of rejecting"
+        }
+      ],
+      "note": "The first swept file's forms are kept for the rest of one findActRecords call (held on the call's own records array), so a later file is read in the first file's spellings: an index that skips a matching file."
+    },
+    {
+      "id": "M2b-forms-keyed-by-name-across-sweeps",
+      "file": "packages/polaris-generation-consent/src/package-reader.ts",
+      "old": "if (namesAct(family.sweep, rel, textForms(await swept(rel, text)))) {",
+      "new": "if (namesAct(family.sweep, rel, await (async (m: Map<string, TextForms>) => m.get(rel) ?? m.set(rel, textForms(await swept(rel, text))).get(rel)!)(((globalThis as { m2b?: Map<string, TextForms> }).m2b ??= new Map())))) {",
+      "tests": [
+        "packages/polaris-generation-consent/src/decisions-sweep.test.ts",
+        "packages/polaris-generation-consent/src/act-families.test.ts",
+        "packages/polaris-generation-consent/src/digest-bound-act.test.ts",
+        "packages/polaris-generation-consent/src/package-reader.test.ts",
+        "packages/polaris-generation-consent/src/consent-ports.test.ts",
+        "packages/polaris-generation-consent/src/real-tree.test.ts"
+      ],
+      "command": "npx vitest run --project @syzygy/polaris-generation-consent packages/polaris-generation-consent/src/decisions-sweep.test.ts packages/polaris-generation-consent/src/act-families.test.ts packages/polaris-generation-consent/src/digest-bound-act.test.ts packages/polaris-generation-consent/src/package-reader.test.ts packages/polaris-generation-consent/src/consent-ports.test.ts packages/polaris-generation-consent/src/real-tree.test.ts",
+      "outcome": "killed",
+      "failedTests": 117,
+      "totalTests": 489,
+      "failures": [
+        {
+          "test": "each family's sweep names it as its own sweep did before the families shared one text carrying an admission stem",
+          "firstErrorLine": "AssertionError: expected [ 'ok', 'ok', 'ok', 'ok' ] to deeply equal [ 'refused', 'ok', 'ok', 'ok' ]"
+        },
+        {
+          "test": "each family's sweep names it as its own sweep did before the families shared one text carrying the screening-scope stem",
+          "firstErrorLine": "AssertionError: expected [ 'ok', 'ok', 'ok', 'ok' ] to deeply equal [ 'ok', 'refused', 'ok', 'ok' ]"
+        },
+        {
+          "test": "each family's sweep names it as its own sweep did before the families shared one text carrying the class module path",
+          "firstErrorLine": "AssertionError: expected [ 'ok', 'ok', 'ok', 'ok' ] to deeply equal [ 'ok', 'ok', 'refused', 'ok' ]"
+        },
+        {
+          "test": "each family's sweep names it as its own sweep did before the families shared one text carrying the class stem",
+          "firstErrorLine": "AssertionError: expected [ 'ok', 'ok', 'ok', 'ok' ] to deeply equal [ 'ok', 'ok', 'refused', 'ok' ]"
+        },
+        {
+          "test": "each family's sweep names it as its own sweep did before the families shared one text carrying the registry artifact path",
+          "firstErrorLine": "AssertionError: expected [ 'ok', 'ok', 'ok', 'ok' ] to deeply equal [ 'ok', 'ok', 'ok', 'refused' ]"
+        },
+        {
+          "test": "each family's sweep names it as its own sweep did before the families shared one text carrying the registry stem",
+          "firstErrorLine": "AssertionError: expected [ 'ok', 'ok', 'ok', 'ok' ] to deeply equal [ 'ok', 'ok', 'ok', 'refused' ]"
+        },
+        {
+          "test": "each family's sweep names it as its own sweep did before the families shared one an admission record id on a Record ID line",
+          "firstErrorLine": "AssertionError: expected [ 'ok', 'ok', 'ok', 'ok' ] to deeply equal [ 'refused', 'ok', 'ok', 'ok' ]"
+        },
+        {
+          "test": "each family's sweep names it as its own sweep did before the families shared one an admission stem on a Subject line",
+          "firstErrorLine": "AssertionError: expected [ 'ok', 'ok', 'ok', 'ok' ] to deeply equal [ 'refused', 'ok', 'ok', 'ok' ]"
+        },
+        {
+          "test": "each family's sweep names it as its own sweep did before the families shared one the class identity on an Act identity line",
+          "firstErrorLine": "AssertionError: expected [ 'ok', 'ok', 'ok', 'ok' ] to deeply equal [ 'ok', 'ok', 'refused', 'ok' ]"
+        },
+        {
+          "test": "each family's sweep names it as its own sweep did before the families shared one the class module on an Artifact identity line",
+          "firstErrorLine": "AssertionError: expected [ 'ok', 'ok', 'ok', 'ok' ] to deeply equal [ 'ok', 'ok', 'refused', 'ok' ]"
+        },
+        {
+          "test": "each family's sweep names it as its own sweep did before the families shared one the class module on an Artifact identity line spaced and cased otherwise",
+          "firstErrorLine": "AssertionError: expected [ 'ok', 'ok', 'ok', 'ok' ] to deeply equal [ 'ok', 'ok', 'refused', 'ok' ]"
+        },
+        {
+          "test": "each family's sweep names it as its own sweep did before the families shared one a policy act identity on an Act identity line",
+          "firstErrorLine": "AssertionError: expected [ 'ok', 'ok', 'ok', 'ok' ] to deeply equal [ 'ok', 'refused', 'ok', 'ok' ]"
+        },
+        {
+          "test": "each family's sweep names it as its own sweep did before the families shared one the policy path on an Act identity line",
+          "firstErrorLine": "AssertionError: expected [ 'ok', 'ok', 'ok', 'ok' ] to deeply equal [ 'ok', 'refused', 'ok', 'ok' ]"
+        },
+        {
+          "test": "each family's sweep names it as its own sweep did before the families shared one the policy path on an Artifact identity line",
+          "firstErrorLine": "AssertionError: expected [ 'ok', 'ok', 'ok', 'ok' ] to deeply equal [ 'ok', 'refused', 'ok', 'ok' ]"
+        },
+        {
+          "test": "each family's sweep names it as its own sweep did before the families shared one the registry stem on a Record ID line",
+          "firstErrorLine": "AssertionError: expected [ 'ok', 'ok', 'ok', 'ok' ] to deeply equal [ 'ok', 'ok', 'ok', 'refused' ]"
+        },
+        {
+          "test": "each family's sweep names it as its own sweep did before the families shared one the registry artifact on a Subject line",
+          "firstErrorLine": "AssertionError: expected [ 'ok', 'ok', 'ok', 'ok' ] to deeply equal [ 'ok', 'ok', 'ok', 'refused' ]"
+        },
+        {
+          "test": "each family's sweep names it as its own sweep did before the families shared one a bulleted policy field line",
+          "firstErrorLine": "AssertionError: expected [ 'ok', 'ok', 'ok', 'ok' ] to deeply equal [ 'ok', 'refused', 'ok', 'ok' ]"
+        },
+        {
+          "test": "each family's sweep names it as its own sweep did before the families shared one a quoted admission field line",
+          "firstErrorLine": "AssertionError: expected [ 'ok', 'ok', 'ok', 'ok' ] to deeply equal [ 'refused', 'ok', 'ok', 'ok' ]"
+        },
+        {
+          "test": "each family's sweep names it as its own sweep did before the families shared one a quoted class field line",
+          "firstErrorLine": "AssertionError: expected [ 'ok', 'ok', 'ok', 'ok' ] to deeply equal [ 'ok', 'ok', 'refused', 'ok' ]"
+        },
+        {
+          "test": "each family's sweep names it as its own sweep did before the families shared one a quoted registry field line",
+          "firstErrorLine": "AssertionError: expected [ 'ok', 'ok', 'ok', 'ok' ] to deeply equal [ 'ok', 'ok', 'ok', 'refused' ]"
+        },
+        {
+          "test": "each family's sweep names it as its own sweep did before the families shared one the registry stem split by backticks in text",
+          "firstErrorLine": "AssertionError: expected [ 'ok', 'ok', 'ok', 'ok' ] to deeply equal [ 'ok', 'ok', 'ok', 'refused' ]"
+        },
+        {
+          "test": "each family's sweep names it as its own sweep did before the families shared one the registry stem split by backticks on a field line",
+          "firstErrorLine": "AssertionError: expected [ 'ok', 'ok', 'ok', 'ok' ] to deeply equal [ 'ok', 'ok', 'ok', 'refused' ]"
+        },
+        {
+          "test": "each family's pinned files and records are read by name and bytes a pinned file's bytes under another name are swept",
+          "firstErrorLine": "AssertionError: expected [ 'ok', 'ok', 'ok', 'ok' ] to deeply equal [ 'refused', 'ok', 'ok', 'ok' ]"
+        },
+        {
+          "test": "each family sets aside exact tooling citations in an allowlisted file only where its sweep did Built by scripts/build_public_egress_v2.py.",
+          "firstErrorLine": "AssertionError: not allowlisted: expected [ 'ok', 'ok', 'ok', 'ok' ] to deeply equal [ 'refused', 'ok', 'ok', 'ok' ]"
+        },
+        {
+          "test": "each family sets aside exact tooling citations in an allowlisted file only where its sweep did Recorded by scripts/record_rfc5_project_documentation_act.py.",
+          "firstErrorLine": "AssertionError: not allowlisted: expected [ 'ok', 'ok', 'ok', 'ok' ] to deeply equal [ 'ok', 'ok', 'refused', 'ok' ]"
+        },
+        {
+          "test": "each family sets aside exact tooling citations in an allowlisted file only where its sweep did Checked by scripts/check_public_admission_registry_git_source.py.",
+          "firstErrorLine": "AssertionError: not allowlisted: expected [ 'ok', 'ok', 'ok', 'ok' ] to deeply equal [ 'ok', 'ok', 'ok', 'refused' ]"
+        },
+        {
+          "test": "each swept file is read in its own spellings reads a file's new bytes in their own spellings when the same file is edited between two reads",
+          "firstErrorLine": "AssertionError: expected 'refused' to be 'ok' // Object.is equality"
+        },
+        {
+          "test": "an admission path in a decisions file's text refuses on .syzygy/governance/contracts/candidates/public-repo-admission/instances in prose, as written",
+          "firstErrorLine": "Error: promise resolved \"[]\" instead of rejecting"
+        },
+        {
+          "test": "an admission path in a decisions file's text refuses on .syzygy/governance/contracts/candidates/public-repo-admission/instances in prose, upper case with underscores",
+          "firstErrorLine": "Error: promise resolved \"[]\" instead of rejecting"
+        },
+        {
+          "test": "an admission path in a decisions file's text refuses on .syzygy/governance/contracts/candidates/public-repo-admission/instances in prose, with a soft hyphen before each dash",
+          "firstErrorLine": "Error: promise resolved \"[]\" instead of rejecting"
+        },
+        {
+          "test": "an admission path in a decisions file's text refuses on .syzygy/governance/contracts/candidates/public-egress-v2/instances/egress-anthropic/EGRESS-CONSENT-ANTHROPIC.md in prose, as written",
+          "firstErrorLine": "Error: promise resolved \"[]\" instead of rejecting"
+        },
+        {
+          "test": "an admission path in a decisions file's text refuses on .syzygy/governance/contracts/candidates/public-egress-v2/instances/egress-anthropic/EGRESS-CONSENT-ANTHROPIC.md in prose, upper case with underscores",
+          "firstErrorLine": "Error: promise resolved \"[]\" instead of rejecting"
+        },
+        {
+          "test": "an admission path in a decisions file's text refuses on .syzygy/governance/contracts/candidates/public-egress-v2/instances/egress-anthropic/EGRESS-CONSENT-ANTHROPIC.md in prose, with a soft hyphen before each dash",
+          "firstErrorLine": "Error: promise resolved \"[]\" instead of rejecting"
+        },
+        {
+          "test": "an admission path in a decisions file's text refuses on .syzygy/governance/contracts/candidates/public-repo-admission/ in prose, as written",
+          "firstErrorLine": "Error: promise resolved \"[]\" instead of rejecting"
+        },
+        {
+          "test": "an admission path in a decisions file's text refuses on .syzygy/governance/contracts/candidates/public-repo-admission/ in prose, upper case with underscores",
+          "firstErrorLine": "Error: promise resolved \"[]\" instead of rejecting"
+        },
+        {
+          "test": "an admission path in a decisions file's text refuses on .syzygy/governance/contracts/candidates/public-repo-admission/ in prose, with a soft hyphen before each dash",
+          "firstErrorLine": "Error: promise resolved \"[]\" instead of rejecting"
+        },
+        {
+          "test": "an admission path in a decisions file's text refuses on .syzygy/governance/contracts/candidates/public-egress-v2/ in prose, as written",
+          "firstErrorLine": "Error: promise resolved \"[]\" instead of rejecting"
+        },
+        {
+          "test": "an admission path in a decisions file's text refuses on .syzygy/governance/contracts/candidates/public-egress-v2/ in prose, upper case with underscores",
+          "firstErrorLine": "Error: promise resolved \"[]\" instead of rejecting"
+        },
+        {
+          "test": "an admission path in a decisions file's text refuses on .syzygy/governance/contracts/candidates/public-egress-v2/ in prose, with a soft hyphen before each dash",
+          "firstErrorLine": "Error: promise resolved \"[]\" instead of rejecting"
+        },
+        {
+          "test": "egress version 2 record withdrawal and forgery forms the reader does not define refuses a file outside the closed list that names an admission artifact, act identity or record id, in any case, dash spelling or directory",
+          "firstErrorLine": "Error: promise resolved \"[ { \u2026(16) }, { \u2026(16) }, { \u2026(16) } ]\" instead of rejecting"
+        },
+        {
+          "test": "egress version 2 record withdrawal and forgery forms the reader does not define applies the field-line rule to the aggregate acceptance record, which is exempt from the whole-text rule only",
+          "firstErrorLine": "Error: promise resolved \"[ { \u2026(16) }, { \u2026(16) }, { \u2026(16) } ]\" instead of rejecting"
+        },
+        {
+          "test": "screening scope version 2 policy act refuses an unlisted record that names the policy: another file, a subdirectory, a loose field spelling, a Unicode-hyphen identity",
+          "firstErrorLine": "Error: promise resolved \"[ { \u2026(4) } ]\" instead of rejecting"
+        },
+        {
+          "test": "every stem counts wherever it sits, save exact tooling citations in an allowlisted file (R-361-1) with no file allowlisted, refuses the reads the pre-#355 reader refused: L policy stem as a script name",
+          "firstErrorLine": "AssertionError: L policy stem as a script name: expected [ 'admission', 'egress' ] to deeply equal [ 'policy' ]"
+        },
+        {
+          "test": "every stem counts wherever it sits, save exact tooling citations in an allowlisted file (R-361-1) with no file allowlisted, refuses the reads the pre-#355 reader refused: M class stem as a script name",
+          "firstErrorLine": "AssertionError: M class stem as a script name: expected [ 'admission', 'egress' ] to deeply equal [ 'admission', 'class', 'egress' ]"
+        },
+        {
+          "test": "every stem counts wherever it sits, save exact tooling citations in an allowlisted file (R-361-1) with no file allowlisted, refuses the reads the pre-#355 reader refused: the class act id beside its recorder",
+          "firstErrorLine": "AssertionError: the class act id beside its recorder: expected [ 'admission', 'egress' ] to deeply equal [ 'admission', 'class', 'egress' ]"
+        },
+        {
+          "test": "every stem counts wherever it sits, save exact tooling citations in an allowlisted file (R-361-1) with no file allowlisted, refuses the reads the pre-#355 reader refused: N-1 class revocation citing its recorder",
+          "firstErrorLine": "AssertionError: N-1 class revocation citing its recorder: expected [ 'admission', 'egress' ] to deeply equal [ 'admission', 'class', 'egress' ]"
+        },
+        {
+          "test": "every stem counts wherever it sits, save exact tooling citations in an allowlisted file (R-361-1) with no file allowlisted, refuses the reads the pre-#355 reader refused: N-1 the intended-difference row of #355",
+          "firstErrorLine": "AssertionError: N-1 the intended-difference row of #355: expected [ 'admission', 'egress' ] to deeply equal [ 'admission', 'policy', 'egress' ]"
+        },
+        {
+          "test": "every stem counts wherever it sits, save exact tooling citations in an allowlisted file (R-361-1) with no file allowlisted, refuses the reads the pre-#355 reader refused: #355 citation: the class recorder",
+          "firstErrorLine": "AssertionError: #355 citation: the class recorder: expected [ 'admission', 'egress' ] to deeply equal [ 'admission', 'class', 'egress' ]"
+        },
+        {
+          "test": "every stem counts wherever it sits, save exact tooling citations in an allowlisted file (R-361-1) with no file allowlisted, refuses the reads the pre-#355 reader refused: C withdraw",
+          "firstErrorLine": "AssertionError: C withdraw: expected [ 'admission', 'egress' ] to deeply equal [ 'admission', 'class', 'egress' ]"
+        },
+        {
+          "test": "every stem counts wherever it sits, save exact tooling citations in an allowlisted file (R-361-1) with no file allowlisted, refuses the reads the pre-#355 reader refused: C Withdrawn",
+          "firstErrorLine": "AssertionError: C Withdrawn: expected [ 'admission', 'egress' ] to deeply equal [ 'admission', 'class', 'egress' ]"
+        },
+        {
+          "test": "every stem counts wherever it sits, save exact tooling citations in an allowlisted file (R-361-1) with no file allowlisted, refuses the reads the pre-#355 reader refused: C WITHDRAWN",
+          "firstErrorLine": "AssertionError: C WITHDRAWN: expected [ 'admission', 'egress' ] to deeply equal [ 'admission', 'class', 'egress' ]"
+        },
+        {
+          "test": "every stem counts wherever it sits, save exact tooling citations in an allowlisted file (R-361-1) with no file allowlisted, refuses the reads the pre-#355 reader refused: C withdrawing",
+          "firstErrorLine": "AssertionError: C withdrawing: expected [ 'admission', 'egress' ] to deeply equal [ 'admission', 'class', 'egress' ]"
+        },
+        {
+          "test": "every stem counts wherever it sits, save exact tooling citations in an allowlisted file (R-361-1) with no file allowlisted, refuses the reads the pre-#355 reader refused: C withdrawal",
+          "firstErrorLine": "AssertionError: C withdrawal: expected [ 'admission', 'egress' ] to deeply equal [ 'admission', 'class', 'egress' ]"
+        },
+        {
+          "test": "every stem counts wherever it sits, save exact tooling citations in an allowlisted file (R-361-1) with no file allowlisted, refuses the reads the pre-#355 reader refused: C withdrew",
+          "firstErrorLine": "AssertionError: C withdrew: expected [ 'admission', 'egress' ] to deeply equal [ 'admission', 'class', 'egress' ]"
+        },
+        {
+          "test": "every stem counts wherever it sits, save exact tooling citations in an allowlisted file (R-361-1) with no file allowlisted, refuses the reads the pre-#355 reader refused: C withdrawl-typo",
+          "firstErrorLine": "AssertionError: C withdrawl-typo: expected [ 'admission', 'egress' ] to deeply equal [ 'admission', 'class', 'egress' ]"
+        },
+        {
+          "test": "every stem counts wherever it sits, save exact tooling citations in an allowlisted file (R-361-1) with no file allowlisted, refuses the reads the pre-#355 reader refused: C revoked",
+          "firstErrorLine": "AssertionError: C revoked: expected [ 'admission', 'egress' ] to deeply equal [ 'admission', 'class', 'egress' ]"
+        },
+        {
+          "test": "every stem counts wherever it sits, save exact tooling citations in an allowlisted file (R-361-1) with no file allowlisted, refuses the reads the pre-#355 reader refused: C revocation",
+          "firstErrorLine": "AssertionError: C revocation: expected [ 'admission', 'egress' ] to deeply equal [ 'admission', 'class', 'egress' ]"
+        },
+        {
+          "test": "every stem counts wherever it sits, save exact tooling citations in an allowlisted file (R-361-1) with no file allowlisted, refuses the reads the pre-#355 reader refused: C revoking",
+          "firstErrorLine": "AssertionError: C revoking: expected [ 'admission', 'egress' ] to deeply equal [ 'admission', 'class', 'egress' ]"
+        },
+        {
+          "test": "every stem counts wherever it sits, save exact tooling citations in an allowlisted file (R-361-1) with no file allowlisted, refuses the reads the pre-#355 reader refused: C retracted",
+          "firstErrorLine": "AssertionError: C retracted: expected [ 'admission', 'egress' ] to deeply equal [ 'admission', 'class', 'egress' ]"
+        },
+        {
+          "test": "every stem counts wherever it sits, save exact tooling citations in an allowlisted file (R-361-1) with no file allowlisted, refuses the reads the pre-#355 reader refused: C retraction",
+          "firstErrorLine": "AssertionError: C retraction: expected [ 'admission', 'egress' ] to deeply equal [ 'admission', 'class', 'egress' ]"
+        },
+        {
+          "test": "every stem counts wherever it sits, save exact tooling citations in an allowlisted file (R-361-1) with no file allowlisted, refuses the reads the pre-#355 reader refused: C rescinded",
+          "firstErrorLine": "AssertionError: C rescinded: expected [ 'admission', 'egress' ] to deeply equal [ 'admission', 'class', 'egress' ]"
+        },
+        {
+          "test": "every stem counts wherever it sits, save exact tooling citations in an allowlisted file (R-361-1) with no file allowlisted, refuses the reads the pre-#355 reader refused: C rescission",
+          "firstErrorLine": "AssertionError: C rescission: expected [ 'admission', 'egress' ] to deeply equal [ 'admission', 'class', 'egress' ]"
+        },
+        {
+          "test": "every stem counts wherever it sits, save exact tooling citations in an allowlisted file (R-361-1) with no file allowlisted, refuses the reads the pre-#355 reader refused: C recission-typo",
+          "firstErrorLine": "AssertionError: C recission-typo: expected [ 'admission', 'egress' ] to deeply equal [ 'admission', 'class', 'egress' ]"
+        },
+        {
+          "test": "every stem counts wherever it sits, save exact tooling citations in an allowlisted file (R-361-1) with no file allowlisted, refuses the reads the pre-#355 reader refused: C recinded-typo",
+          "firstErrorLine": "AssertionError: C recinded-typo: expected [ 'admission', 'egress' ] to deeply equal [ 'admission', 'class', 'egress' ]"
+        },
+        {
+          "test": "every stem counts wherever it sits, save exact tooling citations in an allowlisted file (R-361-1) with no file allowlisted, refuses the reads the pre-#355 reader refused: C with-drawn",
+          "firstErrorLine": "AssertionError: C with-drawn: expected [ 'admission', 'egress' ] to deeply equal [ 'admission', 'class', 'egress' ]"
+        },
+        {
+          "test": "every stem counts wherever it sits, save exact tooling citations in an allowlisted file (R-361-1) with no file allowlisted, refuses the reads the pre-#355 reader refused: C with drawn",
+          "firstErrorLine": "AssertionError: C with drawn: expected [ 'admission', 'egress' ] to deeply equal [ 'admission', 'class', 'egress' ]"
+        },
+        {
+          "test": "every stem counts wherever it sits, save exact tooling citations in an allowlisted file (R-361-1) with no file allowlisted, refuses the reads the pre-#355 reader refused: C with-NL-drawn",
+          "firstErrorLine": "AssertionError: C with-NL-drawn: expected [ 'admission', 'egress' ] to deeply equal [ 'admission', 'class', 'egress' ]"
+        },
+        {
+          "test": "every stem counts wherever it sits, save exact tooling citations in an allowlisted file (R-361-1) with no file allowlisted, refuses the reads the pre-#355 reader refused: C with NL drawn",
+          "firstErrorLine": "AssertionError: C with NL drawn: expected [ 'admission', 'egress' ] to deeply equal [ 'admission', 'class', 'egress' ]"
+        },
+        {
+          "test": "every stem counts wherever it sits, save exact tooling citations in an allowlisted file (R-361-1) with no file allowlisted, refuses the reads the pre-#355 reader refused: C with**drawn**",
+          "firstErrorLine": "AssertionError: C with**drawn**: expected [ 'admission', 'egress' ] to deeply equal [ 'admission', 'class', 'egress' ]"
+        },
+        {
+          "test": "every stem counts wherever it sits, save exact tooling citations in an allowlisted file (R-361-1) with no file allowlisted, refuses the reads the pre-#355 reader refused: C code span",
+          "firstErrorLine": "AssertionError: C code span: expected [ 'admission', 'egress' ] to deeply equal [ 'admission', 'class', 'egress' ]"
+        },
+        {
+          "test": "every stem counts wherever it sits, save exact tooling citations in an allowlisted file (R-361-1) with no file allowlisted, refuses the reads the pre-#355 reader refused: C heading",
+          "firstErrorLine": "AssertionError: C heading: expected [ 'admission', 'egress' ] to deeply equal [ 'admission', 'class', 'egress' ]"
+        },
+        {
+          "test": "every stem counts wherever it sits, save exact tooling citations in an allowlisted file (R-361-1) with no file allowlisted, refuses the reads the pre-#355 reader refused: C re-voked",
+          "firstErrorLine": "AssertionError: C re-voked: expected [ 'admission', 'egress' ] to deeply equal [ 'admission', 'class', 'egress' ]"
+        },
+        {
+          "test": "every stem counts wherever it sits, save exact tooling citations in an allowlisted file (R-361-1) with no file allowlisted, refuses the reads the pre-#355 reader refused: C re U+2011 voked",
+          "firstErrorLine": "AssertionError: C re U+2011 voked: expected [ 'admission', 'egress' ] to deeply equal [ 'admission', 'class', 'egress' ]"
+        },
+        {
+          "test": "every stem counts wherever it sits, save exact tooling citations in an allowlisted file (R-361-1) with no file allowlisted, refuses the reads the pre-#355 reader refused: C soft hyphen",
+          "firstErrorLine": "AssertionError: C soft hyphen: expected [ 'admission', 'egress' ] to deeply equal [ 'admission', 'class', 'egress' ]"
+        },
+        {
+          "test": "every stem counts wherever it sits, save exact tooling citations in an allowlisted file (R-361-1) with no file allowlisted, refuses the reads the pre-#355 reader refused: C ZWSP",
+          "firstErrorLine": "AssertionError: C ZWSP: expected [ 'admission', 'egress' ] to deeply equal [ 'admission', 'class', 'egress' ]"
+        },
+        {
+          "test": "every stem counts wherever it sits, save exact tooling citations in an allowlisted file (R-361-1) with no file allowlisted, refuses the reads the pre-#355 reader refused: C fullwidth",
+          "firstErrorLine": "AssertionError: C fullwidth: expected [ 'admission', 'egress' ] to deeply equal [ 'admission', 'class', 'egress' ]"
+        },
+        {
+          "test": "every stem counts wherever it sits, save exact tooling citations in an allowlisted file (R-361-1) with no file allowlisted, refuses the reads the pre-#355 reader refused: C Cyrillic a",
+          "firstErrorLine": "AssertionError: C Cyrillic a: expected [ 'admission', 'egress' ] to deeply equal [ 'admission', 'class', 'egress' ]"
+        },
+        {
+          "test": "every stem counts wherever it sits, save exact tooling citations in an allowlisted file (R-361-1) with no file allowlisted, refuses the reads the pre-#355 reader refused: C Greek omicron",
+          "firstErrorLine": "AssertionError: C Greek omicron: expected [ 'admission', 'egress' ] to deeply equal [ 'admission', 'class', 'egress' ]"
+        },
+        {
+          "test": "every stem counts wherever it sits, save exact tooling citations in an allowlisted file (R-361-1) with no file allowlisted, refuses the reads the pre-#355 reader refused: C &shy; entity",
+          "firstErrorLine": "AssertionError: C &shy; entity: expected [ 'admission', 'egress' ] to deeply equal [ 'admission', 'class', 'egress' ]"
+        },
+        {
+          "test": "every stem counts wherever it sits, save exact tooling citations in an allowlisted file (R-361-1) with no file allowlisted, refuses the reads the pre-#355 reader refused: C &#119; entity",
+          "firstErrorLine": "AssertionError: C &#119; entity: expected [ 'admission', 'egress' ] to deeply equal [ 'admission', 'class', 'egress' ]"
+        },
+        {
+          "test": "every stem counts wherever it sits, save exact tooling citations in an allowlisted file (R-361-1) with no file allowlisted, refuses the reads the pre-#355 reader refused: C combining mark",
+          "firstErrorLine": "AssertionError: C combining mark: expected [ 'admission', 'egress' ] to deeply equal [ 'admission', 'class', 'egress' ]"
+        },
+        {
+          "test": "every stem counts wherever it sits, save exact tooling citations in an allowlisted file (R-361-1) with no file allowlisted, refuses the reads the pre-#355 reader refused: C re-tract",
+          "firstErrorLine": "AssertionError: C re-tract: expected [ 'admission', 'egress' ] to deeply equal [ 'admission', 'class', 'egress' ]"
+        },
+        {
+          "test": "every stem counts wherever it sits, save exact tooling citations in an allowlisted file (R-361-1) with no file allowlisted, refuses the reads the pre-#355 reader refused: C re-scind",
+          "firstErrorLine": "AssertionError: C re-scind: expected [ 'admission', 'egress' ] to deeply equal [ 'admission', 'class', 'egress' ]"
+        },
+        {
+          "test": "every stem counts wherever it sits, save exact tooling citations in an allowlisted file (R-361-1) with no file allowlisted, refuses the reads the pre-#355 reader refused: C w/drawn",
+          "firstErrorLine": "AssertionError: C w/drawn: expected [ 'admission', 'egress' ] to deeply equal [ 'admission', 'class', 'egress' ]"
+        },
+        {
+          "test": "every stem counts wherever it sits, save exact tooling citations in an allowlisted file (R-361-1) with no file allowlisted, refuses the reads the pre-#355 reader refused: C W-I-T-H",
+          "firstErrorLine": "AssertionError: C W-I-T-H: expected [ 'admission', 'egress' ] to deeply equal [ 'admission', 'class', 'egress' ]"
+        },
+        {
+          "test": "every stem counts wherever it sits, save exact tooling citations in an allowlisted file (R-361-1) with no file allowlisted, refuses the reads the pre-#355 reader refused: C cancelled",
+          "firstErrorLine": "AssertionError: C cancelled: expected [ 'admission', 'egress' ] to deeply equal [ 'admission', 'class', 'egress' ]"
+        },
+        {
+          "test": "every stem counts wherever it sits, save exact tooling citations in an allowlisted file (R-361-1) with no file allowlisted, refuses the reads the pre-#355 reader refused: C terminated",
+          "firstErrorLine": "AssertionError: C terminated: expected [ 'admission', 'egress' ] to deeply equal [ 'admission', 'class', 'egress' ]"
+        },
+        {
+          "test": "every stem counts wherever it sits, save exact tooling citations in an allowlisted file (R-361-1) with no file allowlisted, refuses the reads the pre-#355 reader refused: C ends today",
+          "firstErrorLine": "AssertionError: C ends today: expected [ 'admission', 'egress' ] to deeply equal [ 'admission', 'class', 'egress' ]"
+        },
+        {
+          "test": "every stem counts wherever it sits, save exact tooling citations in an allowlisted file (R-361-1) with no file allowlisted, refuses the reads the pre-#355 reader refused: C void",
+          "firstErrorLine": "AssertionError: C void: expected [ 'admission', 'egress' ] to deeply equal [ 'admission', 'class', 'egress' ]"
+        },
+        {
+          "test": "every stem counts wherever it sits, save exact tooling citations in an allowlisted file (R-361-1) with no file allowlisted, refuses the reads the pre-#355 reader refused: C pulled",
+          "firstErrorLine": "AssertionError: C pulled: expected [ 'admission', 'egress' ] to deeply equal [ 'admission', 'class', 'egress' ]"
+        },
+        {
+          "test": "every stem counts wherever it sits, save exact tooling citations in an allowlisted file (R-361-1) with no file allowlisted, refuses the reads the pre-#355 reader refused: C annulled",
+          "firstErrorLine": "AssertionError: C annulled: expected [ 'admission', 'egress' ] to deeply equal [ 'admission', 'class', 'egress' ]"
+        },
+        {
+          "test": "every stem counts wherever it sits, save exact tooling citations in an allowlisted file (R-361-1) with no file allowlisted, refuses the reads the pre-#355 reader refused: C repealed",
+          "firstErrorLine": "AssertionError: C repealed: expected [ 'admission', 'egress' ] to deeply equal [ 'admission', 'class', 'egress' ]"
+        },
+        {
+          "test": "every stem counts wherever it sits, save exact tooling citations in an allowlisted file (R-361-1) with no file allowlisted, refuses the reads the pre-#355 reader refused: C retired",
+          "firstErrorLine": "AssertionError: C retired: expected [ 'admission', 'egress' ] to deeply equal [ 'admission', 'class', 'egress' ]"
+        },
+        {
+          "test": "every stem counts wherever it sits, save exact tooling citations in an allowlisted file (R-361-1) with no file allowlisted, refuses the reads the pre-#355 reader refused: C superseded",
+          "firstErrorLine": "AssertionError: C superseded: expected [ 'admission', 'egress' ] to deeply equal [ 'admission', 'class', 'egress' ]"
+        },
+        {
+          "test": "every stem counts wherever it sits, save exact tooling citations in an allowlisted file (R-361-1) with no file allowlisted, refuses the reads the pre-#355 reader refused: C suspended",
+          "firstErrorLine": "AssertionError: C suspended: expected [ 'admission', 'egress' ] to deeply equal [ 'admission', 'class', 'egress' ]"
+        },
+        {
+          "test": "every stem counts wherever it sits, save exact tooling citations in an allowlisted file (R-361-1) with no file allowlisted, refuses the reads the pre-#355 reader refused: C lapsed",
+          "firstErrorLine": "AssertionError: C lapsed: expected [ 'admission', 'egress' ] to deeply equal [ 'admission', 'class', 'egress' ]"
+        },
+        {
+          "test": "every stem counts wherever it sits, save exact tooling citations in an allowlisted file (R-361-1) with no file allowlisted, refuses the reads the pre-#355 reader refused: C expired",
+          "firstErrorLine": "AssertionError: C expired: expected [ 'admission', 'egress' ] to deeply equal [ 'admission', 'class', 'egress' ]"
+        },
+        {
+          "test": "every stem counts wherever it sits, save exact tooling citations in an allowlisted file (R-361-1) with no file allowlisted, refuses the reads the pre-#355 reader refused: C stopped",
+          "firstErrorLine": "AssertionError: C stopped: expected [ 'admission', 'egress' ] to deeply equal [ 'admission', 'class', 'egress' ]"
+        },
+        {
+          "test": "every stem counts wherever it sits, save exact tooling citations in an allowlisted file (R-361-1) with no file allowlisted, refuses the reads the pre-#355 reader refused: C invalidated",
+          "firstErrorLine": "AssertionError: C invalidated: expected [ 'admission', 'egress' ] to deeply equal [ 'admission', 'class', 'egress' ]"
+        },
+        {
+          "test": "every stem counts wherever it sits, save exact tooling citations in an allowlisted file (R-361-1) with no file allowlisted, refuses the reads the pre-#355 reader refused: C nullified",
+          "firstErrorLine": "AssertionError: C nullified: expected [ 'admission', 'egress' ] to deeply equal [ 'admission', 'class', 'egress' ]"
+        },
+        {
+          "test": "every stem counts wherever it sits, save exact tooling citations in an allowlisted file (R-361-1) with no file allowlisted, refuses the reads the pre-#355 reader refused: C no longer consent",
+          "firstErrorLine": "AssertionError: C no longer consent: expected [ 'admission', 'egress' ] to deeply equal [ 'admission', 'class', 'egress' ]"
+        },
+        {
+          "test": "every stem counts wherever it sits, save exact tooling citations in an allowlisted file (R-361-1) with no file allowlisted, refuses the reads the pre-#355 reader refused: C no longer in force",
+          "firstErrorLine": "AssertionError: C no longer in force: expected [ 'admission', 'egress' ] to deeply equal [ 'admission', 'class', 'egress' ]"
+        },
+        {
+          "test": "every stem counts wherever it sits, save exact tooling citations in an allowlisted file (R-361-1) with no file allowlisted, refuses the reads the pre-#355 reader refused: C abandoned",
+          "firstErrorLine": "AssertionError: C abandoned: expected [ 'admission', 'egress' ] to deeply equal [ 'admission', 'class', 'egress' ]"
+        },
+        {
+          "test": "every stem counts wherever it sits, save exact tooling citations in an allowlisted file (R-361-1) with no file allowlisted, refuses the reads the pre-#355 reader refused: C reversed",
+          "firstErrorLine": "AssertionError: C reversed: expected [ 'admission', 'egress' ] to deeply equal [ 'admission', 'class', 'egress' ]"
+        },
+        {
+          "test": "every stem counts wherever it sits, save exact tooling citations in an allowlisted file (R-361-1) with no file allowlisted, refuses the reads the pre-#355 reader refused: C removed",
+          "firstErrorLine": "AssertionError: C removed: expected [ 'admission', 'egress' ] to deeply equal [ 'admission', 'class', 'egress' ]"
+        },
+        {
+          "test": "every stem counts wherever it sits, save exact tooling citations in an allowlisted file (R-361-1) with no file allowlisted, refuses the reads the pre-#355 reader refused: C opted out",
+          "firstErrorLine": "AssertionError: C opted out: expected [ 'admission', 'egress' ] to deeply equal [ 'admission', 'class', 'egress' ]"
+        },
+        {
+          "test": "every stem counts wherever it sits, save exact tooling citations in an allowlisted file (R-361-1) with no file allowlisted, refuses the reads the pre-#355 reader refused: C disabled",
+          "firstErrorLine": "AssertionError: C disabled: expected [ 'admission', 'egress' ] to deeply equal [ 'admission', 'class', 'egress' ]"
+        },
+        {
+          "test": "every stem counts wherever it sits, save exact tooling citations in an allowlisted file (R-361-1) with no file allowlisted, refuses the reads the pre-#355 reader refused: C halted",
+          "firstErrorLine": "AssertionError: C halted: expected [ 'admission', 'egress' ] to deeply equal [ 'admission', 'class', 'egress' ]"
+        },
+        {
+          "test": "every stem counts wherever it sits, save exact tooling citations in an allowlisted file (R-361-1) with no file allowlisted, refuses the reads the pre-#355 reader refused: C do not use",
+          "firstErrorLine": "AssertionError: C do not use: expected [ 'admission', 'egress' ] to deeply equal [ 'admission', 'class', 'egress' ]"
+        },
+        {
+          "test": "every stem counts wherever it sits, save exact tooling citations in an allowlisted file (R-361-1) with no file allowlisted, refuses the reads the pre-#355 reader refused: C end",
+          "firstErrorLine": "AssertionError: C end: expected [ 'admission', 'egress' ] to deeply equal [ 'admission', 'class', 'egress' ]"
+        },
+        {
+          "test": "every stem counts wherever it sits, save exact tooling citations in an allowlisted file (R-361-1) with no file allowlisted, refuses the reads the pre-#355 reader refused: C undone",
+          "firstErrorLine": "AssertionError: C undone: expected [ 'admission', 'egress' ] to deeply equal [ 'admission', 'class', 'egress' ]"
+        },
+        {
+          "test": "every stem counts wherever it sits, save exact tooling citations in an allowlisted file (R-361-1) with no file allowlisted, refuses the reads the pre-#355 reader refused: C deauthorized",
+          "firstErrorLine": "AssertionError: C deauthorized: expected [ 'admission', 'egress' ] to deeply equal [ 'admission', 'class', 'egress' ]"
+        },
+        {
+          "test": "every stem counts wherever it sits, save exact tooling citations in an allowlisted file (R-361-1) with no file allowlisted, refuses the reads the pre-#355 reader refused: C refused",
+          "firstErrorLine": "AssertionError: C refused: expected [ 'admission', 'egress' ] to deeply equal [ 'admission', 'class', 'egress' ]"
+        },
+        {
+          "test": "every stem counts wherever it sits, save exact tooling citations in an allowlisted file (R-361-1) a file at its allowlisted path with its allowlisted bytes has its exact tooling citations set aside, and only those",
+          "firstErrorLine": "AssertionError: expected [ 'admission', 'egress' ] to deeply equal [ 'admission', 'class', 'egress' ]"
+        },
+        {
+          "test": "every stem counts wherever it sits, save exact tooling citations in an allowlisted file (R-361-1) one changed byte gives the file the whole-text sweep",
+          "firstErrorLine": "AssertionError: \"Ran `scr\": expected [ 'admission', 'egress' ] to deeply equal [ 'admission', 'class', 'egress' ]"
+        },
+        {
+          "test": "the policy port and the strict policy chain agree on every world in the fixture set, at every instant",
+          "firstErrorLine": "Error: STACK_TRACE_ERROR"
+        },
+        {
+          "test": "the readers over this checkout's decisions directory do reach that directory: one added file naming a record or the class act refuses the reads that sweep for it",
+          "firstErrorLine": "Error: promise resolved \"[ { \u2026(4) } ]\" instead of rejecting"
+        }
+      ],
+      "note": "A process-wide memo keyed by the file's name alone, reused across files' later reads, sweeps and calls (the cross-sweep reuse the rejected D2 would bring): a file's new bytes are read in its old bytes' spellings."
+    },
+    {
+      "id": "M3-folded-from-plain",
+      "file": "packages/polaris-generation-consent/src/package-reader.ts",
+      "old": "folded: () => (folded ??= fold(text))",
+      "new": "folded: () => (folded ??= stemFolds(text)[0]!)",
+      "tests": [
+        "packages/polaris-generation-consent/src/decisions-sweep.test.ts",
+        "packages/polaris-generation-consent/src/act-families.test.ts",
+        "packages/polaris-generation-consent/src/digest-bound-act.test.ts",
+        "packages/polaris-generation-consent/src/package-reader.test.ts",
+        "packages/polaris-generation-consent/src/consent-ports.test.ts",
+        "packages/polaris-generation-consent/src/real-tree.test.ts"
+      ],
+      "command": "npx vitest run --project @syzygy/polaris-generation-consent packages/polaris-generation-consent/src/decisions-sweep.test.ts packages/polaris-generation-consent/src/act-families.test.ts packages/polaris-generation-consent/src/digest-bound-act.test.ts packages/polaris-generation-consent/src/package-reader.test.ts packages/polaris-generation-consent/src/consent-ports.test.ts packages/polaris-generation-consent/src/real-tree.test.ts",
+      "outcome": "killed",
+      "failedTests": 19,
+      "totalTests": 489,
+      "failures": [
+        {
+          "test": "each family's sweep names it as its own sweep did before the families shared one an admission record id on a Record ID line",
+          "firstErrorLine": "AssertionError: expected [ 'ok', 'ok', 'ok', 'ok' ] to deeply equal [ 'refused', 'ok', 'ok', 'ok' ]"
+        },
+        {
+          "test": "each family's sweep names it as its own sweep did before the families shared one the class identity on an Act identity line",
+          "firstErrorLine": "AssertionError: expected [ 'ok', 'ok', 'ok', 'ok' ] to deeply equal [ 'ok', 'ok', 'refused', 'ok' ]"
+        },
+        {
+          "test": "each family's sweep names it as its own sweep did before the families shared one the class module on an Artifact identity line",
+          "firstErrorLine": "AssertionError: expected [ 'ok', 'ok', 'ok', 'ok' ] to deeply equal [ 'ok', 'ok', 'refused', 'ok' ]"
+        },
+        {
+          "test": "each family's sweep names it as its own sweep did before the families shared one the class module on an Artifact identity line spaced and cased otherwise",
+          "firstErrorLine": "AssertionError: expected [ 'ok', 'ok', 'ok', 'ok' ] to deeply equal [ 'ok', 'ok', 'refused', 'ok' ]"
+        },
+        {
+          "test": "each family's sweep names it as its own sweep did before the families shared one a policy act identity on an Act identity line",
+          "firstErrorLine": "AssertionError: expected [ 'ok', 'ok', 'ok', 'ok' ] to deeply equal [ 'ok', 'refused', 'ok', 'ok' ]"
+        },
+        {
+          "test": "each family's sweep names it as its own sweep did before the families shared one the policy path on an Act identity line",
+          "firstErrorLine": "AssertionError: expected [ 'ok', 'ok', 'ok', 'ok' ] to deeply equal [ 'ok', 'refused', 'ok', 'ok' ]"
+        },
+        {
+          "test": "each family's sweep names it as its own sweep did before the families shared one the policy path on an Artifact identity line",
+          "firstErrorLine": "AssertionError: expected [ 'ok', 'ok', 'ok', 'ok' ] to deeply equal [ 'ok', 'refused', 'ok', 'ok' ]"
+        },
+        {
+          "test": "each family's sweep names it as its own sweep did before the families shared one the registry stem on a Record ID line",
+          "firstErrorLine": "AssertionError: expected [ 'ok', 'ok', 'ok', 'ok' ] to deeply equal [ 'ok', 'ok', 'ok', 'refused' ]"
+        },
+        {
+          "test": "each family's sweep names it as its own sweep did before the families shared one a bulleted policy field line",
+          "firstErrorLine": "AssertionError: expected [ 'ok', 'ok', 'ok', 'ok' ] to deeply equal [ 'ok', 'refused', 'ok', 'ok' ]"
+        },
+        {
+          "test": "each family's sweep names it as its own sweep did before the families shared one a quoted admission field line",
+          "firstErrorLine": "AssertionError: expected [ 'ok', 'ok', 'ok', 'ok' ] to deeply equal [ 'refused', 'ok', 'ok', 'ok' ]"
+        },
+        {
+          "test": "each family's sweep names it as its own sweep did before the families shared one a quoted class field line",
+          "firstErrorLine": "AssertionError: expected [ 'ok', 'ok', 'ok', 'ok' ] to deeply equal [ 'ok', 'ok', 'refused', 'ok' ]"
+        },
+        {
+          "test": "each family's sweep names it as its own sweep did before the families shared one a quoted registry field line",
+          "firstErrorLine": "AssertionError: expected [ 'ok', 'ok', 'ok', 'ok' ] to deeply equal [ 'ok', 'ok', 'ok', 'refused' ]"
+        },
+        {
+          "test": "each family's sweep names it as its own sweep did before the families shared one the registry stem split by backticks on a field line",
+          "firstErrorLine": "AssertionError: expected [ 'ok', 'ok', 'ok', 'ok' ] to deeply equal [ 'ok', 'ok', 'ok', 'refused' ]"
+        },
+        {
+          "test": "each swept file is read in its own spellings refuses on a file walked after a file that does not name it: its stem on a field line of the aggregate record",
+          "firstErrorLine": "AssertionError: expected { state: 'ok', act: { \u2026(10) }, \u2026(2) } to deeply equal { state: 'refused', \u2026(2) }"
+        },
+        {
+          "test": "public-source policy act refuses a record other than the recorder's that names the policy as its artifact (packets, quotations, other act types)",
+          "firstErrorLine": "Error: promise resolved \"[ { \u2026(4) } ]\" instead of rejecting"
+        },
+        {
+          "test": "egress version 2 record withdrawal and forgery forms the reader does not define applies the field-line rule to the aggregate acceptance record, which is exempt from the whole-text rule only",
+          "firstErrorLine": "Error: promise resolved \"[ { \u2026(16) }, { \u2026(16) }, { \u2026(16) } ]\" instead of rejecting"
+        },
+        {
+          "test": "screening scope version 2 policy act refuses an unlisted record that names the policy: another file, a subdirectory, a loose field spelling, a Unicode-hyphen identity",
+          "firstErrorLine": "Error: promise resolved \"[ { \u2026(4) } ]\" instead of rejecting"
+        },
+        {
+          "test": "strict act reads policy chain: absent without acts; refused for a missing version 1, equal or earlier instants, equal arguments, a supersession that does not name version 1, or other policy bytes",
+          "firstErrorLine": "AssertionError: an unlisted record naming the policy: expected { state: 'ok', v1: { \u2026(10) }, \u2026(6) } to match object { state: 'refused' }"
+        },
+        {
+          "test": "the policy port and the strict policy chain agree on every world in the fixture set, at every instant",
+          "firstErrorLine": "Error: STACK_TRACE_ERROR"
+        }
+      ],
+      "note": "The field lines are read from the stem spelling, whose whitespace (line breaks included) became dashes: no field line is found."
+    },
+    {
+      "id": "M4-memo-removed",
+      "file": "packages/polaris-generation-consent/src/package-reader.ts",
+      "old": "return { plain: () => (plain ??= stemFolds(text)), slack: () => (slack ??= stemFolds(loose(text))), folded: () => (folded ??= fold(text)) };",
+      "new": "return { plain: () => stemFolds(text), slack: () => stemFolds(loose(text)), folded: () => fold(text) };",
+      "tests": [
+        "packages/polaris-generation-consent/src/decisions-sweep.test.ts",
+        "packages/polaris-generation-consent/src/act-families.test.ts",
+        "packages/polaris-generation-consent/src/digest-bound-act.test.ts",
+        "packages/polaris-generation-consent/src/package-reader.test.ts",
+        "packages/polaris-generation-consent/src/consent-ports.test.ts",
+        "packages/polaris-generation-consent/src/real-tree.test.ts"
+      ],
+      "command": "npx vitest run --project @syzygy/polaris-generation-consent packages/polaris-generation-consent/src/decisions-sweep.test.ts packages/polaris-generation-consent/src/act-families.test.ts packages/polaris-generation-consent/src/digest-bound-act.test.ts packages/polaris-generation-consent/src/package-reader.test.ts packages/polaris-generation-consent/src/consent-ports.test.ts packages/polaris-generation-consent/src/real-tree.test.ts",
+      "outcome": "killed",
+      "failedTests": 2,
+      "totalTests": 489,
+      "failures": [
+        {
+          "test": "the decisions sweep's cost contract folds each swept file's text at most three times in a sweep with nine needles (cost test)",
+          "firstErrorLine": "AssertionError: expected 114 to be less than or equal to 18"
+        },
+        {
+          "test": "the policy port and the strict policy chain agree on every world in the fixture set, at every instant",
+          "firstErrorLine": "Error: STACK_TRACE_ERROR"
+        }
+      ],
+      "note": "Every needle refolds the text, as before syzygy-bpyt.8.20: the same answers at the old cost, so only the cost test can kill it."
+    },
+    {
+      "id": "M5-slack-eager",
+      "file": "packages/polaris-generation-consent/src/package-reader.ts",
+      "old": "let plain: readonly string[] | undefined, slack: readonly string[] | undefined, folded: string | undefined;",
+      "new": "let plain: readonly string[] | undefined, slack: readonly string[] | undefined = stemFolds(loose(text)), folded: string | undefined;",
+      "tests": [
+        "packages/polaris-generation-consent/src/decisions-sweep.test.ts",
+        "packages/polaris-generation-consent/src/act-families.test.ts",
+        "packages/polaris-generation-consent/src/digest-bound-act.test.ts",
+        "packages/polaris-generation-consent/src/package-reader.test.ts",
+        "packages/polaris-generation-consent/src/consent-ports.test.ts",
+        "packages/polaris-generation-consent/src/real-tree.test.ts"
+      ],
+      "command": "npx vitest run --project @syzygy/polaris-generation-consent packages/polaris-generation-consent/src/decisions-sweep.test.ts packages/polaris-generation-consent/src/act-families.test.ts packages/polaris-generation-consent/src/digest-bound-act.test.ts packages/polaris-generation-consent/src/package-reader.test.ts packages/polaris-generation-consent/src/consent-ports.test.ts packages/polaris-generation-consent/src/real-tree.test.ts",
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 489,
+      "failures": [
+        {
+          "test": "the policy port and the strict policy chain agree on every world in the fixture set, at every instant",
+          "firstErrorLine": "Error: STACK_TRACE_ERROR"
+        }
+      ],
+      "note": "Expected to survive, equivalent: the loose spelling is computed before the first needle instead of where the first plain miss needs it. The values are the same pure function of the text, so every answer is the same; the only difference is where a fold that throws (a RangeError past the longest string, from NFKC expansion) would throw, which no natural input reaches, and a loose fold for a sweep that is not loose (at most 3 per file still, so the cost test passes)."
+    },
+    {
+      "id": "M6-loosely-inverted",
+      "file": "packages/polaris-generation-consent/src/package-reader.ts",
+      "old": "  if (!loosely) return false;",
+      "new": "  if (loosely) return false;",
+      "tests": [
+        "packages/polaris-generation-consent/src/decisions-sweep.test.ts",
+        "packages/polaris-generation-consent/src/act-families.test.ts",
+        "packages/polaris-generation-consent/src/digest-bound-act.test.ts",
+        "packages/polaris-generation-consent/src/package-reader.test.ts",
+        "packages/polaris-generation-consent/src/consent-ports.test.ts",
+        "packages/polaris-generation-consent/src/real-tree.test.ts"
+      ],
+      "command": "npx vitest run --project @syzygy/polaris-generation-consent packages/polaris-generation-consent/src/decisions-sweep.test.ts packages/polaris-generation-consent/src/act-families.test.ts packages/polaris-generation-consent/src/digest-bound-act.test.ts packages/polaris-generation-consent/src/package-reader.test.ts packages/polaris-generation-consent/src/consent-ports.test.ts packages/polaris-generation-consent/src/real-tree.test.ts",
+      "outcome": "killed",
+      "failedTests": 6,
+      "totalTests": 489,
+      "failures": [
+        {
+          "test": "each family's sweep names it as its own sweep did before the families shared one an admission stem split by backticks in text",
+          "firstErrorLine": "AssertionError: expected [ 'refused', 'ok', 'ok', 'ok' ] to deeply equal [ 'ok', 'ok', 'ok', 'ok' ]"
+        },
+        {
+          "test": "each family's sweep names it as its own sweep did before the families shared one the screening-scope stem split by backticks in text",
+          "firstErrorLine": "AssertionError: expected [ 'ok', 'refused', 'ok', 'ok' ] to deeply equal [ 'ok', 'ok', 'ok', 'ok' ]"
+        },
+        {
+          "test": "each family's sweep names it as its own sweep did before the families shared one the class stem split by backticks in text",
+          "firstErrorLine": "AssertionError: expected [ 'ok', 'ok', 'refused', 'ok' ] to deeply equal [ 'ok', 'ok', 'ok', 'ok' ]"
+        },
+        {
+          "test": "each family's sweep names it as its own sweep did before the families shared one the registry stem split by backticks in text",
+          "firstErrorLine": "AssertionError: expected [ 'ok', 'ok', 'ok', 'ok' ] to deeply equal [ 'ok', 'ok', 'ok', 'refused' ]"
+        },
+        {
+          "test": "each swept file is read in its own spellings refuses on a file walked after a file that does not name it: its stem split by backticks, read loosely",
+          "firstErrorLine": "AssertionError: expected { state: 'ok', act: { \u2026(10) }, \u2026(2) } to deeply equal { state: 'refused', \u2026(2) }"
+        },
+        {
+          "test": "the policy port and the strict policy chain agree on every world in the fixture set, at every instant",
+          "firstErrorLine": "Error: STACK_TRACE_ERROR"
+        }
+      ],
+      "note": "The loose arm runs for the sweeps that are not loose and not for those that are."
+    },
+    {
+      "id": "M7-plain-arm-dropped",
+      "file": "packages/polaris-generation-consent/src/package-reader.ts",
+      "old": "  if (forms.plain().some(form => form.includes(n))) return true;",
+      "new": "  if (forms.plain().some(form => form.includes(n)) && false) return true;",
+      "tests": [
+        "packages/polaris-generation-consent/src/decisions-sweep.test.ts",
+        "packages/polaris-generation-consent/src/act-families.test.ts",
+        "packages/polaris-generation-consent/src/digest-bound-act.test.ts",
+        "packages/polaris-generation-consent/src/package-reader.test.ts",
+        "packages/polaris-generation-consent/src/consent-ports.test.ts",
+        "packages/polaris-generation-consent/src/real-tree.test.ts"
+      ],
+      "command": "npx vitest run --project @syzygy/polaris-generation-consent packages/polaris-generation-consent/src/decisions-sweep.test.ts packages/polaris-generation-consent/src/act-families.test.ts packages/polaris-generation-consent/src/digest-bound-act.test.ts packages/polaris-generation-consent/src/package-reader.test.ts packages/polaris-generation-consent/src/consent-ports.test.ts packages/polaris-generation-consent/src/real-tree.test.ts",
+      "outcome": "killed",
+      "failedTests": 221,
+      "totalTests": 489,
+      "failures": [
+        {
+          "test": "each family's sweep names it as its own sweep did before the families shared one text carrying an admission stem",
+          "firstErrorLine": "AssertionError: expected [ 'ok', 'ok', 'ok', 'ok' ] to deeply equal [ 'refused', 'ok', 'ok', 'ok' ]"
+        },
+        {
+          "test": "each family's sweep names it as its own sweep did before the families shared one text carrying the screening-scope stem",
+          "firstErrorLine": "AssertionError: expected [ 'ok', 'ok', 'ok', 'ok' ] to deeply equal [ 'ok', 'refused', 'ok', 'ok' ]"
+        },
+        {
+          "test": "each family's sweep names it as its own sweep did before the families shared one text carrying the class module path",
+          "firstErrorLine": "AssertionError: expected [ 'ok', 'ok', 'ok', 'ok' ] to deeply equal [ 'ok', 'ok', 'refused', 'ok' ]"
+        },
+        {
+          "test": "each family's sweep names it as its own sweep did before the families shared one text carrying the class stem",
+          "firstErrorLine": "AssertionError: expected [ 'ok', 'ok', 'ok', 'ok' ] to deeply equal [ 'ok', 'ok', 'refused', 'ok' ]"
+        },
+        {
+          "test": "each family's sweep names it as its own sweep did before the families shared one the same prose in a file of that name elsewhere",
+          "firstErrorLine": "AssertionError: expected [ 'ok', 'ok', 'ok', 'refused' ] to deeply equal [ 'refused', 'refused', \u2026(2) ]"
+        },
+        {
+          "test": "each family's pinned files and records are read by name and bytes a pinned file's bytes under another name are swept",
+          "firstErrorLine": "AssertionError: expected [ 'ok', 'ok', 'ok', 'ok' ] to deeply equal [ 'refused', 'ok', 'ok', 'ok' ]"
+        },
+        {
+          "test": "each family sets aside exact tooling citations in an allowlisted file only where its sweep did Built by scripts/build_public_egress_v2.py.",
+          "firstErrorLine": "AssertionError: not allowlisted: expected [ 'ok', 'ok', 'ok', 'ok' ] to deeply equal [ 'refused', 'ok', 'ok', 'ok' ]"
+        },
+        {
+          "test": "each family sets aside exact tooling citations in an allowlisted file only where its sweep did Recorded by scripts/record_rfc5_project_documentation_act.py.",
+          "firstErrorLine": "AssertionError: not allowlisted: expected [ 'ok', 'ok', 'ok', 'ok' ] to deeply equal [ 'ok', 'ok', 'refused', 'ok' ]"
+        },
+        {
+          "test": "an admission path in a decisions file's text refuses on .syzygy/governance/contracts/candidates/public-repo-admission/instances in prose, as written",
+          "firstErrorLine": "Error: promise resolved \"[]\" instead of rejecting"
+        },
+        {
+          "test": "an admission path in a decisions file's text refuses on .syzygy/governance/contracts/candidates/public-repo-admission/instances in prose, upper case with underscores",
+          "firstErrorLine": "Error: promise resolved \"[]\" instead of rejecting"
+        },
+        {
+          "test": "an admission path in a decisions file's text refuses on .syzygy/governance/contracts/candidates/public-repo-admission/instances in prose, with a soft hyphen before each dash",
+          "firstErrorLine": "Error: promise resolved \"[]\" instead of rejecting"
+        },
+        {
+          "test": "an admission path in a decisions file's text refuses on .syzygy/governance/contracts/candidates/public-egress-v2/instances/egress-anthropic/EGRESS-CONSENT-ANTHROPIC.md in prose, as written",
+          "firstErrorLine": "Error: promise resolved \"[]\" instead of rejecting"
+        },
+        {
+          "test": "an admission path in a decisions file's text refuses on .syzygy/governance/contracts/candidates/public-egress-v2/instances/egress-anthropic/EGRESS-CONSENT-ANTHROPIC.md in prose, upper case with underscores",
+          "firstErrorLine": "Error: promise resolved \"[]\" instead of rejecting"
+        },
+        {
+          "test": "an admission path in a decisions file's text refuses on .syzygy/governance/contracts/candidates/public-egress-v2/instances/egress-anthropic/EGRESS-CONSENT-ANTHROPIC.md in prose, with a soft hyphen before each dash",
+          "firstErrorLine": "Error: promise resolved \"[]\" instead of rejecting"
+        },
+        {
+          "test": "an admission path in a decisions file's text refuses on .syzygy/governance/contracts/candidates/public-repo-admission/ in prose, as written",
+          "firstErrorLine": "Error: promise resolved \"[]\" instead of rejecting"
+        },
+        {
+          "test": "an admission path in a decisions file's text refuses on .syzygy/governance/contracts/candidates/public-repo-admission/ in prose, upper case with underscores",
+          "firstErrorLine": "Error: promise resolved \"[]\" instead of rejecting"
+        },
+        {
+          "test": "an admission path in a decisions file's text refuses on .syzygy/governance/contracts/candidates/public-repo-admission/ in prose, with a soft hyphen before each dash",
+          "firstErrorLine": "Error: promise resolved \"[]\" instead of rejecting"
+        },
+        {
+          "test": "an admission path in a decisions file's text refuses on .syzygy/governance/contracts/candidates/public-egress-v2/ in prose, as written",
+          "firstErrorLine": "Error: promise resolved \"[]\" instead of rejecting"
+        },
+        {
+          "test": "an admission path in a decisions file's text refuses on .syzygy/governance/contracts/candidates/public-egress-v2/ in prose, upper case with underscores",
+          "firstErrorLine": "Error: promise resolved \"[]\" instead of rejecting"
+        },
+        {
+          "test": "an admission path in a decisions file's text refuses on .syzygy/governance/contracts/candidates/public-egress-v2/ in prose, with a soft hyphen before each dash",
+          "firstErrorLine": "Error: promise resolved \"[]\" instead of rejecting"
+        },
+        {
+          "test": "egress version 2 record withdrawal and forgery forms the reader does not define refuses a file outside the closed list that names an admission artifact, act identity or record id, in any case, dash spelling or directory",
+          "firstErrorLine": "Error: promise resolved \"[ { \u2026(16) }, { \u2026(16) }, { \u2026(16) } ]\" instead of rejecting"
+        },
+        {
+          "test": "screening scope version 2 policy act refuses an unlisted record that names the policy: another file, a subdirectory, a loose field spelling, a Unicode-hyphen identity",
+          "firstErrorLine": "Error: promise resolved \"[ { \u2026(4) } ]\" instead of rejecting"
+        },
+        {
+          "test": "strict act reads class act: ok with the installed module's digest; absent without a record; refused for a mismatch, a bad form, or a file elsewhere naming it",
+          "firstErrorLine": "AssertionError: expected { state: 'ok', act: { \u2026(10) }, \u2026(1) } to match object { state: 'refused' }"
+        },
+        {
+          "test": "round-3 review notes folds soft hyphens, zero-width spaces, underscores and spaces before matching a withdrawal stem (N-2)",
+          "firstErrorLine": "Error: promise resolved \"[ { \u2026(16) }, { \u2026(16) } ]\" instead of rejecting"
+        },
+        {
+          "test": "every stem counts wherever it sits, save exact tooling citations in an allowlisted file (R-361-1) with no file allowlisted, refuses the reads the pre-#355 reader refused: A3 bare package directory",
+          "firstErrorLine": "AssertionError: A3 bare package directory: expected [] to deeply equal [ 'admission', 'egress' ]"
+        },
+        {
+          "test": "every stem counts wherever it sits, save exact tooling citations in an allowlisted file (R-361-1) with no file allowlisted, refuses the reads the pre-#355 reader refused: A4 bare package directory, short",
+          "firstErrorLine": "AssertionError: A4 bare package directory, short: expected [] to deeply equal [ 'admission', 'egress' ]"
+        },
+        {
+          "test": "every stem counts wherever it sits, save exact tooling citations in an allowlisted file (R-361-1) with no file allowlisted, refuses the reads the pre-#355 reader refused: A5 instance file without instances/",
+          "firstErrorLine": "AssertionError: A5 instance file without instances/: expected [] to deeply equal [ 'admission', 'egress' ]"
+        },
+        {
+          "test": "every stem counts wherever it sits, save exact tooling citations in an allowlisted file (R-361-1) with no file allowlisted, refuses the reads the pre-#355 reader refused: A id-named package file that does not exist",
+          "firstErrorLine": "AssertionError: A id-named package file that does not exist: expected [] to deeply equal [ 'admission', 'egress' ]"
+        },
+        {
+          "test": "every stem counts wherever it sits, save exact tooling citations in an allowlisted file (R-361-1) with no file allowlisted, refuses the reads the pre-#355 reader refused: A2 id under the package directory",
+          "firstErrorLine": "AssertionError: A2 id under the package directory: expected [] to deeply equal [ 'admission', 'egress' ]"
+        },
+        {
+          "test": "every stem counts wherever it sits, save exact tooling citations in an allowlisted file (R-361-1) with no file allowlisted, refuses the reads the pre-#355 reader refused: F2 URL into the package",
+          "firstErrorLine": "AssertionError: F2 URL into the package: expected [] to deeply equal [ 'admission', 'egress' ]"
+        },
+        {
+          "test": "every stem counts wherever it sits, save exact tooling citations in an allowlisted file (R-361-1) with no file allowlisted, refuses the reads the pre-#355 reader refused: G2 link target carrying the id",
+          "firstErrorLine": "AssertionError: G2 link target carrying the id: expected [] to deeply equal [ 'admission', 'egress' ]"
+        },
+        {
+          "test": "every stem counts wherever it sits, save exact tooling citations in an allowlisted file (R-361-1) with no file allowlisted, refuses the reads the pre-#355 reader refused: B id as a directory before a script name",
+          "firstErrorLine": "AssertionError: B id as a directory before a script name: expected [] to deeply equal [ 'admission', 'egress' ]"
+        },
+        {
+          "test": "every stem counts wherever it sits, save exact tooling citations in an allowlisted file (R-361-1) with no file allowlisted, refuses the reads the pre-#355 reader refused: B2 instance path ending in a script name",
+          "firstErrorLine": "AssertionError: B2 instance path ending in a script name: expected [] to deeply equal [ 'admission', 'egress' ]"
+        },
+        {
+          "test": "every stem counts wherever it sits, save exact tooling citations in an allowlisted file (R-361-1) with no file allowlisted, refuses the reads the pre-#355 reader refused: H2 fullwidth slash",
+          "firstErrorLine": "AssertionError: H2 fullwidth slash: expected [] to deeply equal [ 'admission', 'egress' ]"
+        },
+        {
+          "test": "every stem counts wherever it sits, save exact tooling citations in an allowlisted file (R-361-1) with no file allowlisted, refuses the reads the pre-#355 reader refused: L policy stem as a script name",
+          "firstErrorLine": "AssertionError: L policy stem as a script name: expected [] to deeply equal [ 'policy' ]"
+        },
+        {
+          "test": "every stem counts wherever it sits, save exact tooling citations in an allowlisted file (R-361-1) with no file allowlisted, refuses the reads the pre-#355 reader refused: M class stem as a script name",
+          "firstErrorLine": "AssertionError: M class stem as a script name: expected [] to deeply equal [ 'admission', 'class', 'egress' ]"
+        },
+        {
+          "test": "every stem counts wherever it sits, save exact tooling citations in an allowlisted file (R-361-1) with no file allowlisted, refuses the reads the pre-#355 reader refused: the disclosed round-4 residual",
+          "firstErrorLine": "AssertionError: the disclosed round-4 residual: expected [] to deeply equal [ 'admission', 'egress' ]"
+        },
+        {
+          "test": "every stem counts wherever it sits, save exact tooling citations in an allowlisted file (R-361-1) with no file allowlisted, refuses the reads the pre-#355 reader refused: a script name that does not exist in scripts/",
+          "firstErrorLine": "AssertionError: a script name that does not exist in scripts/: expected [] to deeply equal [ 'admission', 'egress' ]"
+        },
+        {
+          "test": "every stem counts wherever it sits, save exact tooling citations in an allowlisted file (R-361-1) with no file allowlisted, refuses the reads the pre-#355 reader refused: an existing script under another directory",
+          "firstErrorLine": "AssertionError: an existing script under another directory: expected [] to deeply equal [ 'admission', 'egress' ]"
+        },
+        {
+          "test": "every stem counts wherever it sits, save exact tooling citations in an allowlisted file (R-361-1) with no file allowlisted, refuses the reads the pre-#355 reader refused: an existing script in another case",
+          "firstErrorLine": "AssertionError: an existing script in another case: expected [] to deeply equal [ 'admission', 'egress' ]"
+        },
+        {
+          "test": "every stem counts wherever it sits, save exact tooling citations in an allowlisted file (R-361-1) with no file allowlisted, refuses the reads the pre-#355 reader refused: an existing script glued to an id",
+          "firstErrorLine": "AssertionError: an existing script glued to an id: expected [] to deeply equal [ 'admission', 'egress' ]"
+        },
+        {
+          "test": "every stem counts wherever it sits, save exact tooling citations in an allowlisted file (R-361-1) with no file allowlisted, refuses the reads the pre-#355 reader refused: a record id beside an existing script",
+          "firstErrorLine": "AssertionError: a record id beside an existing script: expected [] to deeply equal [ 'admission', 'egress' ]"
+        },
+        {
+          "test": "every stem counts wherever it sits, save exact tooling citations in an allowlisted file (R-361-1) with no file allowlisted, refuses the reads the pre-#355 reader refused: an act record path",
+          "firstErrorLine": "AssertionError: an act record path: expected [] to deeply equal [ 'admission', 'egress' ]"
+        },
+        {
+          "test": "every stem counts wherever it sits, save exact tooling citations in an allowlisted file (R-361-1) with no file allowlisted, refuses the reads the pre-#355 reader refused: an egress v2 instance path",
+          "firstErrorLine": "AssertionError: an egress v2 instance path: expected [] to deeply equal [ 'admission', 'egress' ]"
+        },
+        {
+          "test": "every stem counts wherever it sits, save exact tooling citations in an allowlisted file (R-361-1) with no file allowlisted, refuses the reads the pre-#355 reader refused: an observation instance path",
+          "firstErrorLine": "AssertionError: an observation instance path: expected [] to deeply equal [ 'admission', 'egress' ]"
+        },
+        {
+          "test": "every stem counts wherever it sits, save exact tooling citations in an allowlisted file (R-361-1) with no file allowlisted, refuses the reads the pre-#355 reader refused: the class act id beside its recorder",
+          "firstErrorLine": "AssertionError: the class act id beside its recorder: expected [] to deeply equal [ 'admission', 'class', 'egress' ]"
+        },
+        {
+          "test": "every stem counts wherever it sits, save exact tooling citations in an allowlisted file (R-361-1) with no file allowlisted, refuses the reads the pre-#355 reader refused: a snake_case record id",
+          "firstErrorLine": "AssertionError: a snake_case record id: expected [] to deeply equal [ 'admission', 'egress' ]"
+        },
+        {
+          "test": "every stem counts wherever it sits, save exact tooling citations in an allowlisted file (R-361-1) with no file allowlisted, refuses the reads the pre-#355 reader refused: an existing script whose name carries a record id",
+          "firstErrorLine": "AssertionError: an existing script whose name carries a record id: expected [] to deeply equal [ 'admission', 'egress' ]"
+        },
+        {
+          "test": "every stem counts wherever it sits, save exact tooling citations in an allowlisted file (R-361-1) with no file allowlisted, refuses the reads the pre-#355 reader refused: an existing package file whose name carries a record id",
+          "firstErrorLine": "AssertionError: an existing package file whose name carries a record id: expected [] to deeply equal [ 'admission', 'egress' ]"
+        },
+        {
+          "test": "every stem counts wherever it sits, save exact tooling citations in an allowlisted file (R-361-1) with no file allowlisted, refuses the reads the pre-#355 reader refused: N-1 egress withdrawal citing its recorder",
+          "firstErrorLine": "AssertionError: N-1 egress withdrawal citing its recorder: expected [] to deeply equal [ 'admission', 'egress' ]"
+        },
+        {
+          "test": "every stem counts wherever it sits, save exact tooling citations in an allowlisted file (R-361-1) with no file allowlisted, refuses the reads the pre-#355 reader refused: N-1 withdrawal citing the builder",
+          "firstErrorLine": "AssertionError: N-1 withdrawal citing the builder: expected [] to deeply equal [ 'admission', 'egress' ]"
+        },
+        {
+          "test": "every stem counts wherever it sits, save exact tooling citations in an allowlisted file (R-361-1) with no file allowlisted, refuses the reads the pre-#355 reader refused: N-1 class revocation citing its recorder",
+          "firstErrorLine": "AssertionError: N-1 class revocation citing its recorder: expected [] to deeply equal [ 'admission', 'class', 'egress' ]"
+        },
+        {
+          "test": "every stem counts wherever it sits, save exact tooling citations in an allowlisted file (R-361-1) with no file allowlisted, refuses the reads the pre-#355 reader refused: N-1 admission withdrawal citing its recorder",
+          "firstErrorLine": "AssertionError: N-1 admission withdrawal citing its recorder: expected [] to deeply equal [ 'admission', 'egress' ]"
+        },
+        {
+          "test": "every stem counts wherever it sits, save exact tooling citations in an allowlisted file (R-361-1) with no file allowlisted, refuses the reads the pre-#355 reader refused: N-1 withdrawal citing a package file",
+          "firstErrorLine": "AssertionError: N-1 withdrawal citing a package file: expected [] to deeply equal [ 'admission', 'egress' ]"
+        },
+        {
+          "test": "every stem counts wherever it sits, save exact tooling citations in an allowlisted file (R-361-1) with no file allowlisted, refuses the reads the pre-#355 reader refused: N-1 the intended-difference row of #355",
+          "firstErrorLine": "AssertionError: N-1 the intended-difference row of #355: expected [] to deeply equal [ 'admission', 'policy', 'egress' ]"
+        },
+        {
+          "test": "every stem counts wherever it sits, save exact tooling citations in an allowlisted file (R-361-1) with no file allowlisted, refuses the reads the pre-#355 reader refused: N-2 a package WITHDRAWAL.md (citing it puts the word in the text)",
+          "firstErrorLine": "AssertionError: N-2 a package WITHDRAWAL.md (citing it puts the word in the text): expected [] to deeply equal [ 'admission', 'egress' ]"
+        },
+        {
+          "test": "every stem counts wherever it sits, save exact tooling citations in an allowlisted file (R-361-1) with no file allowlisted, refuses the reads the pre-#355 reader refused: N-2 a nested instances file",
+          "firstErrorLine": "AssertionError: N-2 a nested instances file: expected [] to deeply equal [ 'admission', 'egress' ]"
+        },
+        {
+          "test": "every stem counts wherever it sits, save exact tooling citations in an allowlisted file (R-361-1) with no file allowlisted, refuses the reads the pre-#355 reader refused: N-2 a script for another provider",
+          "firstErrorLine": "AssertionError: N-2 a script for another provider: expected [] to deeply equal [ 'admission', 'egress' ]"
+        },
+        {
+          "test": "every stem counts wherever it sits, save exact tooling citations in an allowlisted file (R-361-1) with no file allowlisted, refuses the reads the pre-#355 reader refused: N-2 a withdraw script for another provider",
+          "firstErrorLine": "AssertionError: N-2 a withdraw script for another provider: expected [] to deeply equal [ 'admission', 'egress' ]"
+        },
+        {
+          "test": "every stem counts wherever it sits, save exact tooling citations in an allowlisted file (R-361-1) with no file allowlisted, refuses the reads the pre-#355 reader refused: a bare package directory, no withdrawal word",
+          "firstErrorLine": "AssertionError: a bare package directory, no withdrawal word: expected [] to deeply equal [ 'admission', 'egress' ]"
+        },
+        {
+          "test": "every stem counts wherever it sits, save exact tooling citations in an allowlisted file (R-361-1) with no file allowlisted, refuses the reads the pre-#355 reader refused: an existing id-named package file, no withdrawal word",
+          "firstErrorLine": "AssertionError: an existing id-named package file, no withdrawal word: expected [] to deeply equal [ 'admission', 'egress' ]"
+        },
+        {
+          "test": "every stem counts wherever it sits, save exact tooling citations in an allowlisted file (R-361-1) with no file allowlisted, refuses the reads the pre-#355 reader refused: N-3a bare package file name",
+          "firstErrorLine": "AssertionError: N-3a bare package file name: expected [] to deeply equal [ 'admission', 'egress' ]"
+        },
+        {
+          "test": "every stem counts wherever it sits, save exact tooling citations in an allowlisted file (R-361-1) with no file allowlisted, refuses the reads the pre-#355 reader refused: #355 citation: a script in a code span",
+          "firstErrorLine": "AssertionError: #355 citation: a script in a code span: expected [] to deeply equal [ 'admission', 'egress' ]"
+        },
+        {
+          "test": "every stem counts wherever it sits, save exact tooling citations in an allowlisted file (R-361-1) with no file allowlisted, refuses the reads the pre-#355 reader refused: #355 citation: the class recorder",
+          "firstErrorLine": "AssertionError: #355 citation: the class recorder: expected [] to deeply equal [ 'admission', 'class', 'egress' ]"
+        },
+        {
+          "test": "every stem counts wherever it sits, save exact tooling citations in an allowlisted file (R-361-1) with no file allowlisted, refuses the reads the pre-#355 reader refused: #355 citation: a bare script name",
+          "firstErrorLine": "AssertionError: #355 citation: a bare script name: expected [] to deeply equal [ 'admission', 'egress' ]"
+        },
+        {
+          "test": "every stem counts wherever it sits, save exact tooling citations in an allowlisted file (R-361-1) with no file allowlisted, refuses the reads the pre-#355 reader refused: #355 citation: a package file path",
+          "firstErrorLine": "AssertionError: #355 citation: a package file path: expected [] to deeply equal [ 'admission', 'egress' ]"
+        },
+        {
+          "test": "every stem counts wherever it sits, save exact tooling citations in an allowlisted file (R-361-1) with no file allowlisted, refuses the reads the pre-#355 reader refused: #355 citation: package path suffixes",
+          "firstErrorLine": "AssertionError: #355 citation: package path suffixes: expected [] to deeply equal [ 'admission', 'egress' ]"
+        },
+        {
+          "test": "every stem counts wherever it sits, save exact tooling citations in an allowlisted file (R-361-1) with no file allowlisted, refuses the reads the pre-#355 reader refused: #355 citation: a link target",
+          "firstErrorLine": "AssertionError: #355 citation: a link target: expected [] to deeply equal [ 'admission', 'egress' ]"
+        },
+        {
+          "test": "every stem counts wherever it sits, save exact tooling citations in an allowlisted file (R-361-1) with no file allowlisted, refuses the reads the pre-#355 reader refused: #361 unseen: a citation-only stem",
+          "firstErrorLine": "AssertionError: #361 unseen: a citation-only stem: expected [] to deeply equal [ 'admission', 'egress' ]"
+        },
+        {
+          "test": "every stem counts wherever it sits, save exact tooling citations in an allowlisted file (R-361-1) with no file allowlisted, refuses the reads the pre-#355 reader refused: E withdraw",
+          "firstErrorLine": "AssertionError: E withdraw: expected [] to deeply equal [ 'admission', 'egress' ]"
+        },
+        {
+          "test": "every stem counts wherever it sits, save exact tooling citations in an allowlisted file (R-361-1) with no file allowlisted, refuses the reads the pre-#355 reader refused: C withdraw",
+          "firstErrorLine": "AssertionError: C withdraw: expected [] to deeply equal [ 'admission', 'class', 'egress' ]"
+        },
+        {
+          "test": "every stem counts wherever it sits, save exact tooling citations in an allowlisted file (R-361-1) with no file allowlisted, refuses the reads the pre-#355 reader refused: E Withdrawn",
+          "firstErrorLine": "AssertionError: E Withdrawn: expected [] to deeply equal [ 'admission', 'egress' ]"
+        },
+        {
+          "test": "every stem counts wherever it sits, save exact tooling citations in an allowlisted file (R-361-1) with no file allowlisted, refuses the reads the pre-#355 reader refused: C Withdrawn",
+          "firstErrorLine": "AssertionError: C Withdrawn: expected [] to deeply equal [ 'admission', 'class', 'egress' ]"
+        },
+        {
+          "test": "every stem counts wherever it sits, save exact tooling citations in an allowlisted file (R-361-1) with no file allowlisted, refuses the reads the pre-#355 reader refused: E WITHDRAWN",
+          "firstErrorLine": "AssertionError: E WITHDRAWN: expected [] to deeply equal [ 'admission', 'egress' ]"
+        },
+        {
+          "test": "every stem counts wherever it sits, save exact tooling citations in an allowlisted file (R-361-1) with no file allowlisted, refuses the reads the pre-#355 reader refused: C WITHDRAWN",
+          "firstErrorLine": "AssertionError: C WITHDRAWN: expected [] to deeply equal [ 'admission', 'class', 'egress' ]"
+        },
+        {
+          "test": "every stem counts wherever it sits, save exact tooling citations in an allowlisted file (R-361-1) with no file allowlisted, refuses the reads the pre-#355 reader refused: E withdrawing",
+          "firstErrorLine": "AssertionError: E withdrawing: expected [] to deeply equal [ 'admission', 'egress' ]"
+        },
+        {
+          "test": "every stem counts wherever it sits, save exact tooling citations in an allowlisted file (R-361-1) with no file allowlisted, refuses the reads the pre-#355 reader refused: C withdrawing",
+          "firstErrorLine": "AssertionError: C withdrawing: expected [] to deeply equal [ 'admission', 'class', 'egress' ]"
+        },
+        {
+          "test": "every stem counts wherever it sits, save exact tooling citations in an allowlisted file (R-361-1) with no file allowlisted, refuses the reads the pre-#355 reader refused: E withdrawal",
+          "firstErrorLine": "AssertionError: E withdrawal: expected [] to deeply equal [ 'admission', 'egress' ]"
+        },
+        {
+          "test": "every stem counts wherever it sits, save exact tooling citations in an allowlisted file (R-361-1) with no file allowlisted, refuses the reads the pre-#355 reader refused: C withdrawal",
+          "firstErrorLine": "AssertionError: C withdrawal: expected [] to deeply equal [ 'admission', 'class', 'egress' ]"
+        },
+        {
+          "test": "every stem counts wherever it sits, save exact tooling citations in an allowlisted file (R-361-1) with no file allowlisted, refuses the reads the pre-#355 reader refused: E withdrew",
+          "firstErrorLine": "AssertionError: E withdrew: expected [] to deeply equal [ 'admission', 'egress' ]"
+        },
+        {
+          "test": "every stem counts wherever it sits, save exact tooling citations in an allowlisted file (R-361-1) with no file allowlisted, refuses the reads the pre-#355 reader refused: C withdrew",
+          "firstErrorLine": "AssertionError: C withdrew: expected [] to deeply equal [ 'admission', 'class', 'egress' ]"
+        },
+        {
+          "test": "every stem counts wherever it sits, save exact tooling citations in an allowlisted file (R-361-1) with no file allowlisted, refuses the reads the pre-#355 reader refused: E withdrawl-typo",
+          "firstErrorLine": "AssertionError: E withdrawl-typo: expected [] to deeply equal [ 'admission', 'egress' ]"
+        },
+        {
+          "test": "every stem counts wherever it sits, save exact tooling citations in an allowlisted file (R-361-1) with no file allowlisted, refuses the reads the pre-#355 reader refused: C withdrawl-typo",
+          "firstErrorLine": "AssertionError: C withdrawl-typo: expected [] to deeply equal [ 'admission', 'class', 'egress' ]"
+        },
+        {
+          "test": "every stem counts wherever it sits, save exact tooling citations in an allowlisted file (R-361-1) with no file allowlisted, refuses the reads the pre-#355 reader refused: E revoked",
+          "firstErrorLine": "AssertionError: E revoked: expected [] to deeply equal [ 'admission', 'egress' ]"
+        },
+        {
+          "test": "every stem counts wherever it sits, save exact tooling citations in an allowlisted file (R-361-1) with no file allowlisted, refuses the reads the pre-#355 reader refused: C revoked",
+          "firstErrorLine": "AssertionError: C revoked: expected [] to deeply equal [ 'admission', 'class', 'egress' ]"
+        },
+        {
+          "test": "every stem counts wherever it sits, save exact tooling citations in an allowlisted file (R-361-1) with no file allowlisted, refuses the reads the pre-#355 reader refused: E revocation",
+          "firstErrorLine": "AssertionError: E revocation: expected [] to deeply equal [ 'admission', 'egress' ]"
+        },
+        {
+          "test": "every stem counts wherever it sits, save exact tooling citations in an allowlisted file (R-361-1) with no file allowlisted, refuses the reads the pre-#355 reader refused: C revocation",
+          "firstErrorLine": "AssertionError: C revocation: expected [] to deeply equal [ 'admission', 'class', 'egress' ]"
+        },
+        {
+          "test": "every stem counts wherever it sits, save exact tooling citations in an allowlisted file (R-361-1) with no file allowlisted, refuses the reads the pre-#355 reader refused: E revoking",
+          "firstErrorLine": "AssertionError: E revoking: expected [] to deeply equal [ 'admission', 'egress' ]"
+        },
+        {
+          "test": "every stem counts wherever it sits, save exact tooling citations in an allowlisted file (R-361-1) with no file allowlisted, refuses the reads the pre-#355 reader refused: C revoking",
+          "firstErrorLine": "AssertionError: C revoking: expected [] to deeply equal [ 'admission', 'class', 'egress' ]"
+        },
+        {
+          "test": "every stem counts wherever it sits, save exact tooling citations in an allowlisted file (R-361-1) with no file allowlisted, refuses the reads the pre-#355 reader refused: E retracted",
+          "firstErrorLine": "AssertionError: E retracted: expected [] to deeply equal [ 'admission', 'egress' ]"
+        },
+        {
+          "test": "every stem counts wherever it sits, save exact tooling citations in an allowlisted file (R-361-1) with no file allowlisted, refuses the reads the pre-#355 reader refused: C retracted",
+          "firstErrorLine": "AssertionError: C retracted: expected [] to deeply equal [ 'admission', 'class', 'egress' ]"
+        },
+        {
+          "test": "every stem counts wherever it sits, save exact tooling citations in an allowlisted file (R-361-1) with no file allowlisted, refuses the reads the pre-#355 reader refused: E retraction",
+          "firstErrorLine": "AssertionError: E retraction: expected [] to deeply equal [ 'admission', 'egress' ]"
+        },
+        {
+          "test": "every stem counts wherever it sits, save exact tooling citations in an allowlisted file (R-361-1) with no file allowlisted, refuses the reads the pre-#355 reader refused: C retraction",
+          "firstErrorLine": "AssertionError: C retraction: expected [] to deeply equal [ 'admission', 'class', 'egress' ]"
+        },
+        {
+          "test": "every stem counts wherever it sits, save exact tooling citations in an allowlisted file (R-361-1) with no file allowlisted, refuses the reads the pre-#355 reader refused: E rescinded",
+          "firstErrorLine": "AssertionError: E rescinded: expected [] to deeply equal [ 'admission', 'egress' ]"
+        },
+        {
+          "test": "every stem counts wherever it sits, save exact tooling citations in an allowlisted file (R-361-1) with no file allowlisted, refuses the reads the pre-#355 reader refused: C rescinded",
+          "firstErrorLine": "AssertionError: C rescinded: expected [] to deeply equal [ 'admission', 'class', 'egress' ]"
+        },
+        {
+          "test": "every stem counts wherever it sits, save exact tooling citations in an allowlisted file (R-361-1) with no file allowlisted, refuses the reads the pre-#355 reader refused: E rescission",
+          "firstErrorLine": "AssertionError: E rescission: expected [] to deeply equal [ 'admission', 'egress' ]"
+        },
+        {
+          "test": "every stem counts wherever it sits, save exact tooling citations in an allowlisted file (R-361-1) with no file allowlisted, refuses the reads the pre-#355 reader refused: C rescission",
+          "firstErrorLine": "AssertionError: C rescission: expected [] to deeply equal [ 'admission', 'class', 'egress' ]"
+        },
+        {
+          "test": "every stem counts wherever it sits, save exact tooling citations in an allowlisted file (R-361-1) with no file allowlisted, refuses the reads the pre-#355 reader refused: E recission-typo",
+          "firstErrorLine": "AssertionError: E recission-typo: expected [] to deeply equal [ 'admission', 'egress' ]"
+        },
+        {
+          "test": "every stem counts wherever it sits, save exact tooling citations in an allowlisted file (R-361-1) with no file allowlisted, refuses the reads the pre-#355 reader refused: C recission-typo",
+          "firstErrorLine": "AssertionError: C recission-typo: expected [] to deeply equal [ 'admission', 'class', 'egress' ]"
+        },
+        {
+          "test": "every stem counts wherever it sits, save exact tooling citations in an allowlisted file (R-361-1) with no file allowlisted, refuses the reads the pre-#355 reader refused: E recinded-typo",
+          "firstErrorLine": "AssertionError: E recinded-typo: expected [] to deeply equal [ 'admission', 'egress' ]"
+        },
+        {
+          "test": "every stem counts wherever it sits, save exact tooling citations in an allowlisted file (R-361-1) with no file allowlisted, refuses the reads the pre-#355 reader refused: C recinded-typo",
+          "firstErrorLine": "AssertionError: C recinded-typo: expected [] to deeply equal [ 'admission', 'class', 'egress' ]"
+        },
+        {
+          "test": "every stem counts wherever it sits, save exact tooling citations in an allowlisted file (R-361-1) with no file allowlisted, refuses the reads the pre-#355 reader refused: E with-drawn",
+          "firstErrorLine": "AssertionError: E with-drawn: expected [] to deeply equal [ 'admission', 'egress' ]"
+        },
+        {
+          "test": "every stem counts wherever it sits, save exact tooling citations in an allowlisted file (R-361-1) with no file allowlisted, refuses the reads the pre-#355 reader refused: C with-drawn",
+          "firstErrorLine": "AssertionError: C with-drawn: expected [] to deeply equal [ 'admission', 'class', 'egress' ]"
+        },
+        {
+          "test": "every stem counts wherever it sits, save exact tooling citations in an allowlisted file (R-361-1) with no file allowlisted, refuses the reads the pre-#355 reader refused: E with drawn",
+          "firstErrorLine": "AssertionError: E with drawn: expected [] to deeply equal [ 'admission', 'egress' ]"
+        },
+        {
+          "test": "every stem counts wherever it sits, save exact tooling citations in an allowlisted file (R-361-1) with no file allowlisted, refuses the reads the pre-#355 reader refused: C with drawn",
+          "firstErrorLine": "AssertionError: C with drawn: expected [] to deeply equal [ 'admission', 'class', 'egress' ]"
+        },
+        {
+          "test": "every stem counts wherever it sits, save exact tooling citations in an allowlisted file (R-361-1) with no file allowlisted, refuses the reads the pre-#355 reader refused: E with-NL-drawn",
+          "firstErrorLine": "AssertionError: E with-NL-drawn: expected [] to deeply equal [ 'admission', 'egress' ]"
+        },
+        {
+          "test": "every stem counts wherever it sits, save exact tooling citations in an allowlisted file (R-361-1) with no file allowlisted, refuses the reads the pre-#355 reader refused: C with-NL-drawn",
+          "firstErrorLine": "AssertionError: C with-NL-drawn: expected [] to deeply equal [ 'admission', 'class', 'egress' ]"
+        },
+        {
+          "test": "every stem counts wherever it sits, save exact tooling citations in an allowlisted file (R-361-1) with no file allowlisted, refuses the reads the pre-#355 reader refused: E with NL drawn",
+          "firstErrorLine": "AssertionError: E with NL drawn: expected [] to deeply equal [ 'admission', 'egress' ]"
+        },
+        {
+          "test": "every stem counts wherever it sits, save exact tooling citations in an allowlisted file (R-361-1) with no file allowlisted, refuses the reads the pre-#355 reader refused: C with NL drawn",
+          "firstErrorLine": "AssertionError: C with NL drawn: expected [] to deeply equal [ 'admission', 'class', 'egress' ]"
+        },
+        {
+          "test": "every stem counts wherever it sits, save exact tooling citations in an allowlisted file (R-361-1) with no file allowlisted, refuses the reads the pre-#355 reader refused: E with**drawn**",
+          "firstErrorLine": "AssertionError: E with**drawn**: expected [] to deeply equal [ 'admission', 'egress' ]"
+        },
+        {
+          "test": "every stem counts wherever it sits, save exact tooling citations in an allowlisted file (R-361-1) with no file allowlisted, refuses the reads the pre-#355 reader refused: C with**drawn**",
+          "firstErrorLine": "AssertionError: C with**drawn**: expected [] to deeply equal [ 'admission', 'class', 'egress' ]"
+        },
+        {
+          "test": "every stem counts wherever it sits, save exact tooling citations in an allowlisted file (R-361-1) with no file allowlisted, refuses the reads the pre-#355 reader refused: E code span",
+          "firstErrorLine": "AssertionError: E code span: expected [] to deeply equal [ 'admission', 'egress' ]"
+        },
+        {
+          "test": "every stem counts wherever it sits, save exact tooling citations in an allowlisted file (R-361-1) with no file allowlisted, refuses the reads the pre-#355 reader refused: C code span",
+          "firstErrorLine": "AssertionError: C code span: expected [] to deeply equal [ 'admission', 'class', 'egress' ]"
+        },
+        {
+          "test": "every stem counts wherever it sits, save exact tooling citations in an allowlisted file (R-361-1) with no file allowlisted, refuses the reads the pre-#355 reader refused: E heading",
+          "firstErrorLine": "AssertionError: E heading: expected [] to deeply equal [ 'admission', 'egress' ]"
+        },
+        {
+          "test": "every stem counts wherever it sits, save exact tooling citations in an allowlisted file (R-361-1) with no file allowlisted, refuses the reads the pre-#355 reader refused: C heading",
+          "firstErrorLine": "AssertionError: C heading: expected [] to deeply equal [ 'admission', 'class', 'egress' ]"
+        },
+        {
+          "test": "every stem counts wherever it sits, save exact tooling citations in an allowlisted file (R-361-1) with no file allowlisted, refuses the reads the pre-#355 reader refused: E re-voked",
+          "firstErrorLine": "AssertionError: E re-voked: expected [] to deeply equal [ 'admission', 'egress' ]"
+        },
+        {
+          "test": "every stem counts wherever it sits, save exact tooling citations in an allowlisted file (R-361-1) with no file allowlisted, refuses the reads the pre-#355 reader refused: C re-voked",
+          "firstErrorLine": "AssertionError: C re-voked: expected [] to deeply equal [ 'admission', 'class', 'egress' ]"
+        },
+        {
+          "test": "every stem counts wherever it sits, save exact tooling citations in an allowlisted file (R-361-1) with no file allowlisted, refuses the reads the pre-#355 reader refused: E re U+2011 voked",
+          "firstErrorLine": "AssertionError: E re U+2011 voked: expected [] to deeply equal [ 'admission', 'egress' ]"
+        },
+        {
+          "test": "every stem counts wherever it sits, save exact tooling citations in an allowlisted file (R-361-1) with no file allowlisted, refuses the reads the pre-#355 reader refused: C re U+2011 voked",
+          "firstErrorLine": "AssertionError: C re U+2011 voked: expected [] to deeply equal [ 'admission', 'class', 'egress' ]"
+        },
+        {
+          "test": "every stem counts wherever it sits, save exact tooling citations in an allowlisted file (R-361-1) with no file allowlisted, refuses the reads the pre-#355 reader refused: E soft hyphen",
+          "firstErrorLine": "AssertionError: E soft hyphen: expected [] to deeply equal [ 'admission', 'egress' ]"
+        },
+        {
+          "test": "every stem counts wherever it sits, save exact tooling citations in an allowlisted file (R-361-1) with no file allowlisted, refuses the reads the pre-#355 reader refused: C soft hyphen",
+          "firstErrorLine": "AssertionError: C soft hyphen: expected [] to deeply equal [ 'admission', 'class', 'egress' ]"
+        },
+        {
+          "test": "every stem counts wherever it sits, save exact tooling citations in an allowlisted file (R-361-1) with no file allowlisted, refuses the reads the pre-#355 reader refused: E ZWSP",
+          "firstErrorLine": "AssertionError: E ZWSP: expected [] to deeply equal [ 'admission', 'egress' ]"
+        },
+        {
+          "test": "every stem counts wherever it sits, save exact tooling citations in an allowlisted file (R-361-1) with no file allowlisted, refuses the reads the pre-#355 reader refused: C ZWSP",
+          "firstErrorLine": "AssertionError: C ZWSP: expected [] to deeply equal [ 'admission', 'class', 'egress' ]"
+        },
+        {
+          "test": "every stem counts wherever it sits, save exact tooling citations in an allowlisted file (R-361-1) with no file allowlisted, refuses the reads the pre-#355 reader refused: E fullwidth",
+          "firstErrorLine": "AssertionError: E fullwidth: expected [] to deeply equal [ 'admission', 'egress' ]"
+        },
+        {
+          "test": "every stem counts wherever it sits, save exact tooling citations in an allowlisted file (R-361-1) with no file allowlisted, refuses the reads the pre-#355 reader refused: C fullwidth",
+          "firstErrorLine": "AssertionError: C fullwidth: expected [] to deeply equal [ 'admission', 'class', 'egress' ]"
+        },
+        {
+          "test": "every stem counts wherever it sits, save exact tooling citations in an allowlisted file (R-361-1) with no file allowlisted, refuses the reads the pre-#355 reader refused: E Cyrillic a",
+          "firstErrorLine": "AssertionError: E Cyrillic a: expected [] to deeply equal [ 'admission', 'egress' ]"
+        },
+        {
+          "test": "every stem counts wherever it sits, save exact tooling citations in an allowlisted file (R-361-1) with no file allowlisted, refuses the reads the pre-#355 reader refused: C Cyrillic a",
+          "firstErrorLine": "AssertionError: C Cyrillic a: expected [] to deeply equal [ 'admission', 'class', 'egress' ]"
+        },
+        {
+          "test": "every stem counts wherever it sits, save exact tooling citations in an allowlisted file (R-361-1) with no file allowlisted, refuses the reads the pre-#355 reader refused: E Greek omicron",
+          "firstErrorLine": "AssertionError: E Greek omicron: expected [] to deeply equal [ 'admission', 'egress' ]"
+        },
+        {
+          "test": "every stem counts wherever it sits, save exact tooling citations in an allowlisted file (R-361-1) with no file allowlisted, refuses the reads the pre-#355 reader refused: C Greek omicron",
+          "firstErrorLine": "AssertionError: C Greek omicron: expected [] to deeply equal [ 'admission', 'class', 'egress' ]"
+        },
+        {
+          "test": "every stem counts wherever it sits, save exact tooling citations in an allowlisted file (R-361-1) with no file allowlisted, refuses the reads the pre-#355 reader refused: E &shy; entity",
+          "firstErrorLine": "AssertionError: E &shy; entity: expected [] to deeply equal [ 'admission', 'egress' ]"
+        },
+        {
+          "test": "every stem counts wherever it sits, save exact tooling citations in an allowlisted file (R-361-1) with no file allowlisted, refuses the reads the pre-#355 reader refused: C &shy; entity",
+          "firstErrorLine": "AssertionError: C &shy; entity: expected [] to deeply equal [ 'admission', 'class', 'egress' ]"
+        },
+        {
+          "test": "every stem counts wherever it sits, save exact tooling citations in an allowlisted file (R-361-1) with no file allowlisted, refuses the reads the pre-#355 reader refused: E &#119; entity",
+          "firstErrorLine": "AssertionError: E &#119; entity: expected [] to deeply equal [ 'admission', 'egress' ]"
+        },
+        {
+          "test": "every stem counts wherever it sits, save exact tooling citations in an allowlisted file (R-361-1) with no file allowlisted, refuses the reads the pre-#355 reader refused: C &#119; entity",
+          "firstErrorLine": "AssertionError: C &#119; entity: expected [] to deeply equal [ 'admission', 'class', 'egress' ]"
+        },
+        {
+          "test": "every stem counts wherever it sits, save exact tooling citations in an allowlisted file (R-361-1) with no file allowlisted, refuses the reads the pre-#355 reader refused: E combining mark",
+          "firstErrorLine": "AssertionError: E combining mark: expected [] to deeply equal [ 'admission', 'egress' ]"
+        },
+        {
+          "test": "every stem counts wherever it sits, save exact tooling citations in an allowlisted file (R-361-1) with no file allowlisted, refuses the reads the pre-#355 reader refused: C combining mark",
+          "firstErrorLine": "AssertionError: C combining mark: expected [] to deeply equal [ 'admission', 'class', 'egress' ]"
+        },
+        {
+          "test": "every stem counts wherever it sits, save exact tooling citations in an allowlisted file (R-361-1) with no file allowlisted, refuses the reads the pre-#355 reader refused: E re-tract",
+          "firstErrorLine": "AssertionError: E re-tract: expected [] to deeply equal [ 'admission', 'egress' ]"
+        },
+        {
+          "test": "every stem counts wherever it sits, save exact tooling citations in an allowlisted file (R-361-1) with no file allowlisted, refuses the reads the pre-#355 reader refused: C re-tract",
+          "firstErrorLine": "AssertionError: C re-tract: expected [] to deeply equal [ 'admission', 'class', 'egress' ]"
+        },
+        {
+          "test": "every stem counts wherever it sits, save exact tooling citations in an allowlisted file (R-361-1) with no file allowlisted, refuses the reads the pre-#355 reader refused: E re-scind",
+          "firstErrorLine": "AssertionError: E re-scind: expected [] to deeply equal [ 'admission', 'egress' ]"
+        },
+        {
+          "test": "every stem counts wherever it sits, save exact tooling citations in an allowlisted file (R-361-1) with no file allowlisted, refuses the reads the pre-#355 reader refused: C re-scind",
+          "firstErrorLine": "AssertionError: C re-scind: expected [] to deeply equal [ 'admission', 'class', 'egress' ]"
+        },
+        {
+          "test": "every stem counts wherever it sits, save exact tooling citations in an allowlisted file (R-361-1) with no file allowlisted, refuses the reads the pre-#355 reader refused: E w/drawn",
+          "firstErrorLine": "AssertionError: E w/drawn: expected [] to deeply equal [ 'admission', 'egress' ]"
+        },
+        {
+          "test": "every stem counts wherever it sits, save exact tooling citations in an allowlisted file (R-361-1) with no file allowlisted, refuses the reads the pre-#355 reader refused: C w/drawn",
+          "firstErrorLine": "AssertionError: C w/drawn: expected [] to deeply equal [ 'admission', 'class', 'egress' ]"
+        },
+        {
+          "test": "every stem counts wherever it sits, save exact tooling citations in an allowlisted file (R-361-1) with no file allowlisted, refuses the reads the pre-#355 reader refused: E W-I-T-H",
+          "firstErrorLine": "AssertionError: E W-I-T-H: expected [] to deeply equal [ 'admission', 'egress' ]"
+        },
+        {
+          "test": "every stem counts wherever it sits, save exact tooling citations in an allowlisted file (R-361-1) with no file allowlisted, refuses the reads the pre-#355 reader refused: C W-I-T-H",
+          "firstErrorLine": "AssertionError: C W-I-T-H: expected [] to deeply equal [ 'admission', 'class', 'egress' ]"
+        },
+        {
+          "test": "every stem counts wherever it sits, save exact tooling citations in an allowlisted file (R-361-1) with no file allowlisted, refuses the reads the pre-#355 reader refused: E cancelled",
+          "firstErrorLine": "AssertionError: E cancelled: expected [] to deeply equal [ 'admission', 'egress' ]"
+        },
+        {
+          "test": "every stem counts wherever it sits, save exact tooling citations in an allowlisted file (R-361-1) with no file allowlisted, refuses the reads the pre-#355 reader refused: C cancelled",
+          "firstErrorLine": "AssertionError: C cancelled: expected [] to deeply equal [ 'admission', 'class', 'egress' ]"
+        },
+        {
+          "test": "every stem counts wherever it sits, save exact tooling citations in an allowlisted file (R-361-1) with no file allowlisted, refuses the reads the pre-#355 reader refused: E terminated",
+          "firstErrorLine": "AssertionError: E terminated: expected [] to deeply equal [ 'admission', 'egress' ]"
+        },
+        {
+          "test": "every stem counts wherever it sits, save exact tooling citations in an allowlisted file (R-361-1) with no file allowlisted, refuses the reads the pre-#355 reader refused: C terminated",
+          "firstErrorLine": "AssertionError: C terminated: expected [] to deeply equal [ 'admission', 'class', 'egress' ]"
+        },
+        {
+          "test": "every stem counts wherever it sits, save exact tooling citations in an allowlisted file (R-361-1) with no file allowlisted, refuses the reads the pre-#355 reader refused: E ends today",
+          "firstErrorLine": "AssertionError: E ends today: expected [] to deeply equal [ 'admission', 'egress' ]"
+        },
+        {
+          "test": "every stem counts wherever it sits, save exact tooling citations in an allowlisted file (R-361-1) with no file allowlisted, refuses the reads the pre-#355 reader refused: C ends today",
+          "firstErrorLine": "AssertionError: C ends today: expected [] to deeply equal [ 'admission', 'class', 'egress' ]"
+        },
+        {
+          "test": "every stem counts wherever it sits, save exact tooling citations in an allowlisted file (R-361-1) with no file allowlisted, refuses the reads the pre-#355 reader refused: E void",
+          "firstErrorLine": "AssertionError: E void: expected [] to deeply equal [ 'admission', 'egress' ]"
+        },
+        {
+          "test": "every stem counts wherever it sits, save exact tooling citations in an allowlisted file (R-361-1) with no file allowlisted, refuses the reads the pre-#355 reader refused: C void",
+          "firstErrorLine": "AssertionError: C void: expected [] to deeply equal [ 'admission', 'class', 'egress' ]"
+        },
+        {
+          "test": "every stem counts wherever it sits, save exact tooling citations in an allowlisted file (R-361-1) with no file allowlisted, refuses the reads the pre-#355 reader refused: E pulled",
+          "firstErrorLine": "AssertionError: E pulled: expected [] to deeply equal [ 'admission', 'egress' ]"
+        },
+        {
+          "test": "every stem counts wherever it sits, save exact tooling citations in an allowlisted file (R-361-1) with no file allowlisted, refuses the reads the pre-#355 reader refused: C pulled",
+          "firstErrorLine": "AssertionError: C pulled: expected [] to deeply equal [ 'admission', 'class', 'egress' ]"
+        },
+        {
+          "test": "every stem counts wherever it sits, save exact tooling citations in an allowlisted file (R-361-1) with no file allowlisted, refuses the reads the pre-#355 reader refused: E annulled",
+          "firstErrorLine": "AssertionError: E annulled: expected [] to deeply equal [ 'admission', 'egress' ]"
+        },
+        {
+          "test": "every stem counts wherever it sits, save exact tooling citations in an allowlisted file (R-361-1) with no file allowlisted, refuses the reads the pre-#355 reader refused: C annulled",
+          "firstErrorLine": "AssertionError: C annulled: expected [] to deeply equal [ 'admission', 'class', 'egress' ]"
+        },
+        {
+          "test": "every stem counts wherever it sits, save exact tooling citations in an allowlisted file (R-361-1) with no file allowlisted, refuses the reads the pre-#355 reader refused: E repealed",
+          "firstErrorLine": "AssertionError: E repealed: expected [] to deeply equal [ 'admission', 'egress' ]"
+        },
+        {
+          "test": "every stem counts wherever it sits, save exact tooling citations in an allowlisted file (R-361-1) with no file allowlisted, refuses the reads the pre-#355 reader refused: C repealed",
+          "firstErrorLine": "AssertionError: C repealed: expected [] to deeply equal [ 'admission', 'class', 'egress' ]"
+        },
+        {
+          "test": "every stem counts wherever it sits, save exact tooling citations in an allowlisted file (R-361-1) with no file allowlisted, refuses the reads the pre-#355 reader refused: E retired",
+          "firstErrorLine": "AssertionError: E retired: expected [] to deeply equal [ 'admission', 'egress' ]"
+        },
+        {
+          "test": "every stem counts wherever it sits, save exact tooling citations in an allowlisted file (R-361-1) with no file allowlisted, refuses the reads the pre-#355 reader refused: C retired",
+          "firstErrorLine": "AssertionError: C retired: expected [] to deeply equal [ 'admission', 'class', 'egress' ]"
+        },
+        {
+          "test": "every stem counts wherever it sits, save exact tooling citations in an allowlisted file (R-361-1) with no file allowlisted, refuses the reads the pre-#355 reader refused: E superseded",
+          "firstErrorLine": "AssertionError: E superseded: expected [] to deeply equal [ 'admission', 'egress' ]"
+        },
+        {
+          "test": "every stem counts wherever it sits, save exact tooling citations in an allowlisted file (R-361-1) with no file allowlisted, refuses the reads the pre-#355 reader refused: C superseded",
+          "firstErrorLine": "AssertionError: C superseded: expected [] to deeply equal [ 'admission', 'class', 'egress' ]"
+        },
+        {
+          "test": "every stem counts wherever it sits, save exact tooling citations in an allowlisted file (R-361-1) with no file allowlisted, refuses the reads the pre-#355 reader refused: E suspended",
+          "firstErrorLine": "AssertionError: E suspended: expected [] to deeply equal [ 'admission', 'egress' ]"
+        },
+        {
+          "test": "every stem counts wherever it sits, save exact tooling citations in an allowlisted file (R-361-1) with no file allowlisted, refuses the reads the pre-#355 reader refused: C suspended",
+          "firstErrorLine": "AssertionError: C suspended: expected [] to deeply equal [ 'admission', 'class', 'egress' ]"
+        },
+        {
+          "test": "every stem counts wherever it sits, save exact tooling citations in an allowlisted file (R-361-1) with no file allowlisted, refuses the reads the pre-#355 reader refused: E lapsed",
+          "firstErrorLine": "AssertionError: E lapsed: expected [] to deeply equal [ 'admission', 'egress' ]"
+        },
+        {
+          "test": "every stem counts wherever it sits, save exact tooling citations in an allowlisted file (R-361-1) with no file allowlisted, refuses the reads the pre-#355 reader refused: C lapsed",
+          "firstErrorLine": "AssertionError: C lapsed: expected [] to deeply equal [ 'admission', 'class', 'egress' ]"
+        },
+        {
+          "test": "every stem counts wherever it sits, save exact tooling citations in an allowlisted file (R-361-1) with no file allowlisted, refuses the reads the pre-#355 reader refused: E expired",
+          "firstErrorLine": "AssertionError: E expired: expected [] to deeply equal [ 'admission', 'egress' ]"
+        },
+        {
+          "test": "every stem counts wherever it sits, save exact tooling citations in an allowlisted file (R-361-1) with no file allowlisted, refuses the reads the pre-#355 reader refused: C expired",
+          "firstErrorLine": "AssertionError: C expired: expected [] to deeply equal [ 'admission', 'class', 'egress' ]"
+        },
+        {
+          "test": "every stem counts wherever it sits, save exact tooling citations in an allowlisted file (R-361-1) with no file allowlisted, refuses the reads the pre-#355 reader refused: E stopped",
+          "firstErrorLine": "AssertionError: E stopped: expected [] to deeply equal [ 'admission', 'egress' ]"
+        },
+        {
+          "test": "every stem counts wherever it sits, save exact tooling citations in an allowlisted file (R-361-1) with no file allowlisted, refuses the reads the pre-#355 reader refused: C stopped",
+          "firstErrorLine": "AssertionError: C stopped: expected [] to deeply equal [ 'admission', 'class', 'egress' ]"
+        },
+        {
+          "test": "every stem counts wherever it sits, save exact tooling citations in an allowlisted file (R-361-1) with no file allowlisted, refuses the reads the pre-#355 reader refused: E invalidated",
+          "firstErrorLine": "AssertionError: E invalidated: expected [] to deeply equal [ 'admission', 'egress' ]"
+        },
+        {
+          "test": "every stem counts wherever it sits, save exact tooling citations in an allowlisted file (R-361-1) with no file allowlisted, refuses the reads the pre-#355 reader refused: C invalidated",
+          "firstErrorLine": "AssertionError: C invalidated: expected [] to deeply equal [ 'admission', 'class', 'egress' ]"
+        },
+        {
+          "test": "every stem counts wherever it sits, save exact tooling citations in an allowlisted file (R-361-1) with no file allowlisted, refuses the reads the pre-#355 reader refused: E nullified",
+          "firstErrorLine": "AssertionError: E nullified: expected [] to deeply equal [ 'admission', 'egress' ]"
+        },
+        {
+          "test": "every stem counts wherever it sits, save exact tooling citations in an allowlisted file (R-361-1) with no file allowlisted, refuses the reads the pre-#355 reader refused: C nullified",
+          "firstErrorLine": "AssertionError: C nullified: expected [] to deeply equal [ 'admission', 'class', 'egress' ]"
+        },
+        {
+          "test": "every stem counts wherever it sits, save exact tooling citations in an allowlisted file (R-361-1) with no file allowlisted, refuses the reads the pre-#355 reader refused: E no longer consent",
+          "firstErrorLine": "AssertionError: E no longer consent: expected [] to deeply equal [ 'admission', 'egress' ]"
+        },
+        {
+          "test": "every stem counts wherever it sits, save exact tooling citations in an allowlisted file (R-361-1) with no file allowlisted, refuses the reads the pre-#355 reader refused: C no longer consent",
+          "firstErrorLine": "AssertionError: C no longer consent: expected [] to deeply equal [ 'admission', 'class', 'egress' ]"
+        },
+        {
+          "test": "every stem counts wherever it sits, save exact tooling citations in an allowlisted file (R-361-1) with no file allowlisted, refuses the reads the pre-#355 reader refused: E no longer in force",
+          "firstErrorLine": "AssertionError: E no longer in force: expected [] to deeply equal [ 'admission', 'egress' ]"
+        },
+        {
+          "test": "every stem counts wherever it sits, save exact tooling citations in an allowlisted file (R-361-1) with no file allowlisted, refuses the reads the pre-#355 reader refused: C no longer in force",
+          "firstErrorLine": "AssertionError: C no longer in force: expected [] to deeply equal [ 'admission', 'class', 'egress' ]"
+        },
+        {
+          "test": "every stem counts wherever it sits, save exact tooling citations in an allowlisted file (R-361-1) with no file allowlisted, refuses the reads the pre-#355 reader refused: E abandoned",
+          "firstErrorLine": "AssertionError: E abandoned: expected [] to deeply equal [ 'admission', 'egress' ]"
+        },
+        {
+          "test": "every stem counts wherever it sits, save exact tooling citations in an allowlisted file (R-361-1) with no file allowlisted, refuses the reads the pre-#355 reader refused: C abandoned",
+          "firstErrorLine": "AssertionError: C abandoned: expected [] to deeply equal [ 'admission', 'class', 'egress' ]"
+        },
+        {
+          "test": "every stem counts wherever it sits, save exact tooling citations in an allowlisted file (R-361-1) with no file allowlisted, refuses the reads the pre-#355 reader refused: E reversed",
+          "firstErrorLine": "AssertionError: E reversed: expected [] to deeply equal [ 'admission', 'egress' ]"
+        },
+        {
+          "test": "every stem counts wherever it sits, save exact tooling citations in an allowlisted file (R-361-1) with no file allowlisted, refuses the reads the pre-#355 reader refused: C reversed",
+          "firstErrorLine": "AssertionError: C reversed: expected [] to deeply equal [ 'admission', 'class', 'egress' ]"
+        },
+        {
+          "test": "every stem counts wherever it sits, save exact tooling citations in an allowlisted file (R-361-1) with no file allowlisted, refuses the reads the pre-#355 reader refused: E removed",
+          "firstErrorLine": "AssertionError: E removed: expected [] to deeply equal [ 'admission', 'egress' ]"
+        },
+        {
+          "test": "every stem counts wherever it sits, save exact tooling citations in an allowlisted file (R-361-1) with no file allowlisted, refuses the reads the pre-#355 reader refused: C removed",
+          "firstErrorLine": "AssertionError: C removed: expected [] to deeply equal [ 'admission', 'class', 'egress' ]"
+        },
+        {
+          "test": "every stem counts wherever it sits, save exact tooling citations in an allowlisted file (R-361-1) with no file allowlisted, refuses the reads the pre-#355 reader refused: E opted out",
+          "firstErrorLine": "AssertionError: E opted out: expected [] to deeply equal [ 'admission', 'egress' ]"
+        },
+        {
+          "test": "every stem counts wherever it sits, save exact tooling citations in an allowlisted file (R-361-1) with no file allowlisted, refuses the reads the pre-#355 reader refused: C opted out",
+          "firstErrorLine": "AssertionError: C opted out: expected [] to deeply equal [ 'admission', 'class', 'egress' ]"
+        },
+        {
+          "test": "every stem counts wherever it sits, save exact tooling citations in an allowlisted file (R-361-1) with no file allowlisted, refuses the reads the pre-#355 reader refused: E disabled",
+          "firstErrorLine": "AssertionError: E disabled: expected [] to deeply equal [ 'admission', 'egress' ]"
+        },
+        {
+          "test": "every stem counts wherever it sits, save exact tooling citations in an allowlisted file (R-361-1) with no file allowlisted, refuses the reads the pre-#355 reader refused: C disabled",
+          "firstErrorLine": "AssertionError: C disabled: expected [] to deeply equal [ 'admission', 'class', 'egress' ]"
+        },
+        {
+          "test": "every stem counts wherever it sits, save exact tooling citations in an allowlisted file (R-361-1) with no file allowlisted, refuses the reads the pre-#355 reader refused: E halted",
+          "firstErrorLine": "AssertionError: E halted: expected [] to deeply equal [ 'admission', 'egress' ]"
+        },
+        {
+          "test": "every stem counts wherever it sits, save exact tooling citations in an allowlisted file (R-361-1) with no file allowlisted, refuses the reads the pre-#355 reader refused: C halted",
+          "firstErrorLine": "AssertionError: C halted: expected [] to deeply equal [ 'admission', 'class', 'egress' ]"
+        },
+        {
+          "test": "every stem counts wherever it sits, save exact tooling citations in an allowlisted file (R-361-1) with no file allowlisted, refuses the reads the pre-#355 reader refused: E do not use",
+          "firstErrorLine": "AssertionError: E do not use: expected [] to deeply equal [ 'admission', 'egress' ]"
+        },
+        {
+          "test": "every stem counts wherever it sits, save exact tooling citations in an allowlisted file (R-361-1) with no file allowlisted, refuses the reads the pre-#355 reader refused: C do not use",
+          "firstErrorLine": "AssertionError: C do not use: expected [] to deeply equal [ 'admission', 'class', 'egress' ]"
+        },
+        {
+          "test": "every stem counts wherever it sits, save exact tooling citations in an allowlisted file (R-361-1) with no file allowlisted, refuses the reads the pre-#355 reader refused: E end",
+          "firstErrorLine": "AssertionError: E end: expected [] to deeply equal [ 'admission', 'egress' ]"
+        },
+        {
+          "test": "every stem counts wherever it sits, save exact tooling citations in an allowlisted file (R-361-1) with no file allowlisted, refuses the reads the pre-#355 reader refused: C end",
+          "firstErrorLine": "AssertionError: C end: expected [] to deeply equal [ 'admission', 'class', 'egress' ]"
+        },
+        {
+          "test": "every stem counts wherever it sits, save exact tooling citations in an allowlisted file (R-361-1) with no file allowlisted, refuses the reads the pre-#355 reader refused: E undone",
+          "firstErrorLine": "AssertionError: E undone: expected [] to deeply equal [ 'admission', 'egress' ]"
+        },
+        {
+          "test": "every stem counts wherever it sits, save exact tooling citations in an allowlisted file (R-361-1) with no file allowlisted, refuses the reads the pre-#355 reader refused: C undone",
+          "firstErrorLine": "AssertionError: C undone: expected [] to deeply equal [ 'admission', 'class', 'egress' ]"
+        },
+        {
+          "test": "every stem counts wherever it sits, save exact tooling citations in an allowlisted file (R-361-1) with no file allowlisted, refuses the reads the pre-#355 reader refused: E deauthorized",
+          "firstErrorLine": "AssertionError: E deauthorized: expected [] to deeply equal [ 'admission', 'egress' ]"
+        },
+        {
+          "test": "every stem counts wherever it sits, save exact tooling citations in an allowlisted file (R-361-1) with no file allowlisted, refuses the reads the pre-#355 reader refused: C deauthorized",
+          "firstErrorLine": "AssertionError: C deauthorized: expected [] to deeply equal [ 'admission', 'class', 'egress' ]"
+        },
+        {
+          "test": "every stem counts wherever it sits, save exact tooling citations in an allowlisted file (R-361-1) with no file allowlisted, refuses the reads the pre-#355 reader refused: E refused",
+          "firstErrorLine": "AssertionError: E refused: expected [] to deeply equal [ 'admission', 'egress' ]"
+        },
+        {
+          "test": "every stem counts wherever it sits, save exact tooling citations in an allowlisted file (R-361-1) with no file allowlisted, refuses the reads the pre-#355 reader refused: C refused",
+          "firstErrorLine": "AssertionError: C refused: expected [] to deeply equal [ 'admission', 'class', 'egress' ]"
+        },
+        {
+          "test": "every stem counts wherever it sits, save exact tooling citations in an allowlisted file (R-361-1) with no file allowlisted, refuses the reads the pre-#355 reader refused: control stem outside citation, synonym",
+          "firstErrorLine": "AssertionError: control stem outside citation, synonym: expected [] to deeply equal [ 'admission', 'egress' ]"
+        },
+        {
+          "test": "every stem counts wherever it sits, save exact tooling citations in an allowlisted file (R-361-1) with no file allowlisted, refuses the reads the pre-#355 reader refused: name EGRESS-WITHDRAWAL.md",
+          "firstErrorLine": "AssertionError: name EGRESS-WITHDRAWAL.md: expected [] to deeply equal [ 'admission', 'egress' ]"
+        },
+        {
+          "test": "every stem counts wherever it sits, save exact tooling citations in an allowlisted file (R-361-1) with no file allowlisted, refuses the reads the pre-#355 reader refused: name REVOCATION.md",
+          "firstErrorLine": "AssertionError: name REVOCATION.md: expected [] to deeply equal [ 'admission', 'egress' ]"
+        },
+        {
+          "test": "every stem counts wherever it sits, save exact tooling citations in an allowlisted file (R-361-1) with no file allowlisted, refuses the reads the pre-#355 reader refused: split files word+cite",
+          "firstErrorLine": "AssertionError: split files word+cite: expected [] to deeply equal [ 'admission', 'egress' ]"
+        },
+        {
+          "test": "every stem counts wherever it sits, save exact tooling citations in an allowlisted file (R-361-1) with no file allowlisted, refuses the reads the pre-#355 reader refused: split files, word file no word in name",
+          "firstErrorLine": "AssertionError: split files, word file no word in name: expected [] to deeply equal [ 'admission', 'egress' ]"
+        },
+        {
+          "test": "every stem counts wherever it sits, save exact tooling citations in an allowlisted file (R-361-1) with no file allowlisted, refuses the reads the pre-#355 reader refused: word in fence",
+          "firstErrorLine": "AssertionError: word in fence: expected [] to deeply equal [ 'admission', 'egress' ]"
+        },
+        {
+          "test": "every stem counts wherever it sits, save exact tooling citations in an allowlisted file (R-361-1) with no file allowlisted, refuses the reads the pre-#355 reader refused: word in html comment",
+          "firstErrorLine": "AssertionError: word in html comment: expected [] to deeply equal [ 'admission', 'egress' ]"
+        },
+        {
+          "test": "every stem counts wherever it sits, save exact tooling citations in an allowlisted file (R-361-1) with no file allowlisted, refuses the reads the pre-#355 reader refused: benign: withdrawal process doc",
+          "firstErrorLine": "AssertionError: benign: withdrawal process doc: expected [] to deeply equal [ 'admission', 'egress' ]"
+        },
+        {
+          "test": "every stem counts wherever it sits, save exact tooling citations in an allowlisted file (R-361-1) with no file allowlisted, refuses the reads the pre-#355 reader refused: bare manifest name withdrawn",
+          "firstErrorLine": "AssertionError: bare manifest name withdrawn: expected [] to deeply equal [ 'admission', 'egress' ]"
+        },
+        {
+          "test": "every stem counts wherever it sits, save exact tooling citations in an allowlisted file (R-361-1) with no file allowlisted, refuses the reads the pre-#355 reader refused: bare manifest name ends",
+          "firstErrorLine": "AssertionError: bare manifest name ends: expected [] to deeply equal [ 'admission', 'egress' ]"
+        },
+        {
+          "test": "every stem counts wherever it sits, save exact tooling citations in an allowlisted file (R-361-1) with no file allowlisted, refuses the reads the pre-#355 reader refused: v2 manifest pkg-relative ends",
+          "firstErrorLine": "AssertionError: v2 manifest pkg-relative ends: expected [] to deeply equal [ 'admission', 'egress' ]"
+        },
+        {
+          "test": "every stem counts wherever it sits, save exact tooling citations in an allowlisted file (R-361-1) with no file allowlisted, refuses the reads the pre-#355 reader refused: public_egress_v2x script",
+          "firstErrorLine": "AssertionError: public_egress_v2x script: expected [] to deeply equal [ 'admission', 'egress' ]"
+        },
+        {
+          "test": "every stem counts wherever it sits, save exact tooling citations in an allowlisted file (R-361-1) with no file allowlisted, refuses the reads the pre-#355 reader refused: public_egress_v20 script",
+          "firstErrorLine": "AssertionError: public_egress_v20 script: expected [] to deeply equal [ 'admission', 'egress' ]"
+        },
+        {
+          "test": "every stem counts wherever it sits, save exact tooling citations in an allowlisted file (R-361-1) with no file allowlisted, refuses the reads the pre-#355 reader refused: instances nested deep",
+          "firstErrorLine": "AssertionError: instances nested deep: expected [] to deeply equal [ 'admission', 'egress' ]"
+        },
+        {
+          "test": "every stem counts wherever it sits, save exact tooling citations in an allowlisted file (R-361-1) with no file allowlisted, refuses the reads the pre-#355 reader refused: Instances capital segment",
+          "firstErrorLine": "AssertionError: Instances capital segment: expected [] to deeply equal [ 'admission', 'egress' ]"
+        },
+        {
+          "test": "every stem counts wherever it sits, save exact tooling citations in an allowlisted file (R-361-1) with no file allowlisted, refuses the reads the pre-#355 reader refused: instances.md file",
+          "firstErrorLine": "AssertionError: instances.md file: expected [] to deeply equal [ 'admission', 'egress' ]"
+        },
+        {
+          "test": "every stem counts wherever it sits, save exact tooling citations in an allowlisted file (R-361-1) with no file allowlisted, refuses the reads the pre-#355 reader refused: instance-x dir",
+          "firstErrorLine": "AssertionError: instance-x dir: expected [] to deeply equal [ 'admission', 'egress' ]"
+        },
+        {
+          "test": "every stem counts wherever it sits, save exact tooling citations in an allowlisted file (R-361-1) a file at its allowlisted path with its allowlisted bytes has its exact tooling citations set aside, and only those",
+          "firstErrorLine": "AssertionError: expected [] to deeply equal [ 'admission', 'class', 'egress' ]"
+        },
+        {
+          "test": "every stem counts wherever it sits, save exact tooling citations in an allowlisted file (R-361-1) one changed byte gives the file the whole-text sweep",
+          "firstErrorLine": "AssertionError: \"Ran `scr\": expected [] to deeply equal [ 'admission', 'class', 'egress' ]"
+        },
+        {
+          "test": "every stem counts wherever it sits, save exact tooling citations in an allowlisted file (R-361-1) the same bytes at any other path are not allowlisted",
+          "firstErrorLine": "AssertionError: OWNER-DIRECTION-SITTING-2026-10-07.md: expected [] to deeply equal [ 'admission', 'class', 'egress' ]"
+        },
+        {
+          "test": "the policy port and the strict policy chain agree on every world in the fixture set, at every instant",
+          "firstErrorLine": "Error: STACK_TRACE_ERROR"
+        },
+        {
+          "test": "the readers over this checkout's decisions directory do reach that directory: one added file naming a record or the class act refuses the reads that sweep for it",
+          "firstErrorLine": "Error: promise resolved \"[ { \u2026(16) } ]\" instead of rejecting"
+        }
+      ],
+      "note": "No text needle is found as written."
+    },
+    {
+      "id": "M22a-admission-stem-removed",
+      "file": "packages/polaris-generation-consent/src/package-reader.ts",
+      "old": "const ADMISSION_STEMS = ['public-repo-admission', 'public-egress-v2',",
+      "new": "const ADMISSION_STEMS = ['public-egress-v2',",
+      "tests": [
+        "packages/polaris-generation-consent/src/decisions-sweep.test.ts",
+        "packages/polaris-generation-consent/src/act-families.test.ts",
+        "packages/polaris-generation-consent/src/digest-bound-act.test.ts",
+        "packages/polaris-generation-consent/src/package-reader.test.ts",
+        "packages/polaris-generation-consent/src/consent-ports.test.ts",
+        "packages/polaris-generation-consent/src/real-tree.test.ts"
+      ],
+      "command": "npx vitest run --project @syzygy/polaris-generation-consent packages/polaris-generation-consent/src/decisions-sweep.test.ts packages/polaris-generation-consent/src/act-families.test.ts packages/polaris-generation-consent/src/digest-bound-act.test.ts packages/polaris-generation-consent/src/package-reader.test.ts packages/polaris-generation-consent/src/consent-ports.test.ts packages/polaris-generation-consent/src/real-tree.test.ts",
+      "outcome": "killed",
+      "failedTests": 29,
+      "totalTests": 489,
+      "failures": [
+        {
+          "test": "each family's pinned files and records are read by name and bytes a pinned file's bytes under another name are swept",
+          "firstErrorLine": "AssertionError: expected [ 'ok', 'ok', 'ok', 'ok' ] to deeply equal [ 'refused', 'ok', 'ok', 'ok' ]"
+        },
+        {
+          "test": "an admission path in a decisions file's text refuses on .syzygy/governance/contracts/candidates/public-repo-admission/instances in prose, as written",
+          "firstErrorLine": "Error: promise resolved \"[]\" instead of rejecting"
+        },
+        {
+          "test": "an admission path in a decisions file's text refuses on .syzygy/governance/contracts/candidates/public-repo-admission/instances in prose, upper case with underscores",
+          "firstErrorLine": "Error: promise resolved \"[]\" instead of rejecting"
+        },
+        {
+          "test": "an admission path in a decisions file's text refuses on .syzygy/governance/contracts/candidates/public-repo-admission/instances in prose, with a soft hyphen before each dash",
+          "firstErrorLine": "Error: promise resolved \"[]\" instead of rejecting"
+        },
+        {
+          "test": "an admission path in a decisions file's text refuses on .syzygy/governance/contracts/candidates/public-repo-admission/ in prose, as written",
+          "firstErrorLine": "Error: promise resolved \"[]\" instead of rejecting"
+        },
+        {
+          "test": "an admission path in a decisions file's text refuses on .syzygy/governance/contracts/candidates/public-repo-admission/ in prose, upper case with underscores",
+          "firstErrorLine": "Error: promise resolved \"[]\" instead of rejecting"
+        },
+        {
+          "test": "an admission path in a decisions file's text refuses on .syzygy/governance/contracts/candidates/public-repo-admission/ in prose, with a soft hyphen before each dash",
+          "firstErrorLine": "Error: promise resolved \"[]\" instead of rejecting"
+        },
+        {
+          "test": "package admission reader refuses the whole read on unknown shapes instead of guessing",
+          "firstErrorLine": "Error: promise resolved \"[ { \u2026(16) }, { \u2026(16) } ]\" instead of rejecting"
+        },
+        {
+          "test": "admission records port is unsatisfied, with a reason, when records cannot be read or none exist",
+          "firstErrorLine": "AssertionError: expected { satisfied: true, \u2026(1) } to match object { satisfied: false, \u2026(1) }"
+        },
+        {
+          "test": "admission records port reads fresh on every check: a later withdrawal-form file turns a satisfied answer into a refusal",
+          "firstErrorLine": "AssertionError: expected true to be false // Object.is equality"
+        },
+        {
+          "test": "consented revisions for a repository is empty before the act, for another repository, for stale bytes, with no act, and when the records cannot be read",
+          "firstErrorLine": "AssertionError: expected [ { label: '8.10.2', \u2026(1) }, \u2026(1) ] to deeply equal []"
+        },
+        {
+          "test": "act instant accepts only the pinned owner-answers file by name and bytes",
+          "firstErrorLine": "Error: promise resolved \"[ { \u2026(16) }, { \u2026(16) } ]\" instead of rejecting"
+        },
+        {
+          "test": "egress version 2 record withdrawal and forgery forms the reader does not define refuses a file outside the closed list that names an admission artifact, act identity or record id, in any case, dash spelling or directory",
+          "firstErrorLine": "Error: promise resolved \"[ { \u2026(16) }, { \u2026(16) }, { \u2026(16) } ]\" instead of rejecting"
+        },
+        {
+          "test": "egress version 2 record withdrawal and forgery forms the reader does not define refuses a file whose name carries an admission stem, in a subdirectory too",
+          "firstErrorLine": "Error: promise resolved \"[ { \u2026(16) }, { \u2026(16) }, { \u2026(16) } ]\" instead of rejecting"
+        },
+        {
+          "test": "strict act reads egress: returns the in-force record's listed content classes, absent before any act and refused when the read is",
+          "firstErrorLine": "AssertionError: expected { state: 'ok', \u2026(5) } to match object { state: 'refused' }"
+        },
+        {
+          "test": "every stem counts wherever it sits, save exact tooling citations in an allowlisted file (R-361-1) with no file allowlisted, refuses the reads the pre-#355 reader refused: A3 bare package directory",
+          "firstErrorLine": "AssertionError: A3 bare package directory: expected [] to deeply equal [ 'admission', 'egress' ]"
+        },
+        {
+          "test": "every stem counts wherever it sits, save exact tooling citations in an allowlisted file (R-361-1) with no file allowlisted, refuses the reads the pre-#355 reader refused: B2 instance path ending in a script name",
+          "firstErrorLine": "AssertionError: B2 instance path ending in a script name: expected [] to deeply equal [ 'admission', 'egress' ]"
+        },
+        {
+          "test": "every stem counts wherever it sits, save exact tooling citations in an allowlisted file (R-361-1) with no file allowlisted, refuses the reads the pre-#355 reader refused: an observation instance path",
+          "firstErrorLine": "AssertionError: an observation instance path: expected [] to deeply equal [ 'admission', 'egress' ]"
+        },
+        {
+          "test": "every stem counts wherever it sits, save exact tooling citations in an allowlisted file (R-361-1) with no file allowlisted, refuses the reads the pre-#355 reader refused: N-1 admission withdrawal citing its recorder",
+          "firstErrorLine": "AssertionError: N-1 admission withdrawal citing its recorder: expected [] to deeply equal [ 'admission', 'egress' ]"
+        },
+        {
+          "test": "every stem counts wherever it sits, save exact tooling citations in an allowlisted file (R-361-1) with no file allowlisted, refuses the reads the pre-#355 reader refused: N-2 a package WITHDRAWAL.md (citing it puts the word in the text)",
+          "firstErrorLine": "AssertionError: N-2 a package WITHDRAWAL.md (citing it puts the word in the text): expected [] to deeply equal [ 'admission', 'egress' ]"
+        },
+        {
+          "test": "every stem counts wherever it sits, save exact tooling citations in an allowlisted file (R-361-1) with no file allowlisted, refuses the reads the pre-#355 reader refused: N-2 a nested instances file",
+          "firstErrorLine": "AssertionError: N-2 a nested instances file: expected [] to deeply equal [ 'admission', 'egress' ]"
+        },
+        {
+          "test": "every stem counts wherever it sits, save exact tooling citations in an allowlisted file (R-361-1) with no file allowlisted, refuses the reads the pre-#355 reader refused: a bare package directory, no withdrawal word",
+          "firstErrorLine": "AssertionError: a bare package directory, no withdrawal word: expected [] to deeply equal [ 'admission', 'egress' ]"
+        },
+        {
+          "test": "every stem counts wherever it sits, save exact tooling citations in an allowlisted file (R-361-1) with no file allowlisted, refuses the reads the pre-#355 reader refused: #355 citation: a bare script name",
+          "firstErrorLine": "AssertionError: #355 citation: a bare script name: expected [] to deeply equal [ 'admission', 'egress' ]"
+        },
+        {
+          "test": "every stem counts wherever it sits, save exact tooling citations in an allowlisted file (R-361-1) with no file allowlisted, refuses the reads the pre-#355 reader refused: instances nested deep",
+          "firstErrorLine": "AssertionError: instances nested deep: expected [] to deeply equal [ 'admission', 'egress' ]"
+        },
+        {
+          "test": "every stem counts wherever it sits, save exact tooling citations in an allowlisted file (R-361-1) with no file allowlisted, refuses the reads the pre-#355 reader refused: Instances capital segment",
+          "firstErrorLine": "AssertionError: Instances capital segment: expected [] to deeply equal [ 'admission', 'egress' ]"
+        },
+        {
+          "test": "every stem counts wherever it sits, save exact tooling citations in an allowlisted file (R-361-1) with no file allowlisted, refuses the reads the pre-#355 reader refused: instances.md file",
+          "firstErrorLine": "AssertionError: instances.md file: expected [] to deeply equal [ 'admission', 'egress' ]"
+        },
+        {
+          "test": "every stem counts wherever it sits, save exact tooling citations in an allowlisted file (R-361-1) with no file allowlisted, refuses the reads the pre-#355 reader refused: instance-x dir",
+          "firstErrorLine": "AssertionError: instance-x dir: expected [] to deeply equal [ 'admission', 'egress' ]"
+        },
+        {
+          "test": "every stem counts wherever it sits, save exact tooling citations in an allowlisted file (R-361-1) a file at its allowlisted path with its allowlisted bytes has its exact tooling citations set aside, and only those",
+          "firstErrorLine": "AssertionError: Every consent under public-repo-admission/ ends.: expected [] to deeply equal [ 'admission', 'egress' ]"
+        },
+        {
+          "test": "the policy port and the strict policy chain agree on every world in the fixture set, at every instant",
+          "firstErrorLine": "Error: STACK_TRACE_ERROR"
+        }
+      ],
+      "note": "syzygy-bpyt.8.22: without the stem two admission paths contain, a text carrying one of those paths no longer names the admission act, now that the paths are not text needles."
+    },
+    {
+      "id": "M22b-admission-paths-restored",
+      "file": "packages/polaris-generation-consent/src/package-reader.ts",
+      "old": "sweep: { stems: ADMISSION_STEMS, needles: [], fields: everyField(ADMISSION_NEEDLES)",
+      "new": "sweep: { stems: ADMISSION_STEMS, needles: ADMISSION_PATHS, fields: everyField(ADMISSION_NEEDLES)",
+      "tests": [
+        "packages/polaris-generation-consent/src/decisions-sweep.test.ts",
+        "packages/polaris-generation-consent/src/act-families.test.ts",
+        "packages/polaris-generation-consent/src/digest-bound-act.test.ts",
+        "packages/polaris-generation-consent/src/package-reader.test.ts",
+        "packages/polaris-generation-consent/src/consent-ports.test.ts",
+        "packages/polaris-generation-consent/src/real-tree.test.ts"
+      ],
+      "command": "npx vitest run --project @syzygy/polaris-generation-consent packages/polaris-generation-consent/src/decisions-sweep.test.ts packages/polaris-generation-consent/src/act-families.test.ts packages/polaris-generation-consent/src/digest-bound-act.test.ts packages/polaris-generation-consent/src/package-reader.test.ts packages/polaris-generation-consent/src/consent-ports.test.ts packages/polaris-generation-consent/src/real-tree.test.ts",
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 489,
+      "failures": [
+        {
+          "test": "the policy port and the strict policy chain agree on every world in the fixture set, at every instant",
+          "firstErrorLine": "Error: STACK_TRACE_ERROR"
+        }
+      ],
+      "note": "Expected to survive, equivalent: the 8.22 change undone. Each path's folded spelling contains an admission stem's, and the stems are tested first, so the paths never decide a text test."
+    },
+    {
+      "id": "M22c-admission-field-paths-dropped",
+      "file": "packages/polaris-generation-consent/src/package-reader.ts",
+      "old": "fields: everyField(ADMISSION_NEEDLES), quoted: true, loose: false",
+      "new": "fields: everyField(ADMISSION_STEMS), quoted: true, loose: false",
+      "tests": [
+        "packages/polaris-generation-consent/src/decisions-sweep.test.ts",
+        "packages/polaris-generation-consent/src/act-families.test.ts",
+        "packages/polaris-generation-consent/src/digest-bound-act.test.ts",
+        "packages/polaris-generation-consent/src/package-reader.test.ts",
+        "packages/polaris-generation-consent/src/consent-ports.test.ts",
+        "packages/polaris-generation-consent/src/real-tree.test.ts"
+      ],
+      "command": "npx vitest run --project @syzygy/polaris-generation-consent packages/polaris-generation-consent/src/decisions-sweep.test.ts packages/polaris-generation-consent/src/act-families.test.ts packages/polaris-generation-consent/src/digest-bound-act.test.ts packages/polaris-generation-consent/src/package-reader.test.ts packages/polaris-generation-consent/src/consent-ports.test.ts packages/polaris-generation-consent/src/real-tree.test.ts",
+      "outcome": "killed",
+      "failedTests": 1,
+      "totalTests": 489,
+      "failures": [
+        {
+          "test": "the policy port and the strict policy chain agree on every world in the fixture set, at every instant",
+          "firstErrorLine": "Error: STACK_TRACE_ERROR"
+        }
+      ],
+      "note": "Expected to survive, equivalent by the same containment, on field values: outside syzygy-bpyt.8.22's scope (its criterion 1 keeps the field needles), recorded so the redundancy is known."
+    }
+  ]
+}

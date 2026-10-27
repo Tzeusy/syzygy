@@ -1,3 +1,5 @@
+// Test support: exports with no non-test importer are consumed by tests only, by design.
+
 import { createHash } from 'node:crypto';
 
 import { itemClaim, type BodyReadAuthorityEvaluation, type GitRunner, type PocModel } from '@syzygy/three-surface-poc-core';
@@ -9,8 +11,8 @@ import { itemClaim, type BodyReadAuthorityEvaluation, type GitRunner, type PocMo
  * identity); `SECRET_SENTINEL` marks a body that the secret policy must
  * exclude so a rendering test can prove hash-not-body.
  */
-export const PROJECT_SHAPE_FIXTURE_COMMIT = '4'.repeat(40);
-export const PROJECT_SHAPE_FIXTURE_COMMITTED_AT = '2026-08-15T10:00:00+00:00';
+const PROJECT_SHAPE_FIXTURE_COMMIT = '4'.repeat(40);
+const PROJECT_SHAPE_FIXTURE_COMMITTED_AT = '2026-08-15T10:00:00+00:00';
 export const SECRET_SENTINEL = 'EXCLUDED-BODY-SENTINEL-7f3a';
 
 const VISION = [

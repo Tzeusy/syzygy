@@ -19,9 +19,11 @@ import {
   type RepositoryCoverage,
   type ServedFact,
 } from '@syzygy/cap1-core';
+import { escapeHtml, type Route, type RouteResponse } from '@syzygy/http-host';
 
-import type { Route, RouteResponse } from './server.js';
 import type { ProjectEvaluation } from './pipeline.js';
+
+export { escapeHtml };
 
 // RT5 — the server-rendered human page and the "Why this answer?"
 // explanation drawer (CAP1-REQ-020…023, 040…046, 050…053), plus the
@@ -104,17 +106,9 @@ export interface HumanRouteDependencies {
 
 // --- HTML escaping -------------------------------------------------------
 
-// Every interpolated value passes through here: observed-file content is
-// untrusted. Escapes the five characters that can change HTML context,
-// so escaped output is safe in both text and double-quoted attributes.
-export function escapeHtml(value: string): string {
-  return value
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#39;');
-}
+// Every interpolated value passes through escapeHtml, which the host
+// package owns (@syzygy/http-host, syzygy-bpyt.7.3) and this module
+// re-exports, as it did when the function was defined here.
 
 function attr(name: string, value: string): string {
   return ` ${name}="${escapeHtml(value)}"`;

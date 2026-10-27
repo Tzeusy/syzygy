@@ -1,6 +1,6 @@
 import * as fs from 'node:fs';
 import * as path from 'node:path';
-import { parseBoundedJson } from '@syzygy/polaris-generation-core';
+import { parseBoundedJson } from '@syzygy/polaris-generation-core/live';
 import { briefIssuedAt } from './check.js';
 import { USAGE_NOT_RECORDED } from './close.js';
 import { readRunRecord, type RecordedRunConfig } from './run-record.js';

@@ -1,6 +1,6 @@
 import * as fs from 'node:fs';
 import * as path from 'node:path';
-import { parseBoundedJson } from '@syzygy/polaris-generation-core';
+import { parseBoundedJson } from '@syzygy/polaris-generation-core/live';
 import { RECORDS_WITHIN_REACH, providerStatementGate, statementContentClasses, type GateSources } from './gate-sources.js';
 import { GitObjectReadRefusal, openPinnedObjectReader, type PinnedObjectReader, type PinnedObjectReaderOptions } from './git-object-reader.js';
 import { governedSubject, type GovernedDecision } from './governed.js';

@@ -21,7 +21,7 @@ export interface PocRuntimeCapture {
   readonly evidence: PocEvaluationEvidence;
 }
 
-export interface ProductionModelBuildOptions {
+interface ProductionModelBuildOptions {
   readonly capture: PocRuntimeCapture;
   readonly repoRoot: string;
   readonly stateDir: string;

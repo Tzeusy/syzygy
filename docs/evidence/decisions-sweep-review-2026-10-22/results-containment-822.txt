@@ -1,0 +1,17 @@
+extracted:
+const INSTANCES_DIR = '.syzygy/governance/contracts/candidates/public-repo-admission/instances';
+const EGRESS_V2_INSTANCE = '.syzygy/governance/contracts/candidates/public-egress-v2/instances/egress-anthropic/EGRESS-CONSENT-ANTHROPIC.md';
+const fold = (value) => value.normalize('NFKC').replace(/[\u2010-\u2015\u2212\uFE58\uFE63\uFF0D]/gu, '-').toLowerCase();
+const stemFolds = (value) => {
+    const base = fold(value).replace(/[_\s]+/gu, '-');
+    return [base.replace(/\p{Default_Ignorable_Code_Point}/gu, ''), base.replace(/\p{Default_Ignorable_Code_Point}/gu, '-')].map(form => form.replace(/-+/g, '-'));
+};
+const carries = (text, needle) => { const n = stemFolds(needle)[0]; return stemFolds(text).some(form => form.includes(n)); };
+const ADMISSION_STEMS = ['public-repo-admission', 'public-egress-v2', 'public-obs-', 'public-egress-anthropic', 'public-egress-'];
+const ADMISSION_PATHS = [INSTANCES_DIR, EGRESS_V2_INSTANCE, '.syzygy/governance/contracts/candidates/public-repo-admission/', '.syzygy/governance/contracts/candidates/public-egress-v2/'];
+
+{"path":".syzygy/governance/contracts/candidates/public-repo-admission/instances","needleFold":".syzygy/governance/contracts/candidates/public-repo-admission/instances","sameAsLowercase":true,"bothFormsEqual":true,"stemsContained":["public-repo-admission"]}
+{"path":".syzygy/governance/contracts/candidates/public-egress-v2/instances/egress-anthropic/EGRESS-CONSENT-ANTHROPIC.md","needleFold":".syzygy/governance/contracts/candidates/public-egress-v2/instances/egress-anthropic/egress-consent-anthropic.md","sameAsLowercase":true,"bothFormsEqual":true,"stemsContained":["public-egress-v2","public-egress-"]}
+{"path":".syzygy/governance/contracts/candidates/public-repo-admission/","needleFold":".syzygy/governance/contracts/candidates/public-repo-admission/","sameAsLowercase":true,"bothFormsEqual":true,"stemsContained":["public-repo-admission"]}
+{"path":".syzygy/governance/contracts/candidates/public-egress-v2/","needleFold":".syzygy/governance/contracts/candidates/public-egress-v2/","sameAsLowercase":true,"bothFormsEqual":true,"stemsContained":["public-egress-v2","public-egress-"]}
+{"containmentHoldsForEveryPath":true,"fuzzTrials":20000,"textsCarryingAPath":15675,"textsCarryingAPathButNoStem":0}

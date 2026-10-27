@@ -1,4 +1,4 @@
-import { escapeHtml } from '@syzygy/cap1-daemon';
+import { escapeHtml } from '@syzygy/http-host';
 import type { PocEntity, PocModel, PocRelationship } from '@syzygy/three-surface-poc-core';
 
 import { actionRouteLink, unknownMarker, unknownRoute } from './unknown-marker.js';
@@ -31,6 +31,7 @@ function provenanceList(model: PocModel, item: PocEntity | PocRelationship, moun
     .join('')}</ul>`;
 }
 
+// Test seam: exported for the tests; production code reaches it only inside this file.
 export function entityRows(model: PocModel, mountPrefix = ''): string {
   return model.entities
     .map(
@@ -44,6 +45,7 @@ export function entityRows(model: PocModel, mountPrefix = ''): string {
     .join('');
 }
 
+// Test seam: exported for the tests; production code reaches it only inside this file.
 export function relationshipRows(model: PocModel, mountPrefix = ''): string {
   return model.relationships
     .map(

@@ -2,13 +2,14 @@ import { createHash } from 'node:crypto';
 import * as fs from 'node:fs';
 import * as path from 'node:path';
 import { UNKNOWN_REASONS } from '@syzygy/cap1-core';
-import { leadInQuotations, lineCount, locateQuote, normaliseTracked, parseBoundedJson, retainedWithMarkers, spanTouchesWithheld, verifiedRedactedBody, type VerifiedRedactedBody, type TrackedText } from '@syzygy/polaris-generation-core';
+import { leadInQuotations, lineCount, locateQuote, normaliseTracked, parseBoundedJson, retainedWithMarkers, spanTouchesWithheld, verifiedRedactedBody, type VerifiedRedactedBody, type TrackedText } from '@syzygy/polaris-generation-core/live';
 import { CREDENTIAL_CHECK_DISCLOSURE, credentialStepCheck, storedBriefArm, type CredentialStepResult } from './credential-probe.js';
 import { SESSION_ID_PATTERN, UNDERSTANDING_ITEMS, checkDraftShape, localDraftSchema, type DraftSchemaWithDefs } from './draft-schema.js';
 import { EXECUTION_FLAGS_BASIS, executionFlags, type ExecutionFlags } from './execution-flags.js';
 import type { CredentialProbe } from './execution-rule.js';
 import { RECORDS_WITHIN_REACH, type GateSources } from './gate-sources.js';
 import { GitObjectReadRefusal, openPinnedObjectReader, type PinnedObjectReader, type PinnedObjectReaderOptions, type TreeEntry } from './git-object-reader.js';
+import type { Outcome } from './outcome.js';
 import { reverifyPinnedRevision, type ReverifyRefusal } from './reverify.js';
 import type { RunConfig } from './run-config.js';
 import { loadDossierScreen, type DossierScreen, type ScreenExclusion, type ScreenLoad } from './screen.js';
@@ -162,7 +163,7 @@ export interface CheckReport extends CheckRecord {
   readonly disclosures: readonly string[];
 }
 
-export type CheckResult = { readonly ok: true; readonly report: CheckReport } | { readonly ok: false; readonly refusal: CheckRefusal };
+export type CheckResult = Outcome<CheckReport, CheckRefusal>;
 
 export interface CheckRequest {
   /** The draft to check; `drafts/next.json` in the run directory by default. */
@@ -239,7 +240,7 @@ export interface SubjectPlan<R extends object, G> {
 }
 
 export type SubjectReport<R extends object> = R & { readonly command: CheckCommand; readonly run: string; readonly checkFile: string; readonly disclosures: readonly string[] };
-export type SubjectResult<R extends object> = { readonly ok: true; readonly report: SubjectReport<R> } | { readonly ok: false; readonly refusal: CheckRefusal };
+export type SubjectResult<R extends object> = Outcome<SubjectReport<R>, CheckRefusal>;
 
 const DRAFT_PLAN: SubjectPlan<CheckRecord, null> = {
   command: 'check',

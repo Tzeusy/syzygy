@@ -123,6 +123,7 @@ export function writeTestArtifactRecordFile(stateDir: string, record: TestArtifa
   });
 }
 
+// Test seam: the tests clear the record file through it; no production code does.
 export function clearTestArtifactRecordFile(stateDir: string): void {
   const path = testArtifactRecordPath(stateDir);
   if (existsSync(path)) {
@@ -396,6 +397,8 @@ export function posixShellWord(word: string): string {
  * missing: the commands to run in their own shell, with the checkout, the
  * interpreter and the test path each quoted as one shell word, so a path
  * with a space or a quote pastes as the command it names.
+ *
+ * Test seam: only the live verification test (and its tests) call it.
  */
 export function liveTestOperatorInstructions(repoRoot: string, python: string, scope: string): string {
   const repo = posixShellWord(repoRoot);

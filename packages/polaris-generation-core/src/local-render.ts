@@ -1,4 +1,4 @@
-import type { EpistemicMarking, ProviderDraft } from './provider-draft.js';
+import type { DossierDraft, EpistemicMarking } from './draft-model.js';
 
 /**
  * What the multi-page dossier renderer takes for an operator-agent run
@@ -115,7 +115,7 @@ export type LocalDraftLayer =
 export interface LocalRenderInput {
   /** The checked draft in the renderer's shape. `sourceIds` name only sources Syzygy read and screening admitted, and may be empty. No
    * part of it renders while the draft layer is Unknown. */
-  readonly draft: ProviderDraft;
+  readonly draft: DossierDraft;
   /** The dossier's title while the draft layer is Unknown, when the draft's own title is draft content and is not shown. */
   readonly withheldTitle: string;
   readonly draftLayer: LocalDraftLayer;

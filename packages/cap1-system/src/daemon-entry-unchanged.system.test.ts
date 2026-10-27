@@ -72,8 +72,18 @@ function sweep(dir: string, from = dir): string[] {
   });
 }
 
-function runSync(args: readonly string[], cwd: string): { status: number | null; stdout: string; stderr: string } {
-  const result = spawnSync(process.execPath, [ENTRY, ...args], { cwd, env: ENV, encoding: 'utf8' });
+// No invocation runSync makes may start a daemon. If one wrongly does, SYZYGY_PORT=0 keeps it off the default port 7477 and the
+// timeout ends it, so the row fails instead of blocking the worker: spawnSync is synchronous, so the suite's own timeout cannot
+// fire (syzygy-bpyt.4.22). SIGKILL, because the daemon handles SIGTERM as a graceful shutdown. The governed-plane row runs
+// without the variable, as captured: it is the one row that reaches port resolution with no --port, so it pins that the
+// default resolves to a valid port. A regression that wrongly admitted that argv could hold 7477 until the timeout.
+const RUN_SYNC_TIMEOUT_MS = 20_000;
+
+function runSync(args: readonly string[], cwd: string, portEnv: Record<string, string> = { SYZYGY_PORT: '0' }): { status: number | null; stdout: string; stderr: string } {
+  const result = spawnSync(process.execPath, [ENTRY, ...args], {
+    cwd, env: { ...ENV, ...portEnv }, encoding: 'utf8', timeout: RUN_SYNC_TIMEOUT_MS, killSignal: 'SIGKILL',
+  });
+  if (result.error) throw new Error(`${JSON.stringify(args)}: ${result.error.message} (timeout ${RUN_SYNC_TIMEOUT_MS} ms)`);
   const mask = (text: string): string => text.split(cwd).join('<BASE>');
   return { status: result.status, stdout: mask(result.stdout), stderr: mask(result.stderr) };
 }
@@ -123,7 +133,7 @@ describe('daemon entry: every invocation but `dossier` is unchanged', () => {
 
   it('a state directory inside the governed plane is refused with the same message', () => {
     const { base: dir, root } = base();
-    expect(runSync(['--root', root, '--state-dir', path.join(root, '.syzygy', 'x')], dir)).toEqual({
+    expect(runSync(['--root', root, '--state-dir', path.join(root, '.syzygy', 'x')], dir, {})).toEqual({
       status: 1,
       stdout: '',
       stderr: `syzygy daemon: state directory <BASE>/root/.syzygy/x lies inside the governed plane (<BASE>/root/.syzygy); choose a location outside openspec/ and .syzygy/\n\n${USAGE}`,
@@ -202,7 +212,7 @@ describe('daemon entry: the one changed input, `dossier` as the first argument',
   // The `polaris` branch (prototype, POLARIS-DOSSIER-ONE-COMMAND-RUN-2026-10-14) injects the same renderer the same way.
   it('the daemon path never loads the POC app: each import is dynamic and inside the `dossier` or `polaris` branch', () => {
     const main = readFileSync(path.join(REPO_ROOT, 'apps/syzygy/src/main.ts'), 'utf8');
-    const line = "    const { renderDossier } = await import('@syzygy/three-surface-poc-app/dossier-render');";
+    const line = "    const { renderLocalDossier } = await import('@syzygy/three-surface-poc-app/dossier-site');";
     const mentions = main.split('\n').filter((text) => text.includes('three-surface-poc-app'));
     expect(mentions).toEqual([line, line]);
     const daemon = main.indexOf('let parsed = parseCli(');

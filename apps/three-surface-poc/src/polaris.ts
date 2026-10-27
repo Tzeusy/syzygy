@@ -2,7 +2,7 @@ import { createHash } from 'node:crypto';
 
 import { renderPolarisMarkdown } from './polaris-markdown.js';
 import { projectReading, type ProjectReading, type ReadingFigure } from './polaris-reading.js';
-import { escapeHtml } from '@syzygy/cap1-daemon';
+import { escapeHtml } from '@syzygy/http-host';
 import {
   EXTRACTION_CLASSES,
   UNKNOWN_REASON_ROUTES,

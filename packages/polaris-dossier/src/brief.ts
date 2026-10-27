@@ -2,12 +2,13 @@ import { createHash } from 'node:crypto';
 import * as fs from 'node:fs';
 import * as path from 'node:path';
 import { UNKNOWN_REASONS } from '@syzygy/cap1-core';
-import { DOSSIER_READER_QUESTIONS, DOSSIER_REQUESTED_ASSETS, ILLUSTRATION_HEADING, OWNER_TOPICS, promptForStage } from '@syzygy/polaris-generation-core';
+import { DOSSIER_READER_QUESTIONS, DOSSIER_REQUESTED_ASSETS, OWNER_TOPICS } from '@syzygy/polaris-generation-core/live';
 import { readSec3 } from './doctrine-quote.js';
 import { CLARIFICATION_ANSWER_KINDS, LOCAL_DRAFT_SCHEMA_VERSION, QUOTATION_FORM, SESSION_ID_RULE, UNDERSTANDING_ITEMS, draftSchemaDocument } from './draft-schema.js';
 import { PERMITTING_ARM_ENABLED, decideExecutionRule, executionRuleSection, type ExecutionRule, type PermittingArm } from './execution-rule.js';
 import { RECORDS_WITHIN_REACH, type GateSources } from './gate-sources.js';
 import { launchedMarkerState } from './launched.js';
+import type { Outcome } from './outcome.js';
 import { reverifyPinnedRevision, type ReverifyOptions, type ReverifyRefusal, type ReverifyResult } from './reverify.js';
 import type { RunConfig } from './run-config.js';
 import type { RunSubject } from './run-record.js';
@@ -32,17 +33,20 @@ import { RUN_ID, RUN_LAYOUT } from './state-directory.js';
 export const BRIEF_VERSION = 'polaris-dossier-brief-v1';
 export const BRIEF_RECORD_FORMAT = 'polaris-dossier-brief/1';
 
-/** The dossier profile's writing guidance, cut from the author stage's dossier prompt: its seven dossier rules and the author guidance,
- * without the provider-pipeline framing before them or the fictional illustration after. */
-const AUTHOR_PROMPT = promptForStage('author', 'dossier');
-export const DOSSIER_GUIDANCE_VERSION = AUTHOR_PROMPT.version;
-export const DOSSIER_GUIDANCE = ((): string => {
-  const system = AUTHOR_PROMPT.system;
-  const open = 'This run produces a dossier:';
-  const close = `\n\n${ILLUSTRATION_HEADING}`;
-  if (system.split(open).length !== 2 || system.split(close).length !== 2) throw new Error('brief: the dossier author prompt changed shape');
-  return system.slice(system.indexOf(open), system.indexOf(close));
-})();
+/** The dossier profile's writing guidance: its seven dossier rules and the author guidance. The brief owns this text. It was first cut
+ * from the provider pipeline's author-stage dossier prompt, whose version it keeps; a version moves only with its bytes, so a change to
+ * this text takes a new one. */
+export const DOSSIER_GUIDANCE_VERSION = 'polaris-author-dossier-v2';
+export const DOSSIER_GUIDANCE = `This run produces a dossier: an evidence-anchored account that takes a newcomer through a project's core ideas, its end-to-end workflows, the mechanisms underneath them, the advantages the project's sources claim and the trade-offs it accepts. The supplied reader questions and requested assets name those topics; a requested section asset's id is also its section id. Where these dossier rules and the instructions above differ, the dossier rules govern. Seven rules hold at every stage:
+1. Claim ledger. One claim per inventory entry or block, citing exactly the sources that support it. A claim no source supports is not written.
+2. Workflow traces. Trace a workflow hop by hop across components: name each hop's entry point and what it hands to the next, and cite the source that shows each hand-off. Never bridge a hop no source shows; leave that hop unresolved with the missing evidence as its reason.
+3. Mechanisms. Outside a quotation, name each function, type, file, command or configuration key in backticks, spelled exactly as the source spells it, and say what it does in the source's terms.
+4. Stated advantages and trade-offs. An advantage, trade-off or comparison the project's sources state is reported only as a quotation: The project states: followed, in double quotes, by one contiguous span of a cited source, at most two sentences or one list item. Quote that span exactly: never elide, splice or add ellipses, and keep the source's own characters inside the quotes, identifiers included, without adding backticks. A quotation matches its source when the two are identical after every run of whitespace, line breaks included, is collapsed to one space and markdown emphasis and link syntax are dropped, keeping the link text; no other change is allowed. Double quotes are used only for such a quotation; everywhere else put commands, identifiers, configuration keys and values in backticks and use no quotation marks. Quote a stated advantage once: child blocks may explain its mechanism in your own words, citing their sources, but never restate the claim unquoted. An advantage no source states is never written, not even as Inferred:. A mechanism-level cost no source states may be written as one Inferred: sentence citing the sources of the mechanism it reasons from, and it must agree with every cited source; otherwise it is unresolved (No source states a cost for X.). Never present an inferred cost or benefit as stated.
+5. Comparisons. Report a comparison with a named alternative only as a quotation under rule 4. Never extend or generalize it, and never add an alternative of your own.
+6. Marked inference. A block that says anything its cited sources do not state begins Inferred: and cites the sources it reasons from. A faithful restatement or summary of cited sources and child blocks is not inference and carries no prefix.
+7. Thin evidence stays Unknown. Where the sources do not answer a reader question, an unresolved entry, block or disposition naming the missing evidence is the correct answer; never fill the gap with a plausible general account.
+
+Dossier draft: open with a two- or three-sentence introduction that says what the project is and how its central workflow runs, never a copy of the first section's block. Explain each term a newcomer may not know at its first use, in one clause its sources support. In the workflow section, give each hop its own child block, citing the source that shows the hand-off; draw the requested workflow diagram from those hops only, its labels taken from that text. In the mechanisms section and its deep dive, name identifiers verbatim in backticks and explain what each does. Write each stated advantage, comparison and trade-off as a quotation (rule 4); an inferred mechanism-level cost is its own block beginning Inferred:. Double quotes appear only around a verbatim span of a cited source after The project states:; identifiers, commands, configuration keys and values go in backticks, and there are no scare quotes. The trade-offs section is a requested section that gathers the costs, not the canned refusals section the instructions above rule out: beside any advantage a trade-off qualifies, keep a one-clause pointer to it. Where only one half of a trade-off is stated and no mechanism supports an inference, say the other half is not stated. Begin every inferential block Inferred: (rule 6), and no other. Record every reader question the sources leave open in unresolved.`;
 
 const isoOf = (instant: number): string => new Date(instant).toISOString();
 
@@ -177,7 +181,7 @@ export interface BriefReport {
   readonly disclosures: readonly string[];
 }
 
-export type BriefResult = { readonly ok: true; readonly report: BriefReport } | { readonly ok: false; readonly refusal: BriefRefusal };
+export type BriefResult = Outcome<BriefReport, BriefRefusal>;
 
 export interface BriefDeps {
   readonly sources: GateSources;

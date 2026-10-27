@@ -4,7 +4,9 @@ import { defineConfig } from 'vitest/config';
 export default defineConfig({
   resolve: {
     alias: {
+      '@syzygy/polaris-generation-core/live': fileURLToPath(new URL('./packages/polaris-generation-core/src/live.ts', import.meta.url)),
       '@syzygy/polaris-generation-core': fileURLToPath(new URL('./packages/polaris-generation-core/src/index.ts', import.meta.url)),
+      '@syzygy/polaris-generation-consent/live': fileURLToPath(new URL('./packages/polaris-generation-consent/src/live.ts', import.meta.url)),
       '@syzygy/polaris-generation-consent/testing': fileURLToPath(new URL('./packages/polaris-generation-consent/src/testing.ts', import.meta.url)),
       '@syzygy/polaris-generation-consent': fileURLToPath(new URL('./packages/polaris-generation-consent/src/index.ts', import.meta.url)),
       '@syzygy/polaris-dossier': fileURLToPath(new URL('./packages/polaris-dossier/src/index.ts', import.meta.url)),
@@ -16,6 +18,9 @@ export default defineConfig({
       ),
       '@syzygy/cap1-daemon': fileURLToPath(
         new URL('./packages/cap1-daemon/src/index.ts', import.meta.url),
+      ),
+      '@syzygy/http-host': fileURLToPath(
+        new URL('./packages/http-host/src/index.ts', import.meta.url),
       ),
       '@syzygy/three-surface-poc-core': fileURLToPath(
         new URL('./packages/three-surface-poc-core/src/index.ts', import.meta.url),
@@ -67,6 +72,13 @@ export default defineConfig({
       {
         extends: true,
         test: {
+          name: '@syzygy/http-host',
+          include: ['packages/http-host/src/**/*.test.ts'],
+        },
+      },
+      {
+        extends: true,
+        test: {
           name: '@syzygy/three-surface-poc-core',
           include: ['packages/three-surface-poc-core/src/**/*.test.ts'],
         },
@@ -76,6 +88,8 @@ export default defineConfig({
         test: {
           name: '@syzygy/three-surface-poc-app',
           include: ['apps/three-surface-poc/src/**/*.test.ts'],
+          // Once per run: removes the fixture directories of killed runs (syzygy-bpyt.4.10).
+          globalSetup: [fileURLToPath(new URL('./apps/three-surface-poc/src/test-fixture-sweep.global-setup.ts', import.meta.url))],
         },
       },
     ],

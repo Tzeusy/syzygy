@@ -272,8 +272,9 @@ sweep lessons added 2026-09-23; the raw-head digest lesson the same day.
   stale; no evidence → Unknown.
 - Conformance expected values are hard-coded literals, never imported from
   the module under test.
-- Root Vitest `test.projects` must alias both `@syzygy/cap1-core` and
-  `@syzygy/cap1-daemon` to source; verify with every `dist/` absent.
+- Root Vitest `test.projects` must alias `@syzygy/cap1-core`,
+  `@syzygy/cap1-daemon` and `@syzygy/http-host` to source; verify with
+  every `dist/` absent.
 - Butlers' pytest needs its own `.venv/bin/python`.
 - Never wire `WORKER_CHANGE_SEAM` test-artifact evidence into the unrelated
   identity-resolution entities in `model.ts` — false "Verified" (reverted

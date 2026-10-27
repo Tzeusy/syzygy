@@ -39,6 +39,7 @@ import {
   type LoadGovernanceInputsOptions,
 } from './governance-inputs.js';
 
+// Test seam: exported for the tests; production code reaches it only inside this file.
 /** The one scheduled walkthrough. Identities are serial, not dated, so the
  * record and act may be performed on whatever day the owner chooses.
  *
@@ -75,8 +76,8 @@ export const PWB_WALKTHROUGH_SCHEDULE = {
  * The version is a digest over both Git tree ids at the observer revision,
  * so it changes with any change to either tree and with nothing else —
  * committing the run record does not move it. */
-export const POLARIS_SURFACE_TREES = ['apps/three-surface-poc/src', 'packages/three-surface-poc-core/src'] as const;
-export const POLARIS_SURFACE_NAME = 'polaris' as const;
+const POLARIS_SURFACE_TREES = ['apps/three-surface-poc/src', 'packages/three-surface-poc-core/src'] as const;
+const POLARIS_SURFACE_NAME = 'polaris' as const;
 
 /** `polaris@<12 hex of sha256 over the surface tree ids, newline-joined>`.
  * When either tree cannot be resolved the version names that state
@@ -104,6 +105,7 @@ const OTHER_ACT_BOUND_ARTIFACTS = [
   '.syzygy/governance/declarations/adapter-registry/POLARIS-BUTLERS-PROJECT-SHAPE-OBSERVER-CANDIDATE.json',
 ] as const;
 
+// Test seam: exported for the tests; production code reaches it only inside this file.
 /** The controlled evaluation input for the scheduled walkthrough, bound
  * to one exact surface version and evaluation identity. */
 export function pwbWalkthroughExpectations(evaluationInstant: string, binding: WalkthroughBinding): WalkthroughJudgmentExpectations {
@@ -134,7 +136,7 @@ export function pwbWalkthroughExpectations(evaluationInstant: string, binding: W
   };
 }
 
-export interface LoadWalkthroughJudgmentInputsOptions extends LoadGovernanceInputsOptions {
+interface LoadWalkthroughJudgmentInputsOptions extends LoadGovernanceInputsOptions {
   /** The exact surface version and evaluation identity the pair must name. */
   readonly binding: WalkthroughBinding;
 }
@@ -150,6 +152,7 @@ export function walkthroughJudgmentInputsFor(options: LoadGovernanceInputsOption
   return (binding) => loadWalkthroughJudgmentInputs({ ...options, binding: { surfaceVersion, evaluationIdentity: binding.evaluationIdentity } });
 }
 
+// Test seam: exported for the tests; production code reaches it only inside this file.
 export function loadWalkthroughJudgmentInputs(options: LoadWalkthroughJudgmentInputsOptions): WalkthroughJudgmentInputs {
   const runGit = options.runGit ?? defaultRunGit;
   const readGitBlob = options.readGitBlob ?? defaultReadGitBlob;

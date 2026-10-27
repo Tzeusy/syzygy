@@ -1,5 +1,6 @@
 import type { PocModel } from '@syzygy/three-surface-poc-core';
 
+// Test seam: exported for the tests; production code reaches it only inside this file.
 /**
  * The composite evaluation identity and as-of instant Polaris already
  * renders in its footer (`Evaluation <snapshot> as of <asOf>`,
@@ -11,7 +12,7 @@ export function compositeEvaluationLine(model: PocModel, escapeHtml: (value: str
   return `Evaluation <code>${escapeHtml(model.evaluation.snapshot)}</code> as of <code>${escapeHtml(model.evaluation.asOf)}</code>.`;
 }
 
-export interface SubstrateSkewCheck {
+interface SubstrateSkewCheck {
   /** What this comparison is of, e.g. "this surface's work-item capture
    * instant". Rendered only when `observed !== expected`. */
   readonly label: string;
@@ -19,7 +20,7 @@ export interface SubstrateSkewCheck {
   readonly expected: string;
 }
 
-export interface SubstrateFooterInput {
+interface SubstrateFooterInput {
   readonly model: PocModel;
   readonly escapeHtml: (value: string) => string;
   /** What this surface's own substrate revision is a revision of, e.g.

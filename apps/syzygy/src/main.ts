@@ -29,15 +29,16 @@
 // the one place process signals are handled (clean shutdown on
 // SIGINT/SIGTERM).
 
-import * as fs from 'node:fs';
 import * as path from 'node:path';
 import {
-  createDaemon,
   evaluateProject,
   humanRoutes,
   machineRoutes,
   type EntrySourceRead,
 } from '@syzygy/cap1-daemon';
+import { closeOnSignal, createDaemon } from '@syzygy/http-host';
+import { isArgvFault, readArgv } from '@syzygy/polaris-dossier/argv';
+import { resolvePathIntent } from '@syzygy/polaris-dossier/state-directory';
 
 const DEFAULT_PORT = 7477;
 const DEFAULT_STATE_DIR_NAME = '.syzygy-daemon-state';
@@ -67,23 +68,24 @@ type CliParse =
   | { readonly kind: 'invalid'; readonly detail: string };
 
 function parseCli(argv: readonly string[], env: NodeJS.ProcessEnv): CliParse {
-  const flags = new Map<string, string>();
-  for (let i = 0; i < argv.length; i++) {
-    const arg = argv[i];
-    if (arg === '--help' || arg === '-h') {
-      return { kind: 'help' };
-    }
-    if (arg === '--root' || arg === '--state-dir' || arg === '--port') {
-      const value = argv[i + 1];
-      if (value === undefined) {
-        return { kind: 'invalid', detail: `${arg} requires a value` };
-      }
-      flags.set(arg, value);
-      i++;
-      continue;
-    }
-    return { kind: 'invalid', detail: `unknown argument: ${arg ?? ''}` };
+  const read = readArgv(argv, {
+    valued: ['--root', '--state-dir', '--port'],
+    stopAt: ['--help', '-h'],
+    dashValue: 'take',
+    repeat: 'last',
+    positionals: false,
+  });
+  if (isArgvFault(read)) {
+    const detail =
+      read.fault === 'missing-value'
+        ? `${read.arg} requires a value`
+        : `unknown argument: ${read.arg}`;
+    return { kind: 'invalid', detail };
   }
+  if (read.stoppedAt !== undefined) {
+    return { kind: 'help' };
+  }
+  const flags = read.values;
 
   const root = path.resolve(
     flags.get('--root') ?? env['SYZYGY_OBSERVED_ROOT'] ?? process.cwd(),
@@ -119,93 +121,11 @@ function parseCli(argv: readonly string[], env: NodeJS.ProcessEnv): CliParse {
 }
 
 // --- Governed-plane containment by symlink reality (RTF-1) ---------------
-
-type PathIntentResolution =
-  | {
-      readonly resolved: true;
-      readonly intendedRealPath: string;
-      readonly dangling: boolean;
-    }
-  | {
-      readonly resolved: false;
-      readonly reason: 'symlink-loop' | 'path-unreadable';
-      readonly detail: string;
-    };
-
-function filesystemFailureCode(cause: unknown): string {
-  return (cause as NodeJS.ErrnoException).code ?? 'unknown-error';
-}
-
-/**
- * Resolve symlinks component-by-component without requiring their target to
- * exist. This preserves the intended landing path of a dangling link, while
- * reporting loops and unreadable components as named failures before effects.
- */
-function resolvePathIntent(absolutePath: string): PathIntentResolution {
-  let candidate = path.resolve(absolutePath);
-  const visitedLinks = new Set<string>();
-
-  for (;;) {
-    const parsed = path.parse(candidate);
-    const components = candidate
-      .slice(parsed.root.length)
-      .split(path.sep)
-      .filter((component) => component !== '');
-    let current = parsed.root;
-    let rewritten = false;
-
-    for (let index = 0; index < components.length; index++) {
-      current = path.join(current, components[index] ?? '');
-      let stats: fs.Stats;
-      try {
-        stats = fs.lstatSync(current);
-      } catch (cause) {
-        const code = filesystemFailureCode(cause);
-        if (code === 'ENOENT') {
-          return { resolved: true, intendedRealPath: candidate, dangling: true };
-        }
-        return {
-          resolved: false,
-          reason: 'path-unreadable',
-          detail: `filesystem inspection failed at ${current} (${code})`,
-        };
-      }
-
-      if (!stats.isSymbolicLink()) {
-        continue;
-      }
-      if (visitedLinks.has(current)) {
-        return {
-          resolved: false,
-          reason: 'symlink-loop',
-          detail: `symbolic link cycle revisits ${current}`,
-        };
-      }
-      visitedLinks.add(current);
-
-      let targetText: string;
-      try {
-        targetText = fs.readlinkSync(current);
-      } catch (cause) {
-        return {
-          resolved: false,
-          reason: 'path-unreadable',
-          detail: `symbolic link target could not be read at ${current} (${filesystemFailureCode(cause)})`,
-        };
-      }
-      const target = path.isAbsolute(targetText)
-        ? path.resolve(targetText)
-        : path.resolve(path.dirname(current), targetText);
-      candidate = path.resolve(target, ...components.slice(index + 1));
-      rewritten = true;
-      break;
-    }
-
-    if (!rewritten) {
-      return { resolved: true, intendedRealPath: candidate, dangling: false };
-    }
-  }
-}
+//
+// resolvePathIntent is the dossier state directory's, the one copy
+// (syzygy-bpyt.8.2): links are resolved component by component without
+// requiring the target to exist, so a dangling link is judged by where it
+// would land, and a loop or an unreadable component is a named failure.
 
 /**
  * Judge the state directory's REAL location against the REAL governed
@@ -227,14 +147,14 @@ function governedPlaneViolation(root: string, stateDir: string): string | null {
     return `state directory is invalid (${stateResolution.reason}): ${stateResolution.detail}`;
   }
 
-  const realRoot = rootResolution.intendedRealPath;
-  const realStateDir = stateResolution.intendedRealPath;
+  const realRoot = rootResolution.realPath;
+  const realStateDir = stateResolution.realPath;
   for (const governed of ['openspec', '.syzygy']) {
     const governedResolution = resolvePathIntent(path.join(realRoot, governed));
     if (!governedResolution.resolved) {
       return `governed root is invalid (${governedResolution.reason}): ${governedResolution.detail}`;
     }
-    const governedRoot = governedResolution.intendedRealPath;
+    const governedRoot = governedResolution.realPath;
     if (realStateDir === governedRoot || realStateDir.startsWith(governedRoot + path.sep)) {
       return `state directory ${stateDir} really resolves to ${realStateDir}, inside the governed plane (${governedRoot}); choose a location outside openspec/ and .syzygy/`;
     }
@@ -253,13 +173,15 @@ async function main(): Promise<number> {
     const { runDossierCli } = await import('@syzygy/polaris-dossier');
     // `render` draws through the existing multi-page dossier renderer, injected
     // here and loaded only on this branch, so the daemon path never loads the
-    // POC app. TODO(syzygy-qkea.19): import it from a renderer package once
+    // POC app. Its operator-agent entry imports nothing from the parked
+    // provider island (island-boundary.test.ts in polaris-generation-core).
+    // TODO(syzygy-qkea.19): import it from a renderer package once
     // the renderer stack moves out of apps/three-surface-poc.
-    const { renderDossier } = await import('@syzygy/three-surface-poc-app/dossier-render');
+    const { renderLocalDossier } = await import('@syzygy/three-surface-poc-app/dossier-site');
     return runDossierCli(argv.slice(1), {
       stdout: (text) => process.stdout.write(text),
       stderr: (text) => process.stderr.write(text),
-    }, { renderer: renderDossier });
+    }, { renderer: renderLocalDossier });
   }
 
   // `syzygy polaris <url>` is the one-command launched run (prototype under
@@ -267,8 +189,8 @@ async function main(): Promise<number> {
   // `dossier` steps in process and starts the agent sessions in views.
   if (argv[0] === 'polaris') {
     const { runPolarisCli } = await import('@syzygy/polaris-dossier');
-    const { renderDossier } = await import('@syzygy/three-surface-poc-app/dossier-render');
-    return runPolarisCli(argv.slice(1), { renderer: renderDossier });
+    const { renderLocalDossier } = await import('@syzygy/three-surface-poc-app/dossier-site');
+    return runPolarisCli(argv.slice(1), { renderer: renderLocalDossier });
   }
 
   let parsed = parseCli(process.argv.slice(2), process.env);
@@ -349,21 +271,14 @@ async function main(): Promise<number> {
     ].join('\n'),
   );
 
-  await new Promise<void>((resolve) => {
-    let closing = false;
-    const shutdown = (signal: string): void => {
-      if (closing) return;
-      closing = true;
-      process.stdout.write(`syzygy daemon: ${signal} received, shutting down\n`);
-      void daemon.close().then(resolve, (cause: unknown) => {
-        process.stderr.write(
-          `syzygy daemon: close failed: ${cause instanceof Error ? cause.message : String(cause)}\n`,
-        );
-        resolve();
-      });
-    };
-    process.on('SIGINT', () => shutdown('SIGINT'));
-    process.on('SIGTERM', () => shutdown('SIGTERM'));
+  await closeOnSignal(daemon, {
+    onSignal: (signal, listener) => { process.on(signal, listener); },
+    announce: (signal) => { process.stdout.write(`syzygy daemon: ${signal} received, shutting down\n`); },
+    closeFailed: (cause) => {
+      process.stderr.write(
+        `syzygy daemon: close failed: ${cause instanceof Error ? cause.message : String(cause)}\n`,
+      );
+    },
   });
   return 0;
 }

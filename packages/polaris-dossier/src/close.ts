@@ -1,12 +1,13 @@
 import { createHash } from 'node:crypto';
 import * as fs from 'node:fs';
 import * as path from 'node:path';
-import { parseBoundedJson } from '@syzygy/polaris-generation-core';
+import { parseBoundedJson } from '@syzygy/polaris-generation-core/live';
 import { CREDENTIAL_CHECK_DISCLOSURE, credentialStepCheck, storedBriefArm, type CredentialStepResult } from './credential-probe.js';
 import { executionFlags } from './execution-flags.js';
 import type { CredentialProbe } from './execution-rule.js';
 import { RECORDS_WITHIN_REACH } from './gate-sources.js';
 import { errno, logStep, openRun, readRecord } from './inventory.js';
+import type { Outcome } from './outcome.js';
 import { latestPassedDraft, type ReviewDeps } from './review.js';
 import type { ReverifyRefusal } from './reverify.js';
 import { loadDossierScreen } from './screen.js';
@@ -74,7 +75,7 @@ export interface CloseReport {
   readonly disclosures: readonly string[];
 }
 
-export type CloseResult = { readonly ok: true; readonly report: CloseReport } | { readonly ok: false; readonly refusal: CloseRefusal };
+export type CloseResult = Outcome<CloseReport, CloseRefusal>;
 
 const DISCLOSURES = [
   RECORDS_WITHIN_REACH,

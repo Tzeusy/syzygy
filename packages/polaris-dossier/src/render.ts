@@ -5,8 +5,8 @@ import {
   excludedSourceId, generationSourcesForBody, generationSourcesForRedactedBody, generationSpanRange, generationSourceTextAt, isDossierPagePath, leadInQuotationSpans, PAGE_SINK_CONTRACT, pageSinkCspFinding,
   type EpistemicMarking, type EvidenceAnchor, type GenerationExclusionReason, type GenerationSource, type LocalBlock,
   type LocalDisclosureItem, type LocalDraftLayer, type LocalPage, type LocalPageItem, type LocalRenderInput, type LocalSegment,
-  type ProviderBlock, type ProviderDraft, type ProviderParagraph,
-} from '@syzygy/polaris-generation-core';
+  type DossierDraft, type DraftBlock, type DraftParagraph,
+} from '@syzygy/polaris-generation-core/live';
 import { collectBlocks, deriveFindings, draftRules, type Derived } from './check.js';
 import { CREDENTIAL_CHECK_DISCLOSURE, credentialStepCheck, storedBriefArm, type CredentialStepResult } from './credential-probe.js';
 import { UNDERSTANDING_ITEMS } from './draft-schema.js';
@@ -16,6 +16,7 @@ import { RECORDS_WITHIN_REACH } from './gate-sources.js';
 import { GitObjectReadRefusal, openPinnedObjectReader } from './git-object-reader.js';
 import { errno, logStep, openRun, readRecord, type OpenedRun } from './inventory.js';
 import { buildDesignPacket } from './design-review.js';
+import type { Outcome } from './outcome.js';
 import { designReviewOfRecord, latestPassedDraft, reviewOfRecord, type DesignReviewOfRecord, type ReviewDeps, type ReviewOfRecord } from './review.js';
 import type { ReverifyRefusal } from './reverify.js';
 import { NO_WORK_ITEM_REASON } from './run-record.js';
@@ -108,7 +109,7 @@ export interface RenderReport {
   readonly disclosures: readonly string[];
 }
 
-export type RenderResult = { readonly ok: true; readonly report: RenderReport } | { readonly ok: false; readonly refusal: RenderRefusal };
+export type RenderResult = Outcome<RenderReport, RenderRefusal>;
 
 const DISCLOSURES = [
   RECORDS_WITHIN_REACH,
@@ -410,23 +411,23 @@ export function buildLocalInput(inputs: BuildInputs): Built {
     const joined = block === undefined ? '' : block.segments.map((part) => (part.kind === 'withheld' ? '[withheld]' : part.text)).join('');
     return joined === '' ? '[no text]' : joined;
   };
-  const paragraph = (value: unknown): ProviderParagraph => {
+  const paragraph = (value: unknown): DraftParagraph => {
     const record = isObj(value) ? value : {};
     return { id: text(record['id'])!, text: plain(text(record['id'])!), sourceIds: record['label'] === 'non-normative' ? [] : citedSources(record) };
   };
-  const tree = (values: unknown): ProviderBlock[] => list(values).map((value) => ({ ...paragraph(value), children: list(isObj(value) ? value['children'] : []).map(paragraph) }));
-  const disposition = (value: unknown): ProviderDraft['sections'][number]['disposition'] => {
+  const tree = (values: unknown): DraftBlock[] => list(values).map((value) => ({ ...paragraph(value), children: list(isObj(value) ? value['children'] : []).map(paragraph) }));
+  const disposition = (value: unknown): DossierDraft['sections'][number]['disposition'] => {
     const record = isObj(value) ? value : {};
     if (record['kind'] === 'produced') return { kind: 'produced', assetIds: list(record['assetIds']).filter((id): id is string => typeof id === 'string') };
     return { kind: record['kind'] === 'omitted' ? 'omitted' : 'unresolved', reason: clean(text(record['reason']) ?? ''), references: citedSources(record) };
   };
   const title = (value: unknown): string => clean(text(value) ?? '');
-  const draft: ProviderDraft = {
+  const draft: DossierDraft = {
     title: title(doc['title']),
     introduction: paragraph(doc['introduction']),
     sections: list(doc['sections']).filter(isObj).map((section) => ({ id: text(section['id'])!, title: title(section['title']), paragraphs: tree(section['paragraphs']), disposition: disposition(section['disposition']) })),
     diagrams: list(doc['diagrams']).filter(isObj).map((diagram) => ({
-      id: text(diagram['id'])!, title: title(diagram['title']), sectionId: text(diagram['sectionId'])!, kind: diagram['kind'] as ProviderDraft['diagrams'][number]['kind'], relationship: title(diagram['relationship']),
+      id: text(diagram['id'])!, title: title(diagram['title']), sectionId: text(diagram['sectionId'])!, kind: diagram['kind'] as DossierDraft['diagrams'][number]['kind'], relationship: title(diagram['relationship']),
       nodes: list(diagram['nodes']).filter(isObj).map((node) => ({ id: text(node['id'])!, label: title(node['label']), sourceIds: citedSources(node), epistemic: node['epistemic'] === 'inferred' ? 'inferred' as const : 'unknown' as const })),
       edges: list(diagram['edges']).filter(isObj).map((edge) => ({ id: text(edge['id'])!, from: text(edge['from'])!, to: text(edge['to'])!, label: title(edge['label']), sourceIds: citedSources(edge), epistemic: edge['epistemic'] === 'inferred' ? 'inferred' as const : 'unknown' as const })),
       disposition: disposition(diagram['disposition']),

@@ -1,0 +1,122 @@
+{
+  "commit": "a670f988a701f23edb08ee4fa216896a7ef45567",
+  "results": [
+    {
+      "id": "Q-unmutated",
+      "edits": [
+        {
+          "file": "packages/polaris-dossier/src/waiting-sessions.test.ts",
+          "old": "  ])('opens on no record when %s', (_name, mutate) => {\n",
+          "new": "    ['the record names a review that leaves the records root after its first segment (reviewer proposal)', (root, decisions) => {\n      const digest = createHash('sha256').update(fs.readFileSync(path.join(root, SPEC_REL))).digest('hex');\n      const outside = path.join(path.dirname(root), `${path.basename(root)}-outside-RAW.md`);\n      cleanups.push(() => fs.rmSync(outside, { force: true }));\n      fs.writeFileSync(outside, reviewHead(digest));\n      const file = path.join(decisions, 'POLARIS-DOSSIER-LOCAL-AGENT-MODE-SIGNOFF-v1.2.md');\n      fs.writeFileSync(file, fs.readFileSync(file, 'utf8').replace('Review: docs/reviews/FIXTURE-v1.2-RAW.md', `Review: docs/../../${path.basename(root)}-outside-RAW.md`));\n    }],\n  ])('opens on no record when %s', (_name, mutate) => {\n"
+        }
+      ],
+      "expectation": "all 117 pass, no stray",
+      "exitCode": 0,
+      "counts": {
+        "numTotalTests": 117,
+        "numPassedTests": 117,
+        "numFailedTests": 0
+      },
+      "rows": [
+        {
+          "test": "the v1.2 gate opens on no record when the record names a review outside the records root (mutant: drop the review-path check)",
+          "status": "passed",
+          "firstErrorLine": null
+        },
+        {
+          "test": "the v1.2 gate opens on no record when the record names a review that leaves the records root after its first segment (reviewer proposal)",
+          "status": "passed",
+          "firstErrorLine": null
+        }
+      ],
+      "tmpdir": "/tmp/r513-prop/q1",
+      "listingBefore": [],
+      "listingAfter": [
+        "node-compile-cache"
+      ],
+      "restored": true
+    },
+    {
+      "id": "Q-R2",
+      "edits": [
+        {
+          "file": "packages/polaris-dossier/src/waiting-sessions.test.ts",
+          "old": "  ])('opens on no record when %s', (_name, mutate) => {\n",
+          "new": "    ['the record names a review that leaves the records root after its first segment (reviewer proposal)', (root, decisions) => {\n      const digest = createHash('sha256').update(fs.readFileSync(path.join(root, SPEC_REL))).digest('hex');\n      const outside = path.join(path.dirname(root), `${path.basename(root)}-outside-RAW.md`);\n      cleanups.push(() => fs.rmSync(outside, { force: true }));\n      fs.writeFileSync(outside, reviewHead(digest));\n      const file = path.join(decisions, 'POLARIS-DOSSIER-LOCAL-AGENT-MODE-SIGNOFF-v1.2.md');\n      fs.writeFileSync(file, fs.readFileSync(file, 'utf8').replace('Review: docs/reviews/FIXTURE-v1.2-RAW.md', `Review: docs/../../${path.basename(root)}-outside-RAW.md`));\n    }],\n  ])('opens on no record when %s', (_name, mutate) => {\n"
+        },
+        {
+          "file": "packages/polaris-dossier/src/waiting-sessions.ts",
+          "old": "  if (review === undefined || review.split('/').includes('..')) return false;",
+          "new": "  if (review === undefined || review.split('/')[0] === '..') return false;"
+        }
+      ],
+      "expectation": "the new row fails, the existing row passes, no stray",
+      "exitCode": 1,
+      "counts": {
+        "numTotalTests": 117,
+        "numPassedTests": 116,
+        "numFailedTests": 1
+      },
+      "rows": [
+        {
+          "test": "the v1.2 gate opens on no record when the record names a review outside the records root (mutant: drop the review-path check)",
+          "status": "passed",
+          "firstErrorLine": null
+        },
+        {
+          "test": "the v1.2 gate opens on no record when the record names a review that leaves the records root after its first segment (reviewer proposal)",
+          "status": "failed",
+          "firstErrorLine": "AssertionError: expected true to be false // Object.is equality"
+        }
+      ],
+      "tmpdir": "/tmp/r513-prop/q2",
+      "listingBefore": [],
+      "listingAfter": [
+        "node-compile-cache"
+      ],
+      "restored": true
+    },
+    {
+      "id": "Q-R1",
+      "edits": [
+        {
+          "file": "packages/polaris-dossier/src/waiting-sessions.test.ts",
+          "old": "  ])('opens on no record when %s', (_name, mutate) => {\n",
+          "new": "    ['the record names a review that leaves the records root after its first segment (reviewer proposal)', (root, decisions) => {\n      const digest = createHash('sha256').update(fs.readFileSync(path.join(root, SPEC_REL))).digest('hex');\n      const outside = path.join(path.dirname(root), `${path.basename(root)}-outside-RAW.md`);\n      cleanups.push(() => fs.rmSync(outside, { force: true }));\n      fs.writeFileSync(outside, reviewHead(digest));\n      const file = path.join(decisions, 'POLARIS-DOSSIER-LOCAL-AGENT-MODE-SIGNOFF-v1.2.md');\n      fs.writeFileSync(file, fs.readFileSync(file, 'utf8').replace('Review: docs/reviews/FIXTURE-v1.2-RAW.md', `Review: docs/../../${path.basename(root)}-outside-RAW.md`));\n    }],\n  ])('opens on no record when %s', (_name, mutate) => {\n"
+        },
+        {
+          "file": "packages/polaris-dossier/src/waiting-sessions.ts",
+          "old": "  if (review === undefined || review.split('/').includes('..')) return false;",
+          "new": "  if (review === undefined) return false;"
+        }
+      ],
+      "expectation": "both outside rows fail, no stray",
+      "exitCode": 1,
+      "counts": {
+        "numTotalTests": 117,
+        "numPassedTests": 115,
+        "numFailedTests": 2
+      },
+      "rows": [
+        {
+          "test": "the v1.2 gate opens on no record when the record names a review outside the records root (mutant: drop the review-path check)",
+          "status": "failed",
+          "firstErrorLine": "AssertionError: expected true to be false // Object.is equality"
+        },
+        {
+          "test": "the v1.2 gate opens on no record when the record names a review that leaves the records root after its first segment (reviewer proposal)",
+          "status": "failed",
+          "firstErrorLine": "AssertionError: expected true to be false // Object.is equality"
+        }
+      ],
+      "tmpdir": "/tmp/r513-prop/q3",
+      "listingBefore": [],
+      "listingAfter": [
+        "node-compile-cache"
+      ],
+      "restored": true
+    }
+  ],
+  "trackedTreeCleanAfter": true,
+  "harnessSha256": "be014974e381a1374991ee8d5ed4b1d5485cd723960a526875647ffec84c2259"
+}

@@ -1,4 +1,4 @@
-import { escapeHtml, type Route } from '@syzygy/cap1-daemon';
+import { escapeHtml, type Route } from '@syzygy/http-host';
 import {
   clearMaterializationRecordFile,
   dispatchAuthorization,
@@ -16,8 +16,9 @@ import { crossSurfaceLink } from './surface-links.js';
 import { mountPrefixForRequest, TAILNET_MOUNT_PREFIX, withMountPrefix } from './tailnet.js';
 import { unknownMarker, unknownRoute, unknownSubject } from './unknown-marker.js';
 
+// Test seam: exported for the tests; production code reaches it only inside this file.
 export const MATERIALIZE_HUMAN_PATH = '/trajectory/materialize' as const;
-export const MATERIALIZE_TAILNET_PATH = `${TAILNET_MOUNT_PREFIX}/trajectory/materialize` as const;
+const MATERIALIZE_TAILNET_PATH = `${TAILNET_MOUNT_PREFIX}/trajectory/materialize` as const;
 
 // Kept as a local literal, not imported from `trajectory.ts`, to avoid a
 // cycle (`trajectory.ts` imports `renderMaterializePanel` from this file).
@@ -27,9 +28,10 @@ const TRAJECTORY_BACK_PATH = '/trajectory' as const;
 // `--actor`), distinct from the machine's real account (which `bd`
 // still records separately as `owner`). Fixed, never user-supplied —
 // this action is human-triggered but not human-identified.
-export const MATERIALIZE_ATTRIBUTION =
+const MATERIALIZE_ATTRIBUTION =
   'syzygy-three-surface-poc:human-triggered-materialize-action' as const;
 
+// Test seam: exported for the tests; production code reaches it only inside this file.
 export function buildTrajectoryMaterializationPacket(model: PocModel): MaterializationPacket | null {
   return model.dispatch?.packet ?? null;
 }
@@ -131,7 +133,7 @@ function resultPage(input: { readonly heading: string; readonly body: string; re
 </html>`;
 }
 
-export interface MaterializeRoutesOptions {
+interface MaterializeRoutesOptions {
   readonly getModel: () => PocModel;
   readonly targetRepoRoot: string;
   readonly stateDir: () => string;

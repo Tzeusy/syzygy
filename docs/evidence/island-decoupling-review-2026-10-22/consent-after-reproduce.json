@@ -1,0 +1,135 @@
+{
+  "format": "syzygy-bpyt-8-1-consent-differential/1",
+  "old": {
+    "commit": "ee89766ad99b248338e72d1ff5538f60d6c60e17",
+    "treeClean": true,
+    "censusSha256": "08672563e24b2148cf86ae1aaa12d0df21aef8d4d670fc53d4173f6781e181ea"
+  },
+  "new": {
+    "commit": "6ac21f2cd88c91e5fa5329ce01106737a8685ebd",
+    "treeClean": true,
+    "censusSha256": "5d44c376038738ec6b15da89a7519db5c29ee28a1b51f495b409092e0548fdd0"
+  },
+  "script": {
+    "path": "scripts/measure_consent_gate_recognition.mjs",
+    "sha256": "ae33a37eaeba019834436b9fb9253c99ea92b219e0d83785788dbc7a4f5e2cb3"
+  },
+  "sameScript": true,
+  "fixtures": "per record: the record as committed, each non-blank line appended to and deleted on its own, and each named alteration",
+  "records": 15,
+  "recordsIdentical": 15,
+  "sameRecordSet": true,
+  "fixtureCount": 1890,
+  "distinctAnswers": 9,
+  "distinctAnswersOf": "the baselines and named alterations; the census stores each append or delete only as same as, or unlike, its baseline",
+  "checkLinesIdentical": true,
+  "supersededRegenerationIdentical": true,
+  "wholeDocumentIdentical": true,
+  "rows": [
+    {
+      "path": ".syzygy/governance/decisions/PUBLIC-REPO-ADMISSION-REDIS-OBSERVATION-ACT.md",
+      "model": "field-parsed",
+      "sha256": "2d3d70bfbe59d3fe49ea8a872ea7eed753add29189bdb93398d2fb8512435e57",
+      "identical": true,
+      "fixtures": 110
+    },
+    {
+      "path": ".syzygy/governance/decisions/PWB-SECRET-CLASSIFICATION-POLICY-PUBLIC-SOURCE-SCOPE-ACT.md",
+      "model": "field-parsed",
+      "sha256": "e7166226aad25ddda948404bc7150e997e2b051271fc4f911941ae58b03f1938",
+      "identical": true,
+      "fixtures": 146
+    },
+    {
+      "path": ".syzygy/governance/decisions/PWB-SECRET-CLASSIFICATION-POLICY-PUBLIC-SOURCE-SCOPE-V2-ACT.md",
+      "model": "field-parsed",
+      "sha256": "b77aa802f28ec328a0b61d59c3bdebcb9bdbf9313595a014e6b003bfd2037d34",
+      "identical": true,
+      "fixtures": 154
+    },
+    {
+      "path": ".syzygy/governance/decisions/PWB-SECRET-CLASSIFICATION-POLICY-PUBLIC-SOURCE-SCOPE-V3-ACT.md",
+      "model": "field-parsed",
+      "sha256": "a5a02b1b4faacc9d3e43c02b6ac5291b03a2140fa787bbf7dde76245d87dc720",
+      "identical": true,
+      "fixtures": 158
+    },
+    {
+      "path": ".syzygy/governance/decisions/PWB-SECRET-CLASSIFICATION-POLICY-PUBLIC-SOURCE-SCOPE-V4-ACT.md",
+      "model": "field-parsed",
+      "sha256": "bd7e386c733f2c25f3cf611db277af14cdf28a7dbb576c1c5145233ac9e9ebd3",
+      "identical": true,
+      "fixtures": 128
+    },
+    {
+      "path": ".syzygy/governance/decisions/RFC5-PROJECT-DOCUMENTATION-CLASS-AMENDMENT-ACT.md",
+      "model": "field-parsed",
+      "sha256": "14a57a8ba9323603958e980df604cac468b0e7a232547d47507988b9a09e78ed",
+      "identical": true,
+      "fixtures": 110
+    },
+    {
+      "path": ".syzygy/governance/decisions/PUBLIC-REPO-ADMISSION-OWNER-ANSWERS-2026-10-03.md",
+      "model": "digest-pinned",
+      "sha256": "549a746e108d06581ac7e0a653023692f7f7664075c81e5502918322feb5145c",
+      "identical": true,
+      "fixtures": 94
+    },
+    {
+      "path": ".syzygy/governance/decisions/PWB-SECRET-CLASSIFICATION-POLICY-ACT.md",
+      "model": "digest-pinned",
+      "sha256": "e02c0e6fbe408c4aac7d60f86e116bc8d4b79672a0c3a4dd4d6cf1a9f6bf59bb",
+      "identical": true,
+      "fixtures": 118
+    },
+    {
+      "path": ".syzygy/governance/decisions/PWB-SECRET-CLASSIFICATION-POLICY-AMENDMENT-ACT.md",
+      "model": "digest-pinned",
+      "sha256": "e766803dafcfbf0c5d40fdc499af7a83239864afd2a09696a7d7a21f81618a0a",
+      "identical": true,
+      "fixtures": 152
+    },
+    {
+      "path": ".syzygy/governance/decisions/PWB-SECRET-CLASSIFICATION-POLICY-BEHAVIOR-CONTRACT-REPIN-ACT.md",
+      "model": "digest-pinned",
+      "sha256": "178fcd57c4afde5ff457e6928a73089a2567f02ff8ef95d7efe05234f88e9988",
+      "identical": true,
+      "fixtures": 160
+    },
+    {
+      "path": ".syzygy/governance/decisions/DOSSIER-LOCAL-AGENT-D9-IN-FORCE-ACT.md",
+      "model": "byte-exact",
+      "sha256": "1f2098fcc074f6536512fe8519323aefbb0dcaeee11b503f591c82c974305f6e",
+      "identical": true,
+      "fixtures": 114
+    },
+    {
+      "path": ".syzygy/governance/decisions/DOSSIER-LOCAL-AGENT-RFC7-20-READING-IN-FORCE-ACT.md",
+      "model": "byte-exact",
+      "sha256": "dba32c2cc273cb911328160744e9e3c81a5d20585a0e8b24f4ec9bdb9453a727",
+      "identical": true,
+      "fixtures": 114
+    },
+    {
+      "path": ".syzygy/governance/decisions/DOSSIER-LOCAL-AGENT-REDIS-AGENT-ANTHROPIC-ACT.md",
+      "model": "byte-exact",
+      "sha256": "3799a889ac504f292e0af9bf8d5e7fe87c5bc09e8bd035ed395fe1ced8a21d60",
+      "identical": true,
+      "fixtures": 114
+    },
+    {
+      "path": ".syzygy/governance/decisions/DOSSIER-AGENT-PROVIDER-V2-REDIS-ANTHROPIC-ACT.md",
+      "model": "byte-exact",
+      "sha256": "96d05244bd860bfd63e27f499635ed8bd39040abacf0f0d777ef8a82ce2e1a0b",
+      "identical": true,
+      "fixtures": 128
+    },
+    {
+      "path": ".syzygy/governance/decisions/PUBLIC-GIT-SOURCE-ACQUISITION-LOCAL-AGENT-SIGNOFF-v1.0.md",
+      "model": "byte-exact",
+      "sha256": "f211248d1175087e9e4961caee2c52de249196a412f8f6f0dcd3de54c130ac45",
+      "identical": true,
+      "fixtures": 90
+    }
+  ]
+}

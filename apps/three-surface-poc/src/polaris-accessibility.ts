@@ -138,7 +138,7 @@ const TARGET_TEXT_SCRIPT = TEXT_SCRIPT.replace('document.createTreeWalker(docume
 // ---------------------------------------------------------------------------
 // Shapes returned by the scripts.
 
-export interface FocusableElement {
+interface FocusableElement {
   readonly index: number;
   readonly tag: string;
   readonly id: string;
@@ -190,7 +190,7 @@ interface Activation {
 // ---------------------------------------------------------------------------
 // WCAG 2.x contrast arithmetic (pure; unit-tested against hand-typed pairs).
 
-export interface Rgb {
+interface Rgb {
   readonly r: number;
   readonly g: number;
   readonly b: number;
@@ -201,11 +201,13 @@ function channel(value: number): number {
   return c <= 0.03928 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4;
 }
 
+// Test seam: exported for the tests; production code reaches it only inside this file.
 /** Relative luminance per WCAG 2.x. */
 export function relativeLuminance(colour: Rgb): number {
   return 0.2126 * channel(colour.r) + 0.7152 * channel(colour.g) + 0.0722 * channel(colour.b);
 }
 
+// Test seam: exported for the tests; production code reaches it only inside this file.
 /** Contrast ratio (1..21) between two opaque colours. */
 export function contrastRatio(foreground: Rgb, background: Rgb): number {
   const a = relativeLuminance(foreground);
@@ -224,6 +226,7 @@ export function composite(top: Rgba, bottom: Rgb): Rgb {
   };
 }
 
+// Test seam: exported for the tests; production code reaches it only inside this file.
 /** WCAG AA threshold: 3:1 for large text (≥ 24px, or ≥ 18.66px bold), else 4.5:1. */
 export function aaThreshold(fontSizePx: number, fontWeight: number): number {
   return fontSizePx >= 24 || (fontSizePx >= 18.66 && fontWeight >= 700) ? 3 : 4.5;
@@ -231,6 +234,7 @@ export function aaThreshold(fontSizePx: number, fontWeight: number): number {
 
 const CANVAS_WHITE: Rgb = { r: 255, g: 255, b: 255 };
 
+// Test seam: exported for the tests; production code reaches it only inside this file.
 /** Every opaque backdrop the element may sit on: the layers composited
  * bottom-up from the canvas, forking at each gradient into one candidate
  * per gradient colour plus the see-through case. */
@@ -257,7 +261,7 @@ function dedupe(colours: readonly Rgb[]): readonly Rgb[] {
 }
 
 /** The worst contrast of `foreground` against any candidate backdrop. */
-export function worstContrast(foreground: Rgba, backdrop: Backdrop): { readonly ratio: number; readonly against: Rgb } {
+function worstContrast(foreground: Rgba, backdrop: Backdrop): { readonly ratio: number; readonly against: Rgb } {
   let worst: { ratio: number; against: Rgb } | undefined;
   for (const candidate of candidateBackdrops(backdrop)) {
     const ratio = contrastRatio(composite(foreground, candidate), candidate);
@@ -280,7 +284,7 @@ function hex(colour: Rgb): string {
 // ---------------------------------------------------------------------------
 // The checks.
 
-export type ViolationKind =
+type ViolationKind =
   | 'non-native-control'
   | 'unreachable-by-tab'
   | 'focus-order-differs-from-document-order'
@@ -297,27 +301,28 @@ export type ViolationKind =
   | 'expected-target-absent'
   | 'disclosure-did-not-open';
 
+// Test seam: exported type the tests name; production code uses it only inside this file.
 export interface Violation {
   readonly kind: ViolationKind;
   readonly where: string;
   readonly detail: string;
 }
 
-export interface FocusTraceReport {
+interface FocusTraceReport {
   readonly forward: readonly string[];
   readonly reverse: readonly string[];
   readonly population: number;
   readonly reached: number;
 }
 
-export interface ActivationReport {
+interface ActivationReport {
   readonly href: string;
   readonly targetId: string | null;
   readonly targetTag: string | null;
   readonly continuedTo: string | null;
 }
 
-export interface ContrastMeasurement {
+interface ContrastMeasurement {
   readonly path: string;
   readonly text: string;
   readonly foreground: string;
@@ -326,13 +331,13 @@ export interface ContrastMeasurement {
   readonly threshold: number;
 }
 
-export interface AxReport {
+interface AxReport {
   readonly nodes: number;
   readonly byRole: Readonly<Record<string, number>>;
   readonly unnamed: readonly string[];
 }
 
-export interface DisclosureReport {
+interface DisclosureReport {
   /** Native disclosures (`<details>`) on the page, each opened by Enter on its summary. */
   readonly population: number;
   readonly opened: number;
@@ -366,7 +371,7 @@ const SUMMARY_INDEXES_SCRIPT = `(() => {
 
 const OPEN_DISCLOSURES_SCRIPT = `(() => { document.querySelectorAll('details').forEach((details) => { details.open = true; }); return null; })()`;
 
-export interface CheckOptions {
+interface CheckOptions {
   /** Element ids the page must reach by keyboard (e.g. every depth target). */
   readonly expectedTargets?: readonly string[];
   /** Cap on fragment links to activate (all when undefined). */

@@ -30,11 +30,11 @@
  * `validateStage` runs on a provider-local *reply*. `admitSourcePopulation`
  * fails closed before this flat selection is converted to bound sources,
  * applying `sourceSchema`'s own `sourceId` handle pattern and `text` upper
- * bound (imported from ./provider-draft.ts, not duplicated) before any
+ * bound (imported from ./source-model.ts, not duplicated) before any
  * source is ever admitted.
  */
 
-import { SOURCE_ID_MAX_LENGTH, SOURCE_ID_PATTERN, SOURCE_TEXT_MAX_LENGTH } from './provider-draft.js';
+import { SOURCE_ID_MAX_LENGTH, SOURCE_ID_PATTERN, SOURCE_TEXT_MAX_LENGTH } from './source-model.js';
 
 const sourceIdHandle = new RegExp(SOURCE_ID_PATTERN, 'u');
 
@@ -85,7 +85,7 @@ export class SourcePopulationError extends Error {
  * so the denominator (`sourcePopulationDenominator`) is trustworthy.
  *
  * Each `selected` source's `sourceId` must additionally match `sourceSchema`'s
- * own handle pattern (./provider-draft.ts's `SOURCE_ID_PATTERN`, length-bounded
+ * own handle pattern (./source-model.ts's `SOURCE_ID_PATTERN`, length-bounded
  * by `SOURCE_ID_MAX_LENGTH`; the regex itself already requires at least one
  * character) and its `text` must not exceed `SOURCE_TEXT_MAX_LENGTH` -- the
  * same pattern and bound `validateStage` enforces against `context.sources`,

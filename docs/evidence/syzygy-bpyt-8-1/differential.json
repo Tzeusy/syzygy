@@ -1,0 +1,988 @@
+{
+  "format": "syzygy-bpyt-8-1-differential/1",
+  "differentialSha256": "0c7bb409220a0167ca33ab666e40a8dd7b155932aec3b42972d5b1efa61576ae",
+  "old": {
+    "tree": "/tmp/claude-1000/-home-tze-GitHub-syzygy/9297eba3-858b-4aca-a313-05ea0802ad02/scratchpad/lane-a/b81/base",
+    "commit": "c55acb73753dc8d29d53b34b38b5d2af0cee6080"
+  },
+  "new": {
+    "tree": "/home/tze/GitHub/syzygy/.worktrees/parallel-agents/syzygy-bpyt.8.1",
+    "commit": "ee89766ad99b248338e72d1ff5538f60d6c60e17"
+  },
+  "localRender": {
+    "fixtures": 16,
+    "identical": 16,
+    "distinctOutputs": 15,
+    "rows": [
+      {
+        "name": "garden/complete/as-is",
+        "identical": true,
+        "refused": null,
+        "outputSha256": "cf14b31e27af495f2da91b15ad6f974a0db71b3eb91454f8411b2ec7f2ec6f12"
+      },
+      {
+        "name": "garden/complete/altered-prose",
+        "identical": true,
+        "refused": null,
+        "outputSha256": "8ce1ebd29cf675cb3cc1b0fba127c2c60f941647c73ac3fd9331174009b61eb9"
+      },
+      {
+        "name": "garden/complete/altered-prose+pages",
+        "identical": true,
+        "refused": null,
+        "outputSha256": "e9cbf2323226063b6181999f74155c3fc715865d7c5e5199f082b074f4af1cb4"
+      },
+      {
+        "name": "garden/complete/mixed-markings",
+        "identical": true,
+        "refused": null,
+        "outputSha256": "d12323360a684ff47d23edf166d47236e012bb57df0b890b066559ee0e2693a3"
+      },
+      {
+        "name": "garden/complete/draft-layer-unknown",
+        "identical": true,
+        "refused": null,
+        "outputSha256": "d83e8172f3e3f553fcf4407f69b6317c9c2f489d3c9a4f07fadf76ef778f4624"
+      },
+      {
+        "name": "garden/complete/altered-prose+draft-layer-unknown",
+        "identical": true,
+        "refused": null,
+        "outputSha256": "107a310537112ac67f9774ef7e4ee7f0d02fbb2933e3ab16dc305b03d1d0ce58"
+      },
+      {
+        "name": "garden/complete/topics",
+        "identical": true,
+        "refused": null,
+        "outputSha256": "97fceca1a7040c1e80e51f0396393bfddd7395585ac24515c653ec78506ccc53"
+      },
+      {
+        "name": "garden/complete/refused-missing-block",
+        "identical": true,
+        "refused": "refused: Dossier render refused: unknown-block",
+        "outputSha256": "94febb37482936785c27ced843031bf7981badeea6618572eac2df71619d73ce"
+      },
+      {
+        "name": "archive/complete/as-is",
+        "identical": true,
+        "refused": null,
+        "outputSha256": "6163ce7b75aadab69f5b624b1d4314ed165cc6b048cc2d060f363ff919aa5d02"
+      },
+      {
+        "name": "archive/complete/altered-prose",
+        "identical": true,
+        "refused": null,
+        "outputSha256": "b802e1026b0b370ad42fa5b6106ab404e63b8b96296e3b64df40d58d5faae566"
+      },
+      {
+        "name": "archive/complete/altered-prose+pages",
+        "identical": true,
+        "refused": null,
+        "outputSha256": "ddf6b1c1910d32e826d315b7cfe17f6efc8440e64dc9cbb2b9e85c2ebc8502ca"
+      },
+      {
+        "name": "archive/complete/mixed-markings",
+        "identical": true,
+        "refused": null,
+        "outputSha256": "7ada53b66aff16a0cd9ecae321c7147cd3a7e0dbba74daeec3688d5e8eac6238"
+      },
+      {
+        "name": "archive/complete/draft-layer-unknown",
+        "identical": true,
+        "refused": null,
+        "outputSha256": "d8e0649708090f71bf17fe64723177422bb32e054c4094b5d611fe94eb481cb5"
+      },
+      {
+        "name": "archive/complete/altered-prose+draft-layer-unknown",
+        "identical": true,
+        "refused": null,
+        "outputSha256": "69660717eb2ae555c765cc88060ad8f5ac99eb72501f280a94c7bc4f17d38821"
+      },
+      {
+        "name": "archive/complete/topics",
+        "identical": true,
+        "refused": null,
+        "outputSha256": "151451ad7de4f1a6bee8ddab8bf905855edee92f39df0e19c53f00f0998724f6"
+      },
+      {
+        "name": "archive/complete/refused-missing-block",
+        "identical": true,
+        "refused": "refused: Dossier render refused: unknown-block",
+        "outputSha256": "94febb37482936785c27ced843031bf7981badeea6618572eac2df71619d73ce"
+      }
+    ]
+  },
+  "providerRender": {
+    "fixtures": 26,
+    "identical": 26,
+    "distinctOutputs": 16,
+    "rows": [
+      {
+        "name": "garden/complete",
+        "identical": true,
+        "refused": null,
+        "outputSha256": "71489c6637d045c64136327e56808812250e48cdee7297dce2e21cff684e8789"
+      },
+      {
+        "name": "garden/complete/altered-prose",
+        "identical": true,
+        "refused": null,
+        "outputSha256": "9318e923bee15a69080e286bb850020826838c9e01fb3e23972b1a4702ca6903"
+      },
+      {
+        "name": "garden/complete/pipeline-quote-finding",
+        "identical": true,
+        "refused": null,
+        "outputSha256": "4093b35af5c95ab4061336f0b6a068d712f454122defbb35a12215ea9bfc0ecf"
+      },
+      {
+        "name": "garden/complete/quote-findings-not-an-array",
+        "identical": true,
+        "refused": null,
+        "outputSha256": "71489c6637d045c64136327e56808812250e48cdee7297dce2e21cff684e8789"
+      },
+      {
+        "name": "garden/stopped-{\"maxCalls\":1}",
+        "identical": true,
+        "refused": null,
+        "outputSha256": "e0ab84e14ae422de62350cd30e855705d4e38c0195f500969f895eeddbadbb76"
+      },
+      {
+        "name": "garden/stopped-{\"maxCalls\":1}/no-requested-assets",
+        "identical": true,
+        "refused": "refused: Dossier render refused: missing-requested-assets",
+        "outputSha256": "3c68071dd71dbffb08839487dbc486a0dc5d5df36bf4d55634aeaa8ac6a15ec3"
+      },
+      {
+        "name": "garden/stopped-{\"maxCalls\":2}",
+        "identical": true,
+        "refused": null,
+        "outputSha256": "ba1d5d395ef7059d13d998244fe64e9f563ae01a6ed2239b5eaa5f10f1afb67c"
+      },
+      {
+        "name": "garden/stopped-{\"maxCalls\":2}/no-requested-assets",
+        "identical": true,
+        "refused": "refused: Dossier render refused: missing-requested-assets",
+        "outputSha256": "3c68071dd71dbffb08839487dbc486a0dc5d5df36bf4d55634aeaa8ac6a15ec3"
+      },
+      {
+        "name": "garden/stopped-{\"maxCalls\":4}",
+        "identical": true,
+        "refused": null,
+        "outputSha256": "ed71c18dc4ee4f27aad761650b1aa7f9b96fc4f6c139915ce71e20dc49dbf619"
+      },
+      {
+        "name": "garden/stopped-{\"maxCalls\":4}/no-requested-assets",
+        "identical": true,
+        "refused": "refused: Dossier render refused: missing-requested-assets",
+        "outputSha256": "3c68071dd71dbffb08839487dbc486a0dc5d5df36bf4d55634aeaa8ac6a15ec3"
+      },
+      {
+        "name": "garden/stopped-{\"maxUsageUnits\":7}",
+        "identical": true,
+        "refused": null,
+        "outputSha256": "a49dd109bcbb5f0636e146e383ab3c25ae5527bb72994ed952988fc7c001c2d0"
+      },
+      {
+        "name": "garden/stopped-{\"maxUsageUnits\":7}/no-requested-assets",
+        "identical": true,
+        "refused": "refused: Dossier render refused: missing-requested-assets",
+        "outputSha256": "3c68071dd71dbffb08839487dbc486a0dc5d5df36bf4d55634aeaa8ac6a15ec3"
+      },
+      {
+        "name": "archive/complete",
+        "identical": true,
+        "refused": null,
+        "outputSha256": "84f86859e5ee588f99850d2d7997deedb63aa6e5649363416f4812acf694e20f"
+      },
+      {
+        "name": "archive/complete/altered-prose",
+        "identical": true,
+        "refused": null,
+        "outputSha256": "7d1244b70f6c398cdf2e82d225df9c15066fa60a8a818bb2b8141fb57f833194"
+      },
+      {
+        "name": "archive/complete/pipeline-quote-finding",
+        "identical": true,
+        "refused": null,
+        "outputSha256": "84f57aa03efca919646796dc8011e8f9f8f2e8d9d5fbb672d95daeeafff505f8"
+      },
+      {
+        "name": "archive/complete/quote-findings-not-an-array",
+        "identical": true,
+        "refused": null,
+        "outputSha256": "84f86859e5ee588f99850d2d7997deedb63aa6e5649363416f4812acf694e20f"
+      },
+      {
+        "name": "archive/stopped-{\"maxCalls\":1}",
+        "identical": true,
+        "refused": null,
+        "outputSha256": "0cab9c77ce0e1fa9aba46493899f79c59f03bf4d1792733af4ecfec4925a6813"
+      },
+      {
+        "name": "archive/stopped-{\"maxCalls\":1}/no-requested-assets",
+        "identical": true,
+        "refused": "refused: Dossier render refused: missing-requested-assets",
+        "outputSha256": "3c68071dd71dbffb08839487dbc486a0dc5d5df36bf4d55634aeaa8ac6a15ec3"
+      },
+      {
+        "name": "archive/stopped-{\"maxCalls\":2}",
+        "identical": true,
+        "refused": null,
+        "outputSha256": "aa6f98a6c67fe715ad5f130182c15b58af4801b2ce7eaeba70d8b8590fbc507b"
+      },
+      {
+        "name": "archive/stopped-{\"maxCalls\":2}/no-requested-assets",
+        "identical": true,
+        "refused": "refused: Dossier render refused: missing-requested-assets",
+        "outputSha256": "3c68071dd71dbffb08839487dbc486a0dc5d5df36bf4d55634aeaa8ac6a15ec3"
+      },
+      {
+        "name": "archive/stopped-{\"maxCalls\":4}",
+        "identical": true,
+        "refused": null,
+        "outputSha256": "001d5097a371cd0769fbdd70cff7e8d760c48bbba3246be8fdc4e1506db13729"
+      },
+      {
+        "name": "archive/stopped-{\"maxCalls\":4}/no-requested-assets",
+        "identical": true,
+        "refused": "refused: Dossier render refused: missing-requested-assets",
+        "outputSha256": "3c68071dd71dbffb08839487dbc486a0dc5d5df36bf4d55634aeaa8ac6a15ec3"
+      },
+      {
+        "name": "archive/stopped-{\"maxUsageUnits\":7}",
+        "identical": true,
+        "refused": null,
+        "outputSha256": "1250223b2b142c00a4511922a8c50571d27466c4cfbcc0a2e523824bca5f3a31"
+      },
+      {
+        "name": "archive/stopped-{\"maxUsageUnits\":7}/no-requested-assets",
+        "identical": true,
+        "refused": "refused: Dossier render refused: missing-requested-assets",
+        "outputSha256": "3c68071dd71dbffb08839487dbc486a0dc5d5df36bf4d55634aeaa8ac6a15ec3"
+      },
+      {
+        "name": "neither-result-nor-local",
+        "identical": true,
+        "refused": "refused: Dossier render refused: not-renderable",
+        "outputSha256": "443c022432a3f190c7c3a6b7867980be382e2d1e1ecf7467e46ec9490af8518c"
+      },
+      {
+        "name": "both-result-and-local",
+        "identical": true,
+        "refused": "refused: Dossier render refused: not-renderable",
+        "outputSha256": "443c022432a3f190c7c3a6b7867980be382e2d1e1ecf7467e46ec9490af8518c"
+      }
+    ]
+  },
+  "brief": {
+    "guidance": {
+      "oldVersion": "polaris-author-dossier-v2",
+      "newVersion": "polaris-author-dossier-v2",
+      "identical": true,
+      "sha256": "17ea6ff5bc05f02b27343da8184033104295b1c02b82ca5e784d6316d1ecea69",
+      "bytes": 4469
+    },
+    "fixtures": 3,
+    "identical": 3,
+    "distinctOutputs": 3,
+    "rows": [
+      {
+        "name": "as-is",
+        "identical": true,
+        "outputSha256": "45047063315beeef52883bde129451b1a26e3de4d534fd8bde6b2abcb1b42c1d",
+        "carriesGuidance": true
+      },
+      {
+        "name": "altered-prose",
+        "identical": true,
+        "outputSha256": "f649b588e5467d65569e271edc5530883af3d911d3175a3d7907dda7f4bbc90a",
+        "carriesGuidance": true
+      },
+      {
+        "name": "no-revision-label",
+        "identical": true,
+        "outputSha256": "348e912b17f836020d3f23124c5c5636870c6e703a30cd8657f9ee42a2ab5b3b",
+        "carriesGuidance": true
+      }
+    ]
+  },
+  "validators": {
+    "fixtures": 62,
+    "identical": 62,
+    "distinctOutcomes": 18,
+    "refusals": 51,
+    "sameObjects": [
+      {
+        "name": "validateDraftRecord",
+        "rootIsLive": true
+      },
+      {
+        "name": "validateRequestedAssets",
+        "rootIsLive": true
+      },
+      {
+        "name": "reviewVerdict",
+        "rootIsLive": true
+      },
+      {
+        "name": "diagramToMermaid",
+        "rootIsLive": true
+      },
+      {
+        "name": "OWNER_TOPICS",
+        "rootIsLive": true
+      },
+      {
+        "name": "SOURCE_ID_PATTERN",
+        "rootIsLive": true
+      },
+      {
+        "name": "DIAGRAM_KINDS",
+        "rootIsLive": true
+      }
+    ],
+    "rows": [
+      {
+        "fn": "validateDraftRecord",
+        "name": "valid",
+        "identical": true,
+        "outcomeSha256": "0f6b6d37e653cf6e1f27924ffc7561fc0894c17e05d3001690becb4cb588fee8",
+        "refused": null
+      },
+      {
+        "fn": "validateDraftRecord",
+        "name": "valid-other-project",
+        "identical": true,
+        "outcomeSha256": "873724f7292f5c751e4c4719e2ce2e60e0b651d5cc2b4630cd9781ac4a57fe00",
+        "refused": null
+      },
+      {
+        "fn": "validateDraftRecord",
+        "name": "altered-prose",
+        "identical": true,
+        "outcomeSha256": "ece831f982bdcb9d0d9f4399daf86fa8a32bb5cc08e79623ca22aa36b15487b7",
+        "refused": null
+      },
+      {
+        "fn": "validateDraftRecord",
+        "name": "missing-title",
+        "identical": true,
+        "outcomeSha256": "aa1ac5146e248c97aae70b76d2d4f3b951603fb6d2b560ae7d94d155f7ac9ea4",
+        "refused": "refused: invalid-fields"
+      },
+      {
+        "fn": "validateDraftRecord",
+        "name": "extra-field",
+        "identical": true,
+        "outcomeSha256": "aa1ac5146e248c97aae70b76d2d4f3b951603fb6d2b560ae7d94d155f7ac9ea4",
+        "refused": "refused: invalid-fields"
+      },
+      {
+        "fn": "validateDraftRecord",
+        "name": "empty-text",
+        "identical": true,
+        "outcomeSha256": "4349b820a1bca9d8bd37a1de8885dbec271b2389546251574bb3f201176648d4",
+        "refused": "refused: invalid-string"
+      },
+      {
+        "fn": "validateDraftRecord",
+        "name": "text-too-long",
+        "identical": true,
+        "outcomeSha256": "4349b820a1bca9d8bd37a1de8885dbec271b2389546251574bb3f201176648d4",
+        "refused": "refused: invalid-string"
+      },
+      {
+        "fn": "validateDraftRecord",
+        "name": "bad-handle",
+        "identical": true,
+        "outcomeSha256": "4349b820a1bca9d8bd37a1de8885dbec271b2389546251574bb3f201176648d4",
+        "refused": "refused: invalid-string"
+      },
+      {
+        "fn": "validateDraftRecord",
+        "name": "handle-too-long",
+        "identical": true,
+        "outcomeSha256": "4349b820a1bca9d8bd37a1de8885dbec271b2389546251574bb3f201176648d4",
+        "refused": "refused: invalid-string"
+      },
+      {
+        "fn": "validateDraftRecord",
+        "name": "duplicate-ref",
+        "identical": true,
+        "outcomeSha256": "7621ad5a99af9dcdcb316517874161a876efd791e56c3c846e0107fc65f09624",
+        "refused": "refused: duplicate-reference"
+      },
+      {
+        "fn": "validateDraftRecord",
+        "name": "unknown-disposition",
+        "identical": true,
+        "outcomeSha256": "f44430813e7a46a6c8b3a037e257ac1d8cb48fd86de4caf27454bbca2d42c179",
+        "refused": "refused: invalid-disposition"
+      },
+      {
+        "fn": "validateDraftRecord",
+        "name": "not-an-object",
+        "identical": true,
+        "outcomeSha256": "ef31b63a352bd33c69a0f9335d1a2e15a5f75092bf6297b6d29b58034fbc3390",
+        "refused": "refused: invalid-structure"
+      },
+      {
+        "fn": "validateDraftRecord",
+        "name": "null",
+        "identical": true,
+        "outcomeSha256": "ef31b63a352bd33c69a0f9335d1a2e15a5f75092bf6297b6d29b58034fbc3390",
+        "refused": "refused: invalid-structure"
+      },
+      {
+        "fn": "validateDraftRecord",
+        "name": "array-for-object",
+        "identical": true,
+        "outcomeSha256": "2bb22b59c16e27a4bc1f2e76323d8583a3a8c19f23494c1b6061b7f3ecddbb3e",
+        "refused": "refused: invalid-object"
+      },
+      {
+        "fn": "validateDraftRecord",
+        "name": "bad-diagram-kind",
+        "identical": true,
+        "outcomeSha256": "4349b820a1bca9d8bd37a1de8885dbec271b2389546251574bb3f201176648d4",
+        "refused": "refused: invalid-string"
+      },
+      {
+        "fn": "validateRequestedAssets",
+        "name": "dossier-assets",
+        "identical": true,
+        "outcomeSha256": "83b21270fa6693fcc85926e7f846b73ece58ff418153a6083ffaadad2b195ef6",
+        "refused": null
+      },
+      {
+        "fn": "validateRequestedAssets",
+        "name": "synthetic-assets",
+        "identical": true,
+        "outcomeSha256": "cc92b4402c76a0122a4529f07cbbb7b7878408bc1c160a18c7e176264d04bc3e",
+        "refused": null
+      },
+      {
+        "fn": "validateRequestedAssets",
+        "name": "empty",
+        "identical": true,
+        "outcomeSha256": "b85e7803f6becd6f64cfd1cd089c38a5a6562325ba0db5b5ea1c18f467315b1a",
+        "refused": null
+      },
+      {
+        "fn": "validateRequestedAssets",
+        "name": "bad-kind",
+        "identical": true,
+        "outcomeSha256": "4349b820a1bca9d8bd37a1de8885dbec271b2389546251574bb3f201176648d4",
+        "refused": "refused: invalid-string"
+      },
+      {
+        "fn": "validateRequestedAssets",
+        "name": "missing-required",
+        "identical": true,
+        "outcomeSha256": "aa1ac5146e248c97aae70b76d2d4f3b951603fb6d2b560ae7d94d155f7ac9ea4",
+        "refused": "refused: invalid-fields"
+      },
+      {
+        "fn": "validateRequestedAssets",
+        "name": "duplicate",
+        "identical": true,
+        "outcomeSha256": "d8525b328dac8daa54f30e79b99a17725a72ae48aa85ddd2c2da6790bff1371a",
+        "refused": "refused: duplicate-handle"
+      },
+      {
+        "fn": "reviewVerdict",
+        "name": "complete-review",
+        "identical": true,
+        "outcomeSha256": "ac833c439331b903462adb68c23cb46a1599401347ef00509f00265df07434cc",
+        "refused": null
+      },
+      {
+        "fn": "reviewVerdict",
+        "name": "other-review",
+        "identical": true,
+        "outcomeSha256": "ac833c439331b903462adb68c23cb46a1599401347ef00509f00265df07434cc",
+        "refused": null
+      },
+      {
+        "fn": "reviewVerdict",
+        "name": "empty",
+        "identical": true,
+        "outcomeSha256": "aa1ac5146e248c97aae70b76d2d4f3b951603fb6d2b560ae7d94d155f7ac9ea4",
+        "refused": "refused: invalid-fields"
+      },
+      {
+        "fn": "reviewVerdict",
+        "name": "null",
+        "identical": true,
+        "outcomeSha256": "ef31b63a352bd33c69a0f9335d1a2e15a5f75092bf6297b6d29b58034fbc3390",
+        "refused": "refused: invalid-structure"
+      },
+      {
+        "fn": "reviewVerdict",
+        "name": "bad-verdict",
+        "identical": true,
+        "outcomeSha256": "4349b820a1bca9d8bd37a1de8885dbec271b2389546251574bb3f201176648d4",
+        "refused": "refused: invalid-string"
+      },
+      {
+        "fn": "validateStage",
+        "name": "garden/complete/0-inventory",
+        "identical": true,
+        "outcomeSha256": "c52760998cc24597c80c5e8e3b189a97355d599cef26c88f3ffb9a831886a0d7",
+        "refused": "refused: Cannot read properties of undefined (reading 'requestedAssets')"
+      },
+      {
+        "fn": "validateStage",
+        "name": "garden/complete/1-plan",
+        "identical": true,
+        "outcomeSha256": "c52760998cc24597c80c5e8e3b189a97355d599cef26c88f3ffb9a831886a0d7",
+        "refused": "refused: Cannot read properties of undefined (reading 'requestedAssets')"
+      },
+      {
+        "fn": "validateStage",
+        "name": "garden/complete/2-author",
+        "identical": true,
+        "outcomeSha256": "c52760998cc24597c80c5e8e3b189a97355d599cef26c88f3ffb9a831886a0d7",
+        "refused": "refused: Cannot read properties of undefined (reading 'requestedAssets')"
+      },
+      {
+        "fn": "validateStage",
+        "name": "garden/complete/3-edit",
+        "identical": true,
+        "outcomeSha256": "c52760998cc24597c80c5e8e3b189a97355d599cef26c88f3ffb9a831886a0d7",
+        "refused": "refused: Cannot read properties of undefined (reading 'requestedAssets')"
+      },
+      {
+        "fn": "validateStage",
+        "name": "garden/complete/4-fidelity",
+        "identical": true,
+        "outcomeSha256": "c52760998cc24597c80c5e8e3b189a97355d599cef26c88f3ffb9a831886a0d7",
+        "refused": "refused: Cannot read properties of undefined (reading 'requestedAssets')"
+      },
+      {
+        "fn": "validateStage",
+        "name": "garden/stopped-{\"maxCalls\":1}/0-inventory",
+        "identical": true,
+        "outcomeSha256": "c52760998cc24597c80c5e8e3b189a97355d599cef26c88f3ffb9a831886a0d7",
+        "refused": "refused: Cannot read properties of undefined (reading 'requestedAssets')"
+      },
+      {
+        "fn": "validateStage",
+        "name": "garden/stopped-{\"maxCalls\":2}/0-inventory",
+        "identical": true,
+        "outcomeSha256": "c52760998cc24597c80c5e8e3b189a97355d599cef26c88f3ffb9a831886a0d7",
+        "refused": "refused: Cannot read properties of undefined (reading 'requestedAssets')"
+      },
+      {
+        "fn": "validateStage",
+        "name": "garden/stopped-{\"maxCalls\":2}/1-plan",
+        "identical": true,
+        "outcomeSha256": "c52760998cc24597c80c5e8e3b189a97355d599cef26c88f3ffb9a831886a0d7",
+        "refused": "refused: Cannot read properties of undefined (reading 'requestedAssets')"
+      },
+      {
+        "fn": "validateStage",
+        "name": "garden/stopped-{\"maxCalls\":4}/0-inventory",
+        "identical": true,
+        "outcomeSha256": "c52760998cc24597c80c5e8e3b189a97355d599cef26c88f3ffb9a831886a0d7",
+        "refused": "refused: Cannot read properties of undefined (reading 'requestedAssets')"
+      },
+      {
+        "fn": "validateStage",
+        "name": "garden/stopped-{\"maxCalls\":4}/1-plan",
+        "identical": true,
+        "outcomeSha256": "c52760998cc24597c80c5e8e3b189a97355d599cef26c88f3ffb9a831886a0d7",
+        "refused": "refused: Cannot read properties of undefined (reading 'requestedAssets')"
+      },
+      {
+        "fn": "validateStage",
+        "name": "garden/stopped-{\"maxCalls\":4}/2-author",
+        "identical": true,
+        "outcomeSha256": "c52760998cc24597c80c5e8e3b189a97355d599cef26c88f3ffb9a831886a0d7",
+        "refused": "refused: Cannot read properties of undefined (reading 'requestedAssets')"
+      },
+      {
+        "fn": "validateStage",
+        "name": "garden/stopped-{\"maxCalls\":4}/3-edit",
+        "identical": true,
+        "outcomeSha256": "c52760998cc24597c80c5e8e3b189a97355d599cef26c88f3ffb9a831886a0d7",
+        "refused": "refused: Cannot read properties of undefined (reading 'requestedAssets')"
+      },
+      {
+        "fn": "validateStage",
+        "name": "garden/stopped-{\"maxUsageUnits\":7}/0-inventory",
+        "identical": true,
+        "outcomeSha256": "c52760998cc24597c80c5e8e3b189a97355d599cef26c88f3ffb9a831886a0d7",
+        "refused": "refused: Cannot read properties of undefined (reading 'requestedAssets')"
+      },
+      {
+        "fn": "validateStage",
+        "name": "garden/stopped-{\"maxUsageUnits\":7}/1-plan",
+        "identical": true,
+        "outcomeSha256": "c52760998cc24597c80c5e8e3b189a97355d599cef26c88f3ffb9a831886a0d7",
+        "refused": "refused: Cannot read properties of undefined (reading 'requestedAssets')"
+      },
+      {
+        "fn": "validateStage",
+        "name": "garden/stopped-{\"maxUsageUnits\":7}/2-author",
+        "identical": true,
+        "outcomeSha256": "c52760998cc24597c80c5e8e3b189a97355d599cef26c88f3ffb9a831886a0d7",
+        "refused": "refused: Cannot read properties of undefined (reading 'requestedAssets')"
+      },
+      {
+        "fn": "validateStage",
+        "name": "archive/complete/0-inventory",
+        "identical": true,
+        "outcomeSha256": "c52760998cc24597c80c5e8e3b189a97355d599cef26c88f3ffb9a831886a0d7",
+        "refused": "refused: Cannot read properties of undefined (reading 'requestedAssets')"
+      },
+      {
+        "fn": "validateStage",
+        "name": "archive/complete/1-plan",
+        "identical": true,
+        "outcomeSha256": "c52760998cc24597c80c5e8e3b189a97355d599cef26c88f3ffb9a831886a0d7",
+        "refused": "refused: Cannot read properties of undefined (reading 'requestedAssets')"
+      },
+      {
+        "fn": "validateStage",
+        "name": "archive/complete/2-author",
+        "identical": true,
+        "outcomeSha256": "c52760998cc24597c80c5e8e3b189a97355d599cef26c88f3ffb9a831886a0d7",
+        "refused": "refused: Cannot read properties of undefined (reading 'requestedAssets')"
+      },
+      {
+        "fn": "validateStage",
+        "name": "archive/complete/3-edit",
+        "identical": true,
+        "outcomeSha256": "c52760998cc24597c80c5e8e3b189a97355d599cef26c88f3ffb9a831886a0d7",
+        "refused": "refused: Cannot read properties of undefined (reading 'requestedAssets')"
+      },
+      {
+        "fn": "validateStage",
+        "name": "archive/complete/4-fidelity",
+        "identical": true,
+        "outcomeSha256": "c52760998cc24597c80c5e8e3b189a97355d599cef26c88f3ffb9a831886a0d7",
+        "refused": "refused: Cannot read properties of undefined (reading 'requestedAssets')"
+      },
+      {
+        "fn": "validateStage",
+        "name": "archive/stopped-{\"maxCalls\":1}/0-inventory",
+        "identical": true,
+        "outcomeSha256": "c52760998cc24597c80c5e8e3b189a97355d599cef26c88f3ffb9a831886a0d7",
+        "refused": "refused: Cannot read properties of undefined (reading 'requestedAssets')"
+      },
+      {
+        "fn": "validateStage",
+        "name": "archive/stopped-{\"maxCalls\":2}/0-inventory",
+        "identical": true,
+        "outcomeSha256": "c52760998cc24597c80c5e8e3b189a97355d599cef26c88f3ffb9a831886a0d7",
+        "refused": "refused: Cannot read properties of undefined (reading 'requestedAssets')"
+      },
+      {
+        "fn": "validateStage",
+        "name": "archive/stopped-{\"maxCalls\":2}/1-plan",
+        "identical": true,
+        "outcomeSha256": "c52760998cc24597c80c5e8e3b189a97355d599cef26c88f3ffb9a831886a0d7",
+        "refused": "refused: Cannot read properties of undefined (reading 'requestedAssets')"
+      },
+      {
+        "fn": "validateStage",
+        "name": "archive/stopped-{\"maxCalls\":4}/0-inventory",
+        "identical": true,
+        "outcomeSha256": "c52760998cc24597c80c5e8e3b189a97355d599cef26c88f3ffb9a831886a0d7",
+        "refused": "refused: Cannot read properties of undefined (reading 'requestedAssets')"
+      },
+      {
+        "fn": "validateStage",
+        "name": "archive/stopped-{\"maxCalls\":4}/1-plan",
+        "identical": true,
+        "outcomeSha256": "c52760998cc24597c80c5e8e3b189a97355d599cef26c88f3ffb9a831886a0d7",
+        "refused": "refused: Cannot read properties of undefined (reading 'requestedAssets')"
+      },
+      {
+        "fn": "validateStage",
+        "name": "archive/stopped-{\"maxCalls\":4}/2-author",
+        "identical": true,
+        "outcomeSha256": "c52760998cc24597c80c5e8e3b189a97355d599cef26c88f3ffb9a831886a0d7",
+        "refused": "refused: Cannot read properties of undefined (reading 'requestedAssets')"
+      },
+      {
+        "fn": "validateStage",
+        "name": "archive/stopped-{\"maxCalls\":4}/3-edit",
+        "identical": true,
+        "outcomeSha256": "c52760998cc24597c80c5e8e3b189a97355d599cef26c88f3ffb9a831886a0d7",
+        "refused": "refused: Cannot read properties of undefined (reading 'requestedAssets')"
+      },
+      {
+        "fn": "validateStage",
+        "name": "archive/stopped-{\"maxUsageUnits\":7}/0-inventory",
+        "identical": true,
+        "outcomeSha256": "c52760998cc24597c80c5e8e3b189a97355d599cef26c88f3ffb9a831886a0d7",
+        "refused": "refused: Cannot read properties of undefined (reading 'requestedAssets')"
+      },
+      {
+        "fn": "validateStage",
+        "name": "archive/stopped-{\"maxUsageUnits\":7}/1-plan",
+        "identical": true,
+        "outcomeSha256": "c52760998cc24597c80c5e8e3b189a97355d599cef26c88f3ffb9a831886a0d7",
+        "refused": "refused: Cannot read properties of undefined (reading 'requestedAssets')"
+      },
+      {
+        "fn": "validateStage",
+        "name": "archive/stopped-{\"maxUsageUnits\":7}/2-author",
+        "identical": true,
+        "outcomeSha256": "c52760998cc24597c80c5e8e3b189a97355d599cef26c88f3ffb9a831886a0d7",
+        "refused": "refused: Cannot read properties of undefined (reading 'requestedAssets')"
+      },
+      {
+        "fn": "validateStage",
+        "name": "inventory-broken",
+        "identical": true,
+        "outcomeSha256": "ef31b63a352bd33c69a0f9335d1a2e15a5f75092bf6297b6d29b58034fbc3390",
+        "refused": "refused: invalid-structure"
+      },
+      {
+        "fn": "validateStage",
+        "name": "plan-broken",
+        "identical": true,
+        "outcomeSha256": "aa1ac5146e248c97aae70b76d2d4f3b951603fb6d2b560ae7d94d155f7ac9ea4",
+        "refused": "refused: invalid-fields"
+      },
+      {
+        "fn": "validateStage",
+        "name": "author-altered",
+        "identical": true,
+        "outcomeSha256": "c52760998cc24597c80c5e8e3b189a97355d599cef26c88f3ffb9a831886a0d7",
+        "refused": "refused: Cannot read properties of undefined (reading 'requestedAssets')"
+      },
+      {
+        "fn": "diagramToMermaid",
+        "name": "draft-0/diagram-0",
+        "identical": true,
+        "outcomeSha256": "39ce5d13417a70db3b13af6a6002d0e409ebd541618e3cd3cec3e1dabd3a02b3",
+        "refused": null
+      },
+      {
+        "fn": "diagramToMermaid",
+        "name": "draft-1/diagram-0",
+        "identical": true,
+        "outcomeSha256": "91d5dccd14d51c614e6f6e5ef30c771703698d1ad338651f81842de21bb25874",
+        "refused": null
+      },
+      {
+        "fn": "diagramToMermaid",
+        "name": "draft-2/diagram-0",
+        "identical": true,
+        "outcomeSha256": "d16396bb452cdf87ede601c3bfe68068a104bc2ae428ca9755314f0c8bfce77f",
+        "refused": null
+      }
+    ]
+  },
+  "compiledModules": {
+    "modules": 24,
+    "identicalAfterLiveSpecifier": 20,
+    "identicalOutsideImportStatements": 23,
+    "identicalCodeOutsideImportStatements": 24,
+    "rows": [
+      {
+        "file": "packages/polaris-dossier/dist/check.js",
+        "identicalRaw": false,
+        "identicalAfterLiveSpecifier": true,
+        "identicalOutsideImportStatements": true,
+        "identicalCodeOutsideImportStatements": true
+      },
+      {
+        "file": "packages/polaris-dossier/dist/class-gate.js",
+        "identicalRaw": true,
+        "identicalAfterLiveSpecifier": true,
+        "identicalOutsideImportStatements": true,
+        "identicalCodeOutsideImportStatements": true
+      },
+      {
+        "file": "packages/polaris-dossier/dist/close.js",
+        "identicalRaw": false,
+        "identicalAfterLiveSpecifier": true,
+        "identicalOutsideImportStatements": true,
+        "identicalCodeOutsideImportStatements": true
+      },
+      {
+        "file": "packages/polaris-dossier/dist/credential-probe.js",
+        "identicalRaw": false,
+        "identicalAfterLiveSpecifier": true,
+        "identicalOutsideImportStatements": true,
+        "identicalCodeOutsideImportStatements": true
+      },
+      {
+        "file": "packages/polaris-dossier/dist/design-review.js",
+        "identicalRaw": false,
+        "identicalAfterLiveSpecifier": true,
+        "identicalOutsideImportStatements": true,
+        "identicalCodeOutsideImportStatements": true
+      },
+      {
+        "file": "packages/polaris-dossier/dist/draft-schema.js",
+        "identicalRaw": false,
+        "identicalAfterLiveSpecifier": true,
+        "identicalOutsideImportStatements": true,
+        "identicalCodeOutsideImportStatements": true
+      },
+      {
+        "file": "packages/polaris-dossier/dist/execution-choice.js",
+        "identicalRaw": false,
+        "identicalAfterLiveSpecifier": true,
+        "identicalOutsideImportStatements": true,
+        "identicalCodeOutsideImportStatements": true
+      },
+      {
+        "file": "packages/polaris-dossier/dist/inventory.js",
+        "identicalRaw": false,
+        "identicalAfterLiveSpecifier": true,
+        "identicalOutsideImportStatements": true,
+        "identicalCodeOutsideImportStatements": true
+      },
+      {
+        "file": "packages/polaris-dossier/dist/render.js",
+        "identicalRaw": false,
+        "identicalAfterLiveSpecifier": true,
+        "identicalOutsideImportStatements": true,
+        "identicalCodeOutsideImportStatements": true
+      },
+      {
+        "file": "packages/polaris-dossier/dist/reverify.js",
+        "identicalRaw": false,
+        "identicalAfterLiveSpecifier": true,
+        "identicalOutsideImportStatements": true,
+        "identicalCodeOutsideImportStatements": true
+      },
+      {
+        "file": "packages/polaris-dossier/dist/review.js",
+        "identicalRaw": false,
+        "identicalAfterLiveSpecifier": true,
+        "identicalOutsideImportStatements": true,
+        "identicalCodeOutsideImportStatements": true
+      },
+      {
+        "file": "packages/polaris-dossier/dist/run-config.js",
+        "identicalRaw": false,
+        "identicalAfterLiveSpecifier": true,
+        "identicalOutsideImportStatements": true,
+        "identicalCodeOutsideImportStatements": true
+      },
+      {
+        "file": "packages/polaris-dossier/dist/run-record.js",
+        "identicalRaw": false,
+        "identicalAfterLiveSpecifier": true,
+        "identicalOutsideImportStatements": true,
+        "identicalCodeOutsideImportStatements": true
+      },
+      {
+        "file": "packages/polaris-dossier/dist/screen.js",
+        "identicalRaw": false,
+        "identicalAfterLiveSpecifier": true,
+        "identicalOutsideImportStatements": true,
+        "identicalCodeOutsideImportStatements": true
+      },
+      {
+        "file": "packages/polaris-dossier/dist/status.js",
+        "identicalRaw": false,
+        "identicalAfterLiveSpecifier": true,
+        "identicalOutsideImportStatements": true,
+        "identicalCodeOutsideImportStatements": true
+      },
+      {
+        "file": "packages/polaris-dossier/dist/waiting-sessions.js",
+        "identicalRaw": false,
+        "identicalAfterLiveSpecifier": true,
+        "identicalOutsideImportStatements": true,
+        "identicalCodeOutsideImportStatements": true
+      },
+      {
+        "file": "apps/three-surface-poc/dist/polaris-generation/diagram-layout.js",
+        "identicalRaw": true,
+        "identicalAfterLiveSpecifier": true,
+        "identicalOutsideImportStatements": true,
+        "identicalCodeOutsideImportStatements": true
+      },
+      {
+        "file": "apps/three-surface-poc/dist/polaris-generation/dossier-render-local.js",
+        "identicalRaw": false,
+        "identicalAfterLiveSpecifier": true,
+        "identicalOutsideImportStatements": true,
+        "identicalCodeOutsideImportStatements": true
+      },
+      {
+        "file": "apps/three-surface-poc/dist/polaris-generation/draft-preview.js",
+        "identicalRaw": false,
+        "identicalAfterLiveSpecifier": true,
+        "identicalOutsideImportStatements": true,
+        "identicalCodeOutsideImportStatements": true
+      },
+      {
+        "file": "packages/polaris-generation-core/dist/admitted-input.js",
+        "identicalRaw": false,
+        "identicalAfterLiveSpecifier": false,
+        "identicalOutsideImportStatements": false,
+        "identicalCodeOutsideImportStatements": true,
+        "importsOld": [
+          "import { SOURCE_ID_MAX_LENGTH, SOURCE_ID_PATTERN, SOURCE_TEXT_MAX_LENGTH } from './provider-draft.js';"
+        ],
+        "importsNew": [
+          "import { SOURCE_ID_MAX_LENGTH, SOURCE_ID_PATTERN, SOURCE_TEXT_MAX_LENGTH } from './source-model.js';"
+        ]
+      },
+      {
+        "file": "packages/polaris-generation-core/dist/dossier-profile.js",
+        "identicalRaw": false,
+        "identicalAfterLiveSpecifier": false,
+        "identicalOutsideImportStatements": true,
+        "identicalCodeOutsideImportStatements": true,
+        "importsOld": [
+          "import { createHash } from 'node:crypto';",
+          "import { READER_QUESTIONS_FORMAT } from './dossier-evaluation.js';"
+        ],
+        "importsNew": [
+          "import { createHash } from 'node:crypto';",
+          "import { READER_QUESTIONS_FORMAT } from './topics.js';"
+        ]
+      },
+      {
+        "file": "packages/polaris-generation-core/dist/generation-source.js",
+        "identicalRaw": false,
+        "identicalAfterLiveSpecifier": false,
+        "identicalOutsideImportStatements": true,
+        "identicalCodeOutsideImportStatements": true,
+        "importsOld": [
+          "import { createHash, createHmac, randomBytes } from 'node:crypto';",
+          "import { SOURCE_ID_MAX_LENGTH, SOURCE_ID_PATTERN, SOURCE_TEXT_MAX_LENGTH } from './provider-draft.js';",
+          "import { bodyLines, redactionMarker } from './secret-redaction.js';"
+        ],
+        "importsNew": [
+          "import { createHash, createHmac, randomBytes } from 'node:crypto';",
+          "import { SOURCE_ID_MAX_LENGTH, SOURCE_ID_PATTERN, SOURCE_TEXT_MAX_LENGTH } from './source-model.js';",
+          "import { bodyLines, redactionMarker } from './secret-redaction.js';"
+        ]
+      },
+      {
+        "file": "packages/polaris-generation-core/dist/local-render.js",
+        "identicalRaw": true,
+        "identicalAfterLiveSpecifier": true,
+        "identicalOutsideImportStatements": true,
+        "identicalCodeOutsideImportStatements": true
+      },
+      {
+        "file": "packages/polaris-generation-core/dist/reader-questions.js",
+        "identicalRaw": false,
+        "identicalAfterLiveSpecifier": false,
+        "identicalOutsideImportStatements": true,
+        "identicalCodeOutsideImportStatements": true,
+        "importsOld": [
+          "import { OWNER_TOPICS } from './dossier-evaluation.js';"
+        ],
+        "importsNew": [
+          "import { OWNER_TOPICS } from './topics.js';"
+        ]
+      }
+    ]
+  }
+}
