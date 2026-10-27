@@ -17,7 +17,7 @@
 // act can retain a negative judgment. Every arm below is evaluated (a
 // sweep, not a first-failure), so the owner sees every reason at once.
 
-import { createHash } from 'node:crypto';
+import { sha256 } from '@syzygy/support';
 
 import { canonicalJson } from './project-shape-manifest.js';
 import type { ProjectShape } from './project-shape-model.js';
@@ -123,7 +123,7 @@ export function walkthroughEvaluationIdentity(shape: ProjectShape): string {
     ? { kind: 'evaluated', consent: inputs.authority.consent, policy: inputs.authority.policy, registry: inputs.authority.registry }
     : { kind: inputs.authority.kind };
   const stable = { ...inputs, authority };
-  const digest = createHash('sha256').update(canonicalJson(stable)).digest('hex');
+  const digest = sha256(canonicalJson(stable));
   return `pwb-eval-${digest.slice(0, 24)}`;
 }
 

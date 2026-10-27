@@ -59,7 +59,7 @@ describe('owner-act drafter (M4 slice 7)', () => {
       ...[...code.matchAll(/^\s*import\s*['"`]([^'"`]+)['"`]/gm)].map((match) => match[1]),
       ...[...code.matchAll(/\b(?:import|require)\s*\(\s*['"`]([^'"`]+)['"`]/g)].map((match) => match[1]),
     ]);
-    expect([...specifiers].sort()).toEqual(['@syzygy/cap1-core', 'node:crypto']);
+    expect([...specifiers].sort()).toEqual(['@syzygy/cap1-core', '@syzygy/support']);
     expect(/^import type .* from '@syzygy\/cap1-core';$/m.test(source)).toBe(true);
     for (const forbidden of [/\brequire\(/, /\bimport\(/, /\bfetch\(/, /\bwriteFile/, /\bappendFile/, /\bmkdir/, /\bprocess\./, /\bDate\b/, /\b(?:node:)?(?:fs|net|http|https|child_process|os)['"`]/]) {
       expect(source, String(forbidden)).not.toMatch(forbidden);

@@ -11,6 +11,7 @@
     }
   },
   "dependencies": {
-    "@syzygy/cap1-core": "0.0.0"
+    "@syzygy/cap1-core": "0.0.0",
+    "@syzygy/support": "0.0.0"
   }
 }
