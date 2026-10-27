@@ -164,6 +164,9 @@ jobs:
       - name: record_versioned_signoff --check three-surface-poc-vocabulary-epistemic-amendment
         run: python3 scripts/record_versioned_signoff.py --check three-surface-poc-vocabulary-epistemic-amendment --version 1.0
 
+      - name: record_versioned_signoff --check three-surface-poc-governedby-reference-amendment
+        run: python3 scripts/record_versioned_signoff.py --check three-surface-poc-governedby-reference-amendment --version 1.0
+
       - name: record_versioned_signoff --check cap1-trusted-bootstrap-consent
         run: python3 scripts/record_versioned_signoff.py --check cap1-trusted-bootstrap-consent --version 1.0
 
