@@ -3,7 +3,8 @@
 Run from the root of a Syzygy checkout at a clean commit, with its product built (`npm run build`, so a check that would only
 fail for want of a dist is not credited): `python3 <this file> > record.json`. For each mutant it replaces one exact fragment
 of one file (the fragment must occur exactly once), runs the named test files, and restores the file's bytes, whatever happens.
-The record keeps every fragment, the commit, the unmutated run of the same files, and each run's failed and passed counts."""
+The record keeps every fragment, the commit, the unmutated run of the same files, and each run's failed and passed counts and
+the full name of each failing test."""
 import hashlib, json, os, subprocess, tempfile
 
 MUTANTS = [
@@ -68,8 +69,9 @@ def vitest(files):
         report = os.path.join(scratch, "report.json")
         done = subprocess.run(["npx", "vitest", "run", *files, "--reporter=json", f"--outputFile={report}"], capture_output=True, text=True)
         counts = json.load(open(report)) if os.path.exists(report) else {}
+    failing = [result["fullName"] for file in counts.get("testResults", []) for result in file.get("assertionResults", []) if result.get("status") == "failed"]
     return {"exit": done.returncode, "failed": counts.get("numFailedTests"), "passed": counts.get("numPassedTests"),
-            "failedSuites": counts.get("numFailedTestSuites"), "total": counts.get("numTotalTests")}
+            "failedSuites": counts.get("numFailedTestSuites"), "total": counts.get("numTotalTests"), "failing": failing}
 
 
 record = {
