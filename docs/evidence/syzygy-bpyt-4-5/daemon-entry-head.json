@@ -1,18 +1,18 @@
 {
  "tool": {
   "name": "daemon_entry_probe.py",
-  "sha256": "b371f924917db4c3cd14b51a0cbc9fb47593303465f1acfb4c44c65815b4bedc"
+  "sha256": "993367c2c3e822ea00c13d1243dda8de20c4de40e59f00710480e1b4cedd84e7"
  },
- "commit": "722231fe0365eccd0239fb63edee92e7c5239531",
+ "commit": "2b56a253f81bb4e6d71b46556f0d675a07dfb7c2",
  "testFileFrom": "the tree",
- "testFileSha256": "4e1fd09f875720aa903b751df4127d02be4dee878790c565d3db8208b5f5590d",
+ "testFileSha256": "97a02eba0337e5e6a73db3ab605dbf8e0e3a5b4f21e39310edca3f699c232e26",
  "results": [
   {
    "mutant": null,
    "exit": 0,
    "killedAfterLimit": false,
-   "seconds": 8.3,
-   "load1Start": 31.33,
+   "seconds": 7.0,
+   "load1Start": 45.35,
    "rows": [
     {
      "title": "daemon entry: every invocation but `dossier` is unchanged [\"--help\"] prints the usage and exits 0",
@@ -90,7 +90,7 @@
      "failure": ""
     },
     {
-     "title": "daemon entry: the one changed input, `dossier` as the first argument every line of main.ts naming the POC app sits inside the `dossier` or the `polaris` branch, before the daemon path",
+     "title": "daemon entry: the one changed input, `dossier` as the first argument every mention of the POC app in main.ts lies inside the `dossier` or the `polaris` branch, whose only else is the other, before the daemon path",
      "status": "passed",
      "failure": ""
     }
@@ -109,8 +109,8 @@
    },
    "exit": 1,
    "killedAfterLimit": false,
-   "seconds": 7.4,
-   "load1Start": 30.01,
+   "seconds": 7.6,
+   "load1Start": 44.62,
    "rows": [
     {
      "title": "daemon entry: every invocation but `dossier` is unchanged [\"--help\"] prints the usage and exits 0",
@@ -185,16 +185,16 @@
     {
      "title": "daemon entry: the one changed input, `dossier` as the first argument the daemon path never loads the POC app, and the `dossier render` branch does",
      "status": "failed",
-     "failure": "AssertionError: expected 'file:///tmp/laneb-45r/c2/apps/three-s\u2026' to be '' // Object.is equality\n    at /tmp/laneb-45r/c2/packages/cap1-system/src/daemon-entry-unchanged.system.test.ts:235:39\n    at processTicksAndRejections (node:internal/process/task_queues:105:5)\n    at file:///tmp/laneb-45r/c2/n"
+     "failure": "AssertionError: expected 'file:///tmp/laneb-45r2/clone/apps/thr\u2026' to be '' // Object.is equality\n    at /tmp/laneb-45r2/clone/packages/cap1-system/src/daemon-entry-unchanged.system.test.ts:236:39\n    at processTicksAndRejections (node:internal/process/task_queues:105:5)\n    at file:///tmp/laneb-45r2"
     },
     {
-     "title": "daemon entry: the one changed input, `dossier` as the first argument every line of main.ts naming the POC app sits inside the `dossier` or the `polaris` branch, before the daemon path",
+     "title": "daemon entry: the one changed input, `dossier` as the first argument every mention of the POC app in main.ts lies inside the `dossier` or the `polaris` branch, whose only else is the other, before the daemon path",
      "status": "failed",
-     "failure": "AssertionError: expected [ Array(1) ] to deeply equal []\n    at /tmp/laneb-45r/c2/packages/cap1-system/src/daemon-entry-unchanged.system.test.ts:259:133\n    at file:///tmp/laneb-45r/c2/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///tmp/laneb-45r/c2/node_modules/@vitest/runner/"
+     "failure": "AssertionError: expected [ Array(1) ] to deeply equal []\n    at /tmp/laneb-45r2/clone/packages/cap1-system/src/daemon-entry-unchanged.system.test.ts:271:105\n    at file:///tmp/laneb-45r2/clone/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///tmp/laneb-45r2/clone/node_modules/@vi"
     }
    ],
    "failed": [
-    "daemon entry: the one changed input, `dossier` as the first argument every line of main.ts naming the POC app sits inside the `dossier` or the `polaris` branch, before the daemon path",
+    "daemon entry: the one changed input, `dossier` as the first argument every mention of the POC app in main.ts lies inside the `dossier` or the `polaris` branch, whose only else is the other, before the daemon path",
     "daemon entry: the one changed input, `dossier` as the first argument the daemon path never loads the POC app, and the `dossier render` branch does"
    ],
    "passed": 14
@@ -210,8 +210,8 @@
    },
    "exit": 1,
    "killedAfterLimit": false,
-   "seconds": 8.1,
-   "load1Start": 29.31,
+   "seconds": 6.8,
+   "load1Start": 43.37,
    "rows": [
     {
      "title": "daemon entry: every invocation but `dossier` is unchanged [\"--help\"] prints the usage and exits 0",
@@ -286,16 +286,16 @@
     {
      "title": "daemon entry: the one changed input, `dossier` as the first argument the daemon path never loads the POC app, and the `dossier render` branch does",
      "status": "failed",
-     "failure": "AssertionError: expected 'file:///tmp/laneb-45r/c2/apps/three-s\u2026' to be '' // Object.is equality\n    at /tmp/laneb-45r/c2/packages/cap1-system/src/daemon-entry-unchanged.system.test.ts:235:39\n    at processTicksAndRejections (node:internal/process/task_queues:105:5)\n    at file:///tmp/laneb-45r/c2/n"
+     "failure": "AssertionError: expected 'file:///tmp/laneb-45r2/clone/apps/thr\u2026' to be '' // Object.is equality\n    at /tmp/laneb-45r2/clone/packages/cap1-system/src/daemon-entry-unchanged.system.test.ts:236:39\n    at processTicksAndRejections (node:internal/process/task_queues:105:5)\n    at file:///tmp/laneb-45r2"
     },
     {
-     "title": "daemon entry: the one changed input, `dossier` as the first argument every line of main.ts naming the POC app sits inside the `dossier` or the `polaris` branch, before the daemon path",
+     "title": "daemon entry: the one changed input, `dossier` as the first argument every mention of the POC app in main.ts lies inside the `dossier` or the `polaris` branch, whose only else is the other, before the daemon path",
      "status": "failed",
-     "failure": "AssertionError: expected [ Array(1) ] to deeply equal []\n    at /tmp/laneb-45r/c2/packages/cap1-system/src/daemon-entry-unchanged.system.test.ts:259:133\n    at file:///tmp/laneb-45r/c2/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///tmp/laneb-45r/c2/node_modules/@vitest/runner/"
+     "failure": "AssertionError: expected [ Array(1) ] to deeply equal []\n    at /tmp/laneb-45r2/clone/packages/cap1-system/src/daemon-entry-unchanged.system.test.ts:271:105\n    at file:///tmp/laneb-45r2/clone/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///tmp/laneb-45r2/clone/node_modules/@vi"
     }
    ],
    "failed": [
-    "daemon entry: the one changed input, `dossier` as the first argument every line of main.ts naming the POC app sits inside the `dossier` or the `polaris` branch, before the daemon path",
+    "daemon entry: the one changed input, `dossier` as the first argument every mention of the POC app in main.ts lies inside the `dossier` or the `polaris` branch, whose only else is the other, before the daemon path",
     "daemon entry: the one changed input, `dossier` as the first argument the daemon path never loads the POC app, and the `dossier render` branch does"
    ],
    "passed": 14
@@ -311,8 +311,8 @@
    },
    "exit": 1,
    "killedAfterLimit": false,
-   "seconds": 9.0,
-   "load1Start": 28.76,
+   "seconds": 7.8,
+   "load1Start": 44.42,
    "rows": [
     {
      "title": "daemon entry: every invocation but `dossier` is unchanged [\"--help\"] prints the usage and exits 0",
@@ -387,16 +387,16 @@
     {
      "title": "daemon entry: the one changed input, `dossier` as the first argument the daemon path never loads the POC app, and the `dossier render` branch does",
      "status": "failed",
-     "failure": "AssertionError: expected 'file:///tmp/laneb-45r/c2/apps/three-s\u2026' to be '' // Object.is equality\n    at /tmp/laneb-45r/c2/packages/cap1-system/src/daemon-entry-unchanged.system.test.ts:235:39\n    at processTicksAndRejections (node:internal/process/task_queues:105:5)\n    at file:///tmp/laneb-45r/c2/n"
+     "failure": "AssertionError: expected 'file:///tmp/laneb-45r2/clone/apps/thr\u2026' to be '' // Object.is equality\n    at /tmp/laneb-45r2/clone/packages/cap1-system/src/daemon-entry-unchanged.system.test.ts:236:39\n    at processTicksAndRejections (node:internal/process/task_queues:105:5)\n    at file:///tmp/laneb-45r2"
     },
     {
-     "title": "daemon entry: the one changed input, `dossier` as the first argument every line of main.ts naming the POC app sits inside the `dossier` or the `polaris` branch, before the daemon path",
+     "title": "daemon entry: the one changed input, `dossier` as the first argument every mention of the POC app in main.ts lies inside the `dossier` or the `polaris` branch, whose only else is the other, before the daemon path",
      "status": "failed",
-     "failure": "AssertionError: expected [ Array(1) ] to deeply equal []\n    at /tmp/laneb-45r/c2/packages/cap1-system/src/daemon-entry-unchanged.system.test.ts:259:133\n    at file:///tmp/laneb-45r/c2/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///tmp/laneb-45r/c2/node_modules/@vitest/runner/"
+     "failure": "AssertionError: expected [ Array(1) ] to deeply equal []\n    at /tmp/laneb-45r2/clone/packages/cap1-system/src/daemon-entry-unchanged.system.test.ts:271:105\n    at file:///tmp/laneb-45r2/clone/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///tmp/laneb-45r2/clone/node_modules/@vi"
     }
    ],
    "failed": [
-    "daemon entry: the one changed input, `dossier` as the first argument every line of main.ts naming the POC app sits inside the `dossier` or the `polaris` branch, before the daemon path",
+    "daemon entry: the one changed input, `dossier` as the first argument every mention of the POC app in main.ts lies inside the `dossier` or the `polaris` branch, whose only else is the other, before the daemon path",
     "daemon entry: the one changed input, `dossier` as the first argument the daemon path never loads the POC app, and the `dossier render` branch does"
    ],
    "passed": 14
@@ -412,8 +412,8 @@
    },
    "exit": 1,
    "killedAfterLimit": false,
-   "seconds": 15.5,
-   "load1Start": 28.75,
+   "seconds": 8.0,
+   "load1Start": 44.67,
    "rows": [
     {
      "title": "daemon entry: every invocation but `dossier` is unchanged [\"--help\"] prints the usage and exits 0",
@@ -488,16 +488,16 @@
     {
      "title": "daemon entry: the one changed input, `dossier` as the first argument the daemon path never loads the POC app, and the `dossier render` branch does",
      "status": "failed",
-     "failure": "AssertionError: expected 'file:///tmp/laneb-45r/c2/apps/three-s\u2026' to be '' // Object.is equality\n    at /tmp/laneb-45r/c2/packages/cap1-system/src/daemon-entry-unchanged.system.test.ts:235:39\n    at processTicksAndRejections (node:internal/process/task_queues:105:5)\n    at file:///tmp/laneb-45r/c2/n"
+     "failure": "AssertionError: expected 'file:///tmp/laneb-45r2/clone/apps/thr\u2026' to be '' // Object.is equality\n    at /tmp/laneb-45r2/clone/packages/cap1-system/src/daemon-entry-unchanged.system.test.ts:236:39\n    at processTicksAndRejections (node:internal/process/task_queues:105:5)\n    at file:///tmp/laneb-45r2"
     },
     {
-     "title": "daemon entry: the one changed input, `dossier` as the first argument every line of main.ts naming the POC app sits inside the `dossier` or the `polaris` branch, before the daemon path",
+     "title": "daemon entry: the one changed input, `dossier` as the first argument every mention of the POC app in main.ts lies inside the `dossier` or the `polaris` branch, whose only else is the other, before the daemon path",
      "status": "failed",
-     "failure": "AssertionError: expected [ Array(1) ] to deeply equal []\n    at /tmp/laneb-45r/c2/packages/cap1-system/src/daemon-entry-unchanged.system.test.ts:259:133\n    at file:///tmp/laneb-45r/c2/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///tmp/laneb-45r/c2/node_modules/@vitest/runner/"
+     "failure": "AssertionError: expected [ Array(1) ] to deeply equal []\n    at /tmp/laneb-45r2/clone/packages/cap1-system/src/daemon-entry-unchanged.system.test.ts:271:105\n    at file:///tmp/laneb-45r2/clone/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///tmp/laneb-45r2/clone/node_modules/@vi"
     }
    ],
    "failed": [
-    "daemon entry: the one changed input, `dossier` as the first argument every line of main.ts naming the POC app sits inside the `dossier` or the `polaris` branch, before the daemon path",
+    "daemon entry: the one changed input, `dossier` as the first argument every mention of the POC app in main.ts lies inside the `dossier` or the `polaris` branch, whose only else is the other, before the daemon path",
     "daemon entry: the one changed input, `dossier` as the first argument the daemon path never loads the POC app, and the `dossier render` branch does"
    ],
    "passed": 14
@@ -513,8 +513,8 @@
    },
    "exit": 1,
    "killedAfterLimit": false,
-   "seconds": 14.4,
-   "load1Start": 34.19,
+   "seconds": 7.2,
+   "load1Start": 46.06,
    "rows": [
     {
      "title": "daemon entry: every invocation but `dossier` is unchanged [\"--help\"] prints the usage and exits 0",
@@ -589,16 +589,16 @@
     {
      "title": "daemon entry: the one changed input, `dossier` as the first argument the daemon path never loads the POC app, and the `dossier render` branch does",
      "status": "failed",
-     "failure": "AssertionError: expected 'file:///tmp/laneb-45r/c2/apps/three-s\u2026' to be '' // Object.is equality\n    at /tmp/laneb-45r/c2/packages/cap1-system/src/daemon-entry-unchanged.system.test.ts:235:39\n    at processTicksAndRejections (node:internal/process/task_queues:105:5)\n    at file:///tmp/laneb-45r/c2/n"
+     "failure": "AssertionError: expected 'file:///tmp/laneb-45r2/clone/apps/thr\u2026' to be '' // Object.is equality\n    at /tmp/laneb-45r2/clone/packages/cap1-system/src/daemon-entry-unchanged.system.test.ts:236:39\n    at processTicksAndRejections (node:internal/process/task_queues:105:5)\n    at file:///tmp/laneb-45r2"
     },
     {
-     "title": "daemon entry: the one changed input, `dossier` as the first argument every line of main.ts naming the POC app sits inside the `dossier` or the `polaris` branch, before the daemon path",
+     "title": "daemon entry: the one changed input, `dossier` as the first argument every mention of the POC app in main.ts lies inside the `dossier` or the `polaris` branch, whose only else is the other, before the daemon path",
      "status": "failed",
-     "failure": "AssertionError: expected [ Array(1) ] to deeply equal []\n    at /tmp/laneb-45r/c2/packages/cap1-system/src/daemon-entry-unchanged.system.test.ts:259:133\n    at file:///tmp/laneb-45r/c2/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///tmp/laneb-45r/c2/node_modules/@vitest/runner/"
+     "failure": "AssertionError: expected [ Array(1) ] to deeply equal []\n    at /tmp/laneb-45r2/clone/packages/cap1-system/src/daemon-entry-unchanged.system.test.ts:271:105\n    at file:///tmp/laneb-45r2/clone/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///tmp/laneb-45r2/clone/node_modules/@vi"
     }
    ],
    "failed": [
-    "daemon entry: the one changed input, `dossier` as the first argument every line of main.ts naming the POC app sits inside the `dossier` or the `polaris` branch, before the daemon path",
+    "daemon entry: the one changed input, `dossier` as the first argument every mention of the POC app in main.ts lies inside the `dossier` or the `polaris` branch, whose only else is the other, before the daemon path",
     "daemon entry: the one changed input, `dossier` as the first argument the daemon path never loads the POC app, and the `dossier render` branch does"
    ],
    "passed": 14
@@ -614,8 +614,8 @@
    },
    "exit": 1,
    "killedAfterLimit": false,
-   "seconds": 23.4,
-   "load1Start": 37.48,
+   "seconds": 7.8,
+   "load1Start": 52.97,
    "rows": [
     {
      "title": "daemon entry: every invocation but `dossier` is unchanged [\"--help\"] prints the usage and exits 0",
@@ -693,13 +693,13 @@
      "failure": ""
     },
     {
-     "title": "daemon entry: the one changed input, `dossier` as the first argument every line of main.ts naming the POC app sits inside the `dossier` or the `polaris` branch, before the daemon path",
+     "title": "daemon entry: the one changed input, `dossier` as the first argument every mention of the POC app in main.ts lies inside the `dossier` or the `polaris` branch, whose only else is the other, before the daemon path",
      "status": "failed",
-     "failure": "AssertionError: expected [ Array(1) ] to deeply equal []\n    at /tmp/laneb-45r/c2/packages/cap1-system/src/daemon-entry-unchanged.system.test.ts:259:133\n    at file:///tmp/laneb-45r/c2/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///tmp/laneb-45r/c2/node_modules/@vitest/runner/"
+     "failure": "AssertionError: expected [ Array(1) ] to deeply equal []\n    at /tmp/laneb-45r2/clone/packages/cap1-system/src/daemon-entry-unchanged.system.test.ts:271:105\n    at file:///tmp/laneb-45r2/clone/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///tmp/laneb-45r2/clone/node_modules/@vi"
     }
    ],
    "failed": [
-    "daemon entry: the one changed input, `dossier` as the first argument every line of main.ts naming the POC app sits inside the `dossier` or the `polaris` branch, before the daemon path"
+    "daemon entry: the one changed input, `dossier` as the first argument every mention of the POC app in main.ts lies inside the `dossier` or the `polaris` branch, whose only else is the other, before the daemon path"
    ],
    "passed": 15
   },
@@ -714,8 +714,8 @@
    },
    "exit": 1,
    "killedAfterLimit": false,
-   "seconds": 15.4,
-   "load1Start": 45.72,
+   "seconds": 7.7,
+   "load1Start": 53.12,
    "rows": [
     {
      "title": "daemon entry: every invocation but `dossier` is unchanged [\"--help\"] prints the usage and exits 0",
@@ -793,29 +793,129 @@
      "failure": ""
     },
     {
-     "title": "daemon entry: the one changed input, `dossier` as the first argument every line of main.ts naming the POC app sits inside the `dossier` or the `polaris` branch, before the daemon path",
+     "title": "daemon entry: the one changed input, `dossier` as the first argument every mention of the POC app in main.ts lies inside the `dossier` or the `polaris` branch, whose only else is the other, before the daemon path",
      "status": "failed",
-     "failure": "AssertionError: expected [ Array(1) ] to deeply equal []\n    at /tmp/laneb-45r/c2/packages/cap1-system/src/daemon-entry-unchanged.system.test.ts:259:133\n    at file:///tmp/laneb-45r/c2/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///tmp/laneb-45r/c2/node_modules/@vitest/runner/"
+     "failure": "AssertionError: expected [ Array(1) ] to deeply equal []\n    at /tmp/laneb-45r2/clone/packages/cap1-system/src/daemon-entry-unchanged.system.test.ts:271:105\n    at file:///tmp/laneb-45r2/clone/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///tmp/laneb-45r2/clone/node_modules/@vi"
     }
    ],
    "failed": [
-    "daemon entry: the one changed input, `dossier` as the first argument every line of main.ts naming the POC app sits inside the `dossier` or the `polaris` branch, before the daemon path"
+    "daemon entry: the one changed input, `dossier` as the first argument every mention of the POC app in main.ts lies inside the `dossier` or the `polaris` branch, whose only else is the other, before the daemon path"
    ],
    "passed": 15
   },
   {
    "mutant": {
-    "id": "P-shutdown",
+    "id": "X1-close-failed-callback-in-main",
     "kind": "defect",
     "file": "apps/syzygy/src/main.ts",
-    "note": "a load in the shutdown handler",
+    "note": "a load in main.ts's closeFailed callback (the lane's P-close-failure, re-targeted)",
+    "old": "    closeFailed: (cause) => {\n",
+    "new": "    closeFailed: (cause) => {\n      void import('@syzygy/three-surface-poc-app/dossier-site');\n"
+   },
+   "exit": 1,
+   "killedAfterLimit": false,
+   "seconds": 9.6,
+   "load1Start": 53.37,
+   "rows": [
+    {
+     "title": "daemon entry: every invocation but `dossier` is unchanged [\"--help\"] prints the usage and exits 0",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: every invocation but `dossier` is unchanged [\"-h\"] prints the usage and exits 0",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: every invocation but `dossier` is unchanged [\"--help\",\"dossier\"] prints the usage and exits 0",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: every invocation but `dossier` is unchanged [\"--bogus\"] is refused with exit 1 and the same message",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: every invocation but `dossier` is unchanged [\"--port\",\"0\",\"dossier\"] is refused with exit 1 and the same message",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: every invocation but `dossier` is unchanged [\"Dossier\"] is refused with exit 1 and the same message",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: every invocation but `dossier` is unchanged [\"--port\"] is refused with exit 1 and the same message",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: every invocation but `dossier` is unchanged [\"--port\",\"70000\"] is refused with exit 1 and the same message",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: every invocation but `dossier` is unchanged a state directory inside the governed plane is refused with the same message",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: every invocation but `dossier` is unchanged with no arguments it serves from the working directory, writes the same state and shuts down the same way",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: every invocation but `dossier` is unchanged with explicit flags it serves, writes the same state and shuts down the same way",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: the one changed input, `dossier` as the first argument `dossier` alone is a dossier usage error (exit 2), not the daemon's refusal",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: the one changed input, `dossier` as the first argument `dossier status <missing>` is a dossier refusal (exit 1) and starts no daemon",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: the one changed input, `dossier` as the first argument `dossier render <missing>` reaches the run with the renderer injected, and starts no daemon",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: the one changed input, `dossier` as the first argument the daemon path never loads the POC app, and the `dossier render` branch does",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: the one changed input, `dossier` as the first argument every mention of the POC app in main.ts lies inside the `dossier` or the `polaris` branch, whose only else is the other, before the daemon path",
+     "status": "failed",
+     "failure": "AssertionError: expected [ Array(1) ] to deeply equal []\n    at /tmp/laneb-45r2/clone/packages/cap1-system/src/daemon-entry-unchanged.system.test.ts:271:105\n    at file:///tmp/laneb-45r2/clone/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///tmp/laneb-45r2/clone/node_modules/@vi"
+    }
+   ],
+   "failed": [
+    "daemon entry: the one changed input, `dossier` as the first argument every mention of the POC app in main.ts lies inside the `dossier` or the `polaris` branch, whose only else is the other, before the daemon path"
+   ],
+   "passed": 15
+  },
+  {
+   "mutant": {
+    "id": "X3-shutdown-in-http-host",
+    "kind": "defect",
+    "file": "packages/http-host/src/shutdown.ts",
+    "note": "a load in http-host's shutdown function (the lane's P-shutdown, re-targeted); main.ts unchanged",
     "old": "      if (closing) return;\n",
     "new": "      if (closing) return;\n      void import('@syzygy/three-surface-poc-app/dossier-site');\n"
    },
    "exit": 1,
    "killedAfterLimit": false,
-   "seconds": 10.9,
-   "load1Start": 41.79,
+   "seconds": 12.0,
+   "load1Start": 53.14,
    "rows": [
     {
      "title": "daemon entry: every invocation but `dossier` is unchanged [\"--help\"] prints the usage and exits 0",
@@ -890,33 +990,32 @@
     {
      "title": "daemon entry: the one changed input, `dossier` as the first argument the daemon path never loads the POC app, and the `dossier render` branch does",
      "status": "failed",
-     "failure": "AssertionError: expected 'file:///tmp/laneb-45r/c2/apps/three-s\u2026' to be '' // Object.is equality\n    at /tmp/laneb-45r/c2/packages/cap1-system/src/daemon-entry-unchanged.system.test.ts:235:39\n    at processTicksAndRejections (node:internal/process/task_queues:105:5)\n    at file:///tmp/laneb-45r/c2/n"
+     "failure": "AssertionError: expected 'file:///tmp/laneb-45r2/clone/apps/thr\u2026' to be '' // Object.is equality\n    at /tmp/laneb-45r2/clone/packages/cap1-system/src/daemon-entry-unchanged.system.test.ts:236:39\n    at processTicksAndRejections (node:internal/process/task_queues:105:5)\n    at file:///tmp/laneb-45r2"
     },
     {
-     "title": "daemon entry: the one changed input, `dossier` as the first argument every line of main.ts naming the POC app sits inside the `dossier` or the `polaris` branch, before the daemon path",
-     "status": "failed",
-     "failure": "AssertionError: expected [ Array(1) ] to deeply equal []\n    at /tmp/laneb-45r/c2/packages/cap1-system/src/daemon-entry-unchanged.system.test.ts:259:133\n    at file:///tmp/laneb-45r/c2/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///tmp/laneb-45r/c2/node_modules/@vitest/runner/"
+     "title": "daemon entry: the one changed input, `dossier` as the first argument every mention of the POC app in main.ts lies inside the `dossier` or the `polaris` branch, whose only else is the other, before the daemon path",
+     "status": "passed",
+     "failure": ""
     }
    ],
    "failed": [
-    "daemon entry: the one changed input, `dossier` as the first argument every line of main.ts naming the POC app sits inside the `dossier` or the `polaris` branch, before the daemon path",
     "daemon entry: the one changed input, `dossier` as the first argument the daemon path never loads the POC app, and the `dossier render` branch does"
    ],
-   "passed": 14
+   "passed": 15
   },
   {
    "mutant": {
-    "id": "P-close-failure",
-    "kind": "defect",
-    "file": "apps/syzygy/src/main.ts",
-    "note": "a load in the branch a failed close takes",
+    "id": "X2-close-failure-in-http-host",
+    "kind": "residual",
+    "file": "packages/http-host/src/shutdown.ts",
+    "note": "a load in http-host's close-failure branch; main.ts unchanged. No row reaches it: round 1's N5 follow-up",
     "old": "      void daemon.close().then(resolve, (cause: unknown) => {\n",
     "new": "      void daemon.close().then(resolve, (cause: unknown) => {\n        void import('@syzygy/three-surface-poc-app/dossier-site');\n"
    },
-   "exit": 1,
+   "exit": 0,
    "killedAfterLimit": false,
-   "seconds": 10.5,
-   "load1Start": 39.89,
+   "seconds": 10.7,
+   "load1Start": 54.47,
    "rows": [
     {
      "title": "daemon entry: every invocation but `dossier` is unchanged [\"--help\"] prints the usage and exits 0",
@@ -994,15 +1093,13 @@
      "failure": ""
     },
     {
-     "title": "daemon entry: the one changed input, `dossier` as the first argument every line of main.ts naming the POC app sits inside the `dossier` or the `polaris` branch, before the daemon path",
-     "status": "failed",
-     "failure": "AssertionError: expected [ Array(1) ] to deeply equal []\n    at /tmp/laneb-45r/c2/packages/cap1-system/src/daemon-entry-unchanged.system.test.ts:259:133\n    at file:///tmp/laneb-45r/c2/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///tmp/laneb-45r/c2/node_modules/@vitest/runner/"
+     "title": "daemon entry: the one changed input, `dossier` as the first argument every mention of the POC app in main.ts lies inside the `dossier` or the `polaris` branch, whose only else is the other, before the daemon path",
+     "status": "passed",
+     "failure": ""
     }
    ],
-   "failed": [
-    "daemon entry: the one changed input, `dossier` as the first argument every line of main.ts naming the POC app sits inside the `dossier` or the `polaris` branch, before the daemon path"
-   ],
-   "passed": 15
+   "failed": [],
+   "passed": 16
   },
   {
    "mutant": {
@@ -1015,8 +1112,8 @@
    },
    "exit": 1,
    "killedAfterLimit": false,
-   "seconds": 8.0,
-   "load1Start": 37.5,
+   "seconds": 12.5,
+   "load1Start": 56.99,
    "rows": [
     {
      "title": "daemon entry: every invocation but `dossier` is unchanged [\"--help\"] prints the usage and exits 0",
@@ -1091,10 +1188,10 @@
     {
      "title": "daemon entry: the one changed input, `dossier` as the first argument the daemon path never loads the POC app, and the `dossier render` branch does",
      "status": "failed",
-     "failure": "AssertionError: expected 'file:///tmp/laneb-45r/c2/apps/three-s\u2026' to be '' // Object.is equality\n    at /tmp/laneb-45r/c2/packages/cap1-system/src/daemon-entry-unchanged.system.test.ts:235:39\n    at processTicksAndRejections (node:internal/process/task_queues:105:5)\n    at file:///tmp/laneb-45r/c2/n"
+     "failure": "AssertionError: expected 'file:///tmp/laneb-45r2/clone/apps/thr\u2026' to be '' // Object.is equality\n    at /tmp/laneb-45r2/clone/packages/cap1-system/src/daemon-entry-unchanged.system.test.ts:236:39\n    at processTicksAndRejections (node:internal/process/task_queues:105:5)\n    at file:///tmp/laneb-45r2"
     },
     {
-     "title": "daemon entry: the one changed input, `dossier` as the first argument every line of main.ts naming the POC app sits inside the `dossier` or the `polaris` branch, before the daemon path",
+     "title": "daemon entry: the one changed input, `dossier` as the first argument every mention of the POC app in main.ts lies inside the `dossier` or the `polaris` branch, whose only else is the other, before the daemon path",
      "status": "passed",
      "failure": ""
     }
@@ -1115,8 +1212,8 @@
    },
    "exit": 1,
    "killedAfterLimit": false,
-   "seconds": 8.0,
-   "load1Start": 34.62,
+   "seconds": 10.5,
+   "load1Start": 59.73,
    "rows": [
     {
      "title": "daemon entry: every invocation but `dossier` is unchanged [\"--help\"] prints the usage and exits 0",
@@ -1194,13 +1291,13 @@
      "failure": ""
     },
     {
-     "title": "daemon entry: the one changed input, `dossier` as the first argument every line of main.ts naming the POC app sits inside the `dossier` or the `polaris` branch, before the daemon path",
+     "title": "daemon entry: the one changed input, `dossier` as the first argument every mention of the POC app in main.ts lies inside the `dossier` or the `polaris` branch, whose only else is the other, before the daemon path",
      "status": "failed",
-     "failure": "AssertionError: expected [ Array(1) ] to deeply equal []\n    at /tmp/laneb-45r/c2/packages/cap1-system/src/daemon-entry-unchanged.system.test.ts:259:133\n    at file:///tmp/laneb-45r/c2/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///tmp/laneb-45r/c2/node_modules/@vitest/runner/"
+     "failure": "AssertionError: expected [ Array(1) ] to deeply equal []\n    at /tmp/laneb-45r2/clone/packages/cap1-system/src/daemon-entry-unchanged.system.test.ts:271:105\n    at file:///tmp/laneb-45r2/clone/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///tmp/laneb-45r2/clone/node_modules/@vi"
     }
    ],
    "failed": [
-    "daemon entry: the one changed input, `dossier` as the first argument every line of main.ts naming the POC app sits inside the `dossier` or the `polaris` branch, before the daemon path"
+    "daemon entry: the one changed input, `dossier` as the first argument every mention of the POC app in main.ts lies inside the `dossier` or the `polaris` branch, whose only else is the other, before the daemon path"
    ],
    "passed": 15
   },
@@ -1215,8 +1312,8 @@
    },
    "exit": 1,
    "killedAfterLimit": false,
-   "seconds": 9.3,
-   "load1Start": 33.31,
+   "seconds": 12.1,
+   "load1Start": 58.51,
    "rows": [
     {
      "title": "daemon entry: every invocation but `dossier` is unchanged [\"--help\"] prints the usage and exits 0",
@@ -1294,13 +1391,13 @@
      "failure": ""
     },
     {
-     "title": "daemon entry: the one changed input, `dossier` as the first argument every line of main.ts naming the POC app sits inside the `dossier` or the `polaris` branch, before the daemon path",
+     "title": "daemon entry: the one changed input, `dossier` as the first argument every mention of the POC app in main.ts lies inside the `dossier` or the `polaris` branch, whose only else is the other, before the daemon path",
      "status": "failed",
-     "failure": "AssertionError: expected [ Array(1) ] to deeply equal []\n    at /tmp/laneb-45r/c2/packages/cap1-system/src/daemon-entry-unchanged.system.test.ts:259:133\n    at file:///tmp/laneb-45r/c2/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///tmp/laneb-45r/c2/node_modules/@vitest/runner/"
+     "failure": "AssertionError: expected [ Array(1) ] to deeply equal []\n    at /tmp/laneb-45r2/clone/packages/cap1-system/src/daemon-entry-unchanged.system.test.ts:271:105\n    at file:///tmp/laneb-45r2/clone/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///tmp/laneb-45r2/clone/node_modules/@vi"
     }
    ],
    "failed": [
-    "daemon entry: the one changed input, `dossier` as the first argument every line of main.ts naming the POC app sits inside the `dossier` or the `polaris` branch, before the daemon path"
+    "daemon entry: the one changed input, `dossier` as the first argument every mention of the POC app in main.ts lies inside the `dossier` or the `polaris` branch, whose only else is the other, before the daemon path"
    ],
    "passed": 15
   },
@@ -1315,8 +1412,8 @@
    },
    "exit": 1,
    "killedAfterLimit": false,
-   "seconds": 8.2,
-   "load1Start": 32.17,
+   "seconds": 15.2,
+   "load1Start": 59.72,
    "rows": [
     {
      "title": "daemon entry: every invocation but `dossier` is unchanged [\"--help\"] prints the usage and exits 0",
@@ -1394,13 +1491,13 @@
      "failure": ""
     },
     {
-     "title": "daemon entry: the one changed input, `dossier` as the first argument every line of main.ts naming the POC app sits inside the `dossier` or the `polaris` branch, before the daemon path",
+     "title": "daemon entry: the one changed input, `dossier` as the first argument every mention of the POC app in main.ts lies inside the `dossier` or the `polaris` branch, whose only else is the other, before the daemon path",
      "status": "failed",
-     "failure": "AssertionError: expected [ Array(1) ] to deeply equal []\n    at /tmp/laneb-45r/c2/packages/cap1-system/src/daemon-entry-unchanged.system.test.ts:259:133\n    at file:///tmp/laneb-45r/c2/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///tmp/laneb-45r/c2/node_modules/@vitest/runner/"
+     "failure": "AssertionError: expected [ Array(1) ] to deeply equal []\n    at /tmp/laneb-45r2/clone/packages/cap1-system/src/daemon-entry-unchanged.system.test.ts:271:105\n    at file:///tmp/laneb-45r2/clone/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///tmp/laneb-45r2/clone/node_modules/@vi"
     }
    ],
    "failed": [
-    "daemon entry: the one changed input, `dossier` as the first argument every line of main.ts naming the POC app sits inside the `dossier` or the `polaris` branch, before the daemon path"
+    "daemon entry: the one changed input, `dossier` as the first argument every mention of the POC app in main.ts lies inside the `dossier` or the `polaris` branch, whose only else is the other, before the daemon path"
    ],
    "passed": 15
   },
@@ -1415,8 +1512,8 @@
    },
    "exit": 1,
    "killedAfterLimit": false,
-   "seconds": 5.5,
-   "load1Start": 33.19,
+   "seconds": 8.3,
+   "load1Start": 63.6,
    "rows": [
     {
      "title": "daemon entry: every invocation but `dossier` is unchanged [\"--help\"] prints the usage and exits 0",
@@ -1494,13 +1591,13 @@
      "failure": ""
     },
     {
-     "title": "daemon entry: the one changed input, `dossier` as the first argument every line of main.ts naming the POC app sits inside the `dossier` or the `polaris` branch, before the daemon path",
+     "title": "daemon entry: the one changed input, `dossier` as the first argument every mention of the POC app in main.ts lies inside the `dossier` or the `polaris` branch, whose only else is the other, before the daemon path",
      "status": "failed",
-     "failure": "AssertionError: expected [ Array(1) ] to deeply equal []\n    at /tmp/laneb-45r/c2/packages/cap1-system/src/daemon-entry-unchanged.system.test.ts:259:133\n    at file:///tmp/laneb-45r/c2/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///tmp/laneb-45r/c2/node_modules/@vitest/runner/"
+     "failure": "AssertionError: expected [ Array(1) ] to deeply equal []\n    at /tmp/laneb-45r2/clone/packages/cap1-system/src/daemon-entry-unchanged.system.test.ts:271:105\n    at file:///tmp/laneb-45r2/clone/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///tmp/laneb-45r2/clone/node_modules/@vi"
     }
    ],
    "failed": [
-    "daemon entry: the one changed input, `dossier` as the first argument every line of main.ts naming the POC app sits inside the `dossier` or the `polaris` branch, before the daemon path"
+    "daemon entry: the one changed input, `dossier` as the first argument every mention of the POC app in main.ts lies inside the `dossier` or the `polaris` branch, whose only else is the other, before the daemon path"
    ],
    "passed": 15
   },
@@ -1515,8 +1612,8 @@
    },
    "exit": 0,
    "killedAfterLimit": false,
-   "seconds": 6.4,
-   "load1Start": 32.24,
+   "seconds": 9.3,
+   "load1Start": 63.7,
    "rows": [
     {
      "title": "daemon entry: every invocation but `dossier` is unchanged [\"--help\"] prints the usage and exits 0",
@@ -1594,7 +1691,7 @@
      "failure": ""
     },
     {
-     "title": "daemon entry: the one changed input, `dossier` as the first argument every line of main.ts naming the POC app sits inside the `dossier` or the `polaris` branch, before the daemon path",
+     "title": "daemon entry: the one changed input, `dossier` as the first argument every mention of the POC app in main.ts lies inside the `dossier` or the `polaris` branch, whose only else is the other, before the daemon path",
      "status": "passed",
      "failure": ""
     }
@@ -1613,8 +1710,8 @@
    },
    "exit": 0,
    "killedAfterLimit": false,
-   "seconds": 6.5,
-   "load1Start": 30.86,
+   "seconds": 12.1,
+   "load1Start": 62.55,
    "rows": [
     {
      "title": "daemon entry: every invocation but `dossier` is unchanged [\"--help\"] prints the usage and exits 0",
@@ -1692,7 +1789,1101 @@
      "failure": ""
     },
     {
-     "title": "daemon entry: the one changed input, `dossier` as the first argument every line of main.ts naming the POC app sits inside the `dossier` or the `polaris` branch, before the daemon path",
+     "title": "daemon entry: the one changed input, `dossier` as the first argument every mention of the POC app in main.ts lies inside the `dossier` or the `polaris` branch, whose only else is the other, before the daemon path",
+     "status": "passed",
+     "failure": ""
+    }
+   ],
+   "failed": [],
+   "passed": 16
+  },
+  {
+   "mutant": {
+    "id": "S1-else-if-flag-after-dossier",
+    "kind": "defect",
+    "file": "apps/syzygy/src/main.ts",
+    "old": "    }, { renderer: renderLocalDossier });\n  }\n",
+    "new": "    }, { renderer: renderLocalDossier });\n  } else if (process.env.SYZYGY_PRELOAD_RENDERER === '1') {\n    await import('@syzygy/three-surface-poc-app/dossier-site');\n  }\n",
+    "note": "an `else if` on the dossier branch: on every non-dossier argv with the flag set, the POC app loads"
+   },
+   "exit": 1,
+   "killedAfterLimit": false,
+   "seconds": 7.6,
+   "load1Start": 64.77,
+   "rows": [
+    {
+     "title": "daemon entry: every invocation but `dossier` is unchanged [\"--help\"] prints the usage and exits 0",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: every invocation but `dossier` is unchanged [\"-h\"] prints the usage and exits 0",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: every invocation but `dossier` is unchanged [\"--help\",\"dossier\"] prints the usage and exits 0",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: every invocation but `dossier` is unchanged [\"--bogus\"] is refused with exit 1 and the same message",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: every invocation but `dossier` is unchanged [\"--port\",\"0\",\"dossier\"] is refused with exit 1 and the same message",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: every invocation but `dossier` is unchanged [\"Dossier\"] is refused with exit 1 and the same message",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: every invocation but `dossier` is unchanged [\"--port\"] is refused with exit 1 and the same message",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: every invocation but `dossier` is unchanged [\"--port\",\"70000\"] is refused with exit 1 and the same message",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: every invocation but `dossier` is unchanged a state directory inside the governed plane is refused with the same message",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: every invocation but `dossier` is unchanged with no arguments it serves from the working directory, writes the same state and shuts down the same way",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: every invocation but `dossier` is unchanged with explicit flags it serves, writes the same state and shuts down the same way",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: the one changed input, `dossier` as the first argument `dossier` alone is a dossier usage error (exit 2), not the daemon's refusal",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: the one changed input, `dossier` as the first argument `dossier status <missing>` is a dossier refusal (exit 1) and starts no daemon",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: the one changed input, `dossier` as the first argument `dossier render <missing>` reaches the run with the renderer injected, and starts no daemon",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: the one changed input, `dossier` as the first argument the daemon path never loads the POC app, and the `dossier render` branch does",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: the one changed input, `dossier` as the first argument every mention of the POC app in main.ts lies inside the `dossier` or the `polaris` branch, whose only else is the other, before the daemon path",
+     "status": "failed",
+     "failure": "AssertionError: expected false to be true // Object.is equality\n    at /tmp/laneb-45r2/clone/packages/cap1-system/src/daemon-entry-unchanged.system.test.ts:263:111\n    at file:///tmp/laneb-45r2/clone/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///tmp/laneb-45r2/clone/node_modu"
+    }
+   ],
+   "failed": [
+    "daemon entry: the one changed input, `dossier` as the first argument every mention of the POC app in main.ts lies inside the `dossier` or the `polaris` branch, whose only else is the other, before the daemon path"
+   ],
+   "passed": 15
+  },
+  {
+   "mutant": {
+    "id": "S2-same-line-if-after-dossier",
+    "kind": "defect",
+    "file": "apps/syzygy/src/main.ts",
+    "old": "    }, { renderer: renderLocalDossier });\n  }\n",
+    "new": "    }, { renderer: renderLocalDossier });\n  } if (process.env.SYZYGY_PRELOAD_RENDERER === '1') await import('@syzygy/three-surface-poc-app/dossier-site');\n",
+    "note": "the dossier close and a flag-gated import on one line"
+   },
+   "exit": 1,
+   "killedAfterLimit": false,
+   "seconds": 6.7,
+   "load1Start": 62.23,
+   "rows": [
+    {
+     "title": "daemon entry: every invocation but `dossier` is unchanged [\"--help\"] prints the usage and exits 0",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: every invocation but `dossier` is unchanged [\"-h\"] prints the usage and exits 0",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: every invocation but `dossier` is unchanged [\"--help\",\"dossier\"] prints the usage and exits 0",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: every invocation but `dossier` is unchanged [\"--bogus\"] is refused with exit 1 and the same message",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: every invocation but `dossier` is unchanged [\"--port\",\"0\",\"dossier\"] is refused with exit 1 and the same message",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: every invocation but `dossier` is unchanged [\"Dossier\"] is refused with exit 1 and the same message",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: every invocation but `dossier` is unchanged [\"--port\"] is refused with exit 1 and the same message",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: every invocation but `dossier` is unchanged [\"--port\",\"70000\"] is refused with exit 1 and the same message",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: every invocation but `dossier` is unchanged a state directory inside the governed plane is refused with the same message",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: every invocation but `dossier` is unchanged with no arguments it serves from the working directory, writes the same state and shuts down the same way",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: every invocation but `dossier` is unchanged with explicit flags it serves, writes the same state and shuts down the same way",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: the one changed input, `dossier` as the first argument `dossier` alone is a dossier usage error (exit 2), not the daemon's refusal",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: the one changed input, `dossier` as the first argument `dossier status <missing>` is a dossier refusal (exit 1) and starts no daemon",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: the one changed input, `dossier` as the first argument `dossier render <missing>` reaches the run with the renderer injected, and starts no daemon",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: the one changed input, `dossier` as the first argument the daemon path never loads the POC app, and the `dossier render` branch does",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: the one changed input, `dossier` as the first argument every mention of the POC app in main.ts lies inside the `dossier` or the `polaris` branch, whose only else is the other, before the daemon path",
+     "status": "failed",
+     "failure": "AssertionError: expected [ Array(1) ] to deeply equal []\n    at /tmp/laneb-45r2/clone/packages/cap1-system/src/daemon-entry-unchanged.system.test.ts:271:105\n    at file:///tmp/laneb-45r2/clone/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///tmp/laneb-45r2/clone/node_modules/@vi"
+    }
+   ],
+   "failed": [
+    "daemon entry: the one changed input, `dossier` as the first argument every mention of the POC app in main.ts lies inside the `dossier` or the `polaris` branch, whose only else is the other, before the daemon path"
+   ],
+   "passed": 15
+  },
+  {
+   "mutant": {
+    "id": "S3-else-if-flag-after-polaris",
+    "kind": "defect",
+    "file": "apps/syzygy/src/main.ts",
+    "old": "    return runPolarisCli(argv.slice(1), { renderer: renderLocalDossier });\n  }\n",
+    "new": "    return runPolarisCli(argv.slice(1), { renderer: renderLocalDossier });\n  } else if (process.env.SYZYGY_PRELOAD_RENDERER === '1') {\n    await import('@syzygy/three-surface-poc-app/dossier-site');\n  }\n",
+    "note": "an `else if` on the polaris branch, just before the daemon path"
+   },
+   "exit": 1,
+   "killedAfterLimit": false,
+   "seconds": 6.3,
+   "load1Start": 58.7,
+   "rows": [
+    {
+     "title": "daemon entry: every invocation but `dossier` is unchanged [\"--help\"] prints the usage and exits 0",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: every invocation but `dossier` is unchanged [\"-h\"] prints the usage and exits 0",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: every invocation but `dossier` is unchanged [\"--help\",\"dossier\"] prints the usage and exits 0",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: every invocation but `dossier` is unchanged [\"--bogus\"] is refused with exit 1 and the same message",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: every invocation but `dossier` is unchanged [\"--port\",\"0\",\"dossier\"] is refused with exit 1 and the same message",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: every invocation but `dossier` is unchanged [\"Dossier\"] is refused with exit 1 and the same message",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: every invocation but `dossier` is unchanged [\"--port\"] is refused with exit 1 and the same message",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: every invocation but `dossier` is unchanged [\"--port\",\"70000\"] is refused with exit 1 and the same message",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: every invocation but `dossier` is unchanged a state directory inside the governed plane is refused with the same message",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: every invocation but `dossier` is unchanged with no arguments it serves from the working directory, writes the same state and shuts down the same way",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: every invocation but `dossier` is unchanged with explicit flags it serves, writes the same state and shuts down the same way",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: the one changed input, `dossier` as the first argument `dossier` alone is a dossier usage error (exit 2), not the daemon's refusal",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: the one changed input, `dossier` as the first argument `dossier status <missing>` is a dossier refusal (exit 1) and starts no daemon",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: the one changed input, `dossier` as the first argument `dossier render <missing>` reaches the run with the renderer injected, and starts no daemon",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: the one changed input, `dossier` as the first argument the daemon path never loads the POC app, and the `dossier render` branch does",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: the one changed input, `dossier` as the first argument every mention of the POC app in main.ts lies inside the `dossier` or the `polaris` branch, whose only else is the other, before the daemon path",
+     "status": "failed",
+     "failure": "AssertionError: expected false to be true // Object.is equality\n    at /tmp/laneb-45r2/clone/packages/cap1-system/src/daemon-entry-unchanged.system.test.ts:263:111\n    at file:///tmp/laneb-45r2/clone/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///tmp/laneb-45r2/clone/node_modu"
+    }
+   ],
+   "failed": [
+    "daemon entry: the one changed input, `dossier` as the first argument every mention of the POC app in main.ts lies inside the `dossier` or the `polaris` branch, whose only else is the other, before the daemon path"
+   ],
+   "passed": 15
+  },
+  {
+   "mutant": {
+    "id": "S4-else-runtime-hook-after-dossier",
+    "kind": "defect",
+    "file": "apps/syzygy/src/main.ts",
+    "old": "    }, { renderer: renderLocalDossier });\n  }\n",
+    "new": "    }, { renderer: renderLocalDossier });\n  } else {\n    const { registerHooks } = process.getBuiltinModule('node:module');\n    const { readFileSync } = process.getBuiltinModule('node:fs');\n    registerHooks({ load: (url, context, nextLoad) => (url.includes('/apps/three-surface-poc/')\n      ? { format: 'module', source: readFileSync(new URL(url), 'utf8'), shortCircuit: true } : nextLoad(url, context)) });\n    await import('@syzygy/three-surface-poc-app/dossier-site');\n  }\n",
+    "note": "R3's runtime hook and import in an unconditional `else` on the dossier branch: every non-dossier argv loads the POC app, unseen by the test's hook"
+   },
+   "exit": 1,
+   "killedAfterLimit": false,
+   "seconds": 7.6,
+   "load1Start": 57.52,
+   "rows": [
+    {
+     "title": "daemon entry: every invocation but `dossier` is unchanged [\"--help\"] prints the usage and exits 0",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: every invocation but `dossier` is unchanged [\"-h\"] prints the usage and exits 0",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: every invocation but `dossier` is unchanged [\"--help\",\"dossier\"] prints the usage and exits 0",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: every invocation but `dossier` is unchanged [\"--bogus\"] is refused with exit 1 and the same message",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: every invocation but `dossier` is unchanged [\"--port\",\"0\",\"dossier\"] is refused with exit 1 and the same message",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: every invocation but `dossier` is unchanged [\"Dossier\"] is refused with exit 1 and the same message",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: every invocation but `dossier` is unchanged [\"--port\"] is refused with exit 1 and the same message",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: every invocation but `dossier` is unchanged [\"--port\",\"70000\"] is refused with exit 1 and the same message",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: every invocation but `dossier` is unchanged a state directory inside the governed plane is refused with the same message",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: every invocation but `dossier` is unchanged with no arguments it serves from the working directory, writes the same state and shuts down the same way",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: every invocation but `dossier` is unchanged with explicit flags it serves, writes the same state and shuts down the same way",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: the one changed input, `dossier` as the first argument `dossier` alone is a dossier usage error (exit 2), not the daemon's refusal",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: the one changed input, `dossier` as the first argument `dossier status <missing>` is a dossier refusal (exit 1) and starts no daemon",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: the one changed input, `dossier` as the first argument `dossier render <missing>` reaches the run with the renderer injected, and starts no daemon",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: the one changed input, `dossier` as the first argument the daemon path never loads the POC app, and the `dossier render` branch does",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: the one changed input, `dossier` as the first argument every mention of the POC app in main.ts lies inside the `dossier` or the `polaris` branch, whose only else is the other, before the daemon path",
+     "status": "failed",
+     "failure": "AssertionError: expected false to be true // Object.is equality\n    at /tmp/laneb-45r2/clone/packages/cap1-system/src/daemon-entry-unchanged.system.test.ts:263:111\n    at file:///tmp/laneb-45r2/clone/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///tmp/laneb-45r2/clone/node_modu"
+    }
+   ],
+   "failed": [
+    "daemon entry: the one changed input, `dossier` as the first argument every mention of the POC app in main.ts lies inside the `dossier` or the `polaris` branch, whose only else is the other, before the daemon path"
+   ],
+   "passed": 15
+  },
+  {
+   "mutant": {
+    "id": "S5-else-createRequire-flag-after-polaris",
+    "kind": "defect",
+    "file": "apps/syzygy/src/main.ts",
+    "old": "    return runPolarisCli(argv.slice(1), { renderer: renderLocalDossier });\n  }\n",
+    "new": "    return runPolarisCli(argv.slice(1), { renderer: renderLocalDossier });\n  } else if (process.env.SYZYGY_PRELOAD_RENDERER === '1') {\n    process.getBuiltinModule('node:module').createRequire(import.meta.url)('@syzygy/three-surface-poc-app/dossier-site');\n  }\n",
+    "note": "R2's createRequire in an `else if` on the polaris branch"
+   },
+   "exit": 1,
+   "killedAfterLimit": false,
+   "seconds": 7.3,
+   "load1Start": 57.9,
+   "rows": [
+    {
+     "title": "daemon entry: every invocation but `dossier` is unchanged [\"--help\"] prints the usage and exits 0",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: every invocation but `dossier` is unchanged [\"-h\"] prints the usage and exits 0",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: every invocation but `dossier` is unchanged [\"--help\",\"dossier\"] prints the usage and exits 0",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: every invocation but `dossier` is unchanged [\"--bogus\"] is refused with exit 1 and the same message",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: every invocation but `dossier` is unchanged [\"--port\",\"0\",\"dossier\"] is refused with exit 1 and the same message",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: every invocation but `dossier` is unchanged [\"Dossier\"] is refused with exit 1 and the same message",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: every invocation but `dossier` is unchanged [\"--port\"] is refused with exit 1 and the same message",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: every invocation but `dossier` is unchanged [\"--port\",\"70000\"] is refused with exit 1 and the same message",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: every invocation but `dossier` is unchanged a state directory inside the governed plane is refused with the same message",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: every invocation but `dossier` is unchanged with no arguments it serves from the working directory, writes the same state and shuts down the same way",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: every invocation but `dossier` is unchanged with explicit flags it serves, writes the same state and shuts down the same way",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: the one changed input, `dossier` as the first argument `dossier` alone is a dossier usage error (exit 2), not the daemon's refusal",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: the one changed input, `dossier` as the first argument `dossier status <missing>` is a dossier refusal (exit 1) and starts no daemon",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: the one changed input, `dossier` as the first argument `dossier render <missing>` reaches the run with the renderer injected, and starts no daemon",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: the one changed input, `dossier` as the first argument the daemon path never loads the POC app, and the `dossier render` branch does",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: the one changed input, `dossier` as the first argument every mention of the POC app in main.ts lies inside the `dossier` or the `polaris` branch, whose only else is the other, before the daemon path",
+     "status": "failed",
+     "failure": "AssertionError: expected false to be true // Object.is equality\n    at /tmp/laneb-45r2/clone/packages/cap1-system/src/daemon-entry-unchanged.system.test.ts:263:111\n    at file:///tmp/laneb-45r2/clone/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///tmp/laneb-45r2/clone/node_modu"
+    }
+   ],
+   "failed": [
+    "daemon entry: the one changed input, `dossier` as the first argument every mention of the POC app in main.ts lies inside the `dossier` or the `polaris` branch, whose only else is the other, before the daemon path"
+   ],
+   "passed": 15
+  },
+  {
+   "mutant": {
+    "id": "S6-misindented-close-after-dossier",
+    "kind": "defect",
+    "file": "apps/syzygy/src/main.ts",
+    "old": "    }, { renderer: renderLocalDossier });\n  }\n",
+    "new": "    }, { renderer: renderLocalDossier });\n    } if (process.env.SYZYGY_PRELOAD_RENDERER === '1') {\n    await import('@syzygy/three-surface-poc-app/dossier-site');\n  }\n",
+    "note": "the dossier branch closed by a 4-space `}` on a line that opens a flag-gated block, closed by `  }`"
+   },
+   "exit": 1,
+   "killedAfterLimit": false,
+   "seconds": 6.8,
+   "load1Start": 57.99,
+   "rows": [
+    {
+     "title": "daemon entry: every invocation but `dossier` is unchanged [\"--help\"] prints the usage and exits 0",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: every invocation but `dossier` is unchanged [\"-h\"] prints the usage and exits 0",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: every invocation but `dossier` is unchanged [\"--help\",\"dossier\"] prints the usage and exits 0",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: every invocation but `dossier` is unchanged [\"--bogus\"] is refused with exit 1 and the same message",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: every invocation but `dossier` is unchanged [\"--port\",\"0\",\"dossier\"] is refused with exit 1 and the same message",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: every invocation but `dossier` is unchanged [\"Dossier\"] is refused with exit 1 and the same message",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: every invocation but `dossier` is unchanged [\"--port\"] is refused with exit 1 and the same message",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: every invocation but `dossier` is unchanged [\"--port\",\"70000\"] is refused with exit 1 and the same message",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: every invocation but `dossier` is unchanged a state directory inside the governed plane is refused with the same message",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: every invocation but `dossier` is unchanged with no arguments it serves from the working directory, writes the same state and shuts down the same way",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: every invocation but `dossier` is unchanged with explicit flags it serves, writes the same state and shuts down the same way",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: the one changed input, `dossier` as the first argument `dossier` alone is a dossier usage error (exit 2), not the daemon's refusal",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: the one changed input, `dossier` as the first argument `dossier status <missing>` is a dossier refusal (exit 1) and starts no daemon",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: the one changed input, `dossier` as the first argument `dossier render <missing>` reaches the run with the renderer injected, and starts no daemon",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: the one changed input, `dossier` as the first argument the daemon path never loads the POC app, and the `dossier render` branch does",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: the one changed input, `dossier` as the first argument every mention of the POC app in main.ts lies inside the `dossier` or the `polaris` branch, whose only else is the other, before the daemon path",
+     "status": "failed",
+     "failure": "AssertionError: expected [ Array(1) ] to deeply equal []\n    at /tmp/laneb-45r2/clone/packages/cap1-system/src/daemon-entry-unchanged.system.test.ts:271:105\n    at file:///tmp/laneb-45r2/clone/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///tmp/laneb-45r2/clone/node_modules/@vi"
+    }
+   ],
+   "failed": [
+    "daemon entry: the one changed input, `dossier` as the first argument every mention of the POC app in main.ts lies inside the `dossier` or the `polaris` branch, whose only else is the other, before the daemon path"
+   ],
+   "passed": 15
+  },
+  {
+   "mutant": {
+    "id": "S7-else-split-specifier-after-dossier",
+    "kind": "defect",
+    "file": "apps/syzygy/src/main.ts",
+    "old": "    }, { renderer: renderLocalDossier });\n  }\n",
+    "new": "    }, { renderer: renderLocalDossier });\n  } else if (process.env.SYZYGY_PRELOAD_RENDERER === '1') {\n    await import('@syzygy/three-surface-poc' + '-app/dossier-site');\n  }\n",
+    "note": "S1's `else if` with the specifier split in two, so no text in main.ts names the POC app"
+   },
+   "exit": 1,
+   "killedAfterLimit": false,
+   "seconds": 10.2,
+   "load1Start": 56.35,
+   "rows": [
+    {
+     "title": "daemon entry: every invocation but `dossier` is unchanged [\"--help\"] prints the usage and exits 0",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: every invocation but `dossier` is unchanged [\"-h\"] prints the usage and exits 0",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: every invocation but `dossier` is unchanged [\"--help\",\"dossier\"] prints the usage and exits 0",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: every invocation but `dossier` is unchanged [\"--bogus\"] is refused with exit 1 and the same message",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: every invocation but `dossier` is unchanged [\"--port\",\"0\",\"dossier\"] is refused with exit 1 and the same message",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: every invocation but `dossier` is unchanged [\"Dossier\"] is refused with exit 1 and the same message",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: every invocation but `dossier` is unchanged [\"--port\"] is refused with exit 1 and the same message",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: every invocation but `dossier` is unchanged [\"--port\",\"70000\"] is refused with exit 1 and the same message",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: every invocation but `dossier` is unchanged a state directory inside the governed plane is refused with the same message",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: every invocation but `dossier` is unchanged with no arguments it serves from the working directory, writes the same state and shuts down the same way",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: every invocation but `dossier` is unchanged with explicit flags it serves, writes the same state and shuts down the same way",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: the one changed input, `dossier` as the first argument `dossier` alone is a dossier usage error (exit 2), not the daemon's refusal",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: the one changed input, `dossier` as the first argument `dossier status <missing>` is a dossier refusal (exit 1) and starts no daemon",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: the one changed input, `dossier` as the first argument `dossier render <missing>` reaches the run with the renderer injected, and starts no daemon",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: the one changed input, `dossier` as the first argument the daemon path never loads the POC app, and the `dossier render` branch does",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: the one changed input, `dossier` as the first argument every mention of the POC app in main.ts lies inside the `dossier` or the `polaris` branch, whose only else is the other, before the daemon path",
+     "status": "failed",
+     "failure": "AssertionError: expected false to be true // Object.is equality\n    at /tmp/laneb-45r2/clone/packages/cap1-system/src/daemon-entry-unchanged.system.test.ts:263:111\n    at file:///tmp/laneb-45r2/clone/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///tmp/laneb-45r2/clone/node_modu"
+    }
+   ],
+   "failed": [
+    "daemon entry: the one changed input, `dossier` as the first argument every mention of the POC app in main.ts lies inside the `dossier` or the `polaris` branch, whose only else is the other, before the daemon path"
+   ],
+   "passed": 15
+  },
+  {
+   "mutant": {
+    "id": "C1-comment-outside-branches",
+    "kind": "equivalent",
+    "file": "apps/syzygy/src/main.ts",
+    "old": "// One exception to all of the above:",
+    "new": "// The dossier renderer is @syzygy/three-surface-poc-app/dossier-site.\n// One exception to all of the above:",
+    "note": "a comment naming the POC app in the header, outside both branches (a disclosed residual: the text row fails it)"
+   },
+   "exit": 1,
+   "killedAfterLimit": false,
+   "seconds": 13.8,
+   "load1Start": 58.91,
+   "rows": [
+    {
+     "title": "daemon entry: every invocation but `dossier` is unchanged [\"--help\"] prints the usage and exits 0",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: every invocation but `dossier` is unchanged [\"-h\"] prints the usage and exits 0",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: every invocation but `dossier` is unchanged [\"--help\",\"dossier\"] prints the usage and exits 0",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: every invocation but `dossier` is unchanged [\"--bogus\"] is refused with exit 1 and the same message",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: every invocation but `dossier` is unchanged [\"--port\",\"0\",\"dossier\"] is refused with exit 1 and the same message",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: every invocation but `dossier` is unchanged [\"Dossier\"] is refused with exit 1 and the same message",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: every invocation but `dossier` is unchanged [\"--port\"] is refused with exit 1 and the same message",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: every invocation but `dossier` is unchanged [\"--port\",\"70000\"] is refused with exit 1 and the same message",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: every invocation but `dossier` is unchanged a state directory inside the governed plane is refused with the same message",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: every invocation but `dossier` is unchanged with no arguments it serves from the working directory, writes the same state and shuts down the same way",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: every invocation but `dossier` is unchanged with explicit flags it serves, writes the same state and shuts down the same way",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: the one changed input, `dossier` as the first argument `dossier` alone is a dossier usage error (exit 2), not the daemon's refusal",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: the one changed input, `dossier` as the first argument `dossier status <missing>` is a dossier refusal (exit 1) and starts no daemon",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: the one changed input, `dossier` as the first argument `dossier render <missing>` reaches the run with the renderer injected, and starts no daemon",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: the one changed input, `dossier` as the first argument the daemon path never loads the POC app, and the `dossier render` branch does",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: the one changed input, `dossier` as the first argument every mention of the POC app in main.ts lies inside the `dossier` or the `polaris` branch, whose only else is the other, before the daemon path",
+     "status": "failed",
+     "failure": "AssertionError: expected [ Array(1) ] to deeply equal []\n    at /tmp/laneb-45r2/clone/packages/cap1-system/src/daemon-entry-unchanged.system.test.ts:271:105\n    at file:///tmp/laneb-45r2/clone/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///tmp/laneb-45r2/clone/node_modules/@vi"
+    }
+   ],
+   "failed": [
+    "daemon entry: the one changed input, `dossier` as the first argument every mention of the POC app in main.ts lies inside the `dossier` or the `polaris` branch, whose only else is the other, before the daemon path"
+   ],
+   "passed": 15
+  },
+  {
+   "mutant": {
+    "id": "L1-else-if-chain",
+    "kind": "equivalent",
+    "file": "apps/syzygy/src/main.ts",
+    "old": "  }\n\n  // `syzygy polaris <url>` is the one-command launched run (prototype under\n  // owner direction POLARIS-DOSSIER-ONE-COMMAND-RUN-2026-10-14): it runs the\n  // `dossier` steps in process and starts the agent sessions in views.\n  if (argv[0] === 'polaris') {\n",
+    "new": "  } else if (argv[0] === 'polaris') {\n    // `syzygy polaris <url>` is the one-command launched run (prototype under\n    // owner direction POLARIS-DOSSIER-ONE-COMMAND-RUN-2026-10-14): it runs the\n    // `dossier` steps in process and starts the agent sessions in views.\n",
+    "note": "the two branches chained as `if \u2026 else if (argv[0] === 'polaris')`"
+   },
+   "exit": 0,
+   "killedAfterLimit": false,
+   "seconds": 10.5,
+   "load1Start": 63.73,
+   "rows": [
+    {
+     "title": "daemon entry: every invocation but `dossier` is unchanged [\"--help\"] prints the usage and exits 0",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: every invocation but `dossier` is unchanged [\"-h\"] prints the usage and exits 0",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: every invocation but `dossier` is unchanged [\"--help\",\"dossier\"] prints the usage and exits 0",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: every invocation but `dossier` is unchanged [\"--bogus\"] is refused with exit 1 and the same message",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: every invocation but `dossier` is unchanged [\"--port\",\"0\",\"dossier\"] is refused with exit 1 and the same message",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: every invocation but `dossier` is unchanged [\"Dossier\"] is refused with exit 1 and the same message",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: every invocation but `dossier` is unchanged [\"--port\"] is refused with exit 1 and the same message",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: every invocation but `dossier` is unchanged [\"--port\",\"70000\"] is refused with exit 1 and the same message",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: every invocation but `dossier` is unchanged a state directory inside the governed plane is refused with the same message",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: every invocation but `dossier` is unchanged with no arguments it serves from the working directory, writes the same state and shuts down the same way",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: every invocation but `dossier` is unchanged with explicit flags it serves, writes the same state and shuts down the same way",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: the one changed input, `dossier` as the first argument `dossier` alone is a dossier usage error (exit 2), not the daemon's refusal",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: the one changed input, `dossier` as the first argument `dossier status <missing>` is a dossier refusal (exit 1) and starts no daemon",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: the one changed input, `dossier` as the first argument `dossier render <missing>` reaches the run with the renderer injected, and starts no daemon",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: the one changed input, `dossier` as the first argument the daemon path never loads the POC app, and the `dossier render` branch does",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: the one changed input, `dossier` as the first argument every mention of the POC app in main.ts lies inside the `dossier` or the `polaris` branch, whose only else is the other, before the daemon path",
+     "status": "passed",
+     "failure": ""
+    }
+   ],
+   "failed": [],
+   "passed": 16
+  },
+  {
+   "mutant": {
+    "id": "L2-nested-function-in-dossier",
+    "kind": "equivalent",
+    "file": "apps/syzygy/src/main.ts",
+    "old": "    const { renderLocalDossier } = await import('@syzygy/three-surface-poc-app/dossier-site');\n    return runDossierCli(",
+    "new": "    const renderLocalDossier = await (async () => {\n      const site = await import('@syzygy/three-surface-poc-app/dossier-site');\n      return site.renderLocalDossier;\n    })();\n    return runDossierCli(",
+    "note": "the dossier import moved into a nested async function inside the branch"
+   },
+   "exit": 0,
+   "killedAfterLimit": false,
+   "seconds": 10.8,
+   "load1Start": 62.78,
+   "rows": [
+    {
+     "title": "daemon entry: every invocation but `dossier` is unchanged [\"--help\"] prints the usage and exits 0",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: every invocation but `dossier` is unchanged [\"-h\"] prints the usage and exits 0",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: every invocation but `dossier` is unchanged [\"--help\",\"dossier\"] prints the usage and exits 0",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: every invocation but `dossier` is unchanged [\"--bogus\"] is refused with exit 1 and the same message",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: every invocation but `dossier` is unchanged [\"--port\",\"0\",\"dossier\"] is refused with exit 1 and the same message",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: every invocation but `dossier` is unchanged [\"Dossier\"] is refused with exit 1 and the same message",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: every invocation but `dossier` is unchanged [\"--port\"] is refused with exit 1 and the same message",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: every invocation but `dossier` is unchanged [\"--port\",\"70000\"] is refused with exit 1 and the same message",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: every invocation but `dossier` is unchanged a state directory inside the governed plane is refused with the same message",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: every invocation but `dossier` is unchanged with no arguments it serves from the working directory, writes the same state and shuts down the same way",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: every invocation but `dossier` is unchanged with explicit flags it serves, writes the same state and shuts down the same way",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: the one changed input, `dossier` as the first argument `dossier` alone is a dossier usage error (exit 2), not the daemon's refusal",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: the one changed input, `dossier` as the first argument `dossier status <missing>` is a dossier refusal (exit 1) and starts no daemon",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: the one changed input, `dossier` as the first argument `dossier render <missing>` reaches the run with the renderer injected, and starts no daemon",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: the one changed input, `dossier` as the first argument the daemon path never loads the POC app, and the `dossier render` branch does",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: the one changed input, `dossier` as the first argument every mention of the POC app in main.ts lies inside the `dossier` or the `polaris` branch, whose only else is the other, before the daemon path",
+     "status": "passed",
+     "failure": ""
+    }
+   ],
+   "failed": [],
+   "passed": 16
+  },
+  {
+   "mutant": {
+    "id": "L3-nested-try-in-polaris",
+    "kind": "equivalent",
+    "file": "apps/syzygy/src/main.ts",
+    "old": "    const { runPolarisCli } = await import('@syzygy/polaris-dossier');\n    const { renderLocalDossier } = await import('@syzygy/three-surface-poc-app/dossier-site');\n    return runPolarisCli(argv.slice(1), { renderer: renderLocalDossier });\n",
+    "new": "    const { runPolarisCli } = await import('@syzygy/polaris-dossier');\n    try {\n      const { renderLocalDossier } = await import('@syzygy/three-surface-poc-app/dossier-site');\n      return runPolarisCli(argv.slice(1), { renderer: renderLocalDossier });\n    } catch (cause: unknown) {\n      throw cause;\n    }\n",
+    "note": "the polaris import inside a nested try block in the branch"
+   },
+   "exit": 0,
+   "killedAfterLimit": false,
+   "seconds": 8.7,
+   "load1Start": 69.17,
+   "rows": [
+    {
+     "title": "daemon entry: every invocation but `dossier` is unchanged [\"--help\"] prints the usage and exits 0",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: every invocation but `dossier` is unchanged [\"-h\"] prints the usage and exits 0",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: every invocation but `dossier` is unchanged [\"--help\",\"dossier\"] prints the usage and exits 0",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: every invocation but `dossier` is unchanged [\"--bogus\"] is refused with exit 1 and the same message",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: every invocation but `dossier` is unchanged [\"--port\",\"0\",\"dossier\"] is refused with exit 1 and the same message",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: every invocation but `dossier` is unchanged [\"Dossier\"] is refused with exit 1 and the same message",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: every invocation but `dossier` is unchanged [\"--port\"] is refused with exit 1 and the same message",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: every invocation but `dossier` is unchanged [\"--port\",\"70000\"] is refused with exit 1 and the same message",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: every invocation but `dossier` is unchanged a state directory inside the governed plane is refused with the same message",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: every invocation but `dossier` is unchanged with no arguments it serves from the working directory, writes the same state and shuts down the same way",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: every invocation but `dossier` is unchanged with explicit flags it serves, writes the same state and shuts down the same way",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: the one changed input, `dossier` as the first argument `dossier` alone is a dossier usage error (exit 2), not the daemon's refusal",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: the one changed input, `dossier` as the first argument `dossier status <missing>` is a dossier refusal (exit 1) and starts no daemon",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: the one changed input, `dossier` as the first argument `dossier render <missing>` reaches the run with the renderer injected, and starts no daemon",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: the one changed input, `dossier` as the first argument the daemon path never loads the POC app, and the `dossier render` branch does",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: the one changed input, `dossier` as the first argument every mention of the POC app in main.ts lies inside the `dossier` or the `polaris` branch, whose only else is the other, before the daemon path",
      "status": "passed",
      "failure": ""
     }
@@ -1711,8 +2902,8 @@
    },
    "exit": 0,
    "killedAfterLimit": false,
-   "seconds": 6.2,
-   "load1Start": 30.38,
+   "seconds": 10.3,
+   "load1Start": 69.57,
    "rows": [
     {
      "title": "daemon entry: every invocation but `dossier` is unchanged [\"--help\"] prints the usage and exits 0",
@@ -1790,7 +2981,7 @@
      "failure": ""
     },
     {
-     "title": "daemon entry: the one changed input, `dossier` as the first argument every line of main.ts naming the POC app sits inside the `dossier` or the `polaris` branch, before the daemon path",
+     "title": "daemon entry: the one changed input, `dossier` as the first argument every mention of the POC app in main.ts lies inside the `dossier` or the `polaris` branch, whose only else is the other, before the daemon path",
      "status": "passed",
      "failure": ""
     }
@@ -1809,8 +3000,8 @@
    },
    "exit": 1,
    "killedAfterLimit": false,
-   "seconds": 9.0,
-   "load1Start": 28.42,
+   "seconds": 10.4,
+   "load1Start": 68.22,
    "rows": [
     {
      "title": "daemon entry: every invocation but `dossier` is unchanged [\"--help\"] prints the usage and exits 0",
@@ -1885,10 +3076,10 @@
     {
      "title": "daemon entry: the one changed input, `dossier` as the first argument the daemon path never loads the POC app, and the `dossier render` branch does",
      "status": "failed",
-     "failure": "AssertionError: expected [ '' ] to include 'file:///tmp/laneb-45r/c2/apps/three-s\u2026'\n    at Proxy.<anonymous> (file:///tmp/laneb-45r/c2/node_modules/@vitest/expect/dist/index.js:1191:15)\n    at Proxy.<anonymous> (file:///tmp/laneb-45r/c2/node_modules/@vitest/expect/dist/index.js:1029:14)\n    at Proxy"
+     "failure": "AssertionError: expected [ '' ] to include 'file:///tmp/laneb-45r2/clone/apps/thr\u2026'\n    at Proxy.<anonymous> (file:///tmp/laneb-45r2/clone/node_modules/@vitest/expect/dist/index.js:1191:15)\n    at Proxy.<anonymous> (file:///tmp/laneb-45r2/clone/node_modules/@vitest/expect/dist/index.js:1029:14)\n    "
     },
     {
-     "title": "daemon entry: the one changed input, `dossier` as the first argument every line of main.ts naming the POC app sits inside the `dossier` or the `polaris` branch, before the daemon path",
+     "title": "daemon entry: the one changed input, `dossier` as the first argument every mention of the POC app in main.ts lies inside the `dossier` or the `polaris` branch, whose only else is the other, before the daemon path",
      "status": "passed",
      "failure": ""
     }
@@ -1909,8 +3100,8 @@
    },
    "exit": 1,
    "killedAfterLimit": false,
-   "seconds": 9.9,
-   "load1Start": 27.6,
+   "seconds": 11.0,
+   "load1Start": 64.93,
    "rows": [
     {
      "title": "daemon entry: every invocation but `dossier` is unchanged [\"--help\"] prints the usage and exits 0",
@@ -1985,10 +3176,10 @@
     {
      "title": "daemon entry: the one changed input, `dossier` as the first argument the daemon path never loads the POC app, and the `dossier render` branch does",
      "status": "failed",
-     "failure": "AssertionError: expected [ '' ] to include 'file:///tmp/laneb-45r/c2/apps/three-s\u2026'\n    at Proxy.<anonymous> (file:///tmp/laneb-45r/c2/node_modules/@vitest/expect/dist/index.js:1191:15)\n    at Proxy.<anonymous> (file:///tmp/laneb-45r/c2/node_modules/@vitest/expect/dist/index.js:1029:14)\n    at Proxy"
+     "failure": "AssertionError: expected [ '' ] to include 'file:///tmp/laneb-45r2/clone/apps/thr\u2026'\n    at Proxy.<anonymous> (file:///tmp/laneb-45r2/clone/node_modules/@vitest/expect/dist/index.js:1191:15)\n    at Proxy.<anonymous> (file:///tmp/laneb-45r2/clone/node_modules/@vitest/expect/dist/index.js:1029:14)\n    "
     },
     {
-     "title": "daemon entry: the one changed input, `dossier` as the first argument every line of main.ts naming the POC app sits inside the `dossier` or the `polaris` branch, before the daemon path",
+     "title": "daemon entry: the one changed input, `dossier` as the first argument every mention of the POC app in main.ts lies inside the `dossier` or the `polaris` branch, whose only else is the other, before the daemon path",
      "status": "passed",
      "failure": ""
     }

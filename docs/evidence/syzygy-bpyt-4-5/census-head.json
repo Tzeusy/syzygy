@@ -3,8 +3,8 @@
   "name": "timing_census.py",
   "sha256": "79aad9c52e1a11f8887d8fe5475a86e93bd742ac8aec436089a69cb098840f48"
  },
- "commit": "bb5df68080b00a08557f64156c9bf3b4d9d25ed4",
- "population": 250,
+ "commit": "2b56a253f81bb4e6d71b46556f0d675a07dfb7c2",
+ "population": 256,
  "summary": {
   "timeout-arg": {
    "lines": 134,
@@ -1314,11 +1314,11 @@
   },
   {
    "path": "packages/cap1-system/src/daemon-entry-unchanged.system.test.ts",
-   "line": 85,
+   "line": 86,
    "kind": "timeout-option",
    "arg": "RUN_SYNC_TIMEOUT_MS",
    "const": {
-    "line": 81,
+    "line": 82,
     "value": "20_000",
     "reason": true
    },
@@ -1327,14 +1327,14 @@
   },
   {
    "path": "packages/cap1-system/src/daemon-entry-unchanged.system.test.ts",
-   "line": 101,
+   "line": 102,
    "kind": "clock",
    "class": "deadline",
    "text": "const deadline = Date.now() + 30_000;"
   },
   {
    "path": "packages/cap1-system/src/daemon-entry-unchanged.system.test.ts",
-   "line": 104,
+   "line": 105,
    "kind": "clock",
    "class": "deadline",
    "text": "if (Date.now() > deadline) {"
@@ -1423,7 +1423,7 @@
   },
   {
    "path": "packages/polaris-dossier/src/no-egress.test.ts",
-   "line": 46,
+   "line": 48,
    "kind": "timeout-arg",
    "arg": "120_000",
    "const": null,
@@ -1432,7 +1432,7 @@
   },
   {
    "path": "packages/polaris-dossier/src/no-egress.test.ts",
-   "line": 56,
+   "line": 58,
    "kind": "timeout-option",
    "arg": "240_000",
    "const": null,
@@ -1441,7 +1441,7 @@
   },
   {
    "path": "packages/polaris-dossier/src/no-egress.test.ts",
-   "line": 83,
+   "line": 85,
    "kind": "timeout-arg",
    "arg": "240_000",
    "const": null,
@@ -1450,7 +1450,7 @@
   },
   {
    "path": "packages/polaris-dossier/src/no-egress.test.ts",
-   "line": 91,
+   "line": 93,
    "kind": "timeout-arg",
    "arg": "240_000",
    "const": null,

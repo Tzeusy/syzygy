@@ -31,11 +31,13 @@ at 3fc3709f at the geometric mean of the first separation and are not refitted: 
 `geometricMeanNowMs`; on the daemon entry, the four runs (the new test, the old test from BASE_COMMIT, and the tests from
 PRIOR_TEST_COMMIT and ROUND1_TEST_COMMIT) hold the same mutants, none skipped but a `hook` mutant in a test without the
 load-hook row; every `defect` mutant fails the new test, every `hook` mutant fails the load-hook row, the R- mutants
-(rev-532's daemon-path loads) pass the kept text row as it stood at PRIOR_TEST_COMMIT and fail it now, the S- mutants
+(rev-532's daemon-path loads) pass the kept text row as it stood at PRIOR_TEST_COMMIT and fail it now, S1-S6
 (rev-532b's) pass the test at ROUND1_TEST_COMMIT and fail both the new text row and the old pin, S7 (an `else` whose load
 names the POC app nowhere in main.ts) passes the round-1 test and fails the new text row, every `equivalent` passes
 the new test except the two the record discloses (E-type-only-import, C1-comment-outside-branches), which fail its text row
-alone, and the `residual` X2 passes every new row, as the record says. The narrative fields (`sites`, `residuals`) are the lane's own words.
+alone, the `residual` X2 passes every row of all four tests while X1 fails the new text row and X3 the load-hook row,
+as the record says; and the last full-suite attempt is one green run at
+EVIDENCE_COMMIT. The narrative fields (`sites`, `residuals`) are the lane's own words.
 """
 import glob, hashlib, json, math, os, re, subprocess, sys
 
@@ -252,11 +254,13 @@ RESIDUALS = [
     "dossier-evaluation's INDEX and DEEP fixtures are ASCII, so a module that counted string length instead of UTF-8 bytes would pass every byte assertion there, at the base (literals) and at the head (counts) alike.",
     'A FIFO capture with the lstat refusal removed blocks in a synchronous open at both sides: the row fails by the test timeout or the run is killed, never by a fast refusal (fifo-blocking-open).',
     'Explicit timeouts are harness bounds, not assertions, and are out of this bead (syzygy-bpyt.4.31); most carry no one-line reason (unreasonedTimeouts).',
-    'Two concurrent full-suite runs were not green on this host at the base or the head alike (attempts 1 to 3): every failure was a 5 s default timeout or a 10 s hook timeout in a file this change does not touch. One run at a time, twice in sequence, was green (attempts 4 and 5).',
+    'Two concurrent full-suite runs were not green on this host at the base or the head alike (attempts 1 to 3): every failure was a 5 s default timeout or a 10 s hook timeout in a file this change does not touch. One run at a time, twice in sequence, was green (attempts 4 and 5), and so was one run of the round-2 repair at default timeouts (attempt 6).',
 ]
 row_delta = subprocess.run([sys.executable, '-I', os.path.join(here, 'tools', 'row_delta.py'), tree, main, ev], capture_output=True, text=True, check=True).stdout.splitlines()
 suites = [load(os.path.relpath(p, here)) for p in sorted(glob.glob(os.path.join(here, 'full-suite', 'attempt-*.json')))]
 durations = [load(os.path.relpath(p, here)) for p in sorted(glob.glob(os.path.join(here, 'durations', '*.json')))]
+if [r['commit'] for r in suites[-1]['runs']] != [ev] or any(r['exit'] or not r['success'] or r['totals']['numFailedTests'] for r in suites[-1]['runs']):
+    sys.exit(f'the last full-suite attempt is not one green run at {ev}')
 
 files = sorted(p for p in glob.glob(os.path.join(here, '**', '*'), recursive=True) if os.path.isfile(p) and not p.endswith('bounds-and-pins.json'))
 record = {

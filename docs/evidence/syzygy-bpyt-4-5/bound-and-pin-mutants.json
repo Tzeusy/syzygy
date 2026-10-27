@@ -7,7 +7,7 @@
   "path": "mutant-cases.json",
   "sha256": "80a34aae115f99b80d2cafdd0928aa5e93126d786fb729242b39bb1029745583"
  },
- "tree": "bb5df68080b00a08557f64156c9bf3b4d9d25ed4",
+ "tree": "2b56a253f81bb4e6d71b46556f0d675a07dfb7c2",
  "treeDirty": false,
  "base": "c104771ff90f47ffd070f2339c36010458679c71",
  "results": [
@@ -28,13 +28,13 @@
      "exit": 0,
      "killedAfterLimit": false,
      "sessionCpuSecondsAtKill": null,
-     "seconds": 8.4,
-     "load1Start": 42.56,
+     "seconds": 5.5,
+     "load1Start": 57.28,
      "rows": [
       {
        "title": "capture-test-artifact never starts the observed project (run check) refuses a FIFO without opening it, so a pipe nobody writes cannot hang the ingest",
        "status": "passed",
-       "durationMs": 293.563435,
+       "durationMs": 131.589066,
        "failure": "",
        "byTimeout": false
       }
@@ -48,13 +48,13 @@
      "exit": 0,
      "killedAfterLimit": false,
      "sessionCpuSecondsAtKill": null,
-     "seconds": 9.4,
-     "load1Start": 43.11,
+     "seconds": 7.6,
+     "load1Start": 55.41,
      "rows": [
       {
        "title": "capture-test-artifact never starts the observed project (run check) refuses a FIFO without opening it, so a pipe nobody writes cannot hang the ingest",
        "status": "passed",
-       "durationMs": 453.08024900000055,
+       "durationMs": 338.48179699999946,
        "failure": "",
        "byTimeout": false
       }
@@ -87,13 +87,13 @@
      "exit": 1,
      "killedAfterLimit": false,
      "sessionCpuSecondsAtKill": null,
-     "seconds": 7.7,
-     "load1Start": 42.4,
+     "seconds": 6.6,
+     "load1Start": 56.31,
      "rows": [
       {
        "title": "capture-test-artifact never starts the observed project (run check) refuses a FIFO without opening it, so a pipe nobody writes cannot hang the ingest",
        "status": "failed",
-       "durationMs": 356.69113300000026,
+       "durationMs": 174.8515610000004,
        "failure": "AssertionError: expected 'capture-test-artifact: the JUnit arti\u2026' to contain 'it is not a regular file'",
        "byTimeout": false
       }
@@ -107,13 +107,13 @@
      "exit": 1,
      "killedAfterLimit": false,
      "sessionCpuSecondsAtKill": null,
-     "seconds": 7.5,
-     "load1Start": 42.61,
+     "seconds": 5.0,
+     "load1Start": 55.64,
      "rows": [
       {
        "title": "capture-test-artifact never starts the observed project (run check) refuses a FIFO without opening it, so a pipe nobody writes cannot hang the ingest",
        "status": "failed",
-       "durationMs": 143.60466799999995,
+       "durationMs": 128.06485199999997,
        "failure": "AssertionError: expected 'capture-test-artifact: the JUnit arti\u2026' to contain 'it is not a regular file'",
        "byTimeout": false
       }
@@ -152,7 +152,7 @@
      "killedAfterLimit": true,
      "sessionCpuSecondsAtKill": 4.54,
      "seconds": 90.3,
-     "load1Start": 39.97,
+     "load1Start": 54.07,
      "rows": [],
      "tail": [],
      "asExpected": true
@@ -162,9 +162,9 @@
      "outcome": "killed",
      "exit": -9,
      "killedAfterLimit": true,
-     "sessionCpuSecondsAtKill": 5.0,
-     "seconds": 90.3,
-     "load1Start": 36.29,
+     "sessionCpuSecondsAtKill": 4.36,
+     "seconds": 90.2,
+     "load1Start": 51.29,
      "rows": [],
      "tail": [],
      "asExpected": true
@@ -188,13 +188,13 @@
      "exit": 0,
      "killedAfterLimit": false,
      "sessionCpuSecondsAtKill": null,
-     "seconds": 11.5,
-     "load1Start": 50.12,
+     "seconds": 5.4,
+     "load1Start": 47.91,
      "rows": [
       {
        "title": "started(): the wait for main to serve reports a run that finished first, at once and by name",
        "status": "passed",
-       "durationMs": 18.490646000000197,
+       "durationMs": 9.499229999999898,
        "failure": "",
        "byTimeout": false
       }
@@ -208,13 +208,13 @@
      "exit": 0,
      "killedAfterLimit": false,
      "sessionCpuSecondsAtKill": null,
-     "seconds": 8.9,
-     "load1Start": 50.97,
+     "seconds": 7.8,
+     "load1Start": 47.44,
      "rows": [
       {
        "title": "started(): the wait for main to serve reports a run that finished first, at once and by name",
        "status": "passed",
-       "durationMs": 9.398478000000068,
+       "durationMs": 9.95257700000002,
        "failure": "",
        "byTimeout": false
       }
@@ -247,14 +247,14 @@
      "exit": 1,
      "killedAfterLimit": false,
      "sessionCpuSecondsAtKill": null,
-     "seconds": 17.0,
-     "load1Start": 49.67,
+     "seconds": 17.9,
+     "load1Start": 49.36,
      "rows": [
       {
        "title": "started(): the wait for main to serve reports a run that finished first, at once and by name",
        "status": "failed",
-       "durationMs": 10054.496546,
-       "failure": "AssertionError: expected 10021 to be less than 5000",
+       "durationMs": 10012.5479,
+       "failure": "AssertionError: expected 10002 to be less than 5000",
        "byTimeout": false
       }
      ],
@@ -267,13 +267,13 @@
      "exit": 1,
      "killedAfterLimit": false,
      "sessionCpuSecondsAtKill": null,
-     "seconds": 42.4,
-     "load1Start": 49.28,
+     "seconds": 38.5,
+     "load1Start": 49.51,
      "rows": [
       {
        "title": "started(): the wait for main to serve reports a run that finished first, at once and by name",
        "status": "failed",
-       "durationMs": 30027.622953000002,
+       "durationMs": 30011.187687999998,
        "failure": "Error: STACK_TRACE_ERROR",
        "byTimeout": true
       }
@@ -300,13 +300,13 @@
      "exit": 0,
      "killedAfterLimit": false,
      "sessionCpuSecondsAtKill": null,
-     "seconds": 16.0,
-     "load1Start": 52.64,
+     "seconds": 11.2,
+     "load1Start": 53.16,
      "rows": [
       {
        "title": "each call is bounded: bytes inflated, delta depth, objects visited (finding 4) the reviewer's amplification shape, 100 levels over a 64 MiB base, refuses within the default per-call budget",
        "status": "passed",
-       "durationMs": 9878.648016000001,
+       "durationMs": 7023.2460009999995,
        "failure": "",
        "byTimeout": false
       }
@@ -320,13 +320,13 @@
      "exit": 0,
      "killedAfterLimit": false,
      "sessionCpuSecondsAtKill": null,
-     "seconds": 20.0,
-     "load1Start": 52.76,
+     "seconds": 14.0,
+     "load1Start": 53.25,
      "rows": [
       {
        "title": "each call is bounded: bytes inflated, delta depth, objects visited (finding 4) the reviewer's amplification shape, 100 levels over a 64 MiB base, refuses within the default per-call budget",
        "status": "passed",
-       "durationMs": 12289.028739000001,
+       "durationMs": 9034.774412,
        "failure": "",
        "byTimeout": false
       }
@@ -359,13 +359,13 @@
      "exit": 1,
      "killedAfterLimit": false,
      "sessionCpuSecondsAtKill": null,
-     "seconds": 22.3,
-     "load1Start": 50.26,
+     "seconds": 16.5,
+     "load1Start": 53.37,
      "rows": [
       {
        "title": "each call is bounded: bytes inflated, delta depth, objects visited (finding 4) the reviewer's amplification shape, 100 levels over a 64 MiB base, refuses within the default per-call budget",
        "status": "failed",
-       "durationMs": 17216.262549,
+       "durationMs": 11327.377036,
        "failure": "Error: expected a refusal, got a result",
        "byTimeout": false
       }
@@ -379,13 +379,13 @@
      "exit": 1,
      "killedAfterLimit": false,
      "sessionCpuSecondsAtKill": null,
-     "seconds": 19.9,
-     "load1Start": 46.12,
+     "seconds": 16.9,
+     "load1Start": 55.55,
      "rows": [
       {
        "title": "each call is bounded: bytes inflated, delta depth, objects visited (finding 4) the reviewer's amplification shape, 100 levels over a 64 MiB base, refuses within the default per-call budget",
        "status": "failed",
-       "durationMs": 13970.873436000002,
+       "durationMs": 11043.560124,
        "failure": "Error: expected a refusal, got a result",
        "byTimeout": false
       }
@@ -412,13 +412,13 @@
      "exit": 0,
      "killedAfterLimit": false,
      "sessionCpuSecondsAtKill": null,
-     "seconds": 5.6,
-     "load1Start": 43.06,
+     "seconds": 2.1,
+     "load1Start": 54.94,
      "rows": [
       {
        "title": "each call is bounded: bytes inflated, delta depth, objects visited (finding 4) a reference delta naming itself refuses at the depth cap, quickly",
        "status": "passed",
-       "durationMs": 265.4913080000001,
+       "durationMs": 72.65675099999999,
        "failure": "",
        "byTimeout": false
       }
@@ -432,13 +432,13 @@
      "exit": 0,
      "killedAfterLimit": false,
      "sessionCpuSecondsAtKill": null,
-     "seconds": 5.3,
-     "load1Start": 40.7,
+     "seconds": 2.2,
+     "load1Start": 54.94,
      "rows": [
       {
        "title": "each call is bounded: bytes inflated, delta depth, objects visited (finding 4) a reference delta naming itself refuses at the depth cap, quickly",
        "status": "passed",
-       "durationMs": 164.061647,
+       "durationMs": 82.03847900000005,
        "failure": "",
        "byTimeout": false
       }
@@ -471,13 +471,13 @@
      "exit": 1,
      "killedAfterLimit": false,
      "sessionCpuSecondsAtKill": null,
-     "seconds": 10.4,
-     "load1Start": 41.04,
+     "seconds": 7.2,
+     "load1Start": 53.35,
      "rows": [
       {
        "title": "each call is bounded: bytes inflated, delta depth, objects visited (finding 4) a reference delta naming itself refuses at the depth cap, quickly",
        "status": "failed",
-       "durationMs": 5022.225679,
+       "durationMs": 5039.008903999999,
        "failure": "Error: STACK_TRACE_ERROR",
        "byTimeout": true
       }
@@ -491,13 +491,13 @@
      "exit": 1,
      "killedAfterLimit": false,
      "sessionCpuSecondsAtKill": null,
-     "seconds": 9.2,
-     "load1Start": 40.25,
+     "seconds": 9.6,
+     "load1Start": 52.44,
      "rows": [
       {
        "title": "each call is bounded: bytes inflated, delta depth, objects visited (finding 4) a reference delta naming itself refuses at the depth cap, quickly",
        "status": "failed",
-       "durationMs": 5054.465453,
+       "durationMs": 5048.223094000001,
        "failure": "Error: STACK_TRACE_ERROR",
        "byTimeout": true
       }
@@ -524,13 +524,13 @@
      "exit": 0,
      "killedAfterLimit": false,
      "sessionCpuSecondsAtKill": null,
-     "seconds": 5.9,
-     "load1Start": 40.13,
+     "seconds": 4.3,
+     "load1Start": 55.71,
      "rows": [
       {
        "title": "nothing under .git is read through a link or from a special file (R-POLARIS-DOSSIER-S2-READER-1 finding 2) a loose object that is a link to a FIFO, a FIFO, a directory or a link to a device refuses at once, never blocks",
        "status": "passed",
-       "durationMs": 63.31523799999991,
+       "durationMs": 120.16971399999989,
        "failure": "",
        "byTimeout": false
       }
@@ -544,13 +544,13 @@
      "exit": 0,
      "killedAfterLimit": false,
      "sessionCpuSecondsAtKill": null,
-     "seconds": 4.7,
-     "load1Start": 40.92,
+     "seconds": 3.8,
+     "load1Start": 59.26,
      "rows": [
       {
        "title": "nothing under .git is read through a link or from a special file (R-POLARIS-DOSSIER-S2-READER-1 finding 2) a loose object that is a link to a FIFO, a FIFO, a directory or a link to a device refuses at once, never blocks",
        "status": "passed",
-       "durationMs": 71.73843899999997,
+       "durationMs": 77.75968000000012,
        "failure": "",
        "byTimeout": false
       }
@@ -583,13 +583,13 @@
      "exit": 1,
      "killedAfterLimit": false,
      "sessionCpuSecondsAtKill": null,
-     "seconds": 7.2,
-     "load1Start": 40.69,
+     "seconds": 6.4,
+     "load1Start": 60.84,
      "rows": [
       {
        "title": "nothing under .git is read through a link or from a special file (R-POLARIS-DOSSIER-S2-READER-1 finding 2) a loose object that is a link to a FIFO, a FIFO, a directory or a link to a device refuses at once, never blocks",
        "status": "failed",
-       "durationMs": 2069.555882,
+       "durationMs": 2123.4199519999997,
        "failure": "Error: no refusal within 2000 ms",
        "byTimeout": false
       }
@@ -603,13 +603,13 @@
      "exit": 1,
      "killedAfterLimit": false,
      "sessionCpuSecondsAtKill": null,
-     "seconds": 9.3,
-     "load1Start": 41.92,
+     "seconds": 8.4,
+     "load1Start": 59.65,
      "rows": [
       {
        "title": "nothing under .git is read through a link or from a special file (R-POLARIS-DOSSIER-S2-READER-1 finding 2) a loose object that is a link to a FIFO, a FIFO, a directory or a link to a device refuses at once, never blocks",
        "status": "failed",
-       "durationMs": 5027.54154,
+       "durationMs": 5061.9238159999995,
        "failure": "Error: STACK_TRACE_ERROR",
        "byTimeout": true
       }
@@ -637,12 +637,12 @@
      "killedAfterLimit": false,
      "sessionCpuSecondsAtKill": null,
      "seconds": 3.7,
-     "load1Start": 42.45,
+     "load1Start": 58.73,
      "rows": [
       {
        "title": "stored bytes are bounded and charged: padding buys no work (R-POLARIS-DOSSIER-S2-READER-2 finding 1) the reviewer's padded pack base: 50 offset deltas over a base padded by 4 MiB refuse at once, under any budget",
        "status": "passed",
-       "durationMs": 116.72601299999997,
+       "durationMs": 145.28619099999992,
        "failure": "",
        "byTimeout": false
       }
@@ -656,13 +656,13 @@
      "exit": 0,
      "killedAfterLimit": false,
      "sessionCpuSecondsAtKill": null,
-     "seconds": 3.2,
-     "load1Start": 41.37,
+     "seconds": 3.7,
+     "load1Start": 58.73,
      "rows": [
       {
        "title": "stored bytes are bounded and charged: padding buys no work (R-POLARIS-DOSSIER-S2-READER-2 finding 1) the reviewer's padded pack base: 50 offset deltas over a base padded by 4 MiB refuse at once, under any budget",
        "status": "passed",
-       "durationMs": 105.78117900000007,
+       "durationMs": 132.955017,
        "failure": "",
        "byTimeout": false
       }
@@ -695,13 +695,13 @@
      "exit": 1,
      "killedAfterLimit": false,
      "sessionCpuSecondsAtKill": null,
-     "seconds": 5.4,
-     "load1Start": 41.37,
+     "seconds": 4.2,
+     "load1Start": 58.91,
      "rows": [
       {
        "title": "stored bytes are bounded and charged: padding buys no work (R-POLARIS-DOSSIER-S2-READER-2 finding 1) the reviewer's padded pack base: 50 offset deltas over a base padded by 4 MiB refuse at once, under any budget",
        "status": "failed",
-       "durationMs": 1351.0092819999998,
+       "durationMs": 881.4313240000001,
        "failure": "Error: expected a refusal, got a result",
        "byTimeout": false
       }
@@ -715,13 +715,13 @@
      "exit": 1,
      "killedAfterLimit": false,
      "sessionCpuSecondsAtKill": null,
-     "seconds": 4.4,
-     "load1Start": 40.46,
+     "seconds": 4.8,
+     "load1Start": 62.44,
      "rows": [
       {
        "title": "stored bytes are bounded and charged: padding buys no work (R-POLARIS-DOSSIER-S2-READER-2 finding 1) the reviewer's padded pack base: 50 offset deltas over a base padded by 4 MiB refuse at once, under any budget",
        "status": "failed",
-       "durationMs": 1256.996165,
+       "durationMs": 1195.195176,
        "failure": "Error: expected a refusal, got a result",
        "byTimeout": false
       }
@@ -748,13 +748,13 @@
      "exit": 0,
      "killedAfterLimit": false,
      "sessionCpuSecondsAtKill": null,
-     "seconds": 2.4,
-     "load1Start": 39.14,
+     "seconds": 4.0,
+     "load1Start": 61.52,
      "rows": [
       {
        "title": "(a) reader cost measures bytes to the close of the last level-0 element and totals per page depth",
        "status": "passed",
-       "durationMs": 14.683596999999963,
+       "durationMs": 11.572139000000107,
        "failure": "",
        "byTimeout": false
       }
@@ -768,13 +768,13 @@
      "exit": 0,
      "killedAfterLimit": false,
      "sessionCpuSecondsAtKill": null,
-     "seconds": 2.7,
-     "load1Start": 37.69,
+     "seconds": 2.6,
+     "load1Start": 61.96,
      "rows": [
       {
        "title": "(a) reader cost measures bytes to the close of the last level-0 element and totals per page depth",
        "status": "passed",
-       "durationMs": 5.2231369999999515,
+       "durationMs": 13.91705300000001,
        "failure": "",
        "byTimeout": false
       }
@@ -807,13 +807,13 @@
      "exit": 1,
      "killedAfterLimit": false,
      "sessionCpuSecondsAtKill": null,
-     "seconds": 2.0,
-     "load1Start": 37.69,
+     "seconds": 3.2,
+     "load1Start": 61.96,
      "rows": [
       {
        "title": "(a) reader cost measures bytes to the close of the last level-0 element and totals per page depth",
        "status": "failed",
-       "durationMs": 15.613744999999994,
+       "durationMs": 45.57318499999997,
        "failure": "AssertionError: expected 1039 to be 1038 // Object.is equality",
        "byTimeout": false
       }
@@ -827,13 +827,13 @@
      "exit": 1,
      "killedAfterLimit": false,
      "sessionCpuSecondsAtKill": null,
-     "seconds": 2.4,
-     "load1Start": 36.03,
+     "seconds": 3.0,
+     "load1Start": 62.29,
      "rows": [
       {
        "title": "(a) reader cost measures bytes to the close of the last level-0 element and totals per page depth",
        "status": "failed",
-       "durationMs": 19.04954500000008,
+       "durationMs": 20.513644999999997,
        "failure": "AssertionError: expected 1039 to be 1038 // Object.is equality",
        "byTimeout": false
       }
@@ -866,13 +866,13 @@
      "exit": 1,
      "killedAfterLimit": false,
      "sessionCpuSecondsAtKill": null,
-     "seconds": 2.8,
-     "load1Start": 36.03,
+     "seconds": 3.4,
+     "load1Start": 62.29,
      "rows": [
       {
        "title": "(a) reader cost measures bytes to the close of the last level-0 element and totals per page depth",
        "status": "failed",
-       "durationMs": 21.460960999999998,
+       "durationMs": 18.837234999999964,
        "failure": "AssertionError: expected 669 to be 670 // Object.is equality",
        "byTimeout": false
       }
@@ -886,13 +886,13 @@
      "exit": 1,
      "killedAfterLimit": false,
      "sessionCpuSecondsAtKill": null,
-     "seconds": 3.2,
-     "load1Start": 36.51,
+     "seconds": 3.3,
+     "load1Start": 61.46,
      "rows": [
       {
        "title": "(a) reader cost measures bytes to the close of the last level-0 element and totals per page depth",
        "status": "failed",
-       "durationMs": 17.403626999999915,
+       "durationMs": 36.180487000000085,
        "failure": "AssertionError: expected 669 to be 670 // Object.is equality",
        "byTimeout": false
       }
@@ -925,13 +925,13 @@
      "exit": 1,
      "killedAfterLimit": false,
      "sessionCpuSecondsAtKill": null,
-     "seconds": 2.9,
-     "load1Start": 36.51,
+     "seconds": 3.5,
+     "load1Start": 63.83,
      "rows": [
       {
        "title": "(a) reader cost measures bytes to the close of the last level-0 element and totals per page depth",
        "status": "failed",
-       "durationMs": 26.234047000000032,
+       "durationMs": 53.62464800000021,
        "failure": "AssertionError: expected 1038 to be 1273 // Object.is equality",
        "byTimeout": false
       }
@@ -945,13 +945,13 @@
      "exit": 1,
      "killedAfterLimit": false,
      "sessionCpuSecondsAtKill": null,
-     "seconds": 2.2,
-     "load1Start": 36.07,
+     "seconds": 3.7,
+     "load1Start": 63.83,
      "rows": [
       {
        "title": "(a) reader cost measures bytes to the close of the last level-0 element and totals per page depth",
        "status": "failed",
-       "durationMs": 21.568574000000012,
+       "durationMs": 14.516086000000087,
        "failure": "AssertionError: expected 1038 to be 1273 // Object.is equality",
        "byTimeout": false
       }
@@ -979,12 +979,12 @@
      "killedAfterLimit": false,
      "sessionCpuSecondsAtKill": null,
      "seconds": 2.9,
-     "load1Start": 36.07,
+     "load1Start": 64.72,
      "rows": [
       {
        "title": "(a) reader cost reports each budget bound as within, over, or Unknown when none is declared",
        "status": "passed",
-       "durationMs": 6.687854000000016,
+       "durationMs": 17.608220999999958,
        "failure": "",
        "byTimeout": false
       }
@@ -998,13 +998,13 @@
      "exit": 0,
      "killedAfterLimit": false,
      "sessionCpuSecondsAtKill": null,
-     "seconds": 2.4,
-     "load1Start": 34.7,
+     "seconds": 3.0,
+     "load1Start": 64.35,
      "rows": [
       {
        "title": "(a) reader cost reports each budget bound as within, over, or Unknown when none is declared",
        "status": "passed",
-       "durationMs": 7.224897999999939,
+       "durationMs": 7.026475000000005,
        "failure": "",
        "byTimeout": false
       }
@@ -1037,13 +1037,13 @@
      "exit": 1,
      "killedAfterLimit": false,
      "sessionCpuSecondsAtKill": null,
-     "seconds": 2.1,
-     "load1Start": 33.12,
+     "seconds": 3.1,
+     "load1Start": 64.35,
      "rows": [
       {
        "title": "(a) reader cost reports each budget bound as within, over, or Unknown when none is declared",
        "status": "failed",
-       "durationMs": 20.34504400000003,
+       "durationMs": 20.34791199999995,
        "failure": "AssertionError: expected { bound: 669, observed: 669, \u2026(1) } to deeply equal { bound: 669, observed: 670, \u2026(1) }",
        "byTimeout": false
       }
@@ -1057,13 +1057,13 @@
      "exit": 1,
      "killedAfterLimit": false,
      "sessionCpuSecondsAtKill": null,
-     "seconds": 2.5,
-     "load1Start": 33.12,
+     "seconds": 3.3,
+     "load1Start": 63.52,
      "rows": [
       {
        "title": "(a) reader cost reports each budget bound as within, over, or Unknown when none is declared",
        "status": "failed",
-       "durationMs": 16.587896,
+       "durationMs": 32.20739400000002,
        "failure": "AssertionError: expected { bound: 669, observed: 669, \u2026(1) } to deeply equal { bound: 669, observed: 670, \u2026(1) }",
        "byTimeout": false
       }
@@ -1096,13 +1096,13 @@
      "exit": 1,
      "killedAfterLimit": false,
      "sessionCpuSecondsAtKill": null,
-     "seconds": 2.9,
-     "load1Start": 33.12,
+     "seconds": 3.6,
+     "load1Start": 63.23,
      "rows": [
       {
        "title": "(a) reader cost reports each budget bound as within, over, or Unknown when none is declared",
        "status": "failed",
-       "durationMs": 29.32304399999998,
+       "durationMs": 18.465894000000162,
        "failure": "AssertionError: expected { bound: 2000, observed: 1038, \u2026(1) } to deeply equal { bound: 2000, observed: 1273, \u2026(1) }",
        "byTimeout": false
       }
@@ -1116,13 +1116,13 @@
      "exit": 1,
      "killedAfterLimit": false,
      "sessionCpuSecondsAtKill": null,
-     "seconds": 3.1,
-     "load1Start": 33.52,
+     "seconds": 2.4,
+     "load1Start": 63.23,
      "rows": [
       {
        "title": "(a) reader cost reports each budget bound as within, over, or Unknown when none is declared",
        "status": "failed",
-       "durationMs": 19.093799999999874,
+       "durationMs": 18.83871899999997,
        "failure": "AssertionError: expected { bound: 2000, observed: 1038, \u2026(1) } to deeply equal { bound: 2000, observed: 1273, \u2026(1) }",
        "byTimeout": false
       }
@@ -1149,13 +1149,13 @@
      "exit": 0,
      "killedAfterLimit": false,
      "sessionCpuSecondsAtKill": null,
-     "seconds": 6.3,
-     "load1Start": 32.43,
+     "seconds": 3.6,
+     "load1Start": 61.77,
      "rows": [
       {
        "title": "discovery on a synthetic tree shaped like a large C key-value server under the dossier byte cap (400,000 bytes of quotable text) keeps the selection inside the cap, with no vendored file, and closes the denominator and the byte totals",
        "status": "passed",
-       "durationMs": 56.48666000000003,
+       "durationMs": 34.73037499999987,
        "failure": "",
        "byTimeout": false
       }
@@ -1169,13 +1169,13 @@
      "exit": 0,
      "killedAfterLimit": false,
      "sessionCpuSecondsAtKill": null,
-     "seconds": 4.4,
-     "load1Start": 33.52,
+     "seconds": 3.5,
+     "load1Start": 63.71,
      "rows": [
       {
        "title": "discovery on a synthetic tree shaped like a large C key-value server under the dossier byte cap (400,000 bytes of quotable text) keeps the selection inside the cap, with no vendored file, and closes the denominator and the byte totals",
        "status": "passed",
-       "durationMs": 55.06728999999996,
+       "durationMs": 56.33055400000012,
        "failure": "",
        "byTimeout": false
       }
@@ -1208,13 +1208,13 @@
      "exit": 1,
      "killedAfterLimit": false,
      "sessionCpuSecondsAtKill": null,
-     "seconds": 3.5,
-     "load1Start": 32.2,
+     "seconds": 3.9,
+     "load1Start": 63.71,
      "rows": [
       {
        "title": "discovery on a synthetic tree shaped like a large C key-value server under the dossier byte cap (400,000 bytes of quotable text) keeps the selection inside the cap, with no vendored file, and closes the denominator and the byte totals",
        "status": "failed",
-       "durationMs": 49.603037000000086,
+       "durationMs": 82.990319,
        "failure": "AssertionError: expected 495420 to be 3871277 // Object.is equality",
        "byTimeout": false
       }
@@ -1228,13 +1228,13 @@
      "exit": 1,
      "killedAfterLimit": false,
      "sessionCpuSecondsAtKill": null,
-     "seconds": 5.0,
-     "load1Start": 32.2,
+     "seconds": 4.0,
+     "load1Start": 61.97,
      "rows": [
       {
        "title": "discovery on a synthetic tree shaped like a large C key-value server under the dossier byte cap (400,000 bytes of quotable text) keeps the selection inside the cap, with no vendored file, and closes the denominator and the byte totals",
        "status": "failed",
-       "durationMs": 52.1280569999999,
+       "durationMs": 41.21435399999973,
        "failure": "AssertionError: LICENSE.txt: expected 592 to be greater than 4228",
        "byTimeout": false
       }
@@ -1262,12 +1262,12 @@
      "killedAfterLimit": false,
      "sessionCpuSecondsAtKill": null,
      "seconds": 3.0,
-     "load1Start": 31.7,
+     "load1Start": 62.94,
      "rows": [
       {
        "title": "REQ-031 clarification counts default-ignorable and zero-width-split text as blank or unknown, and trims a long run of spaces in linear time",
        "status": "passed",
-       "durationMs": 54.418194000000085,
+       "durationMs": 208.36709799999994,
        "failure": "",
        "byTimeout": false
       }
@@ -1281,13 +1281,13 @@
      "exit": 0,
      "killedAfterLimit": false,
      "sessionCpuSecondsAtKill": null,
-     "seconds": 2.8,
-     "load1Start": 30.28,
+     "seconds": 2.5,
+     "load1Start": 62.94,
      "rows": [
       {
        "title": "REQ-031 clarification counts default-ignorable and zero-width-split text as blank or unknown, and trims a long run of spaces in linear time",
        "status": "passed",
-       "durationMs": 82.58424500000001,
+       "durationMs": 111.26830500000005,
        "failure": "",
        "byTimeout": false
       }
@@ -1320,13 +1320,13 @@
      "exit": 0,
      "killedAfterLimit": false,
      "sessionCpuSecondsAtKill": null,
-     "seconds": 2.9,
-     "load1Start": 29.62,
+     "seconds": 3.1,
+     "load1Start": 61.66,
      "rows": [
       {
        "title": "REQ-031 clarification counts default-ignorable and zero-width-split text as blank or unknown, and trims a long run of spaces in linear time",
        "status": "passed",
-       "durationMs": 18.944429000000014,
+       "durationMs": 18.65005199999996,
        "failure": "",
        "byTimeout": false
       }
@@ -1339,9 +1339,9 @@
      "outcome": "killed",
      "exit": -9,
      "killedAfterLimit": true,
-     "sessionCpuSecondsAtKill": 92.3,
-     "seconds": 150.4,
-     "load1Start": 29.62,
+     "sessionCpuSecondsAtKill": 102.74,
+     "seconds": 150.3,
+     "load1Start": 61.45,
      "rows": [],
      "tail": [],
      "asExpected": true
@@ -1365,20 +1365,20 @@
      "exit": 0,
      "killedAfterLimit": false,
      "sessionCpuSecondsAtKill": null,
-     "seconds": 3.8,
-     "load1Start": 35.28,
+     "seconds": 2.0,
+     "load1Start": 49.59,
      "rows": [
       {
        "title": "excerpt: line endings and hostile lines stays linear on one 100k line of spaces after a tag keyword",
        "status": "passed",
-       "durationMs": 12.264363000000003,
+       "durationMs": 5.537490000000048,
        "failure": "",
        "byTimeout": false
       },
       {
        "title": "excerpt: line endings and hostile lines stays linear on one 100k line of spaces after an identifier",
        "status": "passed",
-       "durationMs": 6.9634269999999105,
+       "durationMs": 0.7241289999999481,
        "failure": "",
        "byTimeout": false
       }
@@ -1392,20 +1392,20 @@
      "exit": 0,
      "killedAfterLimit": false,
      "sessionCpuSecondsAtKill": null,
-     "seconds": 3.7,
-     "load1Start": 35.9,
+     "seconds": 2.1,
+     "load1Start": 49.59,
      "rows": [
       {
        "title": "excerpt: line endings and hostile lines stays linear on one 100k line of spaces after a tag keyword",
        "status": "passed",
-       "durationMs": 7.121245999999928,
+       "durationMs": 5.898042000000032,
        "failure": "",
        "byTimeout": false
       },
       {
        "title": "excerpt: line endings and hostile lines stays linear on one 100k line of spaces after an identifier",
        "status": "passed",
-       "durationMs": 3.8694719999998597,
+       "durationMs": 0.907605999999987,
        "failure": "",
        "byTimeout": false
       }
@@ -1438,20 +1438,20 @@
      "exit": 0,
      "killedAfterLimit": false,
      "sessionCpuSecondsAtKill": null,
-     "seconds": 2.9,
-     "load1Start": 36.55,
+     "seconds": 3.2,
+     "load1Start": 49.59,
      "rows": [
       {
        "title": "excerpt: line endings and hostile lines stays linear on one 100k line of spaces after a tag keyword",
        "status": "passed",
-       "durationMs": 5.204323000000045,
+       "durationMs": 8.137254999999982,
        "failure": "",
        "byTimeout": false
       },
       {
        "title": "excerpt: line endings and hostile lines stays linear on one 100k line of spaces after an identifier",
        "status": "passed",
-       "durationMs": 0.6491469999999708,
+       "durationMs": 0.7847730000000865,
        "failure": "",
        "byTimeout": false
       }
@@ -1465,20 +1465,20 @@
      "exit": 0,
      "killedAfterLimit": false,
      "sessionCpuSecondsAtKill": null,
-     "seconds": 2.7,
-     "load1Start": 36.55,
+     "seconds": 2.9,
+     "load1Start": 47.7,
      "rows": [
       {
        "title": "excerpt: line endings and hostile lines stays linear on one 100k line of spaces after a tag keyword",
        "status": "passed",
-       "durationMs": 4.183885000000032,
+       "durationMs": 3.0691229999999905,
        "failure": "",
        "byTimeout": false
       },
       {
        "title": "excerpt: line endings and hostile lines stays linear on one 100k line of spaces after an identifier",
        "status": "passed",
-       "durationMs": 0.9412780000000112,
+       "durationMs": 0.9600459999999202,
        "failure": "",
        "byTimeout": false
       }
@@ -1511,20 +1511,20 @@
      "exit": 1,
      "killedAfterLimit": false,
      "sessionCpuSecondsAtKill": null,
-     "seconds": 3.6,
-     "load1Start": 35.86,
+     "seconds": 2.3,
+     "load1Start": 48.29,
      "rows": [
       {
        "title": "excerpt: line endings and hostile lines stays linear on one 100k line of spaces after a tag keyword",
        "status": "failed",
-       "durationMs": 18.842512000000056,
+       "durationMs": 18.523191999999995,
        "failure": "AssertionError: expected 'struct                               \u2026' to be 'int f(int a) {' // Object.is equality",
        "byTimeout": false
       },
       {
        "title": "excerpt: line endings and hostile lines stays linear on one 100k line of spaces after an identifier",
        "status": "passed",
-       "durationMs": 6.248395999999957,
+       "durationMs": 2.0843609999999444,
        "failure": "",
        "byTimeout": false
       }
@@ -1538,20 +1538,20 @@
      "exit": 1,
      "killedAfterLimit": false,
      "sessionCpuSecondsAtKill": null,
-     "seconds": 3.4,
-     "load1Start": 35.31,
+     "seconds": 2.0,
+     "load1Start": 48.29,
      "rows": [
       {
        "title": "excerpt: line endings and hostile lines stays linear on one 100k line of spaces after a tag keyword",
        "status": "failed",
-       "durationMs": 47.495812,
+       "durationMs": 17.33688899999993,
        "failure": "AssertionError: expected 'struct                               \u2026' to be 'int f(int a) {' // Object.is equality",
        "byTimeout": false
       },
       {
        "title": "excerpt: line endings and hostile lines stays linear on one 100k line of spaces after an identifier",
        "status": "passed",
-       "durationMs": 11.36404200000004,
+       "durationMs": 4.8633049999999685,
        "failure": "",
        "byTimeout": false
       }
@@ -1589,14 +1589,14 @@
      "exit": 1,
      "killedAfterLimit": false,
      "sessionCpuSecondsAtKill": null,
-     "seconds": 25.7,
-     "load1Start": 35.31,
+     "seconds": 19.3,
+     "load1Start": 47.22,
      "rows": [
       {
        "title": "excerpt: line endings and hostile lines stays linear on one 100k line of spaces after an identifier",
        "status": "failed",
-       "durationMs": 22814.176914,
-       "failure": "AssertionError: expected 22805 to be less than 500",
+       "durationMs": 17456.045638,
+       "failure": "AssertionError: expected 17447 to be less than 500",
        "byTimeout": false
       }
      ],
@@ -1609,14 +1609,14 @@
      "exit": 1,
      "killedAfterLimit": false,
      "sessionCpuSecondsAtKill": null,
-     "seconds": 30.8,
-     "load1Start": 32.22,
+     "seconds": 17.7,
+     "load1Start": 45.07,
      "rows": [
       {
        "title": "excerpt: line endings and hostile lines stays linear on one 100k line of spaces after an identifier",
        "status": "failed",
-       "durationMs": 26770.495559,
-       "failure": "AssertionError: expected 16520.248 to be less than 140",
+       "durationMs": 16091.888740999999,
+       "failure": "AssertionError: expected 14723.147 to be less than 140",
        "byTimeout": false
       }
      ],
@@ -1657,13 +1657,13 @@
      "exit": 0,
      "killedAfterLimit": false,
      "sessionCpuSecondsAtKill": null,
-     "seconds": 36.8,
-     "load1Start": 35.43,
+     "seconds": 19.9,
+     "load1Start": 42.93,
      "rows": [
       {
        "title": "excerpt: line endings and hostile lines stays linear on one 100k line of spaces after an identifier",
        "status": "passed",
-       "durationMs": 31631.100175000003,
+       "durationMs": 18295.902521,
        "failure": "",
        "byTimeout": false
       }
@@ -1690,34 +1690,34 @@
      "exit": 0,
      "killedAfterLimit": false,
      "sessionCpuSecondsAtKill": null,
-     "seconds": 6.1,
-     "load1Start": 43.55,
+     "seconds": 2.0,
+     "load1Start": 44.94,
      "rows": [
       {
        "title": "parseJUnitRootTotals scans unterminated opening tags at the ceiling in linear time",
        "status": "passed",
-       "durationMs": 25.787900000000036,
+       "durationMs": 12.044231999999965,
        "failure": "",
        "byTimeout": false
       },
       {
        "title": "parseJUnitRootTotals scans unterminated plural tags at the ceiling in linear time",
        "status": "passed",
-       "durationMs": 198.39560199999983,
+       "durationMs": 42.20647500000007,
        "failure": "",
        "byTimeout": false
       },
       {
        "title": "parseJUnitRootTotals scans near-miss tag names at the ceiling in linear time",
        "status": "passed",
-       "durationMs": 151.331819,
+       "durationMs": 41.60151500000006,
        "failure": "",
        "byTimeout": false
       },
       {
        "title": "parseJUnitRootTotals scans one tag body that is a single word run at the ceiling in linear time",
        "status": "passed",
-       "durationMs": 309.606448,
+       "durationMs": 166.826319,
        "failure": "",
        "byTimeout": false
       }
@@ -1731,34 +1731,34 @@
      "exit": 0,
      "killedAfterLimit": false,
      "sessionCpuSecondsAtKill": null,
-     "seconds": 7.3,
-     "load1Start": 42.7,
+     "seconds": 2.6,
+     "load1Start": 44.94,
      "rows": [
       {
        "title": "parseJUnitRootTotals scans unterminated opening tags at the ceiling in linear time",
        "status": "passed",
-       "durationMs": 82.03589699999998,
+       "durationMs": 13.592943999999989,
        "failure": "",
        "byTimeout": false
       },
       {
        "title": "parseJUnitRootTotals scans unterminated plural tags at the ceiling in linear time",
        "status": "passed",
-       "durationMs": 157.95111899999984,
+       "durationMs": 61.979717999999934,
        "failure": "",
        "byTimeout": false
       },
       {
        "title": "parseJUnitRootTotals scans near-miss tag names at the ceiling in linear time",
        "status": "passed",
-       "durationMs": 157.04857399999992,
+       "durationMs": 67.64222600000005,
        "failure": "",
        "byTimeout": false
       },
       {
        "title": "parseJUnitRootTotals scans one tag body that is a single word run at the ceiling in linear time",
        "status": "passed",
-       "durationMs": 751.8111830000003,
+       "durationMs": 204.35062200000004,
        "failure": "",
        "byTimeout": false
       }
@@ -1790,9 +1790,9 @@
      "outcome": "killed",
      "exit": -9,
      "killedAfterLimit": true,
-     "sessionCpuSecondsAtKill": 70.02,
-     "seconds": 150.4,
-     "load1Start": 42.65,
+     "sessionCpuSecondsAtKill": 107.75,
+     "seconds": 150.2,
+     "load1Start": 44.54,
      "rows": [],
      "tail": [],
      "asExpected": true
@@ -1802,9 +1802,9 @@
      "outcome": "killed",
      "exit": -9,
      "killedAfterLimit": true,
-     "sessionCpuSecondsAtKill": 97.58,
-     "seconds": 150.3,
-     "load1Start": 41.78,
+     "sessionCpuSecondsAtKill": 140.23,
+     "seconds": 150.2,
+     "load1Start": 43.59,
      "rows": [],
      "tail": [],
      "asExpected": true
@@ -1828,13 +1828,13 @@
      "exit": 0,
      "killedAfterLimit": false,
      "sessionCpuSecondsAtKill": null,
-     "seconds": 2.7,
-     "load1Start": 38.3,
+     "seconds": 1.8,
+     "load1Start": 39.71,
      "rows": [
       {
        "title": "parseJUnitRootTotals scans one tag body that is a single word run at the ceiling in linear time",
        "status": "passed",
-       "durationMs": 232.70454200000006,
+       "durationMs": 173.77117599999997,
        "failure": "",
        "byTimeout": false
       }
@@ -1848,13 +1848,13 @@
      "exit": 0,
      "killedAfterLimit": false,
      "sessionCpuSecondsAtKill": null,
-     "seconds": 2.3,
-     "load1Start": 38.3,
+     "seconds": 2.0,
+     "load1Start": 39.71,
      "rows": [
       {
        "title": "parseJUnitRootTotals scans one tag body that is a single word run at the ceiling in linear time",
        "status": "passed",
-       "durationMs": 178.58981000000006,
+       "durationMs": 123.78526499999998,
        "failure": "",
        "byTimeout": false
       }
@@ -1886,9 +1886,9 @@
      "outcome": "killed",
      "exit": -9,
      "killedAfterLimit": true,
-     "sessionCpuSecondsAtKill": 103.78,
+     "sessionCpuSecondsAtKill": 135.49,
      "seconds": 150.2,
-     "load1Start": 37.39,
+     "load1Start": 39.73,
      "rows": [],
      "tail": [],
      "asExpected": true
@@ -1898,9 +1898,9 @@
      "outcome": "killed",
      "exit": -9,
      "killedAfterLimit": true,
-     "sessionCpuSecondsAtKill": 107.99,
-     "seconds": 150.3,
-     "load1Start": 33.61,
+     "sessionCpuSecondsAtKill": 134.55,
+     "seconds": 150.2,
+     "load1Start": 40.01,
      "rows": [],
      "tail": [],
      "asExpected": true
