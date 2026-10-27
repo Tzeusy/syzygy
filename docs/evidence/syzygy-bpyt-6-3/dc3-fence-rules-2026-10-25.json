@@ -755,19 +755,27 @@
     ]
    },
    "unknown": "whether any live source is CRLF (no repository body was read)",
-   "decision": "what a gate accepts changes if the regex changes (one character, the dot to [^\\n]); that needs the owner (GP-Q0) and a new act if the profile text changes. Not changed here; fence-rules.test.ts pins the present behaviour in a test named GAP.",
+   "decision": "what a gate accepts changes if the regex changes (one character, the dot to [^\\n]); that needs the owner (GP-Q0) and a new act if the profile text changes. Not changed here; fence-rules.test.ts pins the present behaviour in a test named GAP. Ruled 2026-10-27, see ownerDecision.ruling: the owner authorized arm (a) widened to a bare CR, implemented under syzygy-bpyt.16 after this change lands; nothing is changed here.",
    "ownerDecision": {
     "bead": "syzygy-bpyt.1.14",
     "what": "owner decision, priority P1, under the M7 packet (syzygy-bpyt.1): the code-context mask is fail-open on CRLF line ends in 3 cases",
     "filedBy": "the coordinator, from this record",
-    "status": "open when this was added. The coordinator reports that an independent vetter reproduces the finding from synthetic fixtures before it goes to the owner [not observed by this lane].",
     "changedHere": "nothing: the opener regex is not changed, and the test named GAP keeps pinning the present behaviour",
     "toRerun": [
      "docs/evidence/syzygy-bpyt-6-3/fence-probe.mjs (the corpus of 33 cases, each in LF and CRLF, and the 152 insertion places)",
      "docs/evidence/syzygy-bpyt-6-3/compare-fence-probe.py (compares two probe outputs)",
      "docs/evidence/syzygy-bpyt-6-3/fence-probe-output.json and fence-probe-output-base.json (the outputs at the code head and at the base)",
      "apps/three-surface-poc/src/fence-rules.test.ts (the characterization test, including the test named GAP)"
-    ]
+    ],
+    "statusWhenAdded": "open when this was added. The coordinator reports that an independent vetter reproduces the finding from synthetic fixtures before it goes to the owner [not observed by this lane].",
+    "status": "ruled by the owner on 2026-10-27 and the decision bead closed (closed_at 2026-10-27T00:31:40Z) [Observed: bd show syzygy-bpyt.1.14, read-only, by this lane on 2026-10-27]",
+    "ruling": {
+     "arm": "(a), widened so that a bare CR also ends a line: inside maskMarkdownCodeContexts a line ends at CRLF, CR or LF, and the split keeps every terminator and offset, so a CRLF or CR text gets exactly the decision its LF form gets",
+     "authorizesNothingBeyond": "no spec or policy byte change, no other reader (G2, G3 and G4 stay open) and no change to LF behaviour",
+     "recordedOn": "the decision bead's comment of 2026-10-27, which quotes the question and the answer; the vet V-CRLF-MASK-1 reproduced the finding at main 8ff50172 (its raw is retained by the implementing change, not by this one)",
+     "implementationBead": "syzygy-bpyt.16",
+     "sequencing": "implemented after this change lands, because it flips this change's test named GAP; this change itself still changes nothing"
+    }
    }
   },
   {
