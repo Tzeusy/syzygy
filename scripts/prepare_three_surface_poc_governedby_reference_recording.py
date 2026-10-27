@@ -2478,6 +2478,44 @@ def selftest(root: Path) -> int:
         print(f"P115 recording preparation selftest BLOCKED: {count} undecidable "
               "requirement-consumption entries; no signed-positive fixtures or readiness claim.")
         return 1
+    current_tools = (
+        Path(__file__).name, "record_versioned_signoff.py",
+        "record_pwb_behavior_amendment_acts.py", "check_spec_reconciliation.py",
+        "check_governance.py", "build_three_surface_poc_readability_successor.py",
+        "build_three_surface_poc_vocabulary_epistemic_amendment.py",
+    )
+    if transaction_present(root):
+        findings, state = check_state(root)
+        if findings:
+            print("P115 signed selftest REFUSED: " + " | ".join(findings))
+            return 1
+        # Every helper must start from unsigned subjects, including helpers that
+        # clone HEAD. Validate the actual transaction before creating that fixture.
+        with tempfile.TemporaryDirectory(prefix="p115-signed-selftest-") as temp:
+            tree = Path(temp) / "tree"
+            subprocess.run(["git", "clone", "--quiet", "--no-hardlinks", "--no-checkout",
+                            str(root), str(tree)], check=True, capture_output=True)
+            git(tree, "checkout", "--quiet", "--detach", CORE_COMMIT)
+            for name in current_tools:
+                shutil.copyfile(root / "scripts" / name, tree / "scripts" / name)
+                if (tree / "scripts" / name).read_bytes() != (root / "scripts" / name).read_bytes():
+                    raise ValueError(f"current selftest tool copy differs: {name}")
+            if transaction_present(tree):
+                raise ValueError("unsigned selftest fixture unexpectedly carries a P115 transaction")
+            git(tree, "add", "--", *(f"scripts/{name}" for name in current_tools))
+            git(tree, "-c", "user.name=P115 synthetic fixture", "-c", "user.email=fixture@invalid",
+                "-c", "core.hooksPath=/dev/null", "commit", "--quiet", "--allow-empty", "-m",
+                "Synthetic unsigned selftest fixture; no owner action")
+            print("P115-SIGNED-SELFTEST-REPLAY " + json.dumps({
+                "sourceHead": git(root, "rev-parse", "HEAD").decode().strip(),
+                "validatedSourceState": state, "coreCommit": CORE_COMMIT,
+                "fixtureHead": git(tree, "rev-parse", "HEAD").decode().strip(),
+                "currentToolSha256": {name: digest((tree / "scripts" / name).read_bytes())
+                                      for name in current_tools},
+                "syntheticOnly": True, "ownerAction": False,
+            }, sort_keys=True), flush=True)
+            return subprocess.run([sys.executable, "-B", str(tree / "scripts" / Path(__file__).name),
+                                   "--selftest"], cwd=tree).returncode
     cases = []
     def expect(name: str, passed: bool):
         cases.append((name, passed))
@@ -2504,10 +2542,7 @@ def selftest(root: Path) -> int:
                         str(root), str(tree)], check=True, capture_output=True)
         git(tree, "checkout", "--quiet", "--detach", CORE_COMMIT)
         # Exercise current preparation/reader bytes in the frozen core tree.
-        for name in (Path(__file__).name, "record_versioned_signoff.py",
-                     "record_pwb_behavior_amendment_acts.py", "check_spec_reconciliation.py",
-                     "check_governance.py", "build_three_surface_poc_readability_successor.py",
-                     "build_three_surface_poc_vocabulary_epistemic_amendment.py"):
+        for name in current_tools:
             shutil.copyfile(root / "scripts" / name, tree / "scripts" / name)
         expect("candidate checks real BASE subjects", candidate_findings(tree) == [])
         expect("no record supplies no signed successor", not is_signed(tree))
