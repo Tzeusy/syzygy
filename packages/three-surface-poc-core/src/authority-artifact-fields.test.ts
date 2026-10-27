@@ -65,7 +65,9 @@ const json = (value: unknown): Uint8Array => enc.encode(JSON.stringify(value));
 const registryOf = (value: unknown) => parseRegistryArtifact(json(value));
 const present = (value: unknown) => ({ kind: 'present', value });
 const MISSING = { kind: 'missing' };
-const NOT_OBJECTS: ReadonlyArray<readonly [string, unknown]> = [['an array', []], ['null', null], ['a string', 'x'], ['a number', 1], ['true', true]];
+// `a number` is not redundant with `a string`: a test written as `typeof value !== 'string'` refuses the string and admits the number. There is no
+// row for `true`: a test that refuses a string and a number yet admits a boolean has to name three types.
+const NOT_OBJECTS: ReadonlyArray<readonly [string, unknown]> = [['an array', []], ['null', null], ['a string', 'x'], ['a number', 1]];
 
 describe('the parsers read a JSON container as an object only when it is one', () => {
   it.each(NOT_OBJECTS)('refuse a policy document that is %s', (_label, value) => {

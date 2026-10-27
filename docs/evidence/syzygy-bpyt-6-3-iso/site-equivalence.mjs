@@ -39,17 +39,22 @@ export function normalize(js, side) {
   let out = js;
   // only the base side loses its definitions and its old names: a definition or an old name left in the head is a difference
   if (side === 'base') {
-    for (const d of DEFINITIONS) out = out.split(d).join('');
+    for (const d of DEFINITIONS) out = out.split(`${d}\n`).join('');
+    // the rename may touch identifiers only: a match inside a string, template or regular expression literal would hide a changed value
+    let identifiers = 0;
+    const visit = (n) => { if (ts.isIdentifier(n) && /^isObj(?:ect)?$/.test(n.text)) identifiers++; ts.forEachChild(n, visit); };
+    visit(ts.createSourceFile('base.js', out, ts.ScriptTarget.ES2022, true));
+    if ((out.match(/\bisObj(?:ect)?\b/g) ?? []).length !== identifiers) return 'RENAME-GUARD: an old name occurs outside an identifier';
     out = out.replace(/\bisObj(?:ect)?\b/g, 'isRecord');
   }
-  // the new bindings: `isRecord` in the support import, and the isoOf import line
+  // the new bindings: `isRecord` in the support import, and the isoOf import line, each removed with its own line end
   out = out.replace(/^import \{ isoOf \} from '\.\/iso-of\.js';\n/m, '');
-  out = out.replace(IMPORT_SUPPORT, (_, names) => {
+  out = out.replace(/^import \{ ([^}]*) \} from '@syzygy\/support';\n/m, (_, names) => {
     const kept = names.split(',').map((n) => n.trim()).filter((n) => n !== 'isRecord');
-    return kept.length === 0 ? '' : `import { ${kept.join(', ')} } from '@syzygy/support';`;
+    return kept.length === 0 ? '' : `import { ${kept.join(', ')} } from '@syzygy/support';\n`;
   });
-  out = out.replace(/^import \{ isRecord \} from '@syzygy\/support';\n/m, '');
-  return out.split('\n').filter((line) => line.trim() !== '').join('\n');
+  // no blank-line filter: the TypeScript emitter writes no blank line between statements, so a blank line left here is inside a literal
+  return out;
 }
 
 export function compareFiles(baseText, headText, path) {
@@ -71,6 +76,11 @@ function selftest() {
   // a definition the applier forgot to delete, and an old name it forgot to rename, are differences
   ok(base.replace('isObj(x)', 'isRecord(x)').replace('import { sha256 }', 'import { isRecord, sha256 }'), false, 'a leftover definition is not equal');
   ok(head.replace('isRecord(x)', 'isObj(x)'), false, 'a leftover old name is not equal');
+  const tbase = `${base}export const t = \`a\n\nb\`;\n`, thead = `${head}export const t = \`a\n\nb\`;\n`;
+  if (compareFiles(tbase, thead, 'x.ts').equal !== true) throw new Error('selftest: an unchanged template literal is equal');
+  if (compareFiles(tbase, thead.replace('a\n\nb', 'a\nb'), 'x.ts').equal !== false) throw new Error('selftest: a blank line removed inside a template literal is not equal');
+  if (compareFiles(tbase, thead.replace('a\n\nb', 'a\n\n  \n\nb'), 'x.ts').equal !== false) throw new Error('selftest: a whitespace-only line added inside a template literal is not equal');
+  if (compareFiles(`${base}export const s = 'isObj';\n`, `${head}export const s = 'isRecord';\n`, 'x.ts').equal !== false) throw new Error('selftest: a string literal renamed from the old name is not equal');
   console.log('site-equivalence selftest ok');
 }
 

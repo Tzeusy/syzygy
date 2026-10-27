@@ -92,6 +92,7 @@ describe('the screen', () => {
 // arrives as JSON bytes, so an array here never carries a field by name.
 describe('the loader reads each container as an object only when it is one', () => {
   const REFUSED = (why: string) => ({ ok: false, why: `the screening policy cannot be applied: ${why}` });
+  // `a number` is not redundant with `a string`: a test written as `typeof value !== 'string'` refuses the string and admits the number.
   const NOT_OBJECTS: ReadonlyArray<readonly [string, unknown]> = [['an array', []], ['null', null], ['a string', 'x'], ['a number', 1]];
   const CODE_CONTENT = { class: 'code-content', sourceExtensions: ['.c', '.txt'] };
 

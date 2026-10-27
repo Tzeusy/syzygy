@@ -1,12 +1,13 @@
 #!/usr/bin/env python3
 """Rule-6 mutants for the stack-4 predicates and their class-1 and class-4 call sites (syzygy-bpyt.6.3).
 
-Usage: mutants.py <clone with node_modules, at the commit under test> <out.json> [--only S|I|C] [--selftest]
+Usage: mutants.py <clone with node_modules, at the commit under test> <out.json> [--only S|I|C|N] [--tmpdir <dir>] [--selftest]
+The scratch directory for the vitest reports is --tmpdir, else $TMPDIR; with neither the run refuses (no fixed /tmp path).
 
 For each mutant: apply the stored fragment change, run the stated test files, restore. A mutant is killed when the run exits non-zero
 with at least one failed test; a run that reports no test counts is an error, never a kill. Every row stores the file, the 1-based
-line, the exact text replaced (`old`) and its replacement (`new`), the occurrence index when the text occurs more than once on the
-mutated line, and the commit of the clone, so each can be re-run by hand.
+line, the exact text replaced (`old`) and its replacement (`new`), the index, from 0, of the call among the file's `isRecord(` calls
+(the line alone locates it: `old` occurs once on its line in every row), and the commit of the clone, so each can be re-run by hand.
 
   C0 / N0   control: the unmutated test set passes; a harmless comment added to the mutated file passes
   S*        the support predicate (packages/support/src/is-record.ts), against its own test
@@ -17,6 +18,11 @@ mutated line, and the commit of the clone, so each can be re-run by hand.
               D  admits anything      isRecord(x) -> true
             run against that importer's own test file; a survivor is re-run against `vitest related <file>` (the escalation)
             and, when it still survives, reported as a survivor for the evidence record to explain.
+  N-*       the rows added by round 1 of the review (R-GP-IMPL-OBJECT-ISO-HELPERS-1, N3 and N8), run with `--only N`; every failing test is stored:
+              E  names strings and admits every other primitive   isRecord(x) -> (x !== null && typeof x !== 'string' && !Array.isArray(x))
+                 at each call of the two importers whose `NOT_OBJECTS` tables hold the `a number` row; that row is not redundant with `a string`
+                 where E is killed by an `a number` test and by no `a string` test (`failsOnANumberRow`, `failsOnAStringRow`)
+              O8 a function is admitted at the secret-redaction declaration read (the reviewer's mutant)
 """
 import json
 import os
@@ -56,6 +62,12 @@ ISO_MUTANTS = [
      "export const isoOf = (instant: number): string => { try { return new Date(instant).toISOString(); } catch { return ''; } };"),
     ('I5-local-time-form', ISO_BODY, 'new Date(instant).toString();'),
 ]
+NOT_OBJECT_IMPORTERS = ['packages/three-surface-poc-core/src/authority-artifact-fields.ts', 'packages/polaris-dossier/src/screen.ts']
+PRIMITIVE_VARIANT = lambda x: f"({x} !== null && typeof {x} !== 'string' && !Array.isArray({x}))"
+SECRET = 'packages/polaris-generation-core/src/secret-redaction.ts'
+SECRET_TESTS = ['packages/polaris-generation-core/src/secret-redaction.test.ts']
+O8_OLD = "if (!isRecord(red)) return refuse('is not an object');"
+O8_NEW = "if (!isRecord(red) && typeof red !== 'function') return refuse('is not an object');"
 MUTANT_VARIANTS = {
     'A': lambda x: f"(typeof {x} === 'object' && {x} !== null)",
     'B': lambda x: f"(typeof {x} === 'object' && !Array.isArray({x}))",
@@ -75,7 +87,7 @@ def calls_of(text):
     return found
 
 
-def run_tests(clone, tmpdir, tests, related=None):
+def run_tests(clone, tmpdir, tests, related=None, keep=3):
     out = os.path.join(tmpdir, 'vitest.json')
     if os.path.exists(out):
         os.remove(out)
@@ -88,7 +100,7 @@ def run_tests(clone, tmpdir, tests, related=None):
     if data['numTotalTests'] == 0:
         raise SystemExit('the run reported no tests')
     failed = [t['fullName'] for f in data['testResults'] for t in f['assertionResults'] if t['status'] == 'failed']
-    return {'exit': proc.returncode, 'passed': data['numPassedTests'], 'failed': data['numFailedTests'], 'total': data['numTotalTests'], 'failedTests': failed[:3]}
+    return {'exit': proc.returncode, 'passed': data['numPassedTests'], 'failed': data['numFailedTests'], 'total': data['numTotalTests'], 'failedTests': failed[:keep]}
 
 
 def with_edit(clone, path, start, end, new):
@@ -102,7 +114,7 @@ def line_of(text, offset):
     return text.count('\n', 0, offset) + 1
 
 
-def mutate_fragment(clone, tmpdir, path, tests, ident, old, new, group, results):
+def mutate_fragment(clone, tmpdir, path, tests, ident, old, new, group, results, keep=3):
     full = os.path.join(clone, path)
     text = open(full).read()
     if text.count(old) != 1:
@@ -110,7 +122,7 @@ def mutate_fragment(clone, tmpdir, path, tests, ident, old, new, group, results)
     at = text.index(old)
     restore = with_edit(clone, path, at, at + len(old), new)
     try:
-        r = run_tests(clone, tmpdir, tests)
+        r = run_tests(clone, tmpdir, tests, keep=keep)
     finally:
         restore()
     results.append({'id': ident, 'group': group, 'file': path, 'line': line_of(text, at), 'old': old, 'new': new, 'tests': tests, **r, 'killed': r['exit'] != 0 and r['failed'] > 0})
@@ -130,7 +142,9 @@ def main(argv):
         return 0
     clone, out_path = argv[0], argv[1]
     only = argv[argv.index('--only') + 1] if '--only' in argv else None
-    tmpdir = '/tmp/lci/mut'
+    tmpdir = argv[argv.index('--tmpdir') + 1] if '--tmpdir' in argv else os.environ.get('TMPDIR')
+    if not tmpdir:
+        raise SystemExit('give --tmpdir <dir> or set TMPDIR: the run keeps vitest reports there')
     os.makedirs(tmpdir, exist_ok=True)
     commit = subprocess.run(['git', '-C', clone, 'rev-parse', 'HEAD'], capture_output=True, text=True, check=True).stdout.strip()
     if subprocess.run(['git', '-C', clone, 'status', '--porcelain'], capture_output=True, text=True, check=True).stdout.strip():
@@ -178,6 +192,25 @@ def main(argv):
                     killed_by_related = escalated is not None and escalated['exit'] != 0 and escalated['failed'] > 0
                     results.append({'id': ident, 'group': 'C', 'class': klass, 'file': path, 'line': line_of(text, start), 'occurrence': n, 'old': old, 'new': new,
                                     'tests': tests, **r, 'killed': killed, 'escalated': escalated, 'killedByRelated': killed_by_related})
+    if only in (None, 'N'):
+        control('C0-secret-redaction', SECRET, SECRET_TESTS, lambda f, t: (lambda: None))
+        mutate_fragment(clone, tmpdir, SECRET, SECRET_TESTS, 'N3-O8-function-admitted', O8_OLD, O8_NEW, 'N', results, keep=None)
+        for path, tests, klass in IMPORTERS:
+            if path not in NOT_OBJECT_IMPORTERS:
+                continue
+            control(f'C0-{os.path.basename(path)}', path, tests, lambda f, t: (lambda: None))
+            text = open(os.path.join(clone, path)).read()
+            for n, (start, end, arg) in enumerate(calls_of(text)):
+                ident = f'N-{os.path.basename(path)[:-3]}-L{line_of(text, start)}n{n}-E'
+                old, new = text[start:end], PRIMITIVE_VARIANT(arg)
+                restore = with_edit(clone, path, start, end, new)
+                try:
+                    r = run_tests(clone, tmpdir, tests, keep=None)
+                finally:
+                    restore()
+                killed = r['exit'] != 0 and r['failed'] > 0
+                results.append({'id': ident, 'group': 'N', 'class': klass, 'file': path, 'line': line_of(text, start), 'occurrence': n, 'old': old, 'new': new, 'tests': tests, **r,
+                                'killed': killed, 'failsOnANumberRow': any(' a number' in t for t in r['failedTests']), 'failsOnAStringRow': any(' a string' in t for t in r['failedTests'])})
     json.dump({'commit': commit, 'controls': controls, 'mutants': results}, open(out_path, 'w'), indent=1)
     killed = sum(1 for r in results if r['killed'] or r.get('killedByRelated'))
     print(f'commit {commit}: {len(results)} mutants, {killed} killed, {len(results) - killed} survived; controls clean: {all(c["passed_clean"] for c in controls)}')

@@ -194,6 +194,7 @@ describe('readSecretRedaction refuses what it does not implement', () => {
     ['a string', () => 'x'],
     ['a number', () => 1],
     ['an array that carries every field', () => Object.assign([], validRedaction())],
+    ['a function that carries every field', () => Object.assign(() => 1, validRedaction())],
   ])('refuses a declaration that is %s', (_name, declaration) => {
     expect(readSecretRedaction({ secretRedaction: declaration() }, ['a'])).toEqual({ ok: false, why: 'its secret redaction is not an object' });
   });
