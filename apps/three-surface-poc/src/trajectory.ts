@@ -1,4 +1,4 @@
-import { escapeHtml } from '@syzygy/cap1-daemon';
+import { escapeHtml } from '@syzygy/http-host';
 import {
   WORK_ITEM_GOVERNING_INTENT_REGION_ID,
   WORK_ITEM_TITLES_REGION_ID,
