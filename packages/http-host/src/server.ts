@@ -8,21 +8,21 @@ import {
   verifyCredential,
 } from './credentials.js';
 
-// RT3 — the daemon's HTTP server core (CAP1-REQ-012's admission at the
-// transport, under RFC5-3: classification by credential presented,
-// never network location — enforced here by binding 127.0.0.1 only and
-// by the admission gate consulting nothing but the Authorization
-// header).
+// The generic HTTP host both apps serve through (syzygy-bpyt.7.3): the
+// Capability 1 daemon and the Three-Surface POC. Admission happens at
+// the transport, under RFC5-3: by the credential presented, never by
+// network location. The server binds 127.0.0.1 only, and the gate
+// consults nothing but the Authorization header (CAP1-REQ-012).
 //
-// The server is a ROUTE REGISTRY: RT4 (machine JSON endpoint) and RT5
-// (server-rendered human page) plug in as `Route` values passed to
-// `createDaemon` — this wave mounts only the minimal root route. The
-// load-bearing mount property: credential admission runs BEFORE any
-// machine-credentialed handler. A missing or invalid credential gets
-// core's named refusal and the handler is NEVER invoked — no partial
-// answer can exist, because the handler that would compute one never
-// ran. Refusal bodies are core's named vocabulary
-// (`{ admitted: false, served: 'nothing' }`), never a bare 401 string.
+// The server is a ROUTE REGISTRY that owns no route: each app passes
+// its `Route` values to `createDaemon` (the Capability 1 root route
+// lives in @syzygy/cap1-daemon). The load-bearing mount property:
+// credential admission runs BEFORE any machine-credentialed handler. A
+// missing or invalid credential gets core's named refusal and the
+// handler is NEVER invoked — no partial answer can exist, because the
+// handler that would compute one never ran. Refusal bodies are core's
+// named vocabulary (`{ admitted: false, served: 'nothing' }`), never a
+// bare 401 string.
 //
 // Startup writes: exactly the credential/state files inside the
 // explicit state directory (via `ensureCredential`, whose writes are
@@ -73,7 +73,7 @@ export interface RouteContext {
   readonly admission?: Extract<AdmissionResult, { admitted: true }> | undefined;
 }
 
-// The route-registry contract RT4/RT5 build on: one value per
+// The route-registry contract every app builds on: one value per
 // (method, path), classed by credential requirement. Registration is
 // data — pass the Route in `DaemonOptions.routes`; the mount applies
 // admission for 'machine-credentialed' routes before `handle` runs.
