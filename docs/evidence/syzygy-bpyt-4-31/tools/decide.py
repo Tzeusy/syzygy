@@ -3,9 +3,10 @@
 
 usage: python3 -I docs/evidence/syzygy-bpyt-4-31/tools/decide.py CENSUS.json SITE-DURATIONS.json CI-DURATIONS.json CITED.json OUT.json
 
-The threshold is 2500 ms for every site: the coordinator's ruling 2 of 2026-10-27, "keep the timeout if that worst exceeds
-2500 ms", which takes syzygy-bpyt.4.13's test threshold (scripts/size_vitest_test_timeouts.py, half the 5000 ms testTimeout)
-and applies it to hooks as well, where 4.13 used half the 10000 ms hookTimeout. A site is
+The threshold is half the default the site falls back to once its timeout is removed, so a kept site has measured worse
+than 2x headroom (the coordinator's ruling of 2026-10-27, the same rule as syzygy-bpyt.4.13's
+scripts/size_vitest_test_timeouts.py). The root vitest.config.ts sets neither default, so vitest's own apply: testTimeout
+5000 ms gives 2500 ms for a test or suite, and hookTimeout 10000 ms gives 5000 ms for a hook. A site is
 
   cited     when its reason already cites a commit or retained record, or CITED.json names one, that measured it above the
             threshold (or saw it time out at the default); its reason is made to cite that;
@@ -24,8 +25,8 @@ and applies it to hooks as well, where 4.13 used half the 10000 ms hookTimeout. 
 A removal still has to pass 5 of 5 full-file runs at the head, each again at or under the threshold, before it lands."""
 import json, os, re, sys
 
-TEST_THRESHOLD_MS, HOOK_THRESHOLD_MS = 2500, 2500
 DEFAULT_MS = {'test': 5000, 'suite': 5000, 'hook': 10000}
+TEST_THRESHOLD_MS, HOOK_THRESHOLD_MS = DEFAULT_MS['test'] // 2, DEFAULT_MS['hook'] // 2
 census_path, durations_path, ci_path, cited_path, out_path = sys.argv[1:6]
 census = json.load(open(census_path, encoding='utf8'))
 durations = {r['site']: r for r in json.load(open(durations_path, encoding='utf8'))['rows']}

@@ -184,7 +184,7 @@ describe.skipIf(executable === undefined)('PWB-REQ-016 names and headings in a r
   beforeAll(async () => {
     browser = await launchBrowser(executable as string);
     pages = mkdtempSync(join(tmpdir(), 'syzygy-poc-names-'));
-  }, 60_000); // launches Chrome: up to 1.1 s in 10 alone runs, but a full-suite run at load1 56-58 left up to 4.8 s of its file's time to its hooks (docs/evidence/syzygy-bpyt-4-31/full-runs.json)
+  });
 
   afterAll(async () => {
     await browser?.close();

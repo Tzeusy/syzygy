@@ -9,7 +9,7 @@ let scratch = '', measured: DossierCapMeasurement;
 beforeAll(async () => {
   scratch = mkdtempSync(join(tmpdir(), 'syzygy-dossier-cap-'));
   measured = await measureDossierCapSelection(join(scratch, 'repo'));
-}, 120_000); // builds the design-prose fixture in git and runs discovery over it: up to 1.4 s in 10 alone runs, but a full-suite run at load1 51-58 left up to 3.3 s of its file's time to its hook (docs/evidence/syzygy-bpyt-4-31/full-runs.json)
+});
 afterAll(() => rmSync(scratch, { recursive: true, force: true }));
 
 describe('what heuristic discovery reads under the dossier cap on the design-prose fixture (no model)', () => {

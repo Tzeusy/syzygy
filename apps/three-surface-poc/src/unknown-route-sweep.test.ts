@@ -170,7 +170,7 @@ beforeAll(() => {
       runWorkItemQuery: (_root, sql) => sql.includes('WHERE id LIKE') ? JSON.stringify(rows) : JSON.stringify([{ revision: 'dolt-rev-2' }]),
     }));
   }
-}, 60_000); // builds the fixture repositories in git and a model for each: up to 0.6 s in 10 alone runs, but a full-suite run at load1 38-54 left up to 2.52 s of its file's time to its hooks (docs/evidence/syzygy-bpyt-4-31/full-runs.json)
+});
 
 afterAll(() => {
   for (const directory of cleanups.splice(0)) rmSync(directory, { recursive: true, force: true });

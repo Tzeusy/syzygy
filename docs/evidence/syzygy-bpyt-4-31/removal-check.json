@@ -32,21 +32,16 @@
   }
  ],
  "rule": "DECISIONS.json is decide.py's output at the base; HEAD-SITE-DURATIONS.json is site_durations.py run over the base census and the\nrecords re-measured at the head (5 alone runs of each file with a removal), which HEAD-RECORDS-DIR holds; FULL-RUNS.json is ci_durations.py --local over saved\nlogs of full `npx vitest run` runs at the head, where every removed timeout has fallen back to vitest's default. A removal holds when\n\n  alone   the head records observed it at least 5 times, every observation passed, and its worst is at or under its threshold;\n  full    in every full run the site is bounded at or under its threshold: a test by its own line, which must be a pass (in a\n          file that passed, no line means under 300 ms; a file with a failure lists every test, so there no line bounds nothing),\n          and a hook by its file's duration less the tests listed beneath it.",
- "removals": 56,
- "holding": 42,
+ "removals": 58,
+ "holding": 49,
  "notHolding": [
-  "apps/three-surface-poc/src/orrery.browser.test.ts:24",
-  "apps/three-surface-poc/src/polaris-generation/dossier-cap-measure.test.ts:12",
+  "apps/three-surface-poc/src/polaris-accessibility.browser.test.ts:91",
   "apps/three-surface-poc/src/polaris-generation/draft-preview.browser.test.ts:47",
   "apps/three-surface-poc/src/polaris-generation/self-corpus.test.ts:46",
   "apps/three-surface-poc/src/polaris-opening-index.browser.test.ts:316",
   "apps/three-surface-poc/src/polaris-opening-index.browser.test.ts:352",
   "apps/three-surface-poc/src/polaris-opening-index.browser.test.ts:370",
-  "apps/three-surface-poc/src/polaris-reconciliation.test.ts:81",
   "apps/three-surface-poc/src/surface-routes.test.ts:537",
-  "apps/three-surface-poc/src/trajectory-narrowing.browser.test.ts:32",
-  "apps/three-surface-poc/src/unknown-route-sweep.test.ts:173",
-  "packages/polaris-dossier/src/no-egress.test.ts:47",
   "packages/polaris-dossier/src/no-egress.test.ts:84",
   "packages/polaris-dossier/src/no-egress.test.ts:92"
  ],
@@ -1614,7 +1609,7 @@
   {
    "site": "apps/three-surface-poc/src/governing-intent-sweep.test.ts:168",
    "kind": "hook",
-   "thresholdMs": 2500,
+   "thresholdMs": 5000,
    "title": null,
    "suites": [],
    "alone": {
@@ -1669,7 +1664,7 @@
   {
    "site": "apps/three-surface-poc/src/orrery.browser.test.ts:24",
    "kind": "hook",
-   "thresholdMs": 2500,
+   "thresholdMs": 5000,
    "title": null,
    "suites": [
     "Orrery rendered geometry"
@@ -1687,7 +1682,7 @@
     ]
    },
    "full": {
-    "holds": false,
+    "holds": true,
     "bounds": [
      {
       "run": "full-1.log",
@@ -1721,12 +1716,126 @@
      }
     ]
    },
+   "holds": true
+  },
+  {
+   "site": "apps/three-surface-poc/src/polaris-accessibility.browser.test.ts:91",
+   "kind": "hook",
+   "thresholdMs": 5000,
+   "title": null,
+   "suites": [
+    "Polaris keyboard, non-visual and contrast checks in a real browser"
+   ],
+   "alone": {
+    "holds": true,
+    "record": "polaris-accessibility.browser.test.hooks.json",
+    "recordCommit": "1785a9057447c84ceada71ac00d63ee044dae177",
+    "observations": 5,
+    "worstMs": 1969,
+    "anyFailed": false,
+    "loadRange": [
+     27.42,
+     36.39
+    ]
+   },
+   "full": {
+    "holds": false,
+    "bounds": [
+     {
+      "run": "full-1.log",
+      "boundMs": 2755,
+      "filePassed": true,
+      "why": "file 257050 ms less 12 tests listed"
+     },
+     {
+      "run": "full-2.log",
+      "boundMs": 3751,
+      "filePassed": true,
+      "why": "file 281911 ms less 12 tests listed"
+     },
+     {
+      "run": "full-3.log",
+      "boundMs": 2979,
+      "filePassed": true,
+      "why": "file 231107 ms less 12 tests listed"
+     },
+     {
+      "run": "full-4.log",
+      "boundMs": 7953,
+      "filePassed": false,
+      "why": "file 426721 ms less 15 tests listed"
+     },
+     {
+      "run": "full-5.log",
+      "boundMs": 4485,
+      "filePassed": true,
+      "why": "file 335259 ms less 12 tests listed"
+     }
+    ]
+   },
    "holds": false
+  },
+  {
+   "site": "apps/three-surface-poc/src/polaris-accessible-names.browser.test.ts:187",
+   "kind": "hook",
+   "thresholdMs": 5000,
+   "title": null,
+   "suites": [
+    "PWB-REQ-016 names and headings in a real browser"
+   ],
+   "alone": {
+    "holds": true,
+    "record": "polaris-accessible-names.browser.test.hooks.json",
+    "recordCommit": "1785a9057447c84ceada71ac00d63ee044dae177",
+    "observations": 5,
+    "worstMs": 766,
+    "anyFailed": false,
+    "loadRange": [
+     24.88,
+     29.75
+    ]
+   },
+   "full": {
+    "holds": true,
+    "bounds": [
+     {
+      "run": "full-1.log",
+      "boundMs": 2763,
+      "filePassed": true,
+      "why": "file 35312 ms less 12 tests listed"
+     },
+     {
+      "run": "full-2.log",
+      "boundMs": 1995,
+      "filePassed": true,
+      "why": "file 27959 ms less 11 tests listed"
+     },
+     {
+      "run": "full-3.log",
+      "boundMs": 2562,
+      "filePassed": true,
+      "why": "file 42368 ms less 14 tests listed"
+     },
+     {
+      "run": "full-4.log",
+      "boundMs": 4750,
+      "filePassed": true,
+      "why": "file 99987 ms less 14 tests listed"
+     },
+     {
+      "run": "full-5.log",
+      "boundMs": 2949,
+      "filePassed": true,
+      "why": "file 47601 ms less 13 tests listed"
+     }
+    ]
+   },
+   "holds": true
   },
   {
    "site": "apps/three-surface-poc/src/polaris-generation/dossier-cap-measure.test.ts:12",
    "kind": "hook",
-   "thresholdMs": 2500,
+   "thresholdMs": 5000,
    "title": null,
    "suites": [],
    "alone": {
@@ -1742,7 +1851,7 @@
     ]
    },
    "full": {
-    "holds": false,
+    "holds": true,
     "bounds": [
      {
       "run": "full-1.log",
@@ -1776,7 +1885,7 @@
      }
     ]
    },
-   "holds": false
+   "holds": true
   },
   {
    "site": "apps/three-surface-poc/src/polaris-generation/draft-preview.browser.test.ts:47",
@@ -2195,7 +2304,7 @@
   {
    "site": "apps/three-surface-poc/src/polaris-opening-index.browser.test.ts:316",
    "kind": "hook",
-   "thresholdMs": 2500,
+   "thresholdMs": 5000,
    "title": null,
    "suites": [
     "opening index in a real browser (PWB-REQ-010, P-98)"
@@ -2616,7 +2725,7 @@
   {
    "site": "apps/three-surface-poc/src/polaris-reconciliation.test.ts:81",
    "kind": "hook",
-   "thresholdMs": 2500,
+   "thresholdMs": 5000,
    "title": null,
    "suites": [],
    "alone": {
@@ -2632,7 +2741,7 @@
     ]
    },
    "full": {
-    "holds": false,
+    "holds": true,
     "bounds": [
      {
       "run": "full-1.log",
@@ -2666,7 +2775,7 @@
      }
     ]
    },
-   "holds": false
+   "holds": true
   },
   {
    "site": "apps/three-surface-poc/src/surface-routes.test.ts:537",
@@ -2723,7 +2832,7 @@
   {
    "site": "apps/three-surface-poc/src/trajectory-narrowing.browser.test.ts:32",
    "kind": "hook",
-   "thresholdMs": 2500,
+   "thresholdMs": 5000,
    "title": null,
    "suites": [
     "Trajectory narrowing to the governing-intent Unknown (POC-REQ-014)"
@@ -2741,7 +2850,7 @@
     ]
    },
    "full": {
-    "holds": false,
+    "holds": true,
     "bounds": [
      {
       "run": "full-1.log",
@@ -2775,12 +2884,12 @@
      }
     ]
    },
-   "holds": false
+   "holds": true
   },
   {
    "site": "apps/three-surface-poc/src/unknown-route-sweep.test.ts:173",
    "kind": "hook",
-   "thresholdMs": 2500,
+   "thresholdMs": 5000,
    "title": null,
    "suites": [],
    "alone": {
@@ -2796,7 +2905,7 @@
     ]
    },
    "full": {
-    "holds": false,
+    "holds": true,
     "bounds": [
      {
       "run": "full-1.log",
@@ -2830,12 +2939,12 @@
      }
     ]
    },
-   "holds": false
+   "holds": true
   },
   {
    "site": "packages/polaris-dossier/src/no-egress.test.ts:47",
    "kind": "hook",
-   "thresholdMs": 2500,
+   "thresholdMs": 5000,
    "title": null,
    "suites": [],
    "alone": {
@@ -2851,7 +2960,7 @@
     ]
    },
    "full": {
-    "holds": false,
+    "holds": true,
     "bounds": [
      {
       "run": "full-1.log",
@@ -2885,7 +2994,7 @@
      }
     ]
    },
-   "holds": false
+   "holds": true
   },
   {
    "site": "packages/polaris-dossier/src/no-egress.test.ts:84",

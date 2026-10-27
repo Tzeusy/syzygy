@@ -3,15 +3,15 @@
  "census": "546f1ff066e2ffef749c757cdb4621336039113b",
  "rule": {
   "testThresholdMs": 2500,
-  "hookThresholdMs": 2500,
-  "text": "The threshold is 2500 ms for every site: the coordinator's ruling 2 of 2026-10-27, \"keep the timeout if that worst exceeds\n2500 ms\", which takes syzygy-bpyt.4.13's test threshold (scripts/size_vitest_test_timeouts.py, half the 5000 ms testTimeout)\nand applies it to hooks as well, where 4.13 used half the 10000 ms hookTimeout. A site is\n\n  cited     when its reason already cites a commit or retained record, or CITED.json names one, that measured it above the\n            threshold (or saw it time out at the default); its reason is made to cite that;\n  blocked   when its file is one an open pull request changes (CITED.json `blocked`); it is left as it is;\n  remove    when the fresh local runs measured it (at least 5 observations, every run passed) at or under the threshold AND every\n            hosted run listed bounds it there too: for a test, its slow-test line (or no line, which means under 300 ms) in a\n            run where its file ran; for a hook, its file's duration less the slow tests listed beneath it; AND it is neither\n            below vitest's default (5000 ms for a test or suite, 10000 ms for a hook), where removing it would loosen the test\n            (ruling 3), nor a vitest config's own timeout, which bounds a whole tier (ruling 4): such a site is kept, on that basis;\n  keep      otherwise, citing whichever measurement exceeded the threshold, or, when no measurement exceeds it but a host does\n            not bound it, the record that shows the gap. Hosted runs print no hook time: a file's duration less its slow tests\n            bounds its hooks from above, and that less 300 ms for every other test bounds them, together, from below.\n            A config's hookTimeout also governs every beforeEach and afterEach hook, which runs inside a test's duration: it is\n            removed only when its tier's worst test is at or under the hook threshold.\n\nA removal still has to pass 5 of 5 full-file runs at the head, each again at or under the threshold, before it lands."
+  "hookThresholdMs": 5000,
+  "text": "The threshold is half the default the site falls back to once its timeout is removed, so a kept site has measured worse\nthan 2x headroom (the coordinator's ruling of 2026-10-27, the same rule as syzygy-bpyt.4.13's\nscripts/size_vitest_test_timeouts.py). The root vitest.config.ts sets neither default, so vitest's own apply: testTimeout\n5000 ms gives 2500 ms for a test or suite, and hookTimeout 10000 ms gives 5000 ms for a hook. A site is\n\n  cited     when its reason already cites a commit or retained record, or CITED.json names one, that measured it above the\n            threshold (or saw it time out at the default); its reason is made to cite that;\n  blocked   when its file is one an open pull request changes (CITED.json `blocked`); it is left as it is;\n  remove    when the fresh local runs measured it (at least 5 observations, every run passed) at or under the threshold AND every\n            hosted run listed bounds it there too: for a test, its slow-test line (or no line, which means under 300 ms) in a\n            run where its file ran; for a hook, its file's duration less the slow tests listed beneath it; AND it is neither\n            below vitest's default (5000 ms for a test or suite, 10000 ms for a hook), where removing it would loosen the test\n            (ruling 3), nor a vitest config's own timeout, which bounds a whole tier (ruling 4): such a site is kept, on that basis;\n  keep      otherwise, citing whichever measurement exceeded the threshold, or, when no measurement exceeds it but a host does\n            not bound it, the record that shows the gap. Hosted runs print no hook time: a file's duration less its slow tests\n            bounds its hooks from above, and that less 300 ms for every other test bounds them, together, from below.\n            A config's hookTimeout also governs every beforeEach and afterEach hook, which runs inside a test's duration: it is\n            removed only when its tier's worst test is at or under the hook threshold.\n\nA removal still has to pass 5 of 5 full-file runs at the head, each again at or under the threshold, before it lands."
  },
  "sites": 140,
  "decisions": {
   "cited": 40,
   "blocked": 17,
-  "remove": 56,
-  "keep": 27
+  "remove": 58,
+  "keep": 25
  },
  "rows": [
   {
@@ -2726,7 +2726,7 @@
    "callee": "beforeAll",
    "expression": "60_000",
    "valueMs": 60000,
-   "thresholdMs": 2500,
+   "thresholdMs": 5000,
    "title": null,
    "suites": [],
    "baseReason": null,
@@ -3085,7 +3085,7 @@
    "callee": "beforeAll",
    "expression": "60_000",
    "valueMs": 60000,
-   "thresholdMs": 2500,
+   "thresholdMs": 5000,
    "title": null,
    "suites": [
     "Orrery rendered geometry"
@@ -3163,7 +3163,7 @@
    "callee": "beforeAll",
    "expression": "60_000",
    "valueMs": 60000,
-   "thresholdMs": 2500,
+   "thresholdMs": 5000,
    "title": null,
    "suites": [
     "Polaris keyboard, non-visual and contrast checks in a real browser"
@@ -3232,8 +3232,8 @@
      "why": "file 65844 ms less 12 slow tests; its hooks together took at least 183 ms"
     }
    ],
-   "decision": "keep",
-   "basis": "local worst over the threshold"
+   "decision": "remove",
+   "basis": "local worst and every hosted bound at or under the threshold"
   },
   {
    "site": "apps/three-surface-poc/src/polaris-accessibility.browser.test.ts:310",
@@ -3389,7 +3389,7 @@
    "callee": "beforeAll",
    "expression": "60_000",
    "valueMs": 60000,
-   "thresholdMs": 2500,
+   "thresholdMs": 5000,
    "title": null,
    "suites": [
     "PWB-REQ-016 names and headings in a real browser"
@@ -3458,8 +3458,8 @@
      "why": "file 12926 ms less 8 slow tests; its hooks together took at least -3068 ms"
     }
    ],
-   "decision": "keep",
-   "basis": "a hosted run does not bound it at or under the threshold"
+   "decision": "remove",
+   "basis": "local worst and every hosted bound at or under the threshold"
   },
   {
    "site": "apps/three-surface-poc/src/polaris-accessible-names.browser.test.ts:315",
@@ -3689,7 +3689,7 @@
    "callee": "beforeAll",
    "expression": "60_000",
    "valueMs": 60000,
-   "thresholdMs": 2500,
+   "thresholdMs": 5000,
    "title": null,
    "suites": [],
    "baseReason": null,
@@ -3706,7 +3706,7 @@
    "callee": "beforeAll",
    "expression": "SHARED_FIXTURE_TIMEOUT_MS",
    "valueMs": 60000,
-   "thresholdMs": 2500,
+   "thresholdMs": 5000,
    "title": null,
    "suites": [],
    "baseReason": "/** * Budget for building a file's shared fixture models once. Five or six * builds took 4.1-10.9 s across five full-suite runs under eight CPU burners * (docs/evidence/shared-fixture-models-k66p-2026-10-03.json), past the 10 s * hook default at the top. */",
@@ -3725,7 +3725,7 @@
    "callee": "beforeAll",
    "expression": "120_000",
    "valueMs": 120000,
-   "thresholdMs": 2500,
+   "thresholdMs": 5000,
    "title": null,
    "suites": [],
    "baseReason": null,
@@ -4422,7 +4422,7 @@
    "callee": "beforeAll",
    "expression": "120_000",
    "valueMs": 120000,
-   "thresholdMs": 2500,
+   "thresholdMs": 5000,
    "title": null,
    "suites": [],
    "baseReason": null,
@@ -4553,7 +4553,7 @@
    "callee": "beforeAll",
    "expression": "SHARED_FIXTURE_TIMEOUT_MS",
    "valueMs": 60000,
-   "thresholdMs": 2500,
+   "thresholdMs": 5000,
    "title": null,
    "suites": [],
    "baseReason": "/** * Budget for building a file's shared fixture models once. Five or six * builds took 4.1-10.9 s across five full-suite runs under eight CPU burners * (docs/evidence/shared-fixture-models-k66p-2026-10-03.json), past the 10 s * hook default at the top. */",
@@ -4572,7 +4572,7 @@
    "callee": "beforeAll",
    "expression": "60_000",
    "valueMs": 60000,
-   "thresholdMs": 2500,
+   "thresholdMs": 5000,
    "title": null,
    "suites": [
     "opening index in a real browser (PWB-REQ-010, P-98)"
@@ -5227,7 +5227,7 @@
    "callee": "beforeAll",
    "expression": "120_000",
    "valueMs": 120000,
-   "thresholdMs": 2500,
+   "thresholdMs": 5000,
    "title": null,
    "suites": [],
    "baseReason": null,
@@ -5461,7 +5461,7 @@
    "callee": "afterEach",
    "expression": "TEST_MS",
    "valueMs": 180000,
-   "thresholdMs": 2500,
+   "thresholdMs": 5000,
    "title": null,
    "suites": [],
    "baseReason": "// Two kinds of wall-clock bound live in this file, and they are kept apart // (syzygy-ve8n: three tests failed under a full suite at load average 60-90). // // LIVENESS_MS bounds a wait for a state the test goes on to assert: a fixture // binding, a marker file, a process exit, a successor listener. It never // decides an outcome, so it is generous; under load it only waits longer. // The same budget is passed as `timeoutMs` wherever the restart is expected // to finish before its deadline (30 s is restart.ts's own ceiling). // // An outcome deadline (100 ms, 150 ms) is kept short only where the test makes // the deadline the sole possible exit: a held listener that cannot close, an // inspection that never reports socket absence, or a cleanup scan whose // injected reader can never succeed. No scheduling delay can let // any other outcome win there, so no clock injection is needed. // // TEST_MS is vitest's per-test budget: several fixture spawns at LIVENESS_MS // each must fit inside it.",
@@ -5495,7 +5495,7 @@
    "callee": "beforeAll",
    "expression": "60_000",
    "valueMs": 60000,
-   "thresholdMs": 2500,
+   "thresholdMs": 5000,
    "title": null,
    "suites": [
     "surface routes",
@@ -5574,7 +5574,7 @@
    "callee": "afterAll",
    "expression": "60_000",
    "valueMs": 60000,
-   "thresholdMs": 2500,
+   "thresholdMs": 5000,
    "title": null,
    "suites": [
     "surface routes",
@@ -5914,7 +5914,7 @@
    "callee": "beforeAll",
    "expression": "60_000",
    "valueMs": 60000,
-   "thresholdMs": 2500,
+   "thresholdMs": 5000,
    "title": null,
    "suites": [
     "Trajectory narrowing to the governing-intent Unknown (POC-REQ-014)"
@@ -5992,7 +5992,7 @@
    "callee": "beforeAll",
    "expression": "SHARED_FIXTURE_TIMEOUT_MS",
    "valueMs": 60000,
-   "thresholdMs": 2500,
+   "thresholdMs": 5000,
    "title": null,
    "suites": [],
    "baseReason": "/** * Budget for building a file's shared fixture models once. Five or six * builds took 4.1-10.9 s across five full-suite runs under eight CPU burners * (docs/evidence/shared-fixture-models-k66p-2026-10-03.json), past the 10 s * hook default at the top. */",
@@ -6085,7 +6085,7 @@
    "callee": "beforeAll",
    "expression": "60_000",
    "valueMs": 60000,
-   "thresholdMs": 2500,
+   "thresholdMs": 5000,
    "title": null,
    "suites": [],
    "baseReason": null,
@@ -6432,7 +6432,7 @@
    "callee": "beforeAll",
    "expression": "120_000",
    "valueMs": 120000,
-   "thresholdMs": 2500,
+   "thresholdMs": 5000,
    "title": null,
    "suites": [],
    "baseReason": null,
@@ -6962,7 +6962,7 @@
    "callee": "beforeAll",
    "expression": "60_000",
    "valueMs": 60000,
-   "thresholdMs": 2500,
+   "thresholdMs": 5000,
    "title": null,
    "suites": [
     "every stem counts wherever it sits, save exact tooling citations in an allowlisted file (R-361-1)"

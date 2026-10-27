@@ -29,7 +29,7 @@ describe.skipIf(executable === undefined)('Trajectory narrowing to the governing
 
   beforeAll(async () => {
     browser = await launchBrowser(executable as string);
-  }, 60_000); // launches Chrome: up to 0.7 s in 10 alone runs, but a full-suite run at load1 51-54 left up to 4.2 s of its file's time to its hooks (docs/evidence/syzygy-bpyt-4-31/full-runs.json)
+  });
 
   afterAll(async () => {
     await browser?.close();
