@@ -1,5 +1,7 @@
 import { execFileSync } from 'node:child_process';
 
+import { decodeUtf8 } from '@syzygy/support';
+
 import { parseGitLsTree } from './git-tree.js';
 import type { PocProvenance } from './model.js';
 
@@ -92,7 +94,6 @@ export interface ObserveCodeStructureInput {
 /** Git's output is not valid UTF-8: a path a JS string cannot carry exactly. */
 class NonUtf8GitOutput extends Error {}
 
-const STRICT_UTF8 = new TextDecoder('utf-8', { fatal: true });
 const GITLINK_RECORD = Buffer.from('160000 ');
 
 /**
@@ -117,11 +118,15 @@ function defaultRunGit(repoRoot: string, args: readonly string[]): string {
     maxBuffer: 256 * 1024 * 1024,
     stdio: ['ignore', 'pipe', 'ignore'],
   });
+  // The gitlink filter runs inside the try, as the decode always did: a copy it cannot allocate is reported like the bytes that
+  // could not be decoded, so the Unknown reason for a failure here is the one this module has always given.
   try {
-    return STRICT_UTF8.decode(withoutGitlinkRecords(bytes));
+    const text = decodeUtf8(withoutGitlinkRecords(bytes));
+    if (text !== undefined) return text;
   } catch {
-    throw new NonUtf8GitOutput();
+    // falls through to the refusal below
   }
+  throw new NonUtf8GitOutput();
 }
 
 const SHA1_OBJECT_ID = /^[0-9a-f]{40}$/;
