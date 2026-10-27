@@ -376,9 +376,9 @@ describe('capture-test-artifact never starts the observed project (run check)', 
     const t = trap();
     const fifo = join(t.repo, '..', 'a.xml');
     execFileSync('mkfifo', [fifo]);
-    const started = Date.now();
+    // The message names the lstat refusal, made before any open. No elapsed-time bound: a blocking open never
+    // returns, so no bound after it could fail.
     const result = ingestFile(t, fifo);
-    expect(Date.now() - started).toBeLessThan(5_000);
     expect(result.code).toBe(1);
     expect(result.err).toContain('it is not a regular file');
     expect(readTestArtifactRecordFile(result.state)).toBeNull();
