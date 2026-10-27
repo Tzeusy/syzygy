@@ -1,6 +1,7 @@
 // polaris-generation-core mutation runner — bead syzygy-u05.11 slice 2's
 // rule-6 mutation proof for `canonical-json.ts`, `parse-json.ts`,
-// `pipeline.ts` and `provider-draft.ts`.
+// `pipeline.ts` and `provider-draft.ts` (one of whose guards now lives in
+// `draft-model.ts`).
 //
 // For every hand-listed literal mutation in `generation-mutation.ts`, this
 // runner: (1) mutates exactly that fragment, (2) runs the independent

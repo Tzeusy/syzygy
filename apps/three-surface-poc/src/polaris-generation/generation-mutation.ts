@@ -28,6 +28,7 @@ const CANONICAL_JSON_SOURCE = 'packages/polaris-generation-core/src/canonical-js
 const PARSE_JSON_SOURCE = 'packages/polaris-generation-core/src/parse-json.ts';
 const PIPELINE_SOURCE = 'packages/polaris-generation-core/src/pipeline.ts';
 const PROVIDER_DRAFT_SOURCE = 'packages/polaris-generation-core/src/provider-draft.ts';
+const DRAFT_MODEL_SOURCE = 'packages/polaris-generation-core/src/draft-model.ts';
 
 export function applyLiteralMutation(source: string, mutation: LiteralMutation): string {
   const occurrences = source.split(mutation.from).length - 1;
@@ -124,11 +125,13 @@ export const GENERATION_LITERAL_MUTATIONS: readonly LiteralMutation[] = [
     to: "if (false) void pending.then(r => ports.lateReceipt(permit, { model: r.model, usageUnits: r.usageUnits }), () => undefined).catch(() => undefined);",
     mustFail: ['retains late usage capture even when recording the interruption fails'],
   },
-  // provider-draft.ts
+  // provider-draft.ts. Its `unique()` handle check moved verbatim to
+  // draft-model.ts in 69995614 and provider-draft.ts still calls it, so the
+  // first mutant keeps its id and must-fail tests and targets the new home.
   {
     kind: 'literal',
     id: 'provider-draft-duplicate-handle-check-disabled',
-    file: PROVIDER_DRAFT_SOURCE,
+    file: DRAFT_MODEL_SOURCE,
     description: 'a duplicate local handle (inventory entry id, draft block id, …) is accepted instead of rejected',
     from: "if (set.size !== values.length) throw new Error('duplicate-handle');",
     to: "if (false) throw new Error('duplicate-handle');",
