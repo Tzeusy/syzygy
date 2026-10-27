@@ -1,4 +1,4 @@
-// Hash-call tracer for syzygy-bpyt.6.3 (preloaded with NODE_OPTIONS=--require; not committed).
+// Hash-call tracer for syzygy-bpyt.6.3 (preloaded with NODE_OPTIONS=--require; committed beside the record).
 //
 // Wraps node:crypto createHash so every hash that is created, fed and finalised through it is recorded as
 //   { alg, enc, inDigest, inLen, outDigest, site }
