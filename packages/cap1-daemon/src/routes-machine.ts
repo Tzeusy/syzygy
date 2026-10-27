@@ -17,9 +17,9 @@ import {
   type RepositoryCoverage,
   type StateRendering,
 } from '@syzygy/cap1-core';
+import type { Route } from '@syzygy/http-host';
 
 import type { ProjectEvaluation } from './pipeline.js';
-import type { Route } from './server.js';
 
 // RT4 — the authenticated JSON machine endpoint (CAP1-REQ-040..046,
 // 060, 062..064 at the transport). This module is TRANSPORT ONLY: every
