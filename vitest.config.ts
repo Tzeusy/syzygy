@@ -4,6 +4,7 @@ import { defineConfig } from 'vitest/config';
 export default defineConfig({
   resolve: {
     alias: {
+      '@syzygy/support': fileURLToPath(new URL('./packages/support/src/index.ts', import.meta.url)),
       '@syzygy/polaris-generation-core/live': fileURLToPath(new URL('./packages/polaris-generation-core/src/live.ts', import.meta.url)),
       '@syzygy/polaris-generation-core': fileURLToPath(new URL('./packages/polaris-generation-core/src/index.ts', import.meta.url)),
       '@syzygy/polaris-generation-consent/live': fileURLToPath(new URL('./packages/polaris-generation-consent/src/live.ts', import.meta.url)),
@@ -19,6 +20,9 @@ export default defineConfig({
       '@syzygy/cap1-daemon': fileURLToPath(
         new URL('./packages/cap1-daemon/src/index.ts', import.meta.url),
       ),
+      '@syzygy/http-host': fileURLToPath(
+        new URL('./packages/http-host/src/index.ts', import.meta.url),
+      ),
       '@syzygy/three-surface-poc-core': fileURLToPath(
         new URL('./packages/three-surface-poc-core/src/index.ts', import.meta.url),
       ),
@@ -31,6 +35,13 @@ export default defineConfig({
     maxWorkers: '50%',
     setupFiles: [fileURLToPath(new URL('./vitest.setup.ts', import.meta.url))],
     projects: [
+      {
+        extends: true,
+        test: {
+          name: '@syzygy/support',
+          include: ['packages/support/src/**/*.test.ts'],
+        },
+      },
       {
         extends: true,
         test: {
@@ -64,6 +75,13 @@ export default defineConfig({
         test: {
           name: '@syzygy/cap1-daemon',
           include: ['packages/cap1-daemon/src/**/*.test.ts'],
+        },
+      },
+      {
+        extends: true,
+        test: {
+          name: '@syzygy/http-host',
+          include: ['packages/http-host/src/**/*.test.ts'],
         },
       },
       {

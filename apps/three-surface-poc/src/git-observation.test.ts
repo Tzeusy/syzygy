@@ -111,6 +111,13 @@ describe('read-only Git observation', () => {
     expect(pocObserverInputsAreClean({ changedPaths: ['package.json'] })).toBe(false);
   });
 
+  // syzygy-bpyt.7.3: the host the POC serves through moved out of cap1-daemon; its bytes are still a runtime input.
+  // syzygy-bpyt.7.14: so is its manifest, which names the entry the POC resolves.
+  it('protects the HTTP host package the POC serves through', () => {
+    expect(pocObserverInputsAreClean({ changedPaths: ['packages/http-host/src/server.ts'] })).toBe(false);
+    expect(pocObserverInputsAreClean({ changedPaths: ['packages/http-host/package.json'] })).toBe(false);
+  });
+
   it('identifies clean and dirty states without refreshing the index', () => {
     const root = repositoryWithFile('src/example.ts');
 

@@ -1,4 +1,4 @@
-import { createHash } from 'node:crypto';
+import { sha256 } from '@syzygy/support';
 
 import { canonicalJson } from './project-shape-manifest.js';
 
@@ -230,7 +230,7 @@ export function buildResponseIdentity(
       `response identity canonicalization failed: ${cause instanceof Error ? cause.message : String(cause)}`,
     );
   }
-  const contentKey = `sha256:${createHash('sha256').update(serialized).digest('hex')}`;
+  const contentKey = `sha256:${sha256(serialized)}`;
   return Object.freeze({
     contentKey,
     excludes: Object.freeze([...activeDeclaration.excludes]),

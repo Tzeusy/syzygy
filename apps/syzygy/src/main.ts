@@ -31,12 +31,12 @@
 
 import * as path from 'node:path';
 import {
-  createDaemon,
   evaluateProject,
   humanRoutes,
   machineRoutes,
   type EntrySourceRead,
 } from '@syzygy/cap1-daemon';
+import { closeOnSignal, createDaemon } from '@syzygy/http-host';
 import { isArgvFault, readArgv } from '@syzygy/polaris-dossier/argv';
 import { resolvePathIntent } from '@syzygy/polaris-dossier/state-directory';
 
@@ -271,21 +271,14 @@ async function main(): Promise<number> {
     ].join('\n'),
   );
 
-  await new Promise<void>((resolve) => {
-    let closing = false;
-    const shutdown = (signal: string): void => {
-      if (closing) return;
-      closing = true;
-      process.stdout.write(`syzygy daemon: ${signal} received, shutting down\n`);
-      void daemon.close().then(resolve, (cause: unknown) => {
-        process.stderr.write(
-          `syzygy daemon: close failed: ${cause instanceof Error ? cause.message : String(cause)}\n`,
-        );
-        resolve();
-      });
-    };
-    process.on('SIGINT', () => shutdown('SIGINT'));
-    process.on('SIGTERM', () => shutdown('SIGTERM'));
+  await closeOnSignal(daemon, {
+    onSignal: (signal, listener) => { process.on(signal, listener); },
+    announce: (signal) => { process.stdout.write(`syzygy daemon: ${signal} received, shutting down\n`); },
+    closeFailed: (cause) => {
+      process.stderr.write(
+        `syzygy daemon: close failed: ${cause instanceof Error ? cause.message : String(cause)}\n`,
+      );
+    },
   });
   return 0;
 }
