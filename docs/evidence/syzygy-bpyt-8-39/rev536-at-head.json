@@ -1,13 +1,13 @@
 {
- "tree": "/var/tmp/la-b839/head",
- "head": "308a62f4a48e47b625aeff9cc718b1b2c37161f8",
+ "tree": "/tmp/la-r541/head",
+ "head": "5f0d5547dfe7f89adf3e86310f819ddeebfaae90",
  "results": [
   {
    "id": "RV536-M1-https-url-reads-outside",
    "outcome": "killed",
    "exit": 1,
    "tests": [
-    "Tests  1 failed | 168 passed (169)"
+    "Tests  1 failed | 170 passed (171)"
    ],
    "testFiles": [
     "Test Files  1 failed | 3 passed (4)"
@@ -16,7 +16,7 @@
     "FAIL   @syzygy/polaris-generation-core  packages/polaris-generation-core/src/workspace-reach.test.ts > the shared workspace resolver > reads a bare name declared as a remote tarball URL dependency as naming no module"
    ],
    "timeouts": 0,
-   "seconds": 9.3,
+   "seconds": 3.6,
    "counts": [
     {
      "file": "packages/polaris-generation-core/src/workspace-reach.testkit.ts",
@@ -37,7 +37,7 @@
    "outcome": "killed",
    "exit": 1,
    "tests": [
-    "Tests  1 failed | 168 passed (169)"
+    "Tests  1 failed | 170 passed (171)"
    ],
    "testFiles": [
     "Test Files  1 failed | 3 passed (4)"
@@ -46,7 +46,7 @@
     "FAIL   @syzygy/polaris-generation-core  packages/polaris-generation-core/src/workspace-reach.test.ts > the shared workspace resolver > reads a bare name declared as a remote http tarball URL dependency as naming no module"
    ],
    "timeouts": 0,
-   "seconds": 12.0,
+   "seconds": 3.9,
    "counts": [
     {
      "file": "packages/polaris-generation-core/src/workspace-reach.testkit.ts",
@@ -67,7 +67,7 @@
    "outcome": "killed",
    "exit": 1,
    "tests": [
-    "Tests  5 failed | 164 passed (169)"
+    "Tests  6 failed | 165 passed (171)"
    ],
    "testFiles": [
     "Test Files  1 failed | 3 passed (4)"
@@ -75,12 +75,13 @@
    "failed": [
     "FAIL   @syzygy/polaris-generation-core  packages/polaris-generation-core/src/workspace-reach.test.ts > the shared workspace resolver > reads a bare name declared as a .tar dependency as naming no module",
     "FAIL   @syzygy/polaris-generation-core  packages/polaris-generation-core/src/workspace-reach.test.ts > the shared workspace resolver > reads a bare name declared as a .tar.gz dependency as naming no module",
+    "FAIL   @syzygy/polaris-generation-core  packages/polaris-generation-core/src/workspace-reach.test.ts > the shared workspace resolver > reads a bare name declared as a git dependency whose spec ends in a tarball extension as naming no module",
     "FAIL   @syzygy/polaris-generation-core  packages/polaris-generation-core/src/workspace-reach.test.ts > the shared workspace resolver > reads a bare name declared as a remote http tarball URL dependency as naming no module",
     "FAIL   @syzygy/polaris-generation-core  packages/polaris-generation-core/src/workspace-reach.test.ts > the shared workspace resolver > reads a bare name declared as a remote tarball URL dependency as naming no module",
     "FAIL   @syzygy/polaris-generation-core  packages/polaris-generation-core/src/workspace-reach.test.ts > the shared workspace resolver > reads a bare name declared as a tarball dependency as naming no module"
    ],
    "timeouts": 0,
-   "seconds": 8.5,
+   "seconds": 4.4,
    "counts": [
     {
      "file": "packages/polaris-generation-core/src/workspace-reach.testkit.ts",
@@ -101,7 +102,7 @@
    "outcome": "killed",
    "exit": 1,
    "tests": [
-    "Tests  1 failed | 168 passed (169)"
+    "Tests  1 failed | 170 passed (171)"
    ],
    "testFiles": [
     "Test Files  1 failed | 3 passed (4)"
@@ -110,7 +111,7 @@
     "FAIL   @syzygy/polaris-dossier  packages/polaris-dossier/src/argv.test.ts > each policy copy above, against the spec its caller passes > reads every module TypeScript compiles under src, .mts, .cts and .tsx among them, and no test module"
    ],
    "timeouts": 0,
-   "seconds": 11.1,
+   "seconds": 4.2,
    "counts": [
     {
      "file": "packages/polaris-dossier/src/argv.test.ts",
@@ -131,14 +132,14 @@
    "outcome": "survives",
    "exit": 0,
    "tests": [
-    "Tests  169 passed (169)"
+    "Tests  171 passed (171)"
    ],
    "testFiles": [
     "Test Files  4 passed (4)"
    ],
    "failed": [],
    "timeouts": 0,
-   "seconds": 12.1,
+   "seconds": 4.5,
    "counts": [
     {
      "file": "packages/polaris-dossier/src/argv.test.ts",
@@ -159,7 +160,7 @@
    "outcome": "killed",
    "exit": 1,
    "tests": [
-    "Tests  1 failed | 168 passed (169)"
+    "Tests  1 failed | 170 passed (171)"
    ],
    "testFiles": [
     "Test Files  1 failed | 3 passed (4)"
@@ -168,7 +169,7 @@
     "FAIL   @syzygy/polaris-generation-core  packages/polaris-generation-core/src/workspace-reach.test.ts > the shared workspace resolver > reads the workspace root's manifest beside the packages'"
    ],
    "timeouts": 0,
-   "seconds": 10.0,
+   "seconds": 4.1,
    "counts": [
     {
      "file": "packages/polaris-generation-core/src/workspace-reach.testkit.ts",
@@ -189,16 +190,17 @@
    "outcome": "killed",
    "exit": 1,
    "tests": [
-    "Tests  1 failed | 168 passed (169)"
+    "Tests  2 failed | 169 passed (171)"
    ],
    "testFiles": [
     "Test Files  1 failed | 3 passed (4)"
    ],
    "failed": [
-    "FAIL   @syzygy/polaris-generation-core  packages/polaris-generation-core/src/workspace-reach.test.ts > the shared workspace resolver > reads a bare name declared as an npm: alias of a registry package as naming no module"
+    "FAIL   @syzygy/polaris-generation-core  packages/polaris-generation-core/src/workspace-reach.test.ts > the shared workspace resolver > reads a bare name declared as an npm: alias of a registry package as naming no module",
+    "FAIL   @syzygy/polaris-generation-core  packages/polaris-generation-core/src/workspace-reach.test.ts > the shared workspace resolver > reads a bare name declared as an npm: alias with no version as naming no module"
    ],
    "timeouts": 0,
-   "seconds": 10.5,
+   "seconds": 4.7,
    "counts": [
     {
      "file": "packages/polaris-generation-core/src/workspace-reach.testkit.ts",
@@ -219,7 +221,7 @@
    "outcome": "killed",
    "exit": 1,
    "tests": [
-    "Tests  1 failed | 168 passed (169)"
+    "Tests  1 failed | 170 passed (171)"
    ],
    "testFiles": [
     "Test Files  1 failed | 3 passed (4)"
@@ -228,7 +230,7 @@
     "FAIL   @syzygy/polaris-generation-core  packages/polaris-generation-core/src/workspace-reach.test.ts > the shared workspace resolver > reads a bare name the workspace root's manifest declares as a local dependency as naming no module"
    ],
    "timeouts": 0,
-   "seconds": 13.8,
+   "seconds": 3.9,
    "counts": [
     {
      "file": "packages/polaris-generation-core/src/workspace-reach.testkit.ts",
@@ -249,7 +251,7 @@
    "outcome": "killed",
    "exit": 1,
    "tests": [
-    "Tests  1 failed | 168 passed (169)"
+    "Tests  1 failed | 170 passed (171)"
    ],
    "testFiles": [
     "Test Files  1 failed | 3 passed (4)"
@@ -258,7 +260,7 @@
     "FAIL   @syzygy/polaris-generation-core  packages/polaris-generation-core/src/workspace-reach.test.ts > the shared workspace resolver > reads a bare name declared as a dependency on its parent directory as naming no module"
    ],
    "timeouts": 0,
-   "seconds": 9.9,
+   "seconds": 3.3,
    "counts": [
     {
      "file": "packages/polaris-generation-core/src/workspace-reach.testkit.ts",
@@ -279,14 +281,14 @@
    "outcome": "survives",
    "exit": 0,
    "tests": [
-    "Tests  169 passed (169)"
+    "Tests  171 passed (171)"
    ],
    "testFiles": [
     "Test Files  4 passed (4)"
    ],
    "failed": [],
    "timeouts": 0,
-   "seconds": 6.6,
+   "seconds": 3.3,
    "counts": [
     {
      "file": "packages/polaris-dossier/src/argv.test.ts",
@@ -307,14 +309,14 @@
    "outcome": "survives",
    "exit": 0,
    "tests": [
-    "Tests  169 passed (169)"
+    "Tests  171 passed (171)"
    ],
    "testFiles": [
     "Test Files  4 passed (4)"
    ],
    "failed": [],
    "timeouts": 0,
-   "seconds": 8.1,
+   "seconds": 3.6,
    "counts": [
     {
      "file": "packages/polaris-generation-core/src/workspace-reach.testkit.ts",

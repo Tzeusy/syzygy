@@ -1,20 +1,25 @@
 {
  "bead": "syzygy-bpyt.8.39",
  "base": "d38d7a3ce632a34c2a41bdb77ad323ba0b05b777",
- "head": "308a62f4a48e47b625aeff9cc718b1b2c37161f8",
+ "first": "308a62f4a48e47b625aeff9cc718b1b2c37161f8",
+ "head": "5f0d5547dfe7f89adf3e86310f819ddeebfaae90",
  "subject": {
-  "what": "git diff d38d7a3c 308a62f4",
-  "sha256": "23161e16390ce20f76bf1bcec4e06850c1249bb60b742ef9e1ff0f8a8d3defb4",
+  "what": "git diff d38d7a3c 5f0d5547 -- packages/polaris-generation-core/src/workspace-reach.test.ts packages/polaris-generation-core/src/workspace-reach.testkit.ts",
+  "sha256": "4a0291695ff094172f09f21ceaf5caf6eb2c844e9d32c799bff9465e4509feb1",
   "files": {
    "packages/polaris-generation-core/src/workspace-reach.test.ts": {
     "base": "a20cdbc84b4e21ee62d6d06eb2abe8c7a21affa03974a35355a812ac89b7cb1e",
-    "head": "5e3ef214af947bc9455ae4d8ebd56c26d01ffe825c5968ce2d9c8625b36a59a4"
+    "head": "15c395c9e23686d605f39f2bd4ea5f9f52fe3e45cbbce244f752486282758519"
    },
    "packages/polaris-generation-core/src/workspace-reach.testkit.ts": {
     "base": "ed67106fe74333c97f419f4a52f14f75bfaa34bbfa5b41f33c4f1b6545895731",
-    "head": "94c9d93b40cc4f54afc8a6d56d9062b25e27938016edef566d7bd75b6381cbd3"
+    "head": "440209bb6d876b7ae1240a88cd4cf5913b01750a0d9ffa56f90c072be7f76951"
    }
   }
+ },
+ "repair": {
+  "what": "git diff 308a62f4 5f0d5547 -- packages/polaris-generation-core/src/workspace-reach.test.ts packages/polaris-generation-core/src/workspace-reach.testkit.ts",
+  "sha256": "a825177271320866bddbe9ab688d7f0c791b3e4584ee43c4b2add7dd9afefca6"
  },
  "productFilesChanged": [],
  "testkitImporters": [
@@ -35,7 +40,8 @@
    "base": "survives",
    "head": "killed",
    "headFailedRows": [
-    "packages/polaris-generation-core/src/workspace-reach.test.ts > the shared workspace resolver > reads a bare name declared as an npm: alias of a registry package as naming no module"
+    "packages/polaris-generation-core/src/workspace-reach.test.ts > the shared workspace resolver > reads a bare name declared as an npm: alias of a registry package as naming no module",
+    "packages/polaris-generation-core/src/workspace-reach.test.ts > the shared workspace resolver > reads a bare name declared as an npm: alias with no version as naming no module"
    ]
   },
   "RV536-M8-root-declarations-unread": {
@@ -79,18 +85,74 @@
   ],
   "weaker": []
  },
+ "round1Mutants": {
+  "R541-X2-root-devDependencies-unread": {
+   "base": "survives",
+   "head": "killed",
+   "headFailedRows": [
+    "packages/polaris-generation-core/src/workspace-reach.test.ts > the shared workspace resolver > reads a bare name the workspace root's manifest declares as a local dependency as naming no module"
+   ]
+  },
+  "R541-X3-npm-alias-needs-version": {
+   "base": "survives",
+   "head": "killed",
+   "headFailedRows": [
+    "packages/polaris-generation-core/src/workspace-reach.test.ts > the shared workspace resolver > reads a bare name declared as an npm: alias with no version as naming no module"
+   ]
+  },
+  "R541-X5-tarball-arm-skips-hash": {
+   "base": "survives",
+   "head": "killed",
+   "headFailedRows": [
+    "packages/polaris-generation-core/src/workspace-reach.test.ts > the shared workspace resolver > reads a bare name declared as a git dependency whose spec ends in a tarball extension as naming no module"
+   ]
+  },
+  "R541-X6-unscoped-manifests-unread": {
+   "base": "survives",
+   "head": "killed",
+   "headFailedRows": [
+    "packages/polaris-generation-core/src/workspace-reach.test.ts > the shared workspace resolver > reads a bare name the workspace root's manifest declares as a local dependency as naming no module"
+   ]
+  },
+  "R541-X7-http-url-tgz-only": {
+   "base": "survives",
+   "head": "killed",
+   "headFailedRows": [
+    "packages/polaris-generation-core/src/workspace-reach.test.ts > the shared workspace resolver > reads a bare name declared as a remote http tarball URL dependency as naming no module"
+   ]
+  },
+  "R541-X1-root-reads-devDependencies-only": {
+   "base": "survives",
+   "head": "survives",
+   "headFailedRows": []
+  },
+  "R541-X4-npm-arm-case-sensitive": {
+   "base": "survives",
+   "head": "survives",
+   "headFailedRows": []
+  }
+ },
  "fix": {
-  "specs": "docs/evidence/guard-pins-followup-review-2026-10-27/rev536-fix-specs.json",
-  "specsSha256": "db6be993471cd37d6a690a35c88b22d43f2a135606bd038f2631cc84f2b2273b",
-  "edits": 2,
-  "headEqualsBaseWithFix": true,
-  "linesAdded": 9,
+  "specs": [
+   "docs/evidence/guard-pins-followup-review-2026-10-27/rev536-fix-specs.json",
+   "docs/evidence/syzygy-bpyt-8-39/rev541-fix-specs.json"
+  ],
+  "specsSha256": [
+   "db6be993471cd37d6a690a35c88b22d43f2a135606bd038f2631cc84f2b2273b",
+   "50d59d9550e333892885ef3f8c082bf472f9c772d765cb3991a3377a99fe0f20"
+  ],
+  "edits": [
+   2,
+   1
+  ],
+  "headEqualsBaseWithFixes": true,
+  "linesAdded": 11,
   "linesRemoved": 0
  },
  "testkit": {
   "changedLines": {
-   "-": 2,
-   "+": 4
+   "-": 4,
+   "+": 12
   },
   "docCommentLines": {
    "base": [
@@ -99,7 +161,7 @@
    ],
    "head": [
     59,
-    71
+    77
    ]
   },
   "emitEqual": true,
@@ -141,29 +203,30 @@
    "walksEqual": 56,
    "resolvesEqual": 1353
   },
-  "toolSha256": "131206846b062bc60ba7efeb67bf6ecf81802a54921d94979f2bc7428b8afc04"
+  "toolSha256": "131206846b062bc60ba7efeb67bf6ecf81802a54921d94979f2bc7428b8afc04",
+  "oldTestkitSha256": "ed67106fe74333c97f419f4a52f14f75bfaa34bbfa5b41f33c4f1b6545895731"
  },
  "repeats": {
   "runs": 5,
   "passed": [
-   169,
-   169,
-   169,
-   169,
-   169
+   171,
+   171,
+   171,
+   171,
+   171
   ],
   "load1": [
-   51.3,
-   51.3,
-   51.2,
-   50.5,
-   48.9
+   22.0,
+   22.0,
+   22.3,
+   22.1,
+   22.1
   ]
  },
  "titles": {
   "base": 165,
-  "head": 169,
-  "added": 4,
+  "head": 171,
+  "added": 6,
   "removed": 0,
   "perFile": {
    "packages/polaris-dossier/src/argv.test.ts": {
@@ -180,61 +243,60 @@
    },
    "packages/polaris-generation-core/src/workspace-reach.test.ts": {
     "base": 48,
-    "head": 52
+    "head": 54
    }
   },
-  "line": "Tests: +4 ~0 -0"
+  "line": "Tests: +6 ~0 -0"
  },
  "npaProbe": {
   "npaVersion": "12.0.2",
   "node": "v24.6.0",
-  "forms": 46
+  "forms": 48
+ },
+ "npmAliasProbe": {
+  "npm": "11.5.1",
+  "arborist": "9.1.3",
+  "node": "v24.6.0",
+  "cases": 9,
+  "links": [
+   "@syzygy/slib: npm:typescript@*",
+   "wlib: ^1.0.0",
+   "wlib: npm:typescript@*",
+   "wlib: npm:typescript@^1.0.0"
+  ],
+  "registry": [
+   "dossier: npm:typescript",
+   "dossier: npm:typescript@^5.5.0",
+   "dossier: npm:wlib@*",
+   "wlib: ^5.5.0",
+   "wlib: npm:typescript@^5.5.0"
+  ]
+ },
+ "workspaces": {
+  "count": 12,
+  "unscoped": []
  },
  "suite": {
-  "full": {
-   "total": 2169,
-   "passed": 2167,
-   "failed": 1,
-   "skipped": 1,
-   "load1Before": 47.93,
-   "load1After": 56.62
-  },
-  "start-gates-alone": {
-   "total": 104,
-   "passed": 102,
-   "failed": 2,
-   "skipped": 0,
-   "load1Before": 57.8,
-   "load1After": 74.85
-  },
-  "start-gates-timeout-60s": {
-   "total": 104,
-   "passed": 104,
+  "whole": {
+   "command": "npx vitest run --reporter=json",
+   "files": 246,
+   "total": 5385,
+   "passed": 5380,
    "failed": 0,
-   "skipped": 0,
-   "load1Before": 83.34,
-   "load1After": 80.03
-  },
-  "full-timeout-60s": {
-   "total": 2169,
-   "passed": 2168,
-   "failed": 0,
-   "skipped": 1,
-   "load1Before": 65.53,
-   "load1After": 77.63
+   "skipped": 5,
+   "load1Before": 21.18,
+   "load1After": 48.85
   }
  },
- "suiteTimeouts": [
-  "init: the clone holds the consented commit alone (syzygy-qkea.24) refuses config naming a remote, a promisor, an include or a command the agent's git would run (R-POLARIS-DOSSIER-CLONE-SHAPE-2 finding 1)"
- ],
  "tools": {
   "island_diff.py": "131206846b062bc60ba7efeb67bf6ecf81802a54921d94979f2bc7428b8afc04",
   "titles.py": "f93af94f73fc70a5e9de768b146cca579c73eb8663e3285d574c8ad7193697e5",
   "repeat.py": "1c87146329e02d971d45eedc8da090c1fd7805dfa8869d0d4cacda99b63572af",
   "comment_only.cjs": "e987f080a7c873907ce5c3bc409bc2752b9c9a1a1d470f502a992a530f86dd8d",
-  "npa_probe.cjs": "689a192f550955781e4941ea4d87d1fcda8199ddf88e9ff78e7022ecb014cd37",
-  "suite_summary.py": "7dff7d8b9433ba61815ac8f23719e1e2ea6d41593a874f0c7ee30727a5db0c65",
-  "record.py": "f21da6bb693b67654c0742a784cdfe39f35ff045346d189ef9d2c46c8d69025b"
+  "npa_probe.cjs": "fd2e2741433b26255e92f42f4b2522f7957570d312617e7057d2926754a695cf",
+  "npm_alias_probe.py": "5960693079918531475f034732be4615a52eef42537dfe73e3c46a3e39123cd9",
+  "suite_summary.py": "fab8e5251fd7b2560a2e8cb7cdcfd00d3d63b19cdb7cb91d555b479bce7eae8a",
+  "record.py": "c46565eec2c9a5d6fbf26ec106acb281e2f1e8cb487aeef9d1ac25c751429958"
  },
  "faithfulTree": {
   "manifests": 13,

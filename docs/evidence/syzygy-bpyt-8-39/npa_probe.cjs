@@ -1,6 +1,7 @@
 // syzygy-bpyt.8.39: classify every version form the testkit comment and the resolver rows name with npm's own npm-package-arg, beside
 // the tree's LOCAL_VERSION pattern, read from the tree's testkit rather than copied. syzygy-bpyt.8.38's npa_probe.cjs, with the forms
 // this bead's comment and rows add, and for an `npm:` alias the type of the spec after `npm:` (N4: npm accepts only a registry spec).
+// The rows include the two the review of 8.39 added (N1). What npm installs for an alias is npm_alias_probe.py's, not this probe's.
 // Usage: node npa_probe.cjs <tree>
 const fs = require('node:fs');
 const path = require('node:path');
@@ -19,7 +20,7 @@ const forms = {
   rows: ['file:../../packages/lib', 'FILE:../../packages/lib', 'link:../../packages/lib', 'workspace:*', 'npm:@syzygy/lib@*', '../../packages/lib',
     '~/lib', '/srv/lib', 'lib-0.0.0.tgz', './lib', '.', 'lib-0.0.0.tar', 'lib-0.0.0.tar.gz', 'https://example.com/lib-1.0.0.tgz', 'file:../../apps/app',
     '2.9.0', '^1.0.0', 'github:someone/dossier', '~1.2.3', 'git+https://example.com/lib.tgz.git',
-    'http://example.com/lib-1.0.0.tar.gz', 'npm:typescript@^5.5.0', '..'],
+    'http://example.com/lib-1.0.0.tar.gz', 'npm:typescript@^5.5.0', '..', 'github:someone/dossier#v1.tar', 'npm:typescript'],
 };
 const classify = (spec) => {
   let type;

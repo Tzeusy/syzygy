@@ -1,6 +1,6 @@
 {
  "base": "d38d7a3ce632a34c2a41bdb77ad323ba0b05b777",
- "head": "308a62f4a48e47b625aeff9cc718b1b2c37161f8",
+ "head": "5f0d5547dfe7f89adf3e86310f819ddeebfaae90",
  "selftest": false,
  "vitestExit": 0,
  "walks": {
@@ -41,6 +41,6 @@
   "packages/polaris-generation-core/src/zz-836-old-testkit.ts": "ed67106fe74333c97f419f4a52f14f75bfaa34bbfa5b41f33c4f1b6545895731",
   "packages/polaris-generation-core/src/zz-836-old-reach.ts": "869eeb312427ce65ffe0404795b9ac41a1431d929339eda09a0d5d77966ceb7c",
   "packages/polaris-generation-core/src/zz-836-new-reach.ts": "d35dbec4de42c65aad4f0e0d9c1f91fde539e2948435599b5108507315642dee",
-  "packages/polaris-generation-core/src/zz-836-diff.test.ts": "53979811c07756462b2153d86bfd35b75386f07e1db1515edf3634a7008ca0e6"
+  "packages/polaris-generation-core/src/zz-836-diff.test.ts": "92181d72bfdd1c569f513b3b48d3c5e8395274dcceb6f6fa06610f6ff6e68244"
  }
 }

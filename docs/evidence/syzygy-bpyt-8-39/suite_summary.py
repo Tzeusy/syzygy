@@ -1,6 +1,6 @@
-"""syzygy-bpyt.8.39: summarize Vitest JSON reports of the two packages' suites at HEAD into suite.json (the reports, about 750 KB
-each, are not kept). Each run names its tree's commit, its command, the host load printed before and after it, its totals and every
-test that did not pass, with its duration and the first line of its error.
+"""syzygy-bpyt.8.39: summarize Vitest JSON reports of the whole suite at HEAD into suite.json (the reports, about 2 MB each, are not
+kept). Each run names its tree's commit, its command, the host load printed before and after it, its totals and every test that did
+not pass, with its duration and the first line of its error.
 Usage: python3 -I suite_summary.py <tree> <out.json> <label>=<report.json>=<load before>=<load after>=<command> ...
 """
 import json, subprocess, sys

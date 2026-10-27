@@ -1,7 +1,7 @@
 {
  "base": 165,
- "head": 169,
- "added": 4,
+ "head": 171,
+ "added": 6,
  "removed": 0,
  "perFile": {
   "packages/polaris-dossier/src/argv.test.ts": {
@@ -18,7 +18,7 @@
   },
   "packages/polaris-generation-core/src/workspace-reach.test.ts": {
    "base": 48,
-   "head": 52
+   "head": 54
   }
  },
  "duplicatesBase": [],
@@ -30,11 +30,19 @@
   ],
   [
    "packages/polaris-generation-core/src/workspace-reach.test.ts",
+   "the shared workspace resolver > reads a bare name declared as a git dependency whose spec ends in a tarball extension as naming no module"
+  ],
+  [
+   "packages/polaris-generation-core/src/workspace-reach.test.ts",
    "the shared workspace resolver > reads a bare name declared as a remote http tarball URL dependency as naming no module"
   ],
   [
    "packages/polaris-generation-core/src/workspace-reach.test.ts",
    "the shared workspace resolver > reads a bare name declared as an npm: alias of a registry package as naming no module"
+  ],
+  [
+   "packages/polaris-generation-core/src/workspace-reach.test.ts",
+   "the shared workspace resolver > reads a bare name declared as an npm: alias with no version as naming no module"
   ],
   [
    "packages/polaris-generation-core/src/workspace-reach.test.ts",

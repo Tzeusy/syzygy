@@ -238,6 +238,17 @@
    "spec": "..",
    "npa": "directory",
    "local": true
+  },
+  {
+   "spec": "github:someone/dossier#v1.tar",
+   "npa": "git",
+   "local": true
+  },
+  {
+   "spec": "npm:typescript",
+   "npa": "alias",
+   "aliasOf": "range",
+   "local": true
   }
  ]
 }

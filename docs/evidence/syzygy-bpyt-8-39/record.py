@@ -1,62 +1,83 @@
 """syzygy-bpyt.8.39: derive summary.json from the raw outputs beside it, checking each against the git objects of the tree given.
 
-The subject is the code commit HEAD over BASE (main after PR 487): the PR 536 review's notes N1, N2 and N4, and N3's optional comment
-clause. Inputs (all in this directory):
+The subject is the code commits over BASE (main after PR 487), ending at HEAD: FIRST, the PR 536 review's notes N1, N2 and N4, and
+N3's optional comment clause; then HEAD, the repair of round 1 of this bead's own review (R-GP-IMPL-GUARD-PINS-FOLLOWUP-2-1): F1's
+`npm:` clause, N1's two rows and N2's residual. Inputs (all in this directory):
   rev536-at-base.json, rev536-at-head.json  all 11 of the PR 536 reviewer's mutants, run unchanged from
                        docs/evidence/guard-pins-followup-review-2026-10-27/rev536-specs.json at BASE and at HEAD, with that
                        reviewer's copy of mut.py (the PR 524 reviewer's runner);
+  rev541-at-base.json, rev541-at-head.json  all 7 of the round-1 reviewer's own mutants, from rev541-specs.json here (that reviewer's
+                       file, kept unchanged), at BASE and at HEAD, with the same mut.py;
   island-diff.json, island-diff-selftest.json  docs/evidence/syzygy-bpyt-8-36/island_diff.py, old testkit (BASE) against new (HEAD);
   repeat-runs.json, titles.json  docs/evidence/syzygy-bpyt-8-36/repeat.py (the four guard files five times at HEAD) and titles.py
                        (their Vitest titles at both commits);
   comment-only.json    comment_only.cjs here: the testkit's comment-free emit and comment-free print at BASE and HEAD, with its selftest;
   npa-probe.json       npa_probe.cjs here: npm-package-arg's type for every version form the testkit comment and the rows name;
-  suite.json           suite_summary.py here, over Vitest JSON reports of both packages' suites in a clean clone at HEAD;
-  start-gates-default-reporter.log  the one file that failed by timeout in suite.json, run alone with the default reporter.
-The test diff must be exactly the PR 536 reviewer's FIX-rows-only edits (rev536-fix-specs.json) applied to BASE.
-repeat-runs.json, titles.json and npa-probe.json carry no commit of their own; each is tied to HEAD by its content: the repeat total is
-HEAD's title count, every added title's row is in HEAD's blob and not BASE's, and the probe's pattern line is HEAD's.
+  npm-alias-probe.json  npm_alias_probe.py here: what npm installs, offline, for an `npm:` alias under a workspace's name or another;
+  suite.json           suite_summary.py here, over Vitest JSON reports of the whole suite in a clean clone at HEAD.
+The test diff must be exactly the PR 536 reviewer's FIX-rows-only edits (rev536-fix-specs.json), then the round-1 reviewer's
+FIX541-rows-only edits (rev541-fix-specs.json here, kept unchanged), applied to BASE.
+repeat-runs.json, titles.json, npa-probe.json and npm-alias-probe.json carry no commit of their own; each is tied to HEAD by its
+content: the repeat total is HEAD's title count, every added title's row is in HEAD's blob and not BASE's, the npa probe's pattern
+line is HEAD's, and the npm probe's outcomes are the ones HEAD's `npm:` clause states.
 Usage: python3 -I record.py <tree> [--check | --selftest]
   --check: exit 1 unless summary.json equals what the inputs give and no check fails.
   --selftest: mutate one input at a time in memory (rule 6) and exit 1 unless every mutation makes a check fail.
 """
-import copy, hashlib, json, re, subprocess, sys
+import copy, hashlib, json, posixpath, re, subprocess, sys
 from pathlib import Path
 
 TREE = Path(sys.argv[1]).resolve()
 HERE_REL = 'docs/evidence/syzygy-bpyt-8-39'
 HERE = TREE / HERE_REL
 BASE = 'd38d7a3ce632a34c2a41bdb77ad323ba0b05b777'
-HEAD = '308a62f4a48e47b625aeff9cc718b1b2c37161f8'
+FIRST = '308a62f4a48e47b625aeff9cc718b1b2c37161f8'
+HEAD = '5f0d5547dfe7f89adf3e86310f819ddeebfaae90'
 REACH = 'packages/polaris-generation-core/src/workspace-reach.test.ts'
 KIT = 'packages/polaris-generation-core/src/workspace-reach.testkit.ts'
+OLD_KIT = 'packages/polaris-generation-core/src/zz-836-old-testkit.ts'  # island_diff.py's scratch copy of BASE's testkit
 CODE = [REACH, KIT]
 GUARDS = ['packages/polaris-dossier/src/subpath-imports.test.ts', 'packages/polaris-generation-core/src/island-boundary.test.ts', REACH]
-START_GATES = 'packages/polaris-dossier/src/start-gates.test.ts'
 REVIEW_DIR = 'docs/evidence/guard-pins-followup-review-2026-10-27'
 RUNNER = f'{REVIEW_DIR}/tools/mut.py'
 RUNNER_524 = 'docs/evidence/argv-guards-review-2026-10-25/tools/mut.py'
 REVIEW_SPECS = f'{REVIEW_DIR}/rev536-specs.json'
 FIX_SPECS = f'{REVIEW_DIR}/rev536-fix-specs.json'
+# The round-1 reviewer's spec files, kept here unchanged: their sha256 as that review's raw lists them (its section 8).
+SPECS_541 = {'rev541-specs.json': '3f9d1900546b54413766d95a3790db1114ac10f51a79313fcae0d678509d63e7',
+             'rev541-fix-specs.json': '50d59d9550e333892885ef3f8c082bf472f9c772d765cb3991a3377a99fe0f20'}
 TOOLS = {name: f'docs/evidence/syzygy-bpyt-8-36/{name}' for name in ('island_diff.py', 'titles.py', 'repeat.py')}
-OWN_TOOLS = ['comment_only.cjs', 'npa_probe.cjs', 'suite_summary.py', 'record.py']
+OWN_TOOLS = ['comment_only.cjs', 'npa_probe.cjs', 'npm_alias_probe.py', 'suite_summary.py', 'record.py']
 WS = f'{REACH} > the shared workspace resolver > '
 NAMING = lambda label: f'{WS}reads a bare name declared as {label} as naming no module'
 ROOT_DECLARES = f"{WS}reads a bare name the workspace root's manifest declares as a local dependency as naming no module"
-# Each of the review's N1 and N2 targets, and the one new row that must be its only failure at HEAD.
+# Each of the PR 536 review's N1 and N2 targets, and the new rows that must be its only failures at HEAD. M7 has two: the round-1
+# repair's unversioned alias row kills it too.
 TARGETS = {
     'RV536-M2-http-url-reads-outside': [NAMING('a remote http tarball URL dependency')],
-    'RV536-M7-npm-alias-workspace-scope-only': [NAMING('an npm: alias of a registry package')],
+    'RV536-M7-npm-alias-workspace-scope-only': [NAMING('an npm: alias of a registry package'), NAMING('an npm: alias with no version')],
     'RV536-M8-root-declarations-unread': [ROOT_DECLARES],
     'RV536-M9-dotdot-alone-outside': [NAMING('a dependency on its parent directory')],
 }
 # Survivors at both commits, as the review ruled them: M5 and M10 equivalent on the tree, M11 the named 8.38 residual.
 RESIDUAL = ['RV536-M5-tree-depth-two', 'RV536-M10-test-exclusion-end-anchor-dropped', 'RV536-M11-residual-widened']
-# The 4 titles this bead adds, each with the row literal that must be in HEAD's blob and not in BASE's.
+# The round-1 reviewer's mutants: all 7 survive at BASE; at HEAD, each target is killed by these rows alone (X3 and X5 by N1's rows),
+# and X1 and X4 survive, as that review ruled them (its section 7).
+TARGETS_541 = {
+    'R541-X2-root-devDependencies-unread': [ROOT_DECLARES],
+    'R541-X3-npm-alias-needs-version': [NAMING('an npm: alias with no version')],
+    'R541-X5-tarball-arm-skips-hash': [NAMING('a git dependency whose spec ends in a tarball extension')],
+    'R541-X6-unscoped-manifests-unread': [ROOT_DECLARES],
+    'R541-X7-http-url-tgz-only': [NAMING('a remote http tarball URL dependency')],
+}
+RESIDUAL_541 = ['R541-X1-root-reads-devDependencies-only', 'R541-X4-npm-arm-case-sensitive']
+# The 6 titles this bead adds, each with the row literal that must be in HEAD's blob and not in BASE's.
 ADDED = {
     ROOT_DECLARES: (REACH, '''  it("reads a bare name the workspace root's manifest declares as a local dependency as naming no module", () => {\n'''),
     **{NAMING(label): (REACH, f"    ['{label}', 'dossier', {{ dependencies: {{ dossier: '{version}' }} }}, {{}}],\n") for label, version in (
         ('a remote http tarball URL dependency', 'http://example.com/lib-1.0.0.tar.gz'), ('an npm: alias of a registry package', 'npm:typescript@^5.5.0'),
-        ('a dependency on its parent directory', '..'))},
+        ('a dependency on its parent directory', '..'), ('a git dependency whose spec ends in a tarball extension', 'github:someone/dossier#v1.tar'),
+        ('an npm: alias with no version', 'npm:typescript'))},
 }
 # npm-package-arg's type for each form the testkit comment names, as the comment states it.
 CLAIMS = {**{f: 'directory' for f in ('file:../x', '.', '..', './x', '../x', '/x', '~/x')}, **{f: 'file' for f in ('x.tgz', 'x.tar', 'x.tar.gz')},
@@ -66,11 +87,33 @@ CLAIMS = {**{f: 'directory' for f in ('file:../x', '.', '..', './x', '../x', '/x
 # The comment's N4 premise: npm takes only a registry spec after `npm:`, and refuses any other.
 REGISTRY_TYPES = {'range', 'version', 'tag'}
 NOT_REGISTRY_ALIASES = ['npm:./lib', 'npm:file:../lib']
-NAMED_IN_COMMENT = ['`npm:`', '`github:someone/dossier#v1.tar`', '`https://…/x.tgz`', 'npm-package-arg 12.0.2 accepts only a registry spec after `npm:`']
+NAMED_IN_COMMENT = ['`npm:`', '`github:someone/dossier#v1.tar`', '`https://…/x.tgz`', 'npm-package-arg 12.0.2 accepts only a registry spec after `npm:`',
+                    'Residual (the review of 8.39, N2): a workspace whose name is not `@syzygy/`-scoped is read by its bare name as outside the',
+                    '0 of the 12 workspaces are unscoped today']
+# The round-1 reviewer's text for the `npm:` clause (F1), which HEAD's testkit must carry verbatim, and the sentence it replaced.
+F1_CLAUSE = (' * - `npm:`: an alias. npm-package-arg 12.0.2 accepts only a registry spec after `npm:`, and npm fetches that spec from the\n'
+          " *   registry unless the alias is declared under a workspace's own name and that workspace's version satisfies it; then npm links\n"
+          " *   the workspace, as for any dependency declared under a workspace's name (every workspace here is `@syzygy/`-scoped, and the\n"
+          " *   `@syzygy/*` branch reads such a name before this pattern). Its target may carry a workspace package's name, which other\n"
+          ' *   package managers can link locally; every alias is refused, failing closed.\n')
+F1_FALSE = 'npm installs it from the registry'
+# What npm_alias_probe.py must observe for each case, as HEAD's `npm:` clause states it: a link to the workspace's directory, or a
+# registry request for the name given (offline, so ENOTCACHED).
+NPM_EXPECTED = {
+    ('dossier', 'npm:typescript@^5.5.0'): ('registry', 'typescript'), ('dossier', 'npm:wlib@*'): ('registry', 'wlib'),
+    ('dossier', 'npm:typescript'): ('registry', 'typescript'), ('wlib', 'npm:typescript@*'): ('link', 'w'),
+    ('wlib', 'npm:typescript@^1.0.0'): ('link', 'w'), ('wlib', 'npm:typescript@^5.5.0'): ('registry', 'typescript'),
+    ('@syzygy/slib', 'npm:typescript@*'): ('link', 's'), ('wlib', '^1.0.0'): ('link', 'w'), ('wlib', '^5.5.0'): ('registry', 'wlib'),
+}
+NPM_REGISTRY = 'http://127.0.0.1:9/'
 RESIDUAL_FORMS = ['packages/polaris-dossier/', '.hidden-lib', 'a/b/c']
 OUTSIDE_VERSIONS = ['2.9.0', '^1.0.0', 'github:someone/dossier', '~1.2.3', 'git+https://example.com/lib.tgz.git']
 LOCAL_VERSION = re.compile(r'^(?:file:|link:|workspace:|npm:|\.\.?(?:/|$)|/|~/)|\.(?:tgz|tar|tar\.gz)$', re.I)
-STRACE_SKIP = 'no provider call and no transmission (S10), without strace is not proved on this host'
+# The whole suite's five skips: the strace capture this host cannot run, and four tests gated on a live Butlers checkout or a browser.
+SKIPS = ['apps/three-surface-poc/src/polaris-opening-index.browser.test.ts', 'apps/three-surface-poc/src/project-shape-discovery.live.test.ts',
+         'packages/polaris-dossier/src/no-egress.test.ts', 'packages/three-surface-poc-core/src/test-artifact-verification.live.test.ts',
+         'packages/three-surface-poc-core/src/work-items.live.test.ts']
+WHOLE = 'npx vitest run --reporter=json'
 MUTATE = {}
 
 
@@ -170,7 +213,7 @@ def doc_comment_span(text):
 def apply_fix(text, edits, problems):
     for e in edits:
         if e['file'] != REACH or text.count(e['old']) != 1:
-            problems.append(f'fix: an edit is not to {REACH} or its old text does not occur once at BASE')
+            problems.append(f'fix: an edit is not to {REACH} or its old text does not occur once where it applies')
             continue
         text = text.replace(e['old'], e['new'])
     return text
@@ -178,6 +221,8 @@ def apply_fix(text, edits, problems):
 
 def main_summary():
     problems = []
+    tracked = [p for p in git('ls-tree', '-r', '--name-only', '-z', HEAD).split('\0') if p]
+    manifests = [p for p in tracked if p == 'package.json' or re.fullmatch(r'(?:apps|packages)/[^/]+/package\.json', p)]
     review = {m['id']: m for m in json.loads(blob(HEAD, REVIEW_SPECS) or '{"mutants": []}')['mutants']}
     if blob(BASE, REVIEW_SPECS) != blob(HEAD, REVIEW_SPECS) or len(review) != 11:
         problems.append('the reviewer specs differ between BASE and HEAD, or are not 11')
@@ -187,8 +232,8 @@ def main_summary():
         b, h = base.get(i, {}), head.get(i, {})
         if (b.get('outcome'), h.get('outcome')) != ('survives', 'killed'):
             problems.append(f'{i}: {b.get("outcome")} at base, {h.get("outcome")} at head')
-        if h.get('failedRows') != own_rows:
-            problems.append(f'{i}: killed at head by {h.get("failedRows")}, not by its own row alone')
+        if h.get('failedRows') != sorted(own_rows):
+            problems.append(f'{i}: killed at head by {h.get("failedRows")}, not by its own rows alone')
     for i in RESIDUAL:
         if (base.get(i, {}).get('outcome'), head.get(i, {}).get('outcome')) != ('survives', 'survives'):
             problems.append(f'{i}: the residual is not a survivor at both commits')
@@ -204,17 +249,37 @@ def main_summary():
     if compare['weaker']:
         problems.append(f'weaker at head, or not killed at base: {compare["weaker"]}')
 
+    for name, digest in SPECS_541.items():
+        if hooked(f'sha {name}', sha((HERE / name).read_text())) != digest:
+            problems.append(f"{name}: not the round-1 reviewer's file, by the sha256 its raw lists")
+    review541 = {m['id']: m for m in load('rev541-specs.json')['mutants']}
+    if sorted(review541) != sorted([*TARGETS_541, *RESIDUAL_541]):
+        problems.append(f'rev541-specs.json: the mutants are not the 7 named here: {sorted(review541)}')
+    base541 = check_runs('rev541-at-base.json', BASE, review541, problems)
+    head541 = check_runs('rev541-at-head.json', HEAD, review541, problems)
+    for i in review541:
+        if base541.get(i, {}).get('outcome') != 'survives':
+            problems.append(f'{i}: {base541.get(i, {}).get("outcome")} at base, not a survivor')
+    for i, own_rows in TARGETS_541.items():
+        if (head541.get(i, {}).get('outcome'), head541.get(i, {}).get('failedRows')) != ('killed', sorted(own_rows)):
+            problems.append(f'{i}: {head541.get(i, {}).get("outcome")} at head by {head541.get(i, {}).get("failedRows")}, not by its own row alone')
+    for i in RESIDUAL_541:
+        if head541.get(i, {}).get('outcome') != 'survives':
+            problems.append(f'{i}: the named survivor is {head541.get(i, {}).get("outcome")} at head')
+
     fix = {m['id']: m for m in json.loads(blob(HEAD, FIX_SPECS) or '{"mutants": []}')['mutants']}.get('FIX-rows-only', {'edits': []})
-    fixed = hooked('fixed', apply_fix(blob(BASE, REACH) or '', fix['edits'], problems))
-    if not fix['edits'] or fixed != blob(HEAD, REACH):
-        problems.append("fix: HEAD's test file is not the reviewer's FIX-rows-only edits applied to BASE")
+    fix541 = {m['id']: m for m in load('rev541-fix-specs.json')['mutants']}.get('FIX541-rows-only', {'edits': []})
+    first_fixed = apply_fix(blob(BASE, REACH) or '', fix['edits'], problems)
+    fixed = hooked('fixed', apply_fix(first_fixed, fix541['edits'], problems))
+    if not fix['edits'] or not fix541['edits'] or first_fixed != blob(FIRST, REACH) or fixed != blob(HEAD, REACH):
+        problems.append("fix: FIRST's test file is not FIX-rows-only applied to BASE, or HEAD's is not FIX541-rows-only applied to FIRST's")
     reach_lines = diff_lines(REACH)
     if any(sign == '-' for sign, _, _ in reach_lines):
         problems.append(f'{REACH}: the subject removes a line')
 
     kit_lines = diff_lines(KIT)
     spans = {'-': doc_comment_span(blob(BASE, KIT) or ''), '+': doc_comment_span(blob(HEAD, KIT) or '')}
-    outside = [line for line in kit_lines if spans[line[0]] is None or not spans[line[0]][0] < line[1] < spans[line[0]][1]
+    outside = [line for line in kit_lines if spans[line[0]] is None or not spans[line[0]][0] < line[1] <= spans[line[0]][1]
                or not re.match(r' \* ', line[2])]
     if not kit_lines or outside:
         problems.append(f'testkit: a changed line is not a ` * ` line inside the LOCAL_VERSION doc comment: {outside[:1]}')
@@ -232,6 +297,8 @@ def main_summary():
     for d, label in ((diff, 'island-diff'), (selftest, 'island-diff-selftest')):
         if (d['base'], d['head'], d['cleanAfter'], d['vitestExit'], d['toolSha256']) != (BASE, HEAD, True, 0, tool):
             problems.append(f'{label}: base, head, clean tree, exit or tool digest is not as required')
+        if d.get('scratchSha256', {}).get(OLD_KIT) != sha(blob(BASE, KIT) or ''):
+            problems.append(f"{label}: the old testkit it compared is not BASE's testkit blob")
     if diff['selftest'] or diff['walks']['equal'] != diff['walks']['entries'] or diff['resolves']['equal'] != diff['resolves']['specifiers'] \
             or diff['walks']['unequal'] or diff['resolves']['unequal']:
         problems.append('island-diff: an answer differs')
@@ -246,7 +313,7 @@ def main_summary():
             or titles['duplicatesBase'] or titles['duplicatesHead']:
         problems.append('titles: a title was removed, the arithmetic does not close, or a title is duplicated')
     if sorted(added) != sorted(ADDED):
-        problems.append(f'titles: added {sorted(set(added) ^ set(ADDED))[:2]} beyond or short of the 4 rows this bead adds')
+        problems.append(f'titles: added {sorted(set(added) ^ set(ADDED))[:2]} beyond or short of the {len(ADDED)} titles this bead adds')
     for title, (path, fragment) in ADDED.items():
         if (blob(HEAD, path) or '').count(fragment) != 1 or fragment in (blob(BASE, path) or ''):
             problems.append(f'titles: the row of {title.rsplit(" > ", 1)[-1]!r} is not new at HEAD')
@@ -267,11 +334,18 @@ def main_summary():
     if not aliases or any(r.get('aliasOf') not in REGISTRY_TYPES for r in aliases) \
             or any(comment.get(form, {}).get('npa') != 'throws aliases only work for registry deps' for form in NOT_REGISTRY_ALIASES):
         problems.append('npa-probe: npm takes an alias of a spec that is not a registry spec')
+    kit = hooked('kit', blob(HEAD, KIT) or '')
     for words in NAMED_IN_COMMENT:
-        if words not in (blob(HEAD, KIT) or ''):
+        if words not in kit:
             problems.append(f'testkit comment: does not name {words}')
+    if kit.count(F1_CLAUSE) != 1 or F1_FALSE in kit:
+        problems.append("testkit comment: the `npm:` clause is not the round-1 reviewer's text, or the false sentence remains")
+    workspaces = hooked('workspaces', {p: json.loads(blob(HEAD, p))['name'] for p in manifests if p != 'package.json'})
+    if json.loads(blob(HEAD, 'package.json')).get('workspaces') != ['packages/*', 'apps/*'] or len(workspaces) != 12 \
+            or [name for name in workspaces.values() if not name.startswith('@syzygy/')]:
+        problems.append(f'workspaces: not the 12 `@syzygy/`-scoped ones the N2 residual counts: {sorted(workspaces.values())}')
     for form in RESIDUAL_FORMS:
-        if (comment.get(form, {}).get('npa'), comment.get(form, {}).get('local')) != ('directory', False) or f'`{form}`' not in (blob(HEAD, KIT) or ''):
+        if (comment.get(form, {}).get('npa'), comment.get(form, {}).get('local')) != ('directory', False) or f'`{form}`' not in kit:
             problems.append(f'npa-probe: the residual {form} is not a directory npm reads that the pattern leaves outside, named in the comment')
     for r in probe['rows']:
         if f": '{r['spec']}' }}" not in (blob(HEAD, REACH) or '') or r['local'] != (r['spec'] not in OUTSIDE_VERSIONS):
@@ -279,71 +353,78 @@ def main_summary():
     if sorted(r['spec'] for r in probe['rows'] if not r['local']) != sorted(OUTSIDE_VERSIONS):
         problems.append('npa-probe: the outside rows are not the five controls')
 
+    npm = load('npm-alias-probe.json')
+    if (npm['npm'], npm['registry'], npm['offline'], npm['workspaces']) != ('11.5.1', NPM_REGISTRY, True, {'w': 'wlib', 's': '@syzygy/slib'}):
+        problems.append('npm-alias-probe: not npm 11.5.1, offline against the unreachable registry, over the two workspaces')
+    declared = [next(iter(r['declared'].items())) for r in npm['results'] if len(r['declared']) == 1]
+    if sorted(declared) != sorted(NPM_EXPECTED) or len(declared) != len(npm['results']):
+        problems.append('npm-alias-probe: the cases are not the nine named here, each once')
+    for r, (name, spec) in zip(npm['results'], declared):
+        kind, what = NPM_EXPECTED.get((name, spec), (None, None))
+        link = r['installedLink'] and posixpath.normpath(posixpath.join(posixpath.dirname(f'node_modules/{name}'), r['installedLink']))
+        observed = ('link', what) if (r['lockExit'], r['lockEntry'], r['installExit'], link, r['appLoads']) == (
+            0, {'resolved': what, 'link': True}, 0, what, {'packageJson': f'{what}/package.json', 'name': npm['workspaces'].get(what), 'version': '1.0.0'}) \
+            else ('registry', r['wouldRequest'][len(NPM_REGISTRY):]) if r['lockExit'] and r['errorCode'] == 'ENOTCACHED' and (r['wouldRequest'] or '').startswith(NPM_REGISTRY) \
+            and (r['lockEntry'], r['installExit'], r['installedLink'], r['appLoads']) == (None, None, None, None) else None
+        if observed != (kind, what):
+            problems.append(f'npm-alias-probe: {name}: {spec} gives {observed}, not {(kind, what)} as the `npm:` clause states')
+
     suite = load('suite.json')
-    runs = {r['label']: r for r in suite['runs']}
-    full, lifted, alone, alone_lifted = (runs.get(k, {}) for k in ('full', 'full-timeout-60s', 'start-gates-alone', 'start-gates-timeout-60s'))
-    if suite['commit'] != HEAD or not suite['cleanAfter'] or sorted(runs) != ['full', 'full-timeout-60s', 'start-gates-alone', 'start-gates-timeout-60s']:
-        problems.append('suite: not a clean tree at HEAD, or not the four runs')
-    skips = lambda r: [t for t in r.get('notPassed', []) if t['status'] != 'failed']
-    for r in (full, lifted):
-        if r.get('files') != 55 or r.get('total') != r.get('passed', 0) + r.get('failed', 0) + r.get('skipped', 0) \
-                or len(skips(r)) != 1 or not skips(r)[0]['name'].startswith(STRACE_SKIP) or skips(r)[0]['status'] != 'skipped':
-            problems.append(f'suite {r.get("label")}: totals do not close, or a test other than the strace capture did not run')
-    if not lifted.get('success') or lifted.get('failed') or lifted.get('total') != full.get('total'):
-        problems.append('suite: the run with a 60 s test timeout failed, or ran another population')
-    timed_out = sorted(t['name'] for t in full.get('notPassed', []) if t['status'] == 'failed')
-    if any(t['file'] != START_GATES or t['ms'] < 5000 for t in full.get('notPassed', []) if t['status'] == 'failed'):
-        problems.append(f'suite: the full run failed outside {START_GATES}, or before the 5 s timeout')
-    if not timed_out or not set(timed_out) <= {t['name'] for t in alone.get('notPassed', []) if t['status'] == 'failed'} \
-            or any(t['ms'] < 5000 for t in alone.get('notPassed', [])) or not alone_lifted.get('success') or alone_lifted.get('notPassed') \
-            or alone_lifted.get('total') != alone.get('total'):
-        problems.append('suite: the full run\'s failures do not recur alone by timeout, or the file fails with a 60 s timeout')
-    log = (HERE / 'start-gates-default-reporter.log').read_text()
-    if HEAD not in log.splitlines()[0] or log.count('Error: Test timed out in 5000ms.') != len([t for t in alone.get('notPassed', []) if t['status'] == 'failed']) \
-            or 'Tests  2 failed | 102 passed (104)' not in log:
-        problems.append('start-gates log: not at HEAD, or its failures are not the timeouts of the run alone')
-    gates = hooked('start-gates', blob(HEAD, START_GATES) or '')
-    if 'workspace-reach' in gates:
-        problems.append(f'{START_GATES}: imports a file the subject changes')
+    whole = {r['label']: r for r in suite['runs']}.get('whole', {})
+    if suite['commit'] != HEAD or not suite['cleanAfter'] or [r['label'] for r in suite['runs']] != ['whole'] or whole.get('command') != WHOLE:
+        problems.append('suite: not one run of the whole suite in a clean tree at HEAD')
+    not_passed = whole.get('notPassed', [])
+    if not whole.get('success') or whole.get('failed') or whole.get('total') != whole.get('passed', 0) + whole.get('skipped', 0) \
+            or whole.get('skipped') != len(not_passed) or sorted(t['file'] for t in not_passed) != SKIPS or any(t['status'] != 'skipped' for t in not_passed):
+        problems.append('suite: a test failed, the totals do not close, or a test other than the five known skips did not run')
+    if whole.get('files', 0) < 246:
+        problems.append(f'suite: {whole.get("files")} files, fewer than the whole suite')
 
     runner = sha(blob(HEAD, RUNNER) or '')
     if runner != sha(blob(HEAD, RUNNER_524) or 'x'):
         problems.append("the mutant runner is not the PR 524 reviewer's mut.py")
-    changed = hooked('names', git('diff', '--name-only', BASE, HEAD).split())
+    # Round 1's evidence commit sits between FIRST and HEAD, so the commits also touch this directory; nothing else may change.
+    changed = hooked('names', [p for p in git('diff', '--name-only', BASE, HEAD).split() if not p.startswith(f'{HERE_REL}/')])
     if sorted(changed) != sorted(CODE):
         problems.append(f'the subject touches {changed}, not the two files')
     importers = hooked('importers', sorted(line.split(':', 1)[1] for line in git('grep', '-l', '-F', 'workspace-reach.testkit', HEAD, '--',
                                                                                  'apps', 'packages', 'scripts').split()))
     if importers != sorted(GUARDS):
         problems.append(f'the testkit is imported by {importers}, not the three guard tests')
-    tracked = [p for p in git('ls-tree', '-r', '--name-only', '-z', HEAD).split('\0') if p]
-    manifests = [p for p in tracked if p == 'package.json' or re.fullmatch(r'(?:apps|packages)/[^/]+/package\.json', p)]
     versions = [[p, field, name, version] for p in manifests for field in ('dependencies', 'devDependencies', 'optionalDependencies', 'peerDependencies')
                 for name, version in json.loads(blob(HEAD, p)).get(field, {}).items()]
     return {
-        'bead': 'syzygy-bpyt.8.39', 'base': BASE, 'head': HEAD,
-        'subject': {'what': f'git diff {BASE[:8]} {HEAD[:8]}', 'sha256': sha(git('diff', BASE, HEAD)),
+        'bead': 'syzygy-bpyt.8.39', 'base': BASE, 'first': FIRST, 'head': HEAD,
+        'subject': {'what': f'git diff {BASE[:8]} {HEAD[:8]} -- {" ".join(CODE)}', 'sha256': sha(git('diff', BASE, HEAD, '--', *CODE)),
                     'files': {f: {'base': sha(blob(BASE, f)), 'head': sha(blob(HEAD, f))} for f in CODE}},
+        'repair': {'what': f'git diff {FIRST[:8]} {HEAD[:8]} -- {" ".join(CODE)}', 'sha256': sha(git('diff', FIRST, HEAD, '--', *CODE))},
         'productFilesChanged': [f for f in changed if f not in CODE],
         'testkitImporters': importers,
         'mutRunnerSha256': runner,
         'targets': {i: {'base': base.get(i, {}).get('outcome'), 'head': head.get(i, {}).get('outcome'),
                         'headFailedRows': head.get(i, {}).get('failedRows')} for i in [*TARGETS, *RESIDUAL]},
         'otherReviewMutants': compare,
-        'fix': {'specs': FIX_SPECS, 'specsSha256': sha(blob(HEAD, FIX_SPECS) or ''), 'edits': len(fix['edits']), 'headEqualsBaseWithFix': fixed == blob(HEAD, REACH),
+        'round1Mutants': {i: {'base': base541.get(i, {}).get('outcome'), 'head': head541.get(i, {}).get('outcome'),
+                              'headFailedRows': head541.get(i, {}).get('failedRows')} for i in [*TARGETS_541, *RESIDUAL_541]},
+        'fix': {'specs': [FIX_SPECS, f'{HERE_REL}/rev541-fix-specs.json'], 'specsSha256': [sha(blob(HEAD, FIX_SPECS) or ''), SPECS_541['rev541-fix-specs.json']],
+                'edits': [len(fix['edits']), len(fix541['edits'])], 'headEqualsBaseWithFixes': fixed == blob(HEAD, REACH),
                 'linesAdded': len(reach_lines), 'linesRemoved': 0},
         'testkit': {'changedLines': {'-': sum(1 for l in kit_lines if l[0] == '-'), '+': sum(1 for l in kit_lines if l[0] == '+')},
                     'docCommentLines': {'base': spans['-'], 'head': spans['+']},
                     'emitEqual': only['emitEqual'], 'printEqual': only['printEqual'], 'typescript': only['typescript'], 'selftest': st},
         'islandDiff': {'walks': {k: diff['walks'][k] for k in ('entries', 'equal', 'answersSha256')},
                        'resolves': {k: diff['resolves'][k] for k in ('files', 'specifiers', 'equal', 'byAnswer', 'answersSha256')},
-                       'selftest': {'walksEqual': selftest['walks']['equal'], 'resolvesEqual': selftest['resolves']['equal']}, 'toolSha256': tool},
+                       'selftest': {'walksEqual': selftest['walks']['equal'], 'resolvesEqual': selftest['resolves']['equal']}, 'toolSha256': tool,
+                       'oldTestkitSha256': diff.get('scratchSha256', {}).get(OLD_KIT)},
         'repeats': {'runs': len(repeat['runs']), 'passed': [r['passed'] for r in repeat['runs']], 'load1': [r['load1'] for r in repeat['runs']]},
         'titles': {'base': titles['base'], 'head': titles['head'], 'added': len(added), 'removed': titles['removed'], 'perFile': per_file,
                    'line': f'Tests: +{len(added)} ~0 -{titles["removed"]}'},
         'npaProbe': {'npaVersion': probe['npaVersion'], 'node': probe['node'], 'forms': len(probe['comment']) + len(probe['rows'])},
-        'suite': {r['label']: {k: r[k] for k in ('total', 'passed', 'failed', 'skipped', 'load1Before', 'load1After')} for r in suite['runs']},
-        'suiteTimeouts': timed_out,
+        'npmAliasProbe': {'npm': npm['npm'], 'arborist': npm['arborist'], 'node': npm['node'], 'cases': len(npm['results']),
+                          'links': sorted(f'{n}: {s}' for (n, s), (k, _) in NPM_EXPECTED.items() if k == 'link'),
+                          'registry': sorted(f'{n}: {s}' for (n, s), (k, _) in NPM_EXPECTED.items() if k == 'registry')},
+        'workspaces': {'count': len(workspaces), 'unscoped': [n for n in workspaces.values() if not n.startswith('@syzygy/')]},
+        'suite': {r['label']: {k: r[k] for k in ('command', 'files', 'total', 'passed', 'failed', 'skipped', 'load1Before', 'load1After')} for r in suite['runs']},
         'tools': {**{name: sha(blob(HEAD, path) or '') for name, path in TOOLS.items()},
                   **{name: sha((HERE / name).read_text()) for name in OWN_TOOLS}},
         'faithfulTree': {'manifests': len(manifests), 'dependencyVersions': len(versions),
@@ -365,6 +446,10 @@ def run(d, label):
     return next(r for r in d['runs'] if r['label'] == label)
 
 
+def case(d, name, spec):
+    return next(r for r in d['results'] if r['declared'] == {name: spec})
+
+
 SELFTEST = {
     'a target that survives at head': {'rev536-at-head.json': lambda d: (first(d, 'RV536-M8-root-declarations-unread').update(outcome='survives', exit=0, failed=[]), d)[1]},
     'a target killed at base': {'rev536-at-base.json': lambda d: (kill(first(d, 'RV536-M2-http-url-reads-outside')), d)[1]},
@@ -378,15 +463,32 @@ SELFTEST = {
     'an outcome that disagrees with its exit': {'rev536-at-base.json': lambda d: (first(d, 'RV536-M4-census-takes-ts-md').update(exit=0), d)[1]},
     'a run whose edits are not its spec': {'rev536-at-base.json': lambda d: (first(d, 'RV536-M2-http-url-reads-outside')['edits'][0].update(new='x'), d)[1]},
     'a tree left dirty': {'rev536-at-head.json': lambda d: (first(d, 'RV536-M10-test-exclusion-end-anchor-dropped').update(cleanAfter=False), d)[1]},
+    'a round-1 target that survives at head': {'rev541-at-head.json': lambda d: (first(d, 'R541-X3-npm-alias-needs-version').update(outcome='survives', exit=0, failed=[]), d)[1]},
+    'a round-1 target killed at base': {'rev541-at-base.json': lambda d: (kill(first(d, 'R541-X5-tarball-arm-skips-hash')), d)[1]},
+    'a round-1 target killed by another row too': {'rev541-at-head.json': lambda d: (first(d, 'R541-X5-tarball-arm-skips-hash')['failed'].append('FAIL   @syzygy/x  ' + ROOT_DECLARES), d)[1]},
+    'a round-1 survivor killed at head': {'rev541-at-head.json': lambda d: (kill(first(d, 'R541-X1-root-reads-devDependencies-only')), d)[1]},
+    'a round-1 run at another commit': {'rev541-at-base.json': lambda d: (d.update(head=HEAD), d)[1]},
+    'a round-1 run missing a mutant': {'rev541-at-head.json': lambda d: (d.update(results=[r for r in d['results'] if r['id'] != 'R541-X4-npm-arm-case-sensitive']), d)[1]},
+    "a round-1 spec file that is not the reviewer's": {'@sha rev541-specs.json': lambda digest: '0' * 64},
+    "a round-1 fix spec file that is not the reviewer's": {'@sha rev541-fix-specs.json': lambda digest: '0' * 64},
+    'a round-1 spec set short of a mutant': {'rev541-specs.json': lambda d: (d.update(mutants=d['mutants'][:-1]), d)[1]},
+    'a round-1 fix with no edits': {'rev541-fix-specs.json': lambda d: (next(m for m in d['mutants'] if m['id'] == 'FIX541-rows-only').update(edits=[]), d)[1]},
     "a test file that is not the reviewer's fix": {'@fixed': lambda text: text.replace("'..'", "'../'", 1)},
     'a line removed from the test file': {f'@lines {REACH}': lambda lines: [*lines, ['-', 90, "    ['a ./ path dependency', ..."]]},
     'a code line changed in the testkit': {f'@lines {KIT}': lambda lines: [*lines, ['+', 70, 'const LOCAL_VERSION = /^file:/iu;']]},
     'a comment line changed outside the doc comment': {f'@lines {KIT}': lambda lines: [*lines, ['+', 3, ' * x']]},
+    'a changed line on the LOCAL_VERSION line itself': {f'@lines {KIT}': lambda lines: [*lines, ['+', 78, ' * x']]},
+    "a testkit without the reviewer's npm: text": {'@kit': lambda kit: kit.replace('then npm links', 'then npm fetches', 1)},
+    'a testkit that keeps the false sentence': {'@kit': lambda kit: kit + '// npm installs it from the registry\n'},
+    'a testkit without the N2 residual count': {'@kit': lambda kit: kit.replace('0 of the 12 workspaces are unscoped today', '', 1)},
+    'an unscoped workspace': {'@workspaces': lambda names: {**names, 'packages/plainlib/package.json': 'plainlib'}},
     'a comment-free emit that differs': {'comment-only.json': lambda d: (d.update(emitEqual=False), d)[1]},
     'a comment-only check of another blob': {'comment-only.json': lambda d: (d.update(headSha256='0' * 64), d)[1]},
     'a comment-only selftest that misses a rename': {'comment-only.json': lambda d: (d['selftest']['identifierRenamed'].update(printEqual=True), d)[1]},
     'a walk that differs': {'island-diff.json': lambda d: (d['walks'].update(equal=d['walks']['equal'] - 1), d)[1]},
     'an island diff by another tool': {'island-diff.json': lambda d: (d.update(toolSha256='0' * 64), d)[1]},
+    'an island diff over another old testkit': {'island-diff.json': lambda d: (d['scratchSha256'].update({OLD_KIT: '0' * 64}), d)[1]},
+    'an island selftest over another old testkit': {'island-diff-selftest.json': lambda d: (d['scratchSha256'].pop(OLD_KIT), d)[1]},
     'a differential selftest that changes nothing': {'island-diff-selftest.json': lambda d: (d['resolves'].update(equal=d['resolves']['specifiers']), d['walks'].update(equal=d['walks']['entries']), d)[2]},
     'a repeat run that fails': {'repeat-runs.json': lambda d: (d['runs'][2].update(failed=['x'], passed=d['runs'][2]['passed'] - 1), d)[1]},
     "a repeat run of BASE's population": {'repeat-runs.json': lambda d: ([r.update(total=165, passed=165) for r in d['runs']], d)[1]},
@@ -398,13 +500,23 @@ SELFTEST = {
     'an alias of a non-registry spec': {'npa-probe.json': lambda d: (next(r for r in d['rows'] if r['spec'] == 'npm:typescript@^5.5.0').update(aliasOf='git'), d)[1]},
     'a residual the pattern refuses': {'npa-probe.json': lambda d: (next(r for r in d['comment'] if r['spec'] == 'a/b/c').update(local=True), d)[1]},
     'a row version on the wrong side': {'npa-probe.json': lambda d: (next(r for r in d['rows'] if r['spec'] == '..').update(local=False), d)[1]},
+    'an npm case that links where the clause says registry': {'npm-alias-probe.json': lambda d: (case(d, 'wlib', 'npm:typescript@^5.5.0').update(
+        lockExit=0, errorCode=None, wouldRequest=None, lockEntry={'resolved': 'w', 'link': True}, installExit=0, installedLink='../w',
+        appLoads={'packageJson': 'w/package.json', 'name': 'wlib', 'version': '1.0.0'}), d)[1]},
+    'an npm case that fetches where the clause says link': {'npm-alias-probe.json': lambda d: (case(d, 'wlib', 'npm:typescript@*').update(
+        lockExit=1, errorCode='ENOTCACHED', wouldRequest='http://127.0.0.1:9/typescript', lockEntry=None, installExit=None, installedLink=None, appLoads=None), d)[1]},
+    'an npm registry case that requests another name': {'npm-alias-probe.json': lambda d: (case(d, 'dossier', 'npm:wlib@*').update(wouldRequest='http://127.0.0.1:9/typescript'), d)[1]},
+    'an npm link to another workspace': {'npm-alias-probe.json': lambda d: (case(d, '@syzygy/slib', 'npm:typescript@*').update(installedLink='../../w'), d)[1]},
+    'an npm case where Node loads another package': {'npm-alias-probe.json': lambda d: (case(d, 'wlib', '^1.0.0')['appLoads'].update(name='typescript'), d)[1]},
+    'an npm probe against a reachable registry': {'npm-alias-probe.json': lambda d: (d.update(registry='https://registry.npmjs.org/'), d)[1]},
+    'an npm probe missing a case': {'npm-alias-probe.json': lambda d: (d.update(results=d['results'][:-1]), d)[1]},
     'a suite at another commit': {'suite.json': lambda d: (d.update(commit=BASE), d)[1]},
-    'a lifted-timeout suite with a failure': {'suite.json': lambda d: (run(d, 'full-timeout-60s').update(success=False, failed=1, passed=run(d, 'full-timeout-60s')['passed'] - 1), d)[1]},
-    'a full-suite failure in another file': {'suite.json': lambda d: (run(d, 'full')['notPassed'].append({'file': REACH, 'name': 'x', 'status': 'failed', 'ms': 9000, 'error': ''}), d)[1]},
-    'a full-suite failure before the timeout': {'suite.json': lambda d: (next(t for t in run(d, 'full')['notPassed'] if t['status'] == 'failed').update(ms=40), d)[1]},
-    'a start-gates file that fails with a 60 s timeout': {'suite.json': lambda d: (run(d, 'start-gates-timeout-60s').update(success=False), d)[1]},
-    'a full suite that skips another test': {'suite.json': lambda d: (run(d, 'full')['notPassed'].append({'file': REACH, 'name': 'y', 'status': 'skipped', 'ms': None, 'error': ''}), d)[1]},
-    'a start-gates file that imports the testkit': {'@start-gates': lambda text: text + "\nimport './workspace-reach.testkit.js';\n"},
+    'a whole suite with a failure': {'suite.json': lambda d: (run(d, 'whole').update(success=False, failed=1, passed=run(d, 'whole')['passed'] - 1), d)[1]},
+    'a whole suite that skips another test': {'suite.json': lambda d: (run(d, 'whole')['notPassed'].append({'file': REACH, 'name': 'y', 'status': 'skipped', 'ms': None, 'error': ''}),
+                                                                  run(d, 'whole').update(skipped=6, passed=run(d, 'whole')['passed'] - 1), d)[2]},
+    'a suite of two packages only': {'suite.json': lambda d: (run(d, 'whole').update(command=WHOLE + ' --project @syzygy/polaris-dossier'), d)[1]},
+    'a whole suite whose totals do not close': {'suite.json': lambda d: (run(d, 'whole').update(total=run(d, 'whole')['total'] + 1), d)[1]},
+    'a whole suite over fewer files': {'suite.json': lambda d: (run(d, 'whole').update(files=55), d)[1]},
     'a product file in the subject': {'@names': lambda names: [*names, 'packages/polaris-dossier/src/argv.ts']},
     'a product module importing the testkit': {'@importers': lambda names: sorted([*names, 'apps/syzygy/src/main.ts'])},
 }
