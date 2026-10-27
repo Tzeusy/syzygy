@@ -100,6 +100,8 @@ describe('the shared workspace resolver', () => {
     ['a remote http tarball URL dependency', 'dossier', { dependencies: { dossier: 'http://example.com/lib-1.0.0.tar.gz' } }, {}],
     ['an npm: alias of a registry package', 'dossier', { dependencies: { dossier: 'npm:typescript@^5.5.0' } }, {}],
     ['a dependency on its parent directory', 'dossier', { dependencies: { dossier: '..' } }, {}],
+    ['a git dependency whose spec ends in a tarball extension', 'dossier', { dependencies: { dossier: 'github:someone/dossier#v1.tar' } }, {}],
+    ['an npm: alias with no version', 'dossier', { dependencies: { dossier: 'npm:typescript' } }, {}],
     ['a file: dependency of another package', 'dossier', {}, { dependencies: { dossier: 'file:../../apps/app' } }],
   ])('reads a bare name declared as %s as naming no module', (_form, specifier, app, lib) => {
     expect(resolveIn(workspace({}, undefined, app, lib), 'apps/app/src/main.ts', specifier)).toBeUndefined();
