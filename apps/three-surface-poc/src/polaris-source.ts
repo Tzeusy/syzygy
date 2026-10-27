@@ -1,4 +1,4 @@
-import { escapeHtml } from '@syzygy/cap1-daemon';
+import { escapeHtml } from '@syzygy/http-host';
 import type { PocModel, ProjectShape } from '@syzygy/three-surface-poc-core';
 
 import { resolveVerbatim, type VerbatimLeafReader, type VerbatimResolution } from './capability-detail.js';

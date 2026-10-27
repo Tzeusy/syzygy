@@ -1,4 +1,4 @@
-import { escapeHtml } from '@syzygy/cap1-daemon';
+import { escapeHtml } from '@syzygy/http-host';
 import type { PocModel } from '@syzygy/three-surface-poc-core';
 
 import { exactTablesSection } from './exact-tables.js';
