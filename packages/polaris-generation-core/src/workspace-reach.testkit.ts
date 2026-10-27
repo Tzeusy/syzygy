@@ -7,7 +7,9 @@ import { fileURLToPath } from 'node:url';
 // specifier resolves through its package's `exports`, where `./dist/X.js` is `src/X.ts`. Each guard says which edges a module has.
 // A specifier the walk cannot follow as Node would reads as naming no module, so both guards' "resolves every" rows fail on it: an
 // absolute path, a `file:` URL, a `#` alias the importing package's `imports` does not name, and an entry whose conditions name
-// more than one target (syzygy-bpyt.8.36, the review of 8.34, N1). A `#` alias it names is followed to its target.
+// more than one target (syzygy-bpyt.8.36, the review of 8.34, N1); and a bare name some manifest declares as a local dependency,
+// which npm installs under that name from a directory or another package's name (syzygy-bpyt.8.37, the review of 8.36, N2). A `#`
+// alias it names is followed to its target.
 
 export const ROOT = fileURLToPath(new URL('../../../', import.meta.url));
 
@@ -16,11 +18,17 @@ export interface ReachEdge { readonly from: string; readonly specifier: string; 
 export const isFile = (path: string): boolean => existsSync(join(ROOT, path)) && statSync(join(ROOT, path)).isFile();
 export const readModule = (path: string): string => readFileSync(join(ROOT, path), 'utf8');
 
-export interface Manifest { readonly name: string; readonly dir: string; readonly exports?: Record<string, unknown>; readonly imports?: Record<string, unknown>; readonly main?: string }
-/** What a resolver reads: each package's manifest by its name, and which paths are files. */
+type Dependencies = Readonly<Record<string, string>>;
+export interface Manifest {
+  readonly name: string; readonly dir: string; readonly exports?: Record<string, unknown>; readonly imports?: Record<string, unknown>; readonly main?: string;
+  readonly dependencies?: Dependencies; readonly devDependencies?: Dependencies; readonly optionalDependencies?: Dependencies; readonly peerDependencies?: Dependencies;
+}
+/** What a resolver reads: each manifest by its name, the workspace root's among them, and which paths are files. */
 export interface Workspace { readonly manifests: ReadonlyMap<string, Manifest>; readonly isFile: (path: string) => boolean }
 
 const manifests = new Map<string, Manifest>();
+const root = JSON.parse(readModule('package.json')) as Omit<Manifest, 'dir'>;
+manifests.set(root.name, { dir: '.', ...root });
 for (const parent of ['apps', 'packages']) {
   for (const name of readdirSync(join(ROOT, parent))) {
     const path = `${parent}/${name}/package.json`;
@@ -29,7 +37,7 @@ for (const parent of ['apps', 'packages']) {
     manifests.set(manifest.name, { dir: `${parent}/${name}`, ...manifest });
   }
 }
-const WORKSPACE: Workspace = { manifests, isFile };
+export const WORKSPACE: Workspace = { manifests, isFile };
 
 /** The one target an `exports` or `imports` entry names: a string, or an object whose conditions other than `types` all name the
  * same string. Node takes the first condition it matches, so `node` or `module-sync` ahead of `import` changes what it loads. */
@@ -48,6 +56,30 @@ function moduleIn(workspace: Workspace, dir: string, target: string): string | u
   return workspace.isFile(module) ? module : undefined;
 }
 
+/** A dependency version the guards treat as possibly local, so a bare name declared with it names no module:
+ * - `file:`, or a path (`.`, `..`, `./x`, `../x`, `/x`, `~/x`) or tarball name (`x.tgz`, `x.tar`, `x.tar.gz`): npm reads each
+ *   as a directory or a file;
+ * - `link:` and `workspace:`: npm does not install them at all (npm-package-arg 12.0.2 throws EUNSUPPORTEDPROTOCOL), and other
+ *   package managers link them locally;
+ * - `npm:`: an alias of another package, which may be a workspace package's name. An alias of a registry package is refused too,
+ *   failing closed.
+ * The tarball arm also matches a tarball URL (`https://…/x.tgz`), which npm types as `remote`; it is refused too, failing closed.
+ * Residual (syzygy-bpyt.8.38): npm also reads a directory spec with no leading `./`, `../`, `/` or `~/` (`packages/polaris-dossier/`,
+ * `.hidden-lib`, `a/b/c`) as a directory. Those still read as outside the workspace; widening the pattern to them changes what the
+ * guards refuse and needs a GP-Q0 ruling first. */
+const LOCAL_VERSION = /^(?:file:|link:|workspace:|npm:|\.\.?(?:\/|$)|\/|~\/)|\.(?:tgz|tar|tar\.gz)$/iu;
+
+/** Every name any manifest declares a local dependency under. npm installs a dependency where every workspace module resolves it. */
+function localNames(workspace: Workspace): Set<string> {
+  const names = new Set<string>();
+  for (const manifest of workspace.manifests.values()) {
+    for (const field of [manifest.dependencies, manifest.devDependencies, manifest.optionalDependencies, manifest.peerDependencies]) {
+      for (const [name, version] of Object.entries(field ?? {})) if (LOCAL_VERSION.test(version)) names.add(name);
+    }
+  }
+  return names;
+}
+
 /** The module a specifier names in `workspace`, null for one outside the workspace (`node:*`, a dependency), or undefined when it
  * names none. */
 export function resolveIn(workspace: Workspace, from: string, specifier: string): string | null | undefined {
@@ -63,7 +95,7 @@ export function resolveIn(workspace: Workspace, from: string, specifier: string)
     return target.startsWith('./') ? moduleIn(workspace, owner.dir, target) : resolveIn(workspace, from, target);
   }
   const named = /^(@syzygy\/[^/]+)(\/.*)?$/u.exec(specifier);
-  if (named === null) return null;
+  if (named === null) return localNames(workspace).has(/^(?:@[^/]+\/)?[^/]+/u.exec(specifier)![0]) ? undefined : null;
   const manifest = workspace.manifests.get(named[1]!);
   if (manifest === undefined) return undefined;
   const subpath = named[2] === undefined ? '.' : `.${named[2]}`;

@@ -318,6 +318,7 @@ These gates remain open; none of them is on the launch path.
 | Craft amendment CC-TEST-2 | Awaiting confirmation at the current digest | `INSTALL-RECORD.md` **2026-08-06** correction block |
 | Topology bundle | Candidate — no act performed | `.syzygy/map/topology-candidates/BUNDLE-MANIFEST.md` |
 | Project overview | Draft — awaiting adoption | `.syzygy/intent/OVERVIEW.md` |
+| Governing-intent value once per observation (P-115, `syzygy-318o`) | [Observed 2026-10-27] Owner selected A for `three-surface-poc-governedby-reference-amendment-v1.0`. The canonical recorder wrote the dedicated and aggregate sign-off records and verified the exact six-file applied result. Semantic round 4 remains `CONFIRM WITH EXCEPTIONS`; its coordinator-preparation note was closed before the owner offer. The signed specification serves one complete governing-intent Unknown per observation with local item references; it preserves distinct claims and complete served/rendered counts. This is a machine compatibility change. Product implementation, migration and runtime conformance remain separately gated; actual payload savings remain Unknown. The sign-off record owns the version binding and scope. | `decisions/THREE-SURFACE-POC-GOVERNEDBY-REFERENCE-AMENDMENT-SIGNOFF-v1.0.md`; `decisions/ACCEPTANCE-ACT-RECORD.md` |
 | Doctrine amendment D3 (bounded missions) | Proposed — adopt, amend, or decline. **D4 was ruled 2026-08-18** (inside VIS-4's bounds; reviewer's §1.2 wording designated) — a D3 rev2 and its VIS-3 fresh-reader review precede act 5 | `contracts/candidates/DOCTRINE-AMENDMENT-BOUNDED-MISSION-D3.md` (rev1); `decisions/D4-RULING-DECISION.md` |
 | Knowledge-hygiene craft policy | Candidate — own craft act (P-12) | `policy-candidates/CRAFT-KNOWLEDGE-HYGIENE-POLICY.md` |
 | Decision-record convention (P-43) | Open — not launch-gating; earliest gate is a deferral-bearing administration | `decisions/PENDING-OWNER-DECISIONS.md` row P-43 |
@@ -401,6 +402,7 @@ python3 scripts/record_versioned_signoff.py --check pwb-accessible-name-amendmen
 python3 scripts/record_versioned_signoff.py --check pwb-opening-index-amendment --version 1.0   # opening-index sign-off, v1.0 2026-10-15: record, aggregate block and applied tree
 python3 scripts/record_versioned_signoff.py --check three-surface-poc-governing-intent-amendment --version 1.0   # POC governing-intent sign-off, v1.0 2026-10-14: record, applied rows, aggregate block and applied tree
 python3 scripts/record_versioned_signoff.py --check three-surface-poc-vocabulary-epistemic-amendment --version 1.0   # POC vocabulary/epistemic sign-off, v1.0 2026-10-15: record, aggregate block and applied tree
+python3 scripts/record_versioned_signoff.py --check three-surface-poc-governedby-reference-amendment --version 1.0   # P-115 v1.0 sign-off, 2026-10-27: exact records, successor chain and six applied subjects
 python3 scripts/record_versioned_signoff.py --check cap1-trusted-bootstrap-consent --version 1.0   # CAP1 consent adoption, v1.0 2026-10-15: record, aggregate block and applied overlay
 python3 scripts/record_versioned_signoff.py --check polaris-dossier-local-agent-mode --version 1.0   # dossier local-agent sign-off, v1.0 2026-10-06: record, aggregate block and applied tree
 python3 scripts/record_versioned_signoff.py --check polaris-dossier-local-agent-mode --version 1.1   # dossier local-agent sign-off, v1.1 2026-10-07: record, options, aggregate block and applied tree
@@ -409,6 +411,9 @@ python3 scripts/record_versioned_signoff.py --check polaris-dossier-local-agent-
 python3 scripts/record_pwb_behavior_amendment_acts.py --check render-mode 527be5ac3732619608355ae9658c92cee45341e831521bc526398481dd915785 --date 2026-10-02   # render-mode act, performed 2026-10-02: record, aggregate block and applied tree
 python3 scripts/record_pwb_behavior_amendment_acts.py --check machine-view acabc7915e4461186b5878ce40cc0c62ed7cf91eadd7eead1cb179c80f672e72 --date 2026-10-02   # machine-view act, performed 2026-10-02: record, aggregate block and applied tree
 python3 scripts/record_versioned_signoff.py --selftest   # version-tagged sign-off recorder (Scope A); per-package --check lines join the battery with each sign-off
+python3 scripts/prepare_three_surface_poc_governedby_reference_recording.py --check   # P-115 unsigned candidate or exact signed successor; grants no authority
+python3 scripts/prepare_three_surface_poc_governedby_reference_recording.py --selftest   # P-115 recording, successor and unresolved-impact refusal fixtures
+python3 scripts/build_three_surface_poc_vocabulary_epistemic_amendment.py --selftest   # P-108 historical fixtures retain the adopted POC-REQ-014 guard
 python3 scripts/pwb_signed_selftest.py --selftest   # reruns a signed builder's fixtures against its pre-adoption tree (git archive; needs full history)
 python3 scripts/build_pwb_missing_currency_disclosure_scenario.py --selftest   # missing-currency builder fixtures, at its pre-adoption tree
 python3 scripts/build_pwb_dismissal_expiry_amendment.py --selftest   # dismissal-expiry builder fixtures, at its pre-adoption tree
@@ -476,7 +481,7 @@ python3 scripts/record_narrative_profile_adoption.py --check --date 2026-10-07 -
 python3 scripts/record_rfc5_project_documentation_act.py --selftest   # rfc5 --selftest
 ```
 
-The one hundred and nine checks above are the same one hundred and nine the hosted workflow runs
+The one hundred and thirteen checks above are the same one hundred and thirteen the hosted workflow runs
 (`.github/workflows/governance-docs.yml`), so "hosted CI is green" and "the
 battery is clean" are one claim rather than two a reader conflates. The
 `git tag` line is orientation, not a check — it prints and cannot fail.
