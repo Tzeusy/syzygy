@@ -94,7 +94,7 @@ for s in census['sites']:
                           'a hosted run does not bound it at or under the threshold'))
     rows.append(row)
 count = lambda k: sum(1 for r in rows if r['decision'] == k)
-out = {'tool': 'decide.py', 'census': census['commit'], 'rule': {'testThresholdMs': TEST_THRESHOLD_MS, 'hookThresholdMs': HOOK_THRESHOLD_MS, 'text': __doc__.split('\n\n')[2]},
+out = {'tool': 'decide.py', 'census': census['commit'], 'rule': {'testThresholdMs': TEST_THRESHOLD_MS, 'hookThresholdMs': HOOK_THRESHOLD_MS, 'text': '\n\n'.join(__doc__.split('\n\n')[2:])},
        'sites': len(rows), 'decisions': {k: count(k) for k in ('cited', 'blocked', 'remove', 'keep')}, 'rows': rows}
 open(out_path, 'w', encoding='utf8').write(json.dumps(out, indent=1, ensure_ascii=False) + '\n')
 print(json.dumps(out['decisions']))

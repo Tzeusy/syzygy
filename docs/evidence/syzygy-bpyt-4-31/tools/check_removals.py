@@ -67,7 +67,7 @@ for row in decisions['rows']:
                  'full': {'holds': full_ok, 'bounds': bounds}, 'holds': alone_ok and full_ok})
 out = {'tool': 'check_removals.py', 'base': decisions['census'], 'headRecordCommits': sorted({r['alone']['recordCommit'] for r in rows} - {None}),
        'fullRuns': [{'run': r['runId'], 'commit': r['headSha'], 'conclusion': r['conclusion']} for r in full['runs']],
-       'rule': __doc__.split('\n\n')[2], 'removals': len(rows), 'holding': sum(r['holds'] for r in rows),
+       'rule': '\n\n'.join(__doc__.split('\n\n')[2:4]), 'removals': len(rows), 'holding': sum(r['holds'] for r in rows),
        'notHolding': [r['site'] for r in rows if not r['holds']], 'rows': rows}
 open(out_path, 'w', encoding='utf8').write(json.dumps(out, indent=1, ensure_ascii=False) + '\n')
 print(f"{out['holding']} of {out['removals']} removals hold; not holding: {out['notHolding']}")

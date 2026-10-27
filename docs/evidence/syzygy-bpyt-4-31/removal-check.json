@@ -31,7 +31,7 @@
    "conclusion": "exit 1"
   }
  ],
- "rule": "DECISIONS.json is decide.py's output at the base; HEAD-SITE-DURATIONS.json is site_durations.py run over the base census and the\nrecords re-measured at the head (5 alone runs of each file with a removal), which HEAD-RECORDS-DIR holds; FULL-RUNS.json is ci_durations.py --local over saved\nlogs of full `npx vitest run` runs at the head, where every removed timeout has fallen back to vitest's default. A removal holds when",
+ "rule": "DECISIONS.json is decide.py's output at the base; HEAD-SITE-DURATIONS.json is site_durations.py run over the base census and the\nrecords re-measured at the head (5 alone runs of each file with a removal), which HEAD-RECORDS-DIR holds; FULL-RUNS.json is ci_durations.py --local over saved\nlogs of full `npx vitest run` runs at the head, where every removed timeout has fallen back to vitest's default. A removal holds when\n\n  alone   the head records observed it at least 5 times, every observation passed, and its worst is at or under its threshold;\n  full    in every full run the site is bounded at or under its threshold: a test by its own line, which must be a pass (in a\n          file that passed, no line means under 300 ms; a file with a failure lists every test, so there no line bounds nothing),\n          and a hook by its file's duration less the tests listed beneath it.",
  "removals": 58,
  "holding": 49,
  "notHolding": [
