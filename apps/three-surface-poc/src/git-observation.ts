@@ -177,12 +177,14 @@ export function pocObserverInputsAreClean(
   observation: Pick<GitObservation, 'changedPaths'>,
 ): boolean {
   const exactInputs = new Set(['package.json', 'package-lock.json', 'tsconfig.base.json']);
+  // Every workspace package the daemon imports needs a prefix here; git-observation.test.ts derives that set from main.ts.
   const inputPrefixes = [
     'apps/three-surface-poc/',
     'packages/three-surface-poc-core/',
     'packages/cap1-daemon/',
     'packages/http-host/',
     'packages/cap1-core/',
+    'packages/support/',
   ];
   return observation.changedPaths.every(
     (changedPath) =>
