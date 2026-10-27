@@ -164,7 +164,7 @@ describe('the S10 bundle takes each workspace package from the source its entry 
     } finally {
       fs.rmSync(out, { recursive: true, force: true });
     }
-  }, 120_000);
+  });
 
   it('fails the bundle when an @syzygy specifier resolves outside them', async () => {
     const outside = build({
