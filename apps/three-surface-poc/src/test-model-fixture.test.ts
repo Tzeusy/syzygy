@@ -117,7 +117,7 @@ describe('fixture directory names (syzygy-bpyt.4.10)', () => {
     expect(names.filter((name) => new RegExp(`^${FIXTURE_PREFIX}${owner}-[A-Za-z0-9]{6}$`).test(name))).toHaveLength(2);
     expect(names).toHaveLength(3);
     expect(copies.map((copy) => copy.repoRoot.startsWith(join(tmp, `${FIXTURE_PREFIX}${owner}-`)))).toEqual([true, true]);
-  }, 30_000);
+  }, 30_000); // makes a template and two fixture copies with git: worst 3.5 s over 5 alone runs at load1 107-143 (docs/evidence/syzygy-bpyt-4-31/durations/test-model-fixture.test.tests.json)
 
   it('does not sweep when a file makes its template: the sweep is the global setup\'s, once per run', async () => {
     const { helper, tmp } = await freshHelper();
@@ -128,5 +128,5 @@ describe('fixture directory names (syzygy-bpyt.4.10)', () => {
     helper.fixtureRepoWithGit([]);
     expect(existsSync(join(tmp, leftover))).toBe(true);
     expect(readdirSync(tmp)).toHaveLength(3);
-  }, 30_000);
+  }, 30_000); // makes a template and one fixture copy with git: worst 4.3 s over 5 alone runs at load1 107-143 (docs/evidence/syzygy-bpyt-4-31/durations/test-model-fixture.test.tests.json)
 });

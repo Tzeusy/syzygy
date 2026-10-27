@@ -29,7 +29,7 @@ describe.skipIf(executable === undefined)('Trajectory narrowing to the governing
 
   beforeAll(async () => {
     browser = await launchBrowser(executable as string);
-  }, 60_000);
+  });
 
   afterAll(async () => {
     await browser?.close();

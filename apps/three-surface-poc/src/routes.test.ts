@@ -5,7 +5,7 @@ import { tmpdir } from 'node:os';
 import { dirname, join } from 'node:path';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
-import { createDaemon, type Route, type RunningDaemon } from '@syzygy/cap1-daemon';
+import { createDaemon, type Route, type RunningDaemon } from '@syzygy/http-host';
 import { BUTLERS_POC_SEEDS, buildPocModel, buildResponseIdentity, type PocModel } from '@syzygy/three-surface-poc-core';
 
 import { POC_MACHINE_PATH, POLARIS_PRESENTATION_PATH, pocRoutes, renderPocPage } from './routes.js';

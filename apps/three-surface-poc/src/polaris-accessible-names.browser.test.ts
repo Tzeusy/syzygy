@@ -16,7 +16,7 @@ import { pathToFileURL } from 'node:url';
 
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
-import { createDaemon, type RunningDaemon } from '@syzygy/cap1-daemon';
+import { createDaemon, type RunningDaemon } from '@syzygy/http-host';
 import { PWB_RESOURCE_LIMITS, type PocModel } from '@syzygy/three-surface-poc-core';
 
 import { findBrowserExecutable, launchBrowser, type Browser } from './cdp-browser.js';
@@ -184,7 +184,7 @@ describe.skipIf(executable === undefined)('PWB-REQ-016 names and headings in a r
   beforeAll(async () => {
     browser = await launchBrowser(executable as string);
     pages = mkdtempSync(join(tmpdir(), 'syzygy-poc-names-'));
-  }, 60_000);
+  });
 
   afterAll(async () => {
     await browser?.close();
@@ -312,7 +312,7 @@ describe.skipIf(executable === undefined)('PWB-REQ-016 names and headings in a r
     // one of them carries its source path (the rule is exercised, not vacuous).
     expect((report.pages[0] as PageNameHeadingReport).sharedLabelGroups).toBeGreaterThan(0);
     expect(report.violations).toEqual([]);
-  }, 240_000);
+  }, 240_000); // a fixture model build and a browser sweep of every served page: worst 5.6 s over 5 alone runs at load1 35-42 (docs/evidence/syzygy-bpyt-4-31/durations/polaris-accessible-names.browser.test.tests.json)
 
   it('fails a listed page the daemon does not serve, never skipping it', async () => {
     const model = buildFixtureModel(cleanups, { projectShape: { authority: ADMITTING_AUTHORITY, runGit: projectShapeFixtureGit(PROJECT_SHAPE_FIXTURE_TEXTS_WITH_BASELINE_SPEC) } });
@@ -326,7 +326,7 @@ describe.skipIf(executable === undefined)('PWB-REQ-016 names and headings in a r
       expect({ listed: report.pagesListed, swept: report.pagesSwept }).toEqual({ listed: 17, swept: 16 });
       expect(report.violations.map((violation) => violation.kind)).toEqual(['page-not-served', 'page-not-swept']);
     } finally { await tab.close(); }
-  }, 240_000);
+  }, 240_000); // a fixture model build, a daemon and a browser sweep: worst 4.1 s over 5 alone runs at load1 35-42 (docs/evidence/syzygy-bpyt-4-31/durations/polaris-accessible-names.browser.test.tests.json)
 
   // Every shape and judgment state the task-4.4 variants render, each served
   // whole: a degraded or refused shape lists fewer sources, never none silently.
@@ -340,6 +340,6 @@ describe.skipIf(executable === undefined)('PWB-REQ-016 names and headings in a r
       expect({ listed: report.pagesListed, swept: report.pagesSwept }).toEqual({ listed: EXPECTED_PAGES[variant.id], swept: EXPECTED_PAGES[variant.id] });
       for (const swept of report.pages) expect(swept.levelOneHeadings, swept.page).toBe(1);
       expect(report.violations).toEqual([]);
-    }, 240_000);
+    }, 240_000); // a browser sweep of every served page: worst 5.0 s over 30 alone runs (6 variants) at load1 35-42 (docs/evidence/syzygy-bpyt-4-31/durations/polaris-accessible-names.browser.test.tests.json)
   }
 });

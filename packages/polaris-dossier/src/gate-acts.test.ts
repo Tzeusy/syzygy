@@ -80,7 +80,7 @@ const notEstablished = (what: string) => ({
 const D9_WHAT = 'the D9 text (SEC-3 amendment)';
 const RFC720_WHAT = 'the RFC7-20 reading (POLARIS-DOSSIER-LOCAL-AGENT-RULINGS-2026-10-05, item 1)';
 const UNSTATED = { stated: false, why: 'no admitted project input record (REQ-polaris-generation-001) for this subject exists, so whether a kernel evidence drawer exists is not stated' };
-/** These walk the whole real decisions tree, or eight worlds in turn: about 2-5 s unloaded, past vitest's 5 s default under load. */
+/** These walk the whole real decisions tree, or eight worlds in turn: about 2-5 s unloaded, past vitest's 5 s default under load (0a08add9). */
 const TREE_TIMEOUT = 60_000;
 const CLASSES = ['governance-text', 'code-structure', 'code-content', 'evidence-content', 'derived-composites'];
 

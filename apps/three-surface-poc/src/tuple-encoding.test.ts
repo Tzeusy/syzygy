@@ -4,7 +4,7 @@ import { join } from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { afterAll, afterEach, beforeAll, describe, expect, it } from 'vitest';
 
-import { createDaemon, type RunningDaemon } from '@syzygy/cap1-daemon';
+import { createDaemon, type RunningDaemon } from '@syzygy/http-host';
 import type { PocModel } from '@syzygy/three-surface-poc-core';
 
 import { TAILNET_HOST } from './browser-origin.js';
@@ -309,7 +309,7 @@ describe('tuple field encoding tables (syzygy-dov.3.2; P-70 M3 slice 5)', () => 
         expect((perPage[POLARIS_HUMAN_PATH] as BrowserTupleCensus).glossaryRows).toBe(12);
       }
     });
-  }, 60_000);
+  }, 60_000); // eight served-page loads in a real browser: worst 7.6 s over 5 alone runs at load1 62-71 (docs/evidence/syzygy-bpyt-4-31/durations/tuple-encoding.test.tests.json)
 });
 
 interface BrowserTupleCensus {

@@ -3,6 +3,12 @@ import type { RunningDaemon } from './server.js';
 // The signal handling both entries repeated (apps/syzygy and the
 // Three-Surface POC, syzygy-bpyt.7.3): the first SIGINT or SIGTERM
 // closes the daemon once, and every later signal does nothing.
+//
+// Only this block is shared (syzygy-bpyt.7.15). Each entry keeps its own
+// createDaemon call, start-failure line and listening banner: the two
+// banners share no line, and the POC redacts a start failure's detail
+// (its startup-detail.ts) where the Capability 1 daemon prints it whole,
+// so a shared helper would take every one of them as a parameter.
 
 export type ShutdownSignal = 'SIGINT' | 'SIGTERM';
 
