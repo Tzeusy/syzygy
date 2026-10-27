@@ -1,0 +1,97 @@
+{
+ "tree": "a clone at HEAD",
+ "commit": "308a62f4a48e47b625aeff9cc718b1b2c37161f8",
+ "cleanAfter": true,
+ "runs": [
+  {
+   "label": "full",
+   "command": "npx vitest run --project @syzygy/polaris-generation-core --project @syzygy/polaris-dossier --reporter=json",
+   "load1Before": 47.93,
+   "load1After": 56.62,
+   "success": false,
+   "files": 55,
+   "total": 2169,
+   "passed": 2167,
+   "failed": 1,
+   "skipped": 1,
+   "notPassed": [
+    {
+     "file": "packages/polaris-dossier/src/no-egress.test.ts",
+     "name": "no provider call and no transmission (S10), without strace is not proved on this host: strace is unavailable, so the capture is skipped, never reported as passed",
+     "status": "skipped",
+     "ms": null,
+     "error": ""
+    },
+    {
+     "file": "packages/polaris-dossier/src/start-gates.test.ts",
+     "name": "init: the clone holds the consented commit alone (syzygy-qkea.24) refuses config naming a remote, a promisor, an include or a command the agent's git would run (R-POLARIS-DOSSIER-CLONE-SHAPE-2 finding 1)",
+     "status": "failed",
+     "ms": 5195,
+     "error": "Error: STACK_TRACE_ERROR"
+    }
+   ]
+  },
+  {
+   "label": "start-gates-alone",
+   "command": "npx vitest run --project @syzygy/polaris-dossier packages/polaris-dossier/src/start-gates.test.ts --reporter=json",
+   "load1Before": 57.8,
+   "load1After": 74.85,
+   "success": false,
+   "files": 1,
+   "total": 104,
+   "passed": 102,
+   "failed": 2,
+   "skipped": 0,
+   "notPassed": [
+    {
+     "file": "packages/polaris-dossier/src/start-gates.test.ts",
+     "name": "init: a run that passes every start gate pins the consented HEAD, records the subject and writes only run.json under the state root",
+     "status": "failed",
+     "ms": 5644,
+     "error": "Error: STACK_TRACE_ERROR"
+    },
+    {
+     "file": "packages/polaris-dossier/src/start-gates.test.ts",
+     "name": "init: the clone holds the consented commit alone (syzygy-qkea.24) refuses config naming a remote, a promisor, an include or a command the agent's git would run (R-POLARIS-DOSSIER-CLONE-SHAPE-2 finding 1)",
+     "status": "failed",
+     "ms": 5074,
+     "error": "Error: STACK_TRACE_ERROR"
+    }
+   ]
+  },
+  {
+   "label": "start-gates-timeout-60s",
+   "command": "npx vitest run --project @syzygy/polaris-dossier packages/polaris-dossier/src/start-gates.test.ts --testTimeout=60000 --reporter=json",
+   "load1Before": 83.34,
+   "load1After": 80.03,
+   "success": true,
+   "files": 1,
+   "total": 104,
+   "passed": 104,
+   "failed": 0,
+   "skipped": 0,
+   "notPassed": []
+  },
+  {
+   "label": "full-timeout-60s",
+   "command": "npx vitest run --project @syzygy/polaris-generation-core --project @syzygy/polaris-dossier --testTimeout=60000 --reporter=json",
+   "load1Before": 65.53,
+   "load1After": 77.63,
+   "success": true,
+   "files": 55,
+   "total": 2169,
+   "passed": 2168,
+   "failed": 0,
+   "skipped": 1,
+   "notPassed": [
+    {
+     "file": "packages/polaris-dossier/src/no-egress.test.ts",
+     "name": "no provider call and no transmission (S10), without strace is not proved on this host: strace is unavailable, so the capture is skipped, never reported as passed",
+     "status": "skipped",
+     "ms": null,
+     "error": ""
+    }
+   ]
+  }
+ ]
+}

@@ -1,0 +1,246 @@
+{
+ "bead": "syzygy-bpyt.8.39",
+ "base": "d38d7a3ce632a34c2a41bdb77ad323ba0b05b777",
+ "head": "308a62f4a48e47b625aeff9cc718b1b2c37161f8",
+ "subject": {
+  "what": "git diff d38d7a3c 308a62f4",
+  "sha256": "23161e16390ce20f76bf1bcec4e06850c1249bb60b742ef9e1ff0f8a8d3defb4",
+  "files": {
+   "packages/polaris-generation-core/src/workspace-reach.test.ts": {
+    "base": "a20cdbc84b4e21ee62d6d06eb2abe8c7a21affa03974a35355a812ac89b7cb1e",
+    "head": "5e3ef214af947bc9455ae4d8ebd56c26d01ffe825c5968ce2d9c8625b36a59a4"
+   },
+   "packages/polaris-generation-core/src/workspace-reach.testkit.ts": {
+    "base": "ed67106fe74333c97f419f4a52f14f75bfaa34bbfa5b41f33c4f1b6545895731",
+    "head": "94c9d93b40cc4f54afc8a6d56d9062b25e27938016edef566d7bd75b6381cbd3"
+   }
+  }
+ },
+ "productFilesChanged": [],
+ "testkitImporters": [
+  "packages/polaris-dossier/src/subpath-imports.test.ts",
+  "packages/polaris-generation-core/src/island-boundary.test.ts",
+  "packages/polaris-generation-core/src/workspace-reach.test.ts"
+ ],
+ "mutRunnerSha256": "ca2b8eadc503305bb3767b7220b02775429164ef6c183ac9854acf9d8ed9b6a5",
+ "targets": {
+  "RV536-M2-http-url-reads-outside": {
+   "base": "survives",
+   "head": "killed",
+   "headFailedRows": [
+    "packages/polaris-generation-core/src/workspace-reach.test.ts > the shared workspace resolver > reads a bare name declared as a remote http tarball URL dependency as naming no module"
+   ]
+  },
+  "RV536-M7-npm-alias-workspace-scope-only": {
+   "base": "survives",
+   "head": "killed",
+   "headFailedRows": [
+    "packages/polaris-generation-core/src/workspace-reach.test.ts > the shared workspace resolver > reads a bare name declared as an npm: alias of a registry package as naming no module"
+   ]
+  },
+  "RV536-M8-root-declarations-unread": {
+   "base": "survives",
+   "head": "killed",
+   "headFailedRows": [
+    "packages/polaris-generation-core/src/workspace-reach.test.ts > the shared workspace resolver > reads a bare name the workspace root's manifest declares as a local dependency as naming no module"
+   ]
+  },
+  "RV536-M9-dotdot-alone-outside": {
+   "base": "survives",
+   "head": "killed",
+   "headFailedRows": [
+    "packages/polaris-generation-core/src/workspace-reach.test.ts > the shared workspace resolver > reads a bare name declared as a dependency on its parent directory as naming no module"
+   ]
+  },
+  "RV536-M5-tree-depth-two": {
+   "base": "survives",
+   "head": "survives",
+   "headFailedRows": []
+  },
+  "RV536-M10-test-exclusion-end-anchor-dropped": {
+   "base": "survives",
+   "head": "survives",
+   "headFailedRows": []
+  },
+  "RV536-M11-residual-widened": {
+   "base": "survives",
+   "head": "survives",
+   "headFailedRows": []
+  }
+ },
+ "otherReviewMutants": {
+  "stronger": [
+   "RV536-M3-tarball-needs-dot-slash"
+  ],
+  "unchanged": [
+   "RV536-M1-https-url-reads-outside",
+   "RV536-M4-census-takes-ts-md",
+   "RV536-M6-root-keeps-only-dependencies"
+  ],
+  "weaker": []
+ },
+ "fix": {
+  "specs": "docs/evidence/guard-pins-followup-review-2026-10-27/rev536-fix-specs.json",
+  "specsSha256": "db6be993471cd37d6a690a35c88b22d43f2a135606bd038f2631cc84f2b2273b",
+  "edits": 2,
+  "headEqualsBaseWithFix": true,
+  "linesAdded": 9,
+  "linesRemoved": 0
+ },
+ "testkit": {
+  "changedLines": {
+   "-": 2,
+   "+": 4
+  },
+  "docCommentLines": {
+   "base": [
+    59,
+    69
+   ],
+   "head": [
+    59,
+    71
+   ]
+  },
+  "emitEqual": true,
+  "printEqual": true,
+  "typescript": "5.9.3",
+  "selftest": {
+   "identifierRenamed": {
+    "emitEqual": false,
+    "printEqual": false
+   },
+   "literalChanged": {
+    "emitEqual": false,
+    "printEqual": false
+   },
+   "commentAdded": {
+    "emitEqual": true,
+    "printEqual": true
+   }
+  }
+ },
+ "islandDiff": {
+  "walks": {
+   "entries": 254,
+   "equal": 254,
+   "answersSha256": "9bb85c87f41b48c712969cbbf0dd26ed5bd958bb4ce2162053b6f4e8f54c7d59"
+  },
+  "resolves": {
+   "files": 510,
+   "specifiers": 2648,
+   "equal": 2648,
+   "byAnswer": {
+    "module": 1620,
+    "null": 1028,
+    "undefined": 0
+   },
+   "answersSha256": "1227a9919158a417879ceb1d5f36b5c596cc3d04e28558317089834e15abc5f0"
+  },
+  "selftest": {
+   "walksEqual": 56,
+   "resolvesEqual": 1353
+  },
+  "toolSha256": "131206846b062bc60ba7efeb67bf6ecf81802a54921d94979f2bc7428b8afc04"
+ },
+ "repeats": {
+  "runs": 5,
+  "passed": [
+   169,
+   169,
+   169,
+   169,
+   169
+  ],
+  "load1": [
+   51.3,
+   51.3,
+   51.2,
+   50.5,
+   48.9
+  ]
+ },
+ "titles": {
+  "base": 165,
+  "head": 169,
+  "added": 4,
+  "removed": 0,
+  "perFile": {
+   "packages/polaris-dossier/src/argv.test.ts": {
+    "base": 86,
+    "head": 86
+   },
+   "packages/polaris-dossier/src/subpath-imports.test.ts": {
+    "base": 27,
+    "head": 27
+   },
+   "packages/polaris-generation-core/src/island-boundary.test.ts": {
+    "base": 4,
+    "head": 4
+   },
+   "packages/polaris-generation-core/src/workspace-reach.test.ts": {
+    "base": 48,
+    "head": 52
+   }
+  },
+  "line": "Tests: +4 ~0 -0"
+ },
+ "npaProbe": {
+  "npaVersion": "12.0.2",
+  "node": "v24.6.0",
+  "forms": 46
+ },
+ "suite": {
+  "full": {
+   "total": 2169,
+   "passed": 2167,
+   "failed": 1,
+   "skipped": 1,
+   "load1Before": 47.93,
+   "load1After": 56.62
+  },
+  "start-gates-alone": {
+   "total": 104,
+   "passed": 102,
+   "failed": 2,
+   "skipped": 0,
+   "load1Before": 57.8,
+   "load1After": 74.85
+  },
+  "start-gates-timeout-60s": {
+   "total": 104,
+   "passed": 104,
+   "failed": 0,
+   "skipped": 0,
+   "load1Before": 83.34,
+   "load1After": 80.03
+  },
+  "full-timeout-60s": {
+   "total": 2169,
+   "passed": 2168,
+   "failed": 0,
+   "skipped": 1,
+   "load1Before": 65.53,
+   "load1After": 77.63
+  }
+ },
+ "suiteTimeouts": [
+  "init: the clone holds the consented commit alone (syzygy-qkea.24) refuses config naming a remote, a promisor, an include or a command the agent's git would run (R-POLARIS-DOSSIER-CLONE-SHAPE-2 finding 1)"
+ ],
+ "tools": {
+  "island_diff.py": "131206846b062bc60ba7efeb67bf6ecf81802a54921d94979f2bc7428b8afc04",
+  "titles.py": "f93af94f73fc70a5e9de768b146cca579c73eb8663e3285d574c8ad7193697e5",
+  "repeat.py": "1c87146329e02d971d45eedc8da090c1fd7805dfa8869d0d4cacda99b63572af",
+  "comment_only.cjs": "e987f080a7c873907ce5c3bc409bc2752b9c9a1a1d470f502a992a530f86dd8d",
+  "npa_probe.cjs": "689a192f550955781e4941ea4d87d1fcda8199ddf88e9ff78e7022ecb014cd37",
+  "suite_summary.py": "7dff7d8b9433ba61815ac8f23719e1e2ea6d41593a874f0c7ee30727a5db0c65",
+  "record.py": "f21da6bb693b67654c0742a784cdfe39f35ff045346d189ef9d2c46c8d69025b"
+ },
+ "faithfulTree": {
+  "manifests": 13,
+  "dependencyVersions": 29,
+  "local": [],
+  "bareDirectoryShaped": []
+ },
+ "problems": []
+}
