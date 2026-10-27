@@ -534,7 +534,7 @@ describe('surface routes', () => {
       }
       expect(total).toBe(serverTotal + 2);
     });
-  });
+  }, 45_000); // timed out at the 5 s default in 4 of 5 full-suite runs at load1 38-71 (docs/evidence/syzygy-bpyt-4-31/full-runs.json), and took up to 5.1 s in 5 alone runs at load1 30-37 (docs/evidence/syzygy-bpyt-4-31/head-durations/surface-routes.test.tests.json)
 
   it.each([
     ['wrong Unknown token', (html: string) => html.replace('color: var(--unknown);', 'color: var(--observed);')],

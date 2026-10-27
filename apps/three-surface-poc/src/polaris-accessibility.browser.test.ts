@@ -88,7 +88,7 @@ describe.skipIf(executable === undefined)('Polaris keyboard, non-visual and cont
     const warm = await browser.newPage();
     try { await warm.navigate(pageUrl(ACCESSIBILITY_VARIANTS[0] as AccessibilityVariant).url); }
     finally { await warm.close(); }
-  });
+  }, 60_000); // launches Chrome and loads one page: up to 2.8 s in 10 alone runs, but a full-suite run at load1 56-58 left up to 8.0 s of its file's time to its hooks (docs/evidence/syzygy-bpyt-4-31/full-runs.json)
 
   afterAll(async () => {
     await browser?.close();

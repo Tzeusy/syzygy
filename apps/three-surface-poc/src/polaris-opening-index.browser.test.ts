@@ -313,7 +313,7 @@ describe.skipIf(executable === undefined)('opening index in a real browser (PWB-
   beforeAll(async () => {
     browser = await launchBrowser(executable as string);
     pages = mkdtempSync(join(tmpdir(), 'syzygy-poc-opening-index-'));
-  });
+  }, 60_000); // launches Chrome: under 0.6 s in 10 alone runs, but a full-suite run at load1 56-71 left up to 5.1 s of its file's time to its hooks (docs/evidence/syzygy-bpyt-4-31/full-runs.json)
 
   afterAll(async () => {
     await browser?.close();
@@ -349,7 +349,7 @@ describe.skipIf(executable === undefined)('opening index in a real browser (PWB-
       expect(report.violations).toEqual([]);
       expect(report.viewport).toEqual(viewport);
       expect(report.rows.filter((row) => 'offset' in row)).toHaveLength(9);
-    });
+    }, 60_000); // up to 4.2 s in 5 full-suite runs at load1 38-71 (docs/evidence/syzygy-bpyt-4-31/full-runs.json)
 
     it(`the opening Unknown aggregate is absent (${viewport.width}x${viewport.height}): the gaps row says so and routes nowhere; eight rows route`, async () => {
       const report = await run('observed', variant('observed'), viewport);
@@ -367,7 +367,7 @@ describe.skipIf(executable === undefined)('opening index in a real browser (PWB-
       const report = await run('not-admitted', variant('not-admitted'), viewport);
       expect(report.violations).toEqual([]);
       expect(report.rows.filter((row) => 'offset' in row).map((row) => row.identity)).toEqual(['unknown-or-contradiction', 'claim-strength']);
-    });
+    }, 60_000); // up to 2.7 s in 5 full-suite runs at load1 38-71 (docs/evidence/syzygy-bpyt-4-31/full-runs.json)
   }
 
   /** Follows the exact-requirement row by keyboard (focus, Enter, Tab) and
