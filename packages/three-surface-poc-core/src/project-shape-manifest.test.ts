@@ -516,6 +516,13 @@ describe('deriveProjectShapeManifest — determinism and identity', () => {
     expect(manifestIdentity(first)).toBe(`repository:butlers-configured-poc@${REVISION}/pwb-discovery-v2-candidate.1/${first.digest}`);
   });
 
+  // Expected value derived outside this module: Python's json.dumps(sort_keys=True, separators=(',', ':'), ensure_ascii=False) over
+  // the manifest without its digest, then SHA-256 (docs/evidence/syzygy-bpyt-6-13/derive-literals.py). A change to the fixture tree,
+  // the seed texts or the manifest shape moves it, on purpose: the manifest digest is an identity (class 3).
+  it('digests the canonical manifest JSON: the fixture manifest has this digest', () => {
+    expect(derive().manifest.digest).toBe('sha256:ef8f9f0a722c28406e434ffe3d0706565c02dd5b9f56c4a5d05aead1fffc1373');
+  });
+
   it('an unlinked extra file leaves the digest unchanged; a changed source blob, revision or discovery version changes it', () => {
     const base = derive().manifest;
     expect(derive({ tree: [...TREE, blob('about/heart-and-soul/extra.md', 50)] }).manifest.digest).toBe(base.digest);

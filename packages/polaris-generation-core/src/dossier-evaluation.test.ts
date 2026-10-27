@@ -322,6 +322,14 @@ describe('report subject (rule 11)', () => {
     expect(sameIdentity.sha256).not.toBe(base.sources.sha256);
   });
 
+  // Expected value: SHA-256 of the QUESTIONS text above, taken with hashlib and agreeing with `sha256sum` over the same bytes
+  // (docs/evidence/syzygy-bpyt-6-13/derive-literals.py), never read back from the module (review R-GP-IMPL-SUPPORT-LEAF-1 N2).
+  it('binds the questions file by the SHA-256 of its own text, and takes that digest as the freeze', async () => {
+    const questionsSha256 = '84d2e0366720f81cad6963e2c7777701dfa0bf37835a812b9ea0b768af675eeb';
+    expect((await evaluateDossier(input(), signal)).subject.questionsSha256).toBe(questionsSha256);
+    expect((await evaluateDossier({ ...input(), expectedQuestionsSha256: questionsSha256 }, signal)).subject.questionsSha256).toBe(questionsSha256);
+  });
+
   it('binds the budget and the scripted answers, and records neither when absent', async () => {
     const none = (await evaluateDossier(input(), signal)).subject;
     expect(none.budgetSha256).toBeNull();

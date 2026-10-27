@@ -11,8 +11,10 @@ import {
 import { tmpdir } from 'node:os';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import ts from 'typescript';
 import { afterEach, describe, expect, it } from 'vitest';
 
+import { reach, readModule, WORKSPACE } from '../../../packages/polaris-generation-core/src/workspace-reach.testkit.js';
 import {
   observeGitRepository,
   observeGitHorizon,
@@ -112,8 +114,42 @@ describe('read-only Git observation', () => {
   });
 
   // syzygy-bpyt.7.3: the host the POC serves through moved out of cap1-daemon; its bytes are still a runtime input.
+  // syzygy-bpyt.7.14: so is its manifest, which names the entry the POC resolves.
   it('protects the HTTP host package the POC serves through', () => {
     expect(pocObserverInputsAreClean({ changedPaths: ['packages/http-host/src/server.ts'] })).toBe(false);
+    expect(pocObserverInputsAreClean({ changedPaths: ['packages/http-host/package.json'] })).toBe(false);
+  });
+
+  // syzygy-bpyt.6.15, the PR 535 review's N6: a protected package is protected whole. Narrowing a prefix to its src/
+  // directory, or to src/ plus its manifest, would admit a dirty build input such as its tsconfig.json.
+  it('protects every file of each protected package, its manifest and tsconfig among them', () => {
+    const prefixes = [
+      'apps/three-surface-poc/',
+      'packages/three-surface-poc-core/',
+      'packages/cap1-daemon/',
+      'packages/http-host/',
+      'packages/cap1-core/',
+      'packages/support/',
+    ];
+    for (const path of prefixes.flatMap((prefix) => [`${prefix}src/x.ts`, `${prefix}package.json`, `${prefix}tsconfig.json`])) {
+      expect(pocObserverInputsAreClean({ changedPaths: [path] }), path).toBe(false);
+    }
+  });
+
+  // syzygy-bpyt.6.15, the PR 535 review's N9: PR 530 moved sha256 into packages/support, which had no prefix, so a dirty
+  // support package read as clean. The packages the daemon runs from are derived here, not listed: the walk starts at its
+  // entry and follows every edge TypeScript's preprocessor reports (static, type-only, re-export and dynamic with a literal
+  // specifier), as island-boundary.test.ts does. It is a subset check, so the gate may protect more than the walk reaches
+  // (packages/cap1-daemon, which the daemon no longer imports, stays protected).
+  it('protects every module and package the POC daemon imports', () => {
+    const { reachable, unresolved } = reach('apps/three-surface-poc/src/main.ts', (file) =>
+      ts.preProcessFile(readModule(file), true, true).importedFiles.map((imported) => imported.fileName));
+    expect(unresolved.map((edge) => `${edge.from} imports ${edge.specifier}`)).toEqual([]);
+    expect(reachable).toContain('packages/support/src/sha256.ts');
+    const packages = [...new Set(reachable.map((module) =>
+      [...WORKSPACE.manifests.values()].find((manifest) => module.startsWith(`${manifest.dir}/`))?.dir ?? module))];
+    const inputs = [...reachable, ...packages.flatMap((dir) => [`${dir}/package.json`, `${dir}/tsconfig.json`])];
+    expect(inputs.filter((path) => pocObserverInputsAreClean({ changedPaths: [path] }))).toEqual([]);
   });
 
   it('identifies clean and dirty states without refreshing the index', () => {

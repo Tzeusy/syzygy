@@ -121,6 +121,58 @@ describe('RT3 — credential-classed admission at the transport', () => {
     }
   });
 
+  // syzygy-bpyt.7.14: each Unknown population the host lists keeps its
+  // breach line and reason; any other reason is free text and withholds
+  // the whole diagnostic.
+  it('logs a 503 breach diagnostic for each listed Unknown population and withholds an unlisted one', async () => {
+    // syzygy-bpyt.7.16: the list is matched exactly, so a case variant of a
+    // listed reason is unlisted too.
+    const reasons = ['project shape not-evaluated', 'project shape not-admitted', 'project shape observation-failed', 'project shape unlisted-sentinel', 'Project shape not-admitted'];
+    const routes: Route[] = reasons.map((reason, index) => ({
+      method: 'GET',
+      path: `/breach-${index}`,
+      credentialClass: 'human-open',
+      handle: () => ({
+        status: 503,
+        contentType: 'application/json',
+        body: '{"served":"nothing"}',
+        diagnostic: {
+          kind: 'response-limit-breached',
+          evaluation: { inputsDigest: 'c'.repeat(64), asOf: '2026-10-27T00:00:00Z' },
+          limit: 'maxHumanResponseBytes',
+          declared: 5,
+          observed: 6,
+          population: { kind: 'unknown', reason },
+          sequence: index + 1,
+        },
+      }),
+    }));
+    const daemon = await startDaemon(join(tempDir('rt3-breach-'), 'state'), routes);
+    const lines: string[] = [];
+    const stderr = vi.spyOn(process.stderr, 'write').mockImplementation((chunk) => { lines.push(String(chunk)); return true; });
+    try {
+      for (const index of reasons.keys()) {
+        expect((await fetch(`http://127.0.0.1:${daemon.port}/breach-${index}`)).status).toBe(503);
+      }
+    } finally {
+      stderr.mockRestore();
+    }
+    const events = lines.map(line => JSON.parse(line) as Record<string, unknown>);
+    expect(events.map(({ at: _at, ...event }) => event)).toEqual([
+      ...['project shape not-evaluated', 'project shape not-admitted', 'project shape observation-failed'].map((reason, index) => ({
+        kind: 'daemon-http-outcome', method: 'GET', route: `/breach-${index}`, status: 503, reason: 'response-limit-breached',
+        contentType: 'application/json',
+        evaluation: { inputsDigest: 'c'.repeat(64), asOf: '2026-10-27T00:00:00Z' },
+        limit: 'maxHumanResponseBytes', declared: 5, observed: 6, population: { kind: 'unknown', reason }, sequence: index + 1,
+      })),
+      ...['/breach-3', '/breach-4'].map(route => ({
+        kind: 'daemon-http-outcome', method: 'GET', route, status: 503, reason: 'route-non-success', contentType: 'application/json',
+      })),
+    ]);
+    expect(lines.join('')).not.toContain('unlisted-sentinel');
+    expect(lines.join('')).not.toContain('Project shape');
+  });
+
   it.each([
     ['missing', undefined],
     ['scheme without separator', 'Bearer'],

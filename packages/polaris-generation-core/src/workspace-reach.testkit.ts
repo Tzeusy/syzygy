@@ -56,8 +56,17 @@ function moduleIn(workspace: Workspace, dir: string, target: string): string | u
   return workspace.isFile(module) ? module : undefined;
 }
 
-/** A dependency version npm installs from a directory, a link, a tarball or another package's name, not from the registry: `file:`,
- * `link:`, `workspace:`, `npm:`, or a path or tarball name, which npm reads as `file:`. */
+/** A dependency version the guards treat as possibly local, so a bare name declared with it names no module:
+ * - `file:`, or a path (`.`, `..`, `./x`, `../x`, `/x`, `~/x`) or tarball name (`x.tgz`, `x.tar`, `x.tar.gz`): npm reads each
+ *   as a directory or a file;
+ * - `link:` and `workspace:`: npm does not install them at all (npm-package-arg 12.0.2 throws EUNSUPPORTEDPROTOCOL), and other
+ *   package managers link them locally;
+ * - `npm:`: an alias of another package, which may be a workspace package's name. An alias of a registry package is refused too,
+ *   failing closed.
+ * The tarball arm also matches a tarball URL (`https://…/x.tgz`), which npm types as `remote`; it is refused too, failing closed.
+ * Residual (syzygy-bpyt.8.38): npm also reads a directory spec with no leading `./`, `../`, `/` or `~/` (`packages/polaris-dossier/`,
+ * `.hidden-lib`, `a/b/c`) as a directory. Those still read as outside the workspace; widening the pattern to them changes what the
+ * guards refuse and needs a GP-Q0 ruling first. */
 const LOCAL_VERSION = /^(?:file:|link:|workspace:|npm:|\.\.?(?:\/|$)|\/|~\/)|\.(?:tgz|tar|tar\.gz)$/iu;
 
 /** Every name any manifest declares a local dependency under. npm installs a dependency where every workspace module resolves it. */

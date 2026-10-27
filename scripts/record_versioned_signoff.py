@@ -96,12 +96,18 @@ from __future__ import annotations
 
 import argparse
 import datetime
+import hashlib
 import importlib
+import json
+import os
 import pathlib
 import re
 import subprocess
 import sys
 import tempfile
+import traceback
+import shutil
+import stat
 from dataclasses import dataclass, replace as dataclasses_replace
 from typing import Callable
 
@@ -327,6 +333,781 @@ def patch_package_apply(root: pathlib.Path, proposed: pathlib.Path, findings) ->
     return 0
 
 
+def p115_package_apply(root: pathlib.Path) -> int:
+    """Existing internal subject-only operation, with its own single ledger."""
+    return p115_attempt(root, operation="apply")
+
+
+def p115_tracked(root: pathlib.Path, head: bytes, index: bytes,
+                  exempt: frozenset[pathlib.Path] = frozenset()) -> None:
+    """Read actual Git blob bytes/modes, independent of the index stat cache.
+
+    Only the separately checked intended target bodies may be exempted during
+    publication. Their tracked modes and every index flag are still checked.
+    No index refresh, normalization or optional-lock write is performed.
+    """
+    entries = {}
+    for row in index.split(b"\0"):
+        if not row:
+            continue
+        metadata, path = row.split(b"\t", 1)
+        mode, oid, stage = metadata.split()
+        if stage != b"0" or mode not in {b"100644", b"100755", b"120000"} or path in entries:
+            raise ValueError("P115 tracked checkout has an unsupported index stage, kind or duplicate path")
+        entries[path] = mode, oid
+    tree = {}
+    data = subprocess.run(["git", "ls-tree", "-r", "-z", head.decode().strip()], cwd=root,
+                          capture_output=True, check=True).stdout
+    for row in data.split(b"\0"):
+        if row:
+            metadata, path = row.split(b"\t", 1)
+            mode, kind, oid = metadata.split()
+            if kind != b"blob" or path in tree:
+                raise ValueError("P115 tracked checkout has an unsupported HEAD kind or duplicate path")
+            tree[path] = mode, oid
+    if entries != tree:
+        raise ValueError("P115 tracked index bytes/modes do not match the admitted HEAD")
+    for option in ("-v", "-f"):
+        flags = subprocess.run(["git", "--no-optional-locks", "ls-files", option, "-z"],
+                               cwd=root, capture_output=True, check=True).stdout.split(b"\0")
+        flags = [row for row in flags if row]
+        if (len(flags) != len(entries) or any(row[:2] != b"H " for row in flags)
+                or {row[2:] for row in flags} != set(entries)):
+            raise ValueError("P115 tracked checkout has unsupported index flags")
+    algorithm = subprocess.run(["git", "rev-parse", "--show-object-format"], cwd=root,
+                               capture_output=True, text=True, check=True).stdout.strip()
+    if algorithm not in {"sha1", "sha256"}:
+        raise ValueError("P115 tracked checkout has an unsupported Git object format")
+    for raw_path, (mode, oid) in entries.items():
+        rel = pathlib.Path(os.fsdecode(raw_path))
+        if rel.is_absolute() or ".." in rel.parts:
+            raise ValueError("P115 tracked path escapes the checkout")
+        path = root / rel
+        info = path.lstat()
+        if stat.S_ISLNK(info.st_mode):
+            actual_mode, body = b"120000", os.fsencode(os.readlink(path))
+        elif stat.S_ISREG(info.st_mode):
+            fd = os.open(path, os.O_RDONLY | os.O_NOFOLLOW | os.O_NONBLOCK)
+            with os.fdopen(fd, "rb") as stream:
+                info = os.fstat(stream.fileno())
+                if not stat.S_ISREG(info.st_mode):
+                    raise ValueError(f"P115 tracked path is not a regular file: {rel}")
+                actual_mode = b"100755" if info.st_mode & 0o111 else b"100644"
+                body = stream.read() if rel not in exempt else None
+        else:
+            raise ValueError(f"P115 tracked path has an unsupported working kind: {rel}")
+        if actual_mode != mode:
+            raise ValueError(f"P115 tracked working mode differs from the admitted object: {rel}")
+        if rel not in exempt:
+            actual = hashlib.new(algorithm, b"blob " + str(len(body)).encode() + b"\0" + body).hexdigest().encode()
+            if actual != oid:
+                raise ValueError(f"P115 tracked working bytes differ from the admitted object: {rel}")
+
+
+def p115_clean(root: pathlib.Path) -> tuple[bytes, bytes]:
+    """Whole checkout boundary; ignored build outputs are outside this gate."""
+    state = subprocess.run(["git", "--no-optional-locks", "status", "--porcelain=v1", "-z",
+                            "--untracked-files=all", "--ignore-submodules=none"],
+                           cwd=root, capture_output=True, check=True).stdout
+    if state:
+        raise ValueError("refusing P115 recording: index, worktree and untracked-not-ignored files must be clean")
+    head = subprocess.run(["git", "rev-parse", "HEAD"], cwd=root,
+                          capture_output=True, check=True).stdout
+    index = subprocess.run(["git", "ls-files", "--stage", "-z"], cwd=root,
+                           capture_output=True, check=True).stdout
+    p115_tracked(root, head, index)
+    return head, index
+
+
+def p115_apply_batch(root: pathlib.Path, journal: pathlib.Path, before: dict,
+                       proposed: dict, patches: tuple, evidence: dict) -> None:
+    """The identical captured batch runs only in an owned private projection."""
+    reference = _module("prepare_three_surface_poc_governedby_reference_recording")
+    projection, copies, metadata = (journal / name for name in ("projection", "patches", "git"))
+    projection.mkdir()
+    copies.mkdir()
+    for rel in reference.SUBJECTS:
+        path = projection / rel
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_bytes(before[rel])
+    names = []
+    rows = []
+    for number, (rel, body) in enumerate(patches):
+        path = copies / f"{number}.patch"
+        path.write_bytes(body)
+        names.append(str(path))
+        rows.append({"source": rel.as_posix(), "copy": str(path), "bytes": len(body),
+                     "sha256": hashlib.sha256(body).hexdigest()})
+    # Child repository location is closed; credentials/config/PATH and the
+    # process environment are unchanged. No parent Git metadata is discovered.
+    env = os.environ.copy()
+    for name in ("GIT_DIR", "GIT_WORK_TREE", "GIT_COMMON_DIR", "GIT_INDEX_FILE",
+                 "GIT_OBJECT_DIRECTORY", "GIT_ALTERNATE_OBJECT_DIRECTORIES", "GIT_QUARANTINE_PATH",
+                 "GIT_GRAFT_FILE", "GIT_SHALLOW_FILE", "GIT_PREFIX", "GIT_NAMESPACE",
+                 "GIT_CEILING_DIRECTORIES", "GIT_DISCOVERY_ACROSS_FILESYSTEM"):
+        env.pop(name, None)
+    env.update(GIT_DIR=str(metadata), GIT_WORK_TREE=str(projection), GIT_INDEX_FILE=str(metadata / "index"))
+    batch = ["git", "apply", "--whitespace=nowarn", "--unidiff-zero"]
+    evidence.update(orderedPatches=rows, batchSha256=hashlib.sha256(json.dumps(
+        [(r["source"], r["sha256"]) for r in rows], separators=(",", ":")).encode()).hexdigest(),
+        cwd=str(projection), gitDir=str(metadata), gitWorkTree=str(projection),
+        gitIndexFile=str(metadata / "index"), commands=[])
+
+    def run(argv):
+        row = {"argv": argv, "cwd": str(projection), "returncode": None}
+        evidence["commands"].append(row)
+        done = subprocess.run(argv, cwd=projection, env=env, capture_output=True, text=True)
+        row.update(returncode=done.returncode, stdout=done.stdout, stderr=done.stderr)
+        return done
+
+    done = run(["git", "init", "--quiet", "--template="])
+    if done.returncode:
+        raise ValueError("P115 private Git initialization failed: " + done.stderr.strip())
+    done = run([*batch, "--check", *names])
+    if done.returncode:
+        raise ValueError("P115 preflight refused: " + done.stderr.strip())
+    if any(p115_read(pathlib.Path(row["copy"])) != body for row, (_rel, body) in zip(rows, patches)):
+        raise ValueError("P115 captured private patch copies changed after preflight")
+    done = run([*batch, *names])
+    if done.returncode:
+        raise ValueError(f"P115 batch apply failed ({done.returncode}): " + done.stderr.strip())
+    files = set()
+    directories = {parent for rel in reference.SUBJECTS for parent in rel.parents if parent != pathlib.Path(".")}
+    for path in projection.rglob("*"):
+        kind = path.lstat().st_mode
+        rel = path.relative_to(projection)
+        if stat.S_ISREG(kind):
+            files.add(rel)
+        elif not stat.S_ISDIR(kind) or rel not in directories:
+            raise ValueError("P115 private projection has unexpected/nonregular output: " + str(rel))
+    if (files != set(reference.SUBJECTS)
+            or any(p115_read(projection / rel) != proposed[rel] for rel in reference.SUBJECTS)
+            or p115_read(projection / reference.SUBJECTS[0]) != before[reference.SUBJECTS[0]]
+            or sum(p115_read(projection / rel) != before[rel] for rel in reference.SUBJECTS) != 5
+            or any(hashlib.sha256(p115_read(projection / rel)).hexdigest() != sha
+                   for sha, rel in reference.manifest_rows(root))):
+        raise ValueError("P115 private batch outputs differ from exact six subjects/five changes/manifest")
+    evidence["validatedOutputs"] = {str(rel): hashlib.sha256(proposed[rel]).hexdigest()
+                                    for rel in reference.SUBJECTS}
+
+
+def p115_read(path: pathlib.Path) -> bytes | None:
+    if path.is_symlink() or (path.exists() and not path.is_file()):
+        raise ValueError(f"P115 transaction path is not a regular file: {path}")
+    return path.read_bytes() if path.exists() else None
+
+
+def p115_identity(path: pathlib.Path) -> tuple[int, int] | None:
+    return (path.lstat().st_dev, path.lstat().st_ino) if path.exists() else None
+
+
+def p115_exception(failure: BaseException) -> dict:
+    """Freeze both visible and suppressed diagnostic edges, without locals."""
+    pending, identities, nodes = [failure], {id(failure): 0}, []
+    for error in pending:
+        node = {"id": identities[id(error)],
+                "type": type(error).__module__ + "." + type(error).__qualname__,
+                "message": str(error), "suppressContext": error.__suppress_context__}
+        for name, target in (("cause", error.__cause__), ("context", error.__context__)):
+            if target is not None and id(target) not in identities:
+                identities[id(target)] = len(pending)
+                pending.append(target)
+            node[name] = None if target is None else identities[id(target)]
+        if isinstance(error, OSError):
+            node["errno"] = error.errno
+            for field in ("filename", "filename2"):
+                value = getattr(error, field)
+                kind = type(value).__module__ + "." + type(value).__qualname__
+                if value is None:
+                    node[field], evidence = None, {"type": kind}
+                else:
+                    try:
+                        raw = os.fsencode(value)
+                        node[field] = os.fsdecode(raw)
+                        evidence = {"type": kind, "filesystemBytesHex": raw.hex()}
+                    except TypeError:
+                        # OSError accepts non-path diagnostic objects too.
+                        node[field], evidence = repr(value), {"type": kind, "representation": "repr"}
+                node[field + "Evidence"] = evidence
+        if isinstance(error, subprocess.CalledProcessError):
+            # Native captures are diagnostic evidence, including empty/absent
+            # values and arbitrary bytes. Do not normalize or replacement-decode.
+            def captured(value):
+                field = {"type": type(value).__module__ + "." + type(value).__qualname__}
+                if value is None:
+                    field["value"] = None
+                elif isinstance(value, bytes):
+                    field["bytesHex"] = value.hex()
+                elif isinstance(value, str):
+                    field["text"] = value
+                elif isinstance(value, os.PathLike):
+                    raw = os.fspath(value)
+                    field["path"] = ({"type": "builtins.bytes", "bytesHex": raw.hex()}
+                                     if isinstance(raw, bytes) else {"type": "builtins.str", "text": raw})
+                else:
+                    field["representation"] = repr(value)
+                return field
+            command = error.cmd
+            command_evidence = ({"type": type(command).__module__ + "." + type(command).__qualname__,
+                                 "items": [captured(value) for value in command]}
+                                if isinstance(command, (list, tuple)) else captured(command))
+            node["process"] = {"returncode": error.returncode, "command": command_evidence,
+                               "stdout": captured(error.stdout), "output": captured(error.output),
+                               "stderr": captured(error.stderr)}
+        nodes.append(node)
+    return {"root": 0, "nodes": nodes, "secondaryExceptions": getattr(failure, "_p115_secondary", []),
+            "traceback": "".join(traceback.format_exception(type(failure), failure,
+                                                            failure.__traceback__, chain=True))}
+
+
+def p115_cleanup_stage(staged: pathlib.Path, identity: tuple[int, int]) -> None:
+    """Only the regular inode created for this stage may be removed."""
+    try:
+        info = staged.lstat()
+    except FileNotFoundError:
+        return  # Replacement consumed the stage; no unlink is necessary.
+    if not stat.S_ISREG(info.st_mode) or (info.st_dev, info.st_ino) != identity:
+        raise ValueError(f"P115 stage cleanup ownership unproven: {staged}")
+    staged.unlink()
+
+
+def p115_stage(path: pathlib.Path, body: bytes, *, on_stage=lambda path, identity: None) -> pathlib.Path:
+    """Close complete bytes on the target filesystem before publication."""
+    fd, name = tempfile.mkstemp(prefix=".p115-", dir=path.parent)
+    staged = pathlib.Path(name)
+    identity = os.fstat(fd).st_dev, os.fstat(fd).st_ino
+    try:
+        with os.fdopen(fd, "wb") as stream:
+            stream.write(body)
+            if path.exists():
+                os.fchmod(stream.fileno(), path.stat().st_mode & 0o777)
+            stream.flush()
+            os.fsync(stream.fileno())
+        on_stage(staged, identity)
+        return staged
+    except BaseException as failure:
+        try:
+            p115_cleanup_stage(staged, identity)
+        except BaseException as cleanup_error:
+            failure._p115_secondary = [*getattr(failure, "_p115_secondary", []), p115_exception(cleanup_error)]
+        raise
+
+
+def p115_publish(path: pathlib.Path, body: bytes, *, expected: bytes | None,
+                  expected_identity, guard=lambda staged, identity, body: None,
+                  published=lambda identity: None) -> None:
+    """One bounded native publication; equality alone never grants ownership."""
+    token = {}
+    staged = p115_stage(path, body, on_stage=lambda _p, identity: token.update(identity=identity))
+    operation_error = None
+    try:
+        if p115_identity(staged) != token["identity"] or p115_read(staged) != body:
+            raise ValueError(f"P115 owned stage changed: {staged}")
+        guard(staged, token["identity"], body)
+        if p115_observe(staged) != (body, token["identity"]):
+            raise ValueError(f"P115 owned stage changed: {staged}")
+        if p115_observe(path) != (expected, expected_identity):
+            raise ValueError(f"P115 publication destination changed: {path}")
+        if expected is None:
+            os.link(staged, path)  # EEXIST refuses even a same-byte foreign creator.
+        else:
+            os.replace(staged, path)
+        # This must precede fallible private cleanup and caller wrapper faults.
+        published(token["identity"])
+    except BaseException as failure:
+        operation_error = failure
+        raise
+    finally:
+        try:
+            p115_cleanup_stage(staged, token["identity"])
+        except BaseException as cleanup_error:
+            # Retain the first native-unlink error even when a retry cleans up.
+            try:
+                p115_cleanup_stage(staged, token["identity"])
+            except BaseException as retry_error:
+                cleanup_error._p115_secondary = [p115_exception(retry_error)]
+            if operation_error is None:
+                raise
+            operation_error._p115_secondary = [*getattr(operation_error, "_p115_secondary", []),
+                                              p115_exception(cleanup_error)]
+
+
+def p115_write(path: pathlib.Path, body: bytes, **publication) -> None:
+    p115_publish(path, body, **publication)
+
+
+@dataclass(frozen=True)
+class P115Publication:
+    attempt: str
+    path: pathlib.Path
+    identity: tuple[int, int]
+    kind: int
+    body: bytes
+    sha256: str
+
+
+def p115_publications(publications: dict) -> dict:
+    return {str(rel): {"attempt": token.attempt, "path": str(token.path), "kind": "regular",
+                      "device": token.identity[0], "inode": token.identity[1], "sha256": token.sha256}
+            for rel, token in publications.items()}
+
+
+def p115_observe(path: pathlib.Path) -> tuple[bytes | None, tuple[int, int] | None]:
+    """One bounded regular-file/absence observation; reader errors are not absence."""
+    try:
+        info = path.lstat()
+    except FileNotFoundError:
+        return None, None
+    if not stat.S_ISREG(info.st_mode):
+        raise ValueError(f"P115 recovery path is not a regular file: {path}")
+    identity = info.st_dev, info.st_ino
+    body = p115_read(path)
+    after = path.lstat()
+    if body is None or not stat.S_ISREG(after.st_mode) or (after.st_dev, after.st_ino) != identity:
+        raise ValueError(f"P115 recovery path changed during observation: {path}")
+    return body, identity
+
+
+def p115_recovery_observation(root: pathlib.Path, before: dict, before_identity: dict,
+                               owned_order: list[pathlib.Path], restored: dict, blocked: set,
+                               conflicts: list[str], errors: list[dict], identity: str) -> dict:
+    """Observe every captured target; known conflicts remain negative without duplication."""
+    started = datetime.datetime.now(datetime.timezone.utc).isoformat().replace("+00:00", "Z")
+    rows = []
+    for rel, original in before.items():
+        try:
+            body, actual_identity = p115_observe(root / rel)
+            row = {"path": str(rel), "sha256": None if body is None else hashlib.sha256(body).hexdigest(),
+                   "identity": actual_identity, "kind": "absent" if body is None else "regular"}
+            if rel not in blocked:
+                witnessed = rel not in owned_order or rel in restored
+                expected_identity = restored.get(rel) if rel in owned_order else before_identity[rel]
+                if not witnessed or body != original or actual_identity != expected_identity:
+                    reason = ("restored preimage/identity unverified" if rel in owned_order else
+                              "independent change retained; no owned write")
+                    conflicts.append(f"{rel}: {reason}")
+                    blocked.add(rel)
+            row["verified"] = rel not in blocked
+        except BaseException as error:
+            snapshot = p115_exception(error)
+            node = snapshot["nodes"][0]
+            row = {"path": str(rel), "verified": False, "kind": "unverified",
+                   "error": {k: node[k] for k in ("type", "message", "errno") if k in node}}
+            if rel not in blocked:
+                conflicts.append(f"{rel}: recovery inspection failed: {error}")
+                errors.append(snapshot)
+                blocked.add(rel)
+        rows.append(row)
+    return {"observationId": identity, "startedAt": started,
+            "endedAt": datetime.datetime.now(datetime.timezone.utc).isoformat().replace("+00:00", "Z"),
+            "scope": "exclusive-checkout sequential read-only observation; no atomic/CAS/beyond-window guarantee",
+            "targetCount": len(before), "targets": rows,
+            "complete": not conflicts and not errors and all(r["verified"] for r in rows)}
+
+
+def p115_recover(root: pathlib.Path, before: dict, outputs: dict, before_identity: dict,
+                  owned_order: list[pathlib.Path], publications: dict, *,
+                  restored: dict | None = None, blocked: set | None = None) -> tuple[list[str], list[dict]]:
+    """Every governed output needs the same successful-native-publication token."""
+    conflicts, errors = [], []
+    restored = {} if restored is None else restored
+    blocked = set() if blocked is None else blocked
+    for rel in reversed(owned_order):
+        try:
+            path, token = root / rel, publications[rel]
+            def owned():
+                return (token.path == rel and token.kind == stat.S_IFREG
+                        and token.body == outputs[rel] and p115_read(path) == token.body
+                        and p115_identity(path) == token.identity)
+            if not owned():
+                conflicts.append(f"{rel}: independently changed or deleted; publication ownership unproven")
+                blocked.add(rel)
+                continue
+            if before[rel] is None:
+                if not owned():
+                    conflicts.append(f"{rel}: recovery ownership changed")
+                    blocked.add(rel)
+                    continue
+                path.unlink()
+                restored[rel] = None  # Only a successful native return witnesses absence.
+            else:
+                def guard(_staged, _identity, _body):
+                    if not owned():
+                        raise ValueError(f"{rel}: recovery ownership changed")
+                p115_publish(path, before[rel], expected=outputs[rel], expected_identity=token.identity,
+                    guard=guard, published=lambda identity: restored.update({rel: identity}))
+            if p115_observe(path) != (before[rel], restored[rel]):
+                raise ValueError(f"{rel}: recovery native result differs from captured preimage/identity")
+        except BaseException as error:
+            conflicts.append(f"{rel}: restoration failed: {type(error).__name__}: {error}")
+            errors.append(p115_exception(error))
+            blocked.add(rel)
+    p115_recovery_observation(root, before, before_identity, owned_order, restored, blocked,
+                              conflicts, errors, "recovery-loop-observation")
+    return conflicts, errors
+
+
+def p115_payload_inventory(journal: pathlib.Path) -> list[dict]:
+    return [{"path": p.name, "bytes": p.stat().st_size,
+             "sha256": hashlib.sha256(p.read_bytes()).hexdigest()}
+            for p in sorted(journal.iterdir()) if p.is_file()] if journal.exists() else []
+
+
+def p115_private_inventory(journal: pathlib.Path) -> list[dict]:
+    """Recursive private payload is separate from the unchanged preimage list."""
+    rows = []
+    if journal.exists():
+        for path in sorted(journal.rglob("*")):
+            rel, kind = path.relative_to(journal).as_posix(), path.lstat().st_mode
+            if path.parent == journal and path.name.endswith(".before"):
+                continue
+            if stat.S_ISREG(kind):
+                body = path.read_bytes()
+                rows.append({"path": rel, "kind": "regular", "bytes": len(body),
+                             "sha256": hashlib.sha256(body).hexdigest()})
+            else:
+                rows.append({"path": rel, "kind": "directory" if stat.S_ISDIR(kind) else "nonregular"})
+    return rows
+
+
+def p115_report_receipt(path: pathlib.Path, published: dict, *, completed: bool) -> dict:
+    """A pathname is not retention evidence; observe a confirmed publication."""
+    try:
+        body = p115_read(path)
+        if body is None:
+            state = "absent"
+        elif (published["body"] is None or published["identity"] is None
+              or body != published["body"] or p115_identity(path) != published["identity"]):
+            state = "unverified"
+        else:
+            record = json.loads(body)
+            phase = record["state"]
+            labels = {"failed": "updated failed", "prepared": "older prepared", "completed": "completed"}
+            if phase not in labels or completed and phase != "completed":
+                state = "unverified"
+            else:
+                print("P115 verified retained receipt phase: " + labels[phase])
+                prefix = ("P115 completed outcome receipt retained: " if completed else
+                          "P115 failed-attempt evidence retained: ")
+                print(prefix + str(path))
+                if not completed and "recoveryObservation" in record:
+                    print("P115 retained receipt recovery observation: "
+                          + record["recoveryObservation"]["observationId"]
+                          + "; historical observation only; final recovery reported separately")
+                return {"verified": True, "phase": phase}
+    except BaseException as verification_error:
+        snapshot = p115_exception(verification_error)
+        print("P115 secondary receipt verification error: " + json.dumps(snapshot))
+        state = "unverified/read-error"
+        print(f"P115 receipt verification: {state}; no retained receipt claimed: {path}")
+        return {"verified": False, "state": state, "exception": snapshot}
+    print(f"P115 receipt verification: {state}; no retained receipt claimed: {path}")
+    return {"verified": False, "state": state}
+
+
+def p115_record(root: pathlib.Path, pkg: Package, version: str, date: str, quote: str,
+                 review_rel: str, disposition_rel: str | None,
+                 options: frozenset[str]) -> int:
+    return p115_attempt(root, operation="record", pkg=pkg, version=version, date=date,
+                        quote=quote, review_rel=review_rel, disposition_rel=disposition_rel, options=options)
+
+
+def p115_attempt(root: pathlib.Path, *, operation: str, pkg: Package | None = None,
+                  version: str = "1.0", date: str | None = None, quote: str = "",
+                  review_rel: str | None = None, disposition_rel: str | None = None,
+                  options: frozenset[str] = frozenset()) -> int:
+    """P115-only provisional publication, receipt commit, then private cleanup.
+
+    Assumes the admitted checkout is exclusively operated. Immediate drift
+    checks and no-clobber creation are not a universal CAS or crash guarantee.
+    """
+    reference = _module("prepare_three_surface_poc_governedby_reference_recording")
+    if operation not in {"record", "apply"}:
+        raise ValueError("P115 supports only the existing record and internal apply operations")
+    pkg = pkg or real_packages()[reference.KEY]
+    owned_order, publications = [], {}
+    journal = outcome = None
+    before, before_identity, outputs, receipt, batch_evidence = {}, {}, {}, {}, {}
+    receipt_state = {"body": None, "identity": None}
+    committed = False
+    try:
+        head, index = p115_clean(root)
+        paths = (*reference.SUBJECTS, reference.RECORD, reference.AGGREGATE)
+        before = {rel: p115_read(root / rel) for rel in paths}
+        before_identity = {rel: p115_identity(root / rel) for rel in paths}
+        target_identity = dict(before_identity)
+        family = reference.family_snapshot(root)
+        inputs = {pathlib.Path(p) for p in reference.validation_inputs(root)}
+        if review_rel is not None:
+            inputs.add(pathlib.Path(review_rel))
+        if disposition_rel:
+            inputs.add(pathlib.Path(disposition_rel))
+        if any(p.is_absolute() or ".." in p.parts for p in inputs):
+            raise ValueError("P115 validation inputs must stay inside the repository")
+        captured = {rel: p115_read(root / rel) for rel in inputs}
+        if version != reference.VERSION or options:
+            raise ValueError("P115 recording covers exactly v1.0 with no options")
+        if reference.transaction_present(root):
+            raise ValueError("P115 transaction is already present or partial")
+        if before[reference.AGGREGATE] is None or any(before[p] is None for p in reference.SUBJECTS):
+            raise ValueError("P115 transaction requires all six subjects and the aggregate")
+        if operation == "record":
+            validate_inputs(version, date, quote, pkg)
+            commit, verdict = verify_reviewed(root, pkg, review_rel, disposition_rel)
+            findings = pkg.check(root) + reference.chain_findings(root, date)
+        else:
+            findings = reference.recording_findings(root) + reference.chain_findings(root, predecessors_only=True)
+        if findings:
+            raise ValueError("package does not verify: " + " | ".join(findings))
+        patch_paths = _patches(root, reference.CANDIDATE / "proposed")
+        if len(patch_paths) != 5 or len(set(patch_paths)) != 5:
+            raise ValueError("refusing P115 apply: exact five-patch population changed")
+        patches = tuple((path.relative_to(root), p115_read(path)) for path in patch_paths)
+        if any(body is None for _rel, body in patches):
+            raise ValueError("P115 captured patch is absent")
+        current, proposed = reference.load_frozen(root).collect()
+        current = {pathlib.Path(p): body for p, body in current.items()}
+        proposed = {pathlib.Path(p): body for p, body in proposed.items()}
+        if set(current) != set(reference.SUBJECTS) or any(current[p] != before[p] for p in current):
+            raise ValueError("P115 validated subjects differ from captured preimages")
+        if (set(proposed) != set(reference.SUBJECTS) or any(
+                hashlib.sha256(proposed[pathlib.Path(p)]).hexdigest() != sha
+                for sha, p in reference.manifest_rows(root))):
+            raise ValueError("P115 proposed outputs differ from the exact six-row manifest")
+        outputs = {**before, **proposed}
+        if operation == "record":
+            disposition = disposition_rel if verdict == "CONFIRM WITH EXCEPTIONS" else None
+            outputs[reference.RECORD] = render_record(
+                pkg, version, date, quote, review_rel, commit, verdict, disposition,
+                root=root, rows=tuple(reference.manifest_rows(root))).encode()
+            outputs[reference.AGGREGATE] = (before[reference.AGGREGATE].decode().rstrip("\n")
+                + "\n\n" + render_aggregate(pkg, version, date, review_rel, verdict, disposition)).encode()
+        expected = dict(before)
+
+        def unchanged(staged=None, identity=None, body=None):
+            for rel, value in {**captured, **expected}.items():
+                if p115_read(root / rel) != value:
+                    raise ValueError(f"P115 transaction input changed: {rel}")
+            expected_family = {"files": dict(family["files"]), "aggregate": expected[reference.AGGREGATE]}
+            if expected[reference.RECORD] is not None:
+                expected_family["files"][reference.RECORD.name] = {"kind": "regular", "body": expected[reference.RECORD]}
+            if reference.family_snapshot(root) != expected_family:
+                raise ValueError("P115 transaction reserved family changed")
+            if any(p115_identity(root / rel) != target_identity[rel] for rel in paths):
+                raise ValueError("P115 transaction target identity changed")
+            if (subprocess.run(["git", "rev-parse", "HEAD"], cwd=root, capture_output=True,
+                               check=True).stdout != head
+                    or subprocess.run(["git", "ls-files", "--stage", "-z"], cwd=root,
+                                      capture_output=True, check=True).stdout != index):
+                raise ValueError("P115 transaction HEAD or index changed")
+            p115_tracked(root, head, index, frozenset(paths))
+            changed = subprocess.run(["git", "--no-optional-locks", "diff", "--name-only", "-z"], cwd=root,
+                                     capture_output=True, check=True).stdout.split(b"\0")
+            changed += subprocess.run(["git", "ls-files", "--others", "--exclude-standard", "-z"],
+                                      cwd=root, capture_output=True, check=True).stdout.split(b"\0")
+            allowed = {rel.as_posix() for rel in paths}
+            if staged is not None:
+                if p115_identity(staged) != identity or p115_read(staged) != body:
+                    raise ValueError("P115 private stage ownership changed")
+                # Only this exact verified live stage may be omitted from dirt.
+                if staged.is_relative_to(root):
+                    allowed.add(staged.relative_to(root).as_posix())
+            if any(p and p.decode() not in allowed for p in changed):
+                raise ValueError("P115 transaction acquired unrelated worktree changes")
+
+        def persist(guard=lambda staged, identity, body: None):
+            receipt["updatedAt"] = datetime.datetime.now(datetime.timezone.utc).isoformat().replace("+00:00", "Z")
+            body = (json.dumps(receipt, indent=2) + "\n").encode()
+            def published(identity):
+                receipt_state.update(body=body, identity=identity)
+            p115_publish(outcome, body, expected=receipt_state["body"],
+                          expected_identity=receipt_state["identity"], guard=guard, published=published)
+            if p115_read(outcome) != body or p115_identity(outcome) != receipt_state["identity"]:
+                raise ValueError("P115 outcome receipt failed readback")
+
+        unchanged()
+        p115_clean(root)
+        git_dir = pathlib.Path(subprocess.run(["git", "rev-parse", "--absolute-git-dir"],
+                               cwd=root, capture_output=True, text=True, check=True).stdout.strip())
+        recovery = git_dir / "p115-recording-recovery"
+        recovery.mkdir(exist_ok=True)
+        journal = pathlib.Path(tempfile.mkdtemp(prefix="attempt-", dir=recovery))
+        outcome = journal.with_name(journal.name + ".ATTEMPT.json")
+        receipt = {"scope": "P115 " + operation + " attempt; selftest calls are synthetic/no owner action",
+                   "operation": operation, "batch": batch_evidence,
+                   "ranAt": head.decode().strip(), "indexSha256": hashlib.sha256(index).hexdigest(),
+                   "attemptId": journal.name,
+                   "capturedAt": datetime.datetime.now(datetime.timezone.utc).isoformat().replace("+00:00", "Z"),
+                   "state": "prepared", "paths": [],
+                   "validationInputs": {str(p): None if b is None else hashlib.sha256(b).hexdigest()
+                                        for p,b in sorted(captured.items())}}
+        for number, rel in enumerate(paths):
+            body = before[rel]
+            name = journal.name + f"/{number}.before"
+            if body is not None:
+                (outcome.parent / name).write_bytes(body)
+            receipt["paths"].append({"path": rel.as_posix(),
+                "before": None if body is None else hashlib.sha256(body).hexdigest(),
+                "after": None if outputs[rel] is None else hashlib.sha256(outputs[rel]).hexdigest(),
+                "preimage": None if body is None else name})
+        persist(unchanged)
+        unchanged()
+        p115_apply_batch(root, journal, before, proposed, patches, batch_evidence)
+        unchanged()
+        changed_subjects = tuple(p for p in reference.SUBJECTS if before[p] != outputs[p])
+        publish_paths = (*changed_subjects, *((reference.RECORD, reference.AGGREGATE)
+                                             if operation == "record" else ()))
+        for rel in publish_paths:
+            unchanged()
+            def published(identity, rel=rel):
+                publications[rel] = P115Publication(journal.name, rel, identity, stat.S_IFREG,
+                    outputs[rel], hashlib.sha256(outputs[rel]).hexdigest())
+                owned_order.append(rel)
+                expected[rel], target_identity[rel] = outputs[rel], identity
+            p115_write(root / rel, outputs[rel], expected=expected[rel],
+                        expected_identity=target_identity[rel], guard=unchanged, published=published)
+        unchanged()
+        if not pkg.applied(root):
+            raise ValueError("P115 applied postcondition failed")
+        if operation == "record":
+            findings = reference.signed_findings(root)
+            if findings:
+                raise ValueError("P115 recorded postcondition failed: " + " | ".join(findings))
+        receipt.update(state="completed", postconditions={"sixSubjects": True, "exactRecords": operation == "record",
+            "signedChain": operation == "record", "capturedInputsAndIndex": True},
+            publications=p115_publications(publications),
+            payloadCapturedAtCompletion=p115_payload_inventory(journal),
+            privatePayloadCapturedAtCompletion=p115_private_inventory(journal))
+        persist(unchanged)
+        # Receipt I/O is precommit too: it must not conceal intervening drift.
+        unchanged()
+        committed = True
+    except BaseException as failure:
+        original = p115_exception(failure)  # Freeze BEFORE any recovery operation.
+        message = f"{type(failure).__name__}: {failure}"
+        diagnostic_errors = []
+        try:
+            print("P115 original exception: " + json.dumps(original))
+        except BaseException as diagnostic_error:
+            diagnostic_errors.append(p115_exception(diagnostic_error))
+        restored, blocked = {}, set()
+        conflicts, recovery_errors = p115_recover(root, before, outputs, before_identity,
+            owned_order, publications, restored=restored, blocked=blocked)
+        observation_prefix = (journal.name if journal is not None else
+            "unstarted-" + datetime.datetime.now(datetime.timezone.utc).strftime("%Y%m%dT%H%M%S%fZ"))
+
+        def observe(label):
+            return p115_recovery_observation(root, before, before_identity, owned_order,
+                restored, blocked, conflicts, recovery_errors, observation_prefix + ":" + label)
+
+        def emit(text):
+            try:
+                print(text)
+            except BaseException as diagnostic_error:
+                diagnostic_errors.append(p115_exception(diagnostic_error))
+                if "failure diagnostic output unavailable" not in conflicts:
+                    conflicts.append("failure diagnostic output unavailable")
+
+        def failure_receipt(observation):
+            receipt.update(state="failed", originalError=message, originalException=original,
+                recoveryConflicts=list(conflicts), recoveryExceptions=list(recovery_errors),
+                diagnosticExceptions=list(diagnostic_errors), recoveryObservation=observation,
+                recoveryPublications={str(rel): identity for rel, identity in restored.items()},
+                publications=p115_publications(publications))
+
+        def report_receipt():
+            try:
+                verified = p115_report_receipt(outcome, receipt_state, completed=False)
+                if not verified["verified"] and not any("failure receipt" in c for c in conflicts):
+                    conflicts.append("failure receipt verification unavailable; no final recovery proof")
+                if verified.get("exception") is not None:
+                    diagnostic_errors.append(verified["exception"])
+            except BaseException as diagnostic_error:
+                diagnostic_errors.append(p115_exception(diagnostic_error))
+                conflicts.append("failure receipt diagnostic unavailable")
+
+        if diagnostic_errors:
+            conflicts.append("original failure diagnostic output unavailable")
+        initial_observation = observe("after-recovery")
+        if outcome is not None:
+            failure_receipt(initial_observation)
+            try:
+                receipt["privatePayloadOnFailure"] = p115_private_inventory(journal)
+            except BaseException as inventory_error:
+                receipt["privatePayloadOnFailure"] = None
+                receipt["privatePayloadInventoryException"] = p115_exception(inventory_error)
+            try:
+                persist()
+            except BaseException as evidence_error:
+                evidence = p115_exception(evidence_error)
+                conflicts.append("failure receipt persistence failed; durable failure update unavailable")
+                diagnostic_errors.append(evidence)
+                emit("P115 secondary evidence error: " + json.dumps(evidence))
+                emit("P115 diagnostic fallback: original exception snapshot printed above; "
+                     "no durable failure update is claimed")
+        for error in recovery_errors:
+            emit("P115 secondary recovery error: " + json.dumps(error))
+        emit("FAILED P115: " + message)
+        if outcome is not None:
+            report_receipt()
+        # Receipt verification and its output are not preservation evidence.
+        # This final read-only observation follows all their effects.
+        final_observation = observe("after-receipt-and-diagnostics")
+        corrected = False
+        if outcome is not None and final_observation["targets"] != initial_observation["targets"]:
+            corrected = True
+            failure_receipt(final_observation)
+            try:
+                persist()  # One corrective update, never a persistence retry loop.
+            except BaseException as evidence_error:
+                diagnostic_errors.append(p115_exception(evidence_error))
+                conflicts.append("corrective failure receipt unavailable; retained observation is historical")
+                emit("P115 secondary corrective evidence error: " + json.dumps(diagnostic_errors[-1]))
+            report_receipt()
+            final_observation = observe("after-one-corrective-receipt")
+        if final_observation["complete"] and not diagnostic_errors:
+            terminal = ("P115 recovery complete; captured preimages preserved at observation "
+                + final_observation["observationId"] + " [" + final_observation["startedAt"]
+                + " .. " + final_observation["endedAt"] + "]; targets=" + str(len(before))
+                + "; exclusive-checkout sequential read-only scope; no atomic/CAS/beyond-window guarantee")
+        else:
+            emit("P115 final recovery observation: " + json.dumps(final_observation))
+            if corrected:
+                emit("P115 retained receipt recovery scope: historical observation; "
+                     "no current preservation claim beyond the final observation window")
+            terminal = "P115 recovery incomplete: " + " | ".join(conflicts)
+        # No receipt, inventory or diagnostic read follows a positive line.
+        emit(terminal)
+        if not isinstance(failure, Exception):
+            raise
+        return 1
+    assert committed  # No governed recovery is permitted beyond this point.
+    try:
+        shutil.rmtree(journal)
+        outcome.unlink()
+    except BaseException as cleanup_error:
+        cleanup = p115_exception(cleanup_error)
+        print("P115 WARNING: recording completed; private cleanup failed: " + json.dumps(cleanup))
+        try:
+            survivors = p115_payload_inventory(journal)
+            receipt.update(payloadSurvivors=survivors, privatePayloadSurvivors=p115_private_inventory(journal))
+        except BaseException as inventory_error:
+            receipt.update(payloadSurvivors=None, payloadInventoryException=p115_exception(inventory_error))
+            print("P115 WARNING: surviving payload inventory unavailable: " + json.dumps(p115_exception(inventory_error)))
+        receipt.update(state="completed", cleanupException=cleanup)
+        try:
+            persist()
+        except BaseException as evidence_error:
+            print("P115 WARNING: cleanup diagnostic persistence failed: " + json.dumps(p115_exception(evidence_error)))
+        p115_report_receipt(outcome, receipt_state, completed=True)
+    if operation == "apply":
+        print("applied the exact five P115 patches as one preflighted batch")
+        return 0
+    print(f"wrote {reference.RECORD.as_posix()}; appended exact P115 aggregate block")
+    print(f"next: review the logical Git transaction, commit, then `git tag -a {tag_for(pkg, version)}` on that commit")
+    return 0
+
+
 def patch_package_applied(root: pathlib.Path, proposed: pathlib.Path,
                           record: pathlib.Path) -> bool:
     """Before its record exists, every patch reverses over the tree; after,
@@ -366,6 +1147,7 @@ def real_packages() -> dict[str, Package]:
     intent_record = DECISIONS / "THREE-SURFACE-POC-GOVERNING-INTENT-AMENDMENT-SIGNOFF-v1.0.md"
     vocabulary = lambda: _module("build_three_surface_poc_vocabulary_epistemic_amendment")  # noqa: E731
     vocabulary_dir = CANDIDATES / "three-surface-poc-vocabulary-epistemic-amendment"
+    reference = lambda: _module("prepare_three_surface_poc_governedby_reference_recording")  # noqa: E731
     consent = lambda: _module("build_cap1_trusted_bootstrap_consent_adoption")  # noqa: E731
     consent_change = pathlib.Path("openspec/changes/cap1-trusted-bootstrap-consent")
 
@@ -591,6 +1373,21 @@ def real_packages() -> dict[str, Package]:
                 "also re-judges POC-REQ-014's encoding arm and its RFC2-24 and RFC8-24\n"
                 "rows against P-84's amended POC-REQ-060, which that arm now reads (the\n"
                 "round-3 raw's note 4). The P-84 package is not edited by this sign-off.\n"),
+        ),
+        # Prospective P-115: registration is neither signature nor installation.
+        "three-surface-poc-governedby-reference-amendment": Package(
+            "three-surface-poc-governedby-reference-amendment",
+            "Three-Surface POC governedBy reference amendment",
+            "specification amendment",
+            CANDIDATES / "three-surface-poc-governedby-reference-amendment",
+            "THREE-SURFACE-POC-GOVERNEDBY-REFERENCE-AMENDMENT",
+            lambda root: reference().recording_findings(root),
+            p115_package_apply,
+            lambda root: reference().applied_rows_match(root),
+            subject=CANDIDATES / "three-surface-poc-governedby-reference-amendment" /
+                    "THREE-SURFACE-POC-GOVERNEDBY-REFERENCE-AMENDMENT-MANIFEST.txt",
+            extension=POC_EXTENSION_REL,
+            review_alias="build_three_surface_poc_governedby_reference_amendment.py",
         ),
         # P-108, cleared by its round-2 notes-only raw; signed 2026-10-15
         # under the POC extension (its item 1 reaches any package patching
@@ -1183,6 +1980,9 @@ def note_section(pkg: Package) -> str:
 
 def checked_phrase(pkg: Package) -> str:
     """How the record says the package was checked and applied."""
+    if pkg.key == "three-surface-poc-governedby-reference-amendment":
+        return ("that the frozen P115 builder check passed before the exact five patches were applied\n"
+                "as one preflighted Git batch through the P115 recording adapter.")
     if pkg.applied_subjects:
         return ("that the package's checks passed (every patch applies to the signed\n"
                 "bytes, and the dependency generator over the patched specification\n"
@@ -1290,11 +2090,15 @@ def render_aggregate(pkg: Package, version: str, date: str, review: str,
     review_row = f"`{review}`: `{verdict}`"
     if disposition:
         review_row += f"; disposition: `{disposition}`"
+    selection = ("The owner signed off version " + version + " by selecting an option in the\n"
+                 "Claude Code CLI (quoted in the dedicated record).")
+    if pkg.key == "three-surface-poc-governedby-reference-amendment":
+        selection = (f"The owner signed off version {version} by selecting an option in a structured\n"
+                     "question naming this package and version (quoted in the dedicated record).")
     return f"""{start}
 ## Versioned sign-off — {pkg.key} — v{version} — recorded {date}
 
-The owner signed off version {version} by selecting an option in the
-Claude Code CLI (quoted in the dedicated record).
+{selection}
 
 | | |
 |---|---|
@@ -1343,6 +2147,8 @@ def parse_options(pkg: Package, text: str) -> frozenset[str]:
 def record(root: pathlib.Path, pkg: Package, version: str, date: str, quote: str,
            review_rel: str, disposition_rel: str | None,
            options: frozenset[str] = frozenset(), *, instant: str | None = None) -> int:
+    if pkg.key == "three-surface-poc-governedby-reference-amendment":
+        return p115_record(root, pkg, version, date, quote, review_rel, disposition_rel, options)
     if instant is None:
         instant = datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
     try:
@@ -1395,6 +2201,19 @@ def check(root: pathlib.Path, pkg: Package, version: str) -> int:
     if not VERSION_RE.fullmatch(version):
         print(f"FAILED: version {version!r} is not major.minor")
         return 1
+    if pkg.key == "three-surface-poc-governedby-reference-amendment":
+        reference = _module("prepare_three_surface_poc_governedby_reference_recording")
+        state, findings = reference.family_state(root)
+        if version != reference.VERSION:
+            findings.append("P115 checker supports only exact canonical v1.0")
+        if not findings and state != "ABSENT":
+            try:
+                findings = reference.binding_findings(root)
+            except (OSError, ValueError, KeyError, TypeError, subprocess.CalledProcessError) as exc:
+                findings = [str(exc)]
+        if findings:
+            print("FAILED: " + " | ".join(findings))
+            return 1
     rec = root / record_rel(pkg, version)
     copies = aggregate_copies(root, pkg, version)
     if not rec.exists() and not copies:
