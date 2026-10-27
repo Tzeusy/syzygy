@@ -1,5 +1,5 @@
 {
- "subject": "the host every local measurement under docs/evidence/syzygy-bpyt-4-31/ ran on (syzygy-bpyt.4.31): the alone runs in durations/ and head-durations/, and the five full-suite runs in full-runs.json; hosted runs (ci-durations.json) ran on GitHub-hosted runners, not here",
+ "subject": "the host every local measurement under docs/evidence/syzygy-bpyt-4-31/ ran on (syzygy-bpyt.4.31): the alone runs in durations/, head-durations/ and repair-durations/, and the five full-suite runs in full-runs.json; hosted runs (ci-durations.json) ran on GitHub-hosted runners, not here",
  "recordedAt": "2026-10-27",
  "recordedAtCommit": "08e11a178c986ca002f1f1e907bf7dfb85125ccd",
  "hostname": "Tzeusy",

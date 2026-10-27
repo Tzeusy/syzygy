@@ -1,5 +1,6 @@
 {
- "text": "Sites whose support is an introducing commit or an earlier retained record, read by hand from the commit message or record named; and the files an open pull request changes.",
+ "text": "Sites whose support is an introducing commit or an earlier retained record, read by hand from the commit message or record named; and the files an open pull request changes. Site keys are path:line with the line numbers at linesAt.",
+ "linesAt": "546f1ff066e2ffef749c757cdb4621336039113b",
  "sites": {
   "apps/three-surface-poc/src/restart.test.ts:331": "b48d86fa: under a full suite at load average 60-90, two restart.test.ts tests hit the 5 s default",
   "packages/polaris-dossier/src/gate-acts.test.ts:98": "0a08add9: the two tree-walking gate-acts tests time out under load at the 5 s default",

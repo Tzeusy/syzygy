@@ -4,7 +4,8 @@
 usage: python3 -I docs/evidence/syzygy-bpyt-4-31/tools/census_mutants.py OUT.json
 
 Each mutant replaces one fragment of the tool (exactly one occurrence) and runs the mutated copy's --selftest; the mutant is
-killed when the selftest exits 1. The copy is written beside the tool, so it resolves the same `typescript`, and removed after.
+killed when the selftest exits 1 on its own assertions. A mutant whose copy does not parse (a `SyntaxError` in its output) is
+an error, never a kill, and fails the suite: a deleted fragment can leave a brace unmatched. The copy is written beside the tool, so it resolves the same `typescript`, and removed after.
 The unmutated tool's selftest must pass first. OUT.json records each mutant's old and new fragment, its outcome and the
 selftest's output, with the commit and the tool's sha256."""
 import hashlib, json, os, subprocess, sys
@@ -19,7 +20,7 @@ MUTANTS = [
     ('M5', 'options-last object', "const t = timeoutProp(args[2]); if (t) { expr = t.initializer; form = 'options-last'; }", ''),
     ('M6', 'a function third argument is not a timeout', "args.length >= 3 && !ts.isFunctionLike(args[2])", 'args.length >= 3'),
     ('M7', 'hooks', "kind = 'hook'; expr = args[1]; form = 'second-argument';", ''),
-    ('M8', 'vi.setConfig', "push(sf, prop.initializer, 'setConfig', 'vi.setConfig', prop.name.text);", ''),
+    ('M8', 'vi.setConfig', "node.expression.name.text === 'setConfig'", "node.expression.name.text === 'setConfigX'"),
     ('M9', 'config properties', "push(sf, node.initializer, 'config', node.name.text, 'config-property');", ''),
     ('M10', 'population excludes docs/', "(/^(apps|packages)\\//.test(p)", "(/^(apps|packages|docs)\\//.test(p)"),
     ('M11', 'reason on the timeout line', "if (onLine) return { where: `${sf.fileName}:${endLine}`, text: onLine };", ''),
@@ -52,11 +53,13 @@ for mid, predicate, old, new in MUTANTS:
         code, output = selftest(copy)
     finally:
         os.remove(copy)
-    rows.append({'id': mid, 'predicate': predicate, 'old': old, 'new': new, 'exit': code, 'killed': code == 1, 'output': output[:1500]})
-    print(f"{mid} {'killed' if code == 1 else 'SURVIVED' if code == 0 else f'exit {code}'}: {predicate}")
+    outcome = 'error' if 'SyntaxError' in output else 'killed' if code == 1 else 'survived' if code == 0 else f'exit {code}'
+    rows.append({'id': mid, 'predicate': predicate, 'old': old, 'new': new, 'exit': code, 'outcome': outcome, 'killed': outcome == 'killed', 'output': output[:1500]})
+    print(f"{mid} {outcome}: {predicate}")
 commit = subprocess.run(['git', '-C', HERE, 'rev-parse', 'HEAD'], capture_output=True, text=True).stdout.strip()
 out = {'tool': 'census_mutants.py', 'subject': {'path': 'docs/evidence/syzygy-bpyt-4-31/tools/timeout_census.mjs', 'sha256': sha(TOOL), 'commit': commit},
        'unmutatedSelftest': output_unmutated if (output_unmutated := selftest(TOOL)[1]) else None,
        'mutants': len(rows), 'killed': sum(r['killed'] for r in rows), 'rows': rows}
 open(sys.argv[1], 'w', encoding='utf8').write(json.dumps(out, indent=1) + '\n')
 print(f"{out['killed']} of {out['mutants']} killed")
+if out['killed'] != out['mutants']: sys.exit(1)

@@ -15,16 +15,26 @@ suite's start to its first child's start, and afterAllMs the time from its last 
 or a nested suite; a test's duration includes its beforeEach and afterEach hooks, so the two figures hold only the suite's own
 beforeAll and afterAll hooks and the runner's bookkeeping between them. A suite with no child that ran records nulls.
 
+Each run also records the unhandled errors vitest hands its reporters (`onFinished`'s second argument), which make a run exit 1
+with every test passing, and, for a run that exits nonzero, the last 40 lines of vitest's output.
+
+The `--hookTimeout=600000` in each command does not reach a project: in vitest 3.2.7, cli-api's `overridesOptions` carries
+`testTimeout` and not `hookTimeout`, so in a `--project` run every hook ran under its own explicit timeout or the project's
+10000 ms default (the review R-GP-IMPL-TEST-TIMEOUTS-1, §3.4 and §3.13). No recorded duration is wrong as a duration, but a hook
+past that budget records a failure rather than a time.
+
 It writes only OUT.json. A SIGKILL of the script itself can leave vitest running."""
-import datetime, hashlib, json, os, signal, subprocess, sys, tempfile, threading, time
+import datetime, hashlib, json, os, re, signal, subprocess, sys, tempfile, threading, time
 
 GRACE_SECONDS = 10
+TAIL_LINES = 40
+ANSI = re.compile(r'\x1b\[[0-9;]*m')
 SCRIPT = 'docs/evidence/syzygy-bpyt-4-31/tools/measure_vitest_hook_durations.py'
 REPORTER = r"""import { writeFileSync } from 'node:fs';
 const span = (task) => task.result && typeof task.result.startTime === 'number' && typeof task.result.duration === 'number'
   ? [task.result.startTime, task.result.startTime + task.result.duration] : null;
 export default class {
-  onFinished(files) {
+  onFinished(files, errors) {
     const rows = [];
     const walk = (suite, names) => {
       const children = (suite.tasks ?? []).map(span).filter(Boolean);
@@ -45,7 +55,8 @@ export default class {
       for (const child of task.tasks ?? []) walkTests(child, task.type === 'suite' && task.name ? [...names, task.name] : names);
     };
     for (const file of files) { walk(file, []); for (const task of file.tasks) walkTests(task, []); }
-    writeFileSync(process.env.HOOK_DURATIONS_OUT, JSON.stringify({ rows, tests }));
+    const unhandledErrors = (errors ?? []).map((e) => ({ name: e?.name ?? null, message: String(e?.message ?? e).slice(0, 500) }));
+    writeFileSync(process.env.HOOK_DURATIONS_OUT, JSON.stringify({ rows, tests, unhandledErrors }));
   }
 }
 """
@@ -82,7 +93,7 @@ def end_group(proc):
 
 def one_run(index):
     with tempfile.TemporaryDirectory() as tmp:
-        reporter, rows_path = os.path.join(tmp, 'hook-reporter.mjs'), os.path.join(tmp, 'rows.json')
+        reporter, rows_path, log_path = os.path.join(tmp, 'hook-reporter.mjs'), os.path.join(tmp, 'rows.json'), os.path.join(tmp, 'output.log')
         open(reporter, 'w', encoding='utf8').write(REPORTER)
         command = ['npx', 'vitest', 'run', *(['--config', config] if config else []), *(['--project', project] if project else []), test_file,
                    f'--reporter={reporter}', '--testTimeout=600000', '--hookTimeout=600000']
@@ -96,21 +107,25 @@ def one_run(index):
         sampler.start()
         try:
             if not stopped_by:
-                proc = subprocess.Popen(command, cwd=tree, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, start_new_session=True,
-                                        env={**os.environ, **extra_env, 'HOOK_DURATIONS_OUT': rows_path})
-                while proc.poll() is None and not stopped_by: time.sleep(0.05)
+                with open(log_path, 'w', encoding='utf8') as log:
+                    proc = subprocess.Popen(command, cwd=tree, stdout=log, stderr=subprocess.STDOUT, start_new_session=True,
+                                            env={**os.environ, **extra_env, 'HOOK_DURATIONS_OUT': rows_path})
+                    while proc.poll() is None and not stopped_by: time.sleep(0.05)
         finally:
             stop.set(); sampler.join()
             if proc is not None: end_group(proc)
         if stopped_by: sys.exit(128 + stopped_by[0])
         wall, load_end = round(time.monotonic() - t0, 1), os.getloadavg()[0]
-        data = json.load(open(rows_path, encoding='utf8')) if os.path.exists(rows_path) else {'rows': [], 'tests': []}
+        data = json.load(open(rows_path, encoding='utf8')) if os.path.exists(rows_path) else {'rows': [], 'tests': [], 'unhandledErrors': None}
+        output = [ANSI.sub('', l).rstrip().replace(tmp, '<tmp>') for l in open(log_path, encoding='utf8', errors='replace')] if proc is not None else []
     mine = lambda r: r['file'] and (os.path.relpath(r['file'], tree) == test_file or os.path.relpath(r['file'], tree).startswith(test_file.rstrip('/') + '/'))
     relative = lambda r: {**r, 'file': os.path.relpath(r['file'], tree)} if os.path.isdir(os.path.join(tree, test_file)) else {k: v for k, v in r.items() if k != 'file'}
     suites = [relative(r) for r in data['rows'] if mine(r)]
     tests = [relative(t) for t in data['tests'] if mine(t)]
     run = {'index': index, 'startedAt': started_at, 'command': ' '.join(command).replace(reporter, '<tmp>/hook-reporter.mjs'), 'exitCode': proc.returncode,
            'wallSeconds': wall, 'load1': {'start': round(load_start, 2), 'end': round(load_end, 2), 'min': round(min(samples), 2), 'max': round(max(samples), 2), 'samples': len(samples)},
+           'unhandledErrors': data.get('unhandledErrors'),
+           **({'outputTail': [l for l in output if l][-TAIL_LINES:]} if proc.returncode != 0 else {}),
            'suites': suites, 'tests': tests}
     print(f"run {index}: exit {proc.returncode}, {wall} s, load1 {run['load1']}, " +
           ', '.join(f"{s['suite'][:40]} before {s['beforeAllMs']} after {s['afterAllMs']}" for s in suites if s['beforeAllMs'] is not None), flush=True)
