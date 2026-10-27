@@ -111,8 +111,8 @@ export const GENERATION_LITERAL_MUTATIONS: readonly LiteralMutation[] = [
     id: 'pipeline-repair-cycle-cap-disabled',
     file: PIPELINE_SOURCE,
     description: 'the repair-cycle cap is never enforced, so a persistently blocking review repairs forever instead of stopping',
-    from: "if (repairs >= budget.maxRepairCycles) stop('repair-exhausted');",
-    to: "if (false) stop('repair-exhausted');",
+    from: "if (repairs >= budget.maxRepairCycles) {\n        if (verdict.reviewerBlocking) stop('repair-exhausted');",
+    to: "if (false) {\n        if (verdict.reviewerBlocking) stop('repair-exhausted');",
     mustFail: ['stops when calls or repairs are exhausted and when usage is unknown'],
   },
   {
