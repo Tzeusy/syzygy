@@ -1,0 +1,277 @@
+#!/usr/bin/env python3
+"""Builds dc4-object-and-iso-helpers-2026-10-28.json, the record of syzygy-bpyt.6.3 stack 4, from the outputs beside it.
+Every digest and total is computed; the decision table is the only hand-written part and is checked against the census.
+
+Usage: build-record.py <git repo> <base commit> <code commit> <evidence dir>
+Refuses (exit 1) unless the outputs say what the record is about to say: the two census methods agree per file at both commits, every
+census row of the object-shape and ISO populations has a decision, the differential groups are the ones the decisions rest on, every
+non-equivalent mutant is killed, both digest-citer methods agree, the equivalence check names only the declared exceptions, and every
+test of the head runs passed.
+"""
+import hashlib
+import json
+import os
+import subprocess
+import sys
+
+repo, base_arg, code_arg, evidence = sys.argv[1:]
+REGISTRY_BOUND = 'packages/polaris-dossier/src/git-object-reader.ts'
+
+
+def git(*args):
+    return subprocess.run(['git', '-C', repo, *args], capture_output=True, check=True).stdout
+
+
+def sha(data):
+    return hashlib.sha256(data).hexdigest()
+
+
+def load(name):
+    return json.load(open(os.path.join(evidence, name), encoding='utf8'))
+
+
+def file_sha(name):
+    return sha(open(os.path.join(evidence, name), 'rb').read())
+
+
+base = git('rev-parse', base_arg).decode().strip()
+code = git('rev-parse', code_arg).decode().strip()
+problems = []
+
+census_b, census_h = load('census-base.json'), load('census-head.json')
+grep_b, grep_h = load('census-grep-base.json'), load('census-grep-head.json')
+diff = load('differential-base.json')
+dates = load('date-probe-base.json')
+equiv = load('site-equivalence.json')
+mut_s, mut_i, mut_c = load('mutants-S.json'), load('mutants-I.json'), load('mutants-C.json')
+citers = load('digest-citers.json')
+tests = load('test-delta.json')
+runs = load('test-runs-summary.json')
+
+for label, c, g in (('base', census_b, grep_b), ('head', census_h, grep_h)):
+    if not g['namedEqualPerFile'] or g['namedMethodOne'] != g['namedMethodTwo']:
+        problems.append(f'census methods disagree at {label}')
+    if c['summary']['commit'] != (base if label == 'base' else code):
+        problems.append(f'census {label} is of another commit')
+
+# ---- the decision table, keyed file:line at the base commit
+MERGED = 'merged into @syzygy/support isRecord'
+SUPPORT_MERGED = {
+    'packages/polaris-dossier/src/check.ts:194': 3, 'packages/polaris-dossier/src/close.ts:86': 3, 'packages/polaris-dossier/src/design-review.ts:28': 3,
+    'packages/polaris-dossier/src/execution-flags.ts:43': 3, 'packages/polaris-dossier/src/inventory.ts:77': 3, 'packages/polaris-dossier/src/render.ts:121': 3,
+    'packages/polaris-dossier/src/review.ts:61': 3, 'packages/polaris-dossier/src/run-record.ts:136': 3, 'packages/polaris-dossier/src/screen.ts:73': 4,
+    'packages/polaris-dossier/src/session-statement.ts:31': 3, 'packages/polaris-dossier/src/waiting-sessions.ts:71': 3,
+    'packages/polaris-generation-core/src/discovery.ts:219': 3, 'packages/polaris-generation-core/src/dossier-evaluation.ts:50': 3,
+    'packages/polaris-generation-core/src/public-source-classification.ts:56': 4, 'packages/polaris-generation-core/src/reader-questions.ts:22': 3,
+    'packages/polaris-generation-core/src/secret-redaction.ts:35': 4, 'packages/three-surface-poc-core/src/authority-artifact-fields.ts:85': 1,
+}
+KEPT = {
+    'packages/polaris-generation-core/src/discovery-provider.ts:66': ('decides differently', 'adds a prototype check ([Object.prototype, null].includes(Object.getPrototypeOf(value))); the differential finds 24 of the 62 values on which it differs from the plain test (discoveryProviderDiffersOn): class instances, Date, Map, boxed primitives, objects with another prototype and cross-realm objects it refuses where the plain test admits, and a proxy with trapping handlers it throws on'),
+    'packages/three-surface-poc-core/src/response-identity.ts:131': ('type contract', 'the caller deletes keys from the narrowed value (three sites), which Readonly<Record<string, unknown>> forbids: tsc TS2542 at response-identity.ts 155, 158 and 191 (typecheck-all-20-sites-attempt.log); the decision is identical'),
+    'apps/three-surface-poc/src/block-provenance-sweep.test.ts:40': ('type contract', 'narrows Json | undefined to the test\'s own Obj; the support guard narrows to Readonly<Record<string, unknown>> and the typed reads that follow fail (TS2345, TS18047, TS2339 in the attempt log); the decision is identical'),
+    'apps/three-surface-poc/src/governing-intent-sweep.test.ts:39': ('type contract', 'the same narrowing as block-provenance-sweep.test.ts'),
+    'packages/cap1-core/src/declaration.ts:72': ('package boundary', 'a cap1 package; cap1 packages never import @syzygy/support (cap1-system is an independent oracle); named isPlainObject, outside the three names in the bead; the decision is identical'),
+    'packages/cap1-daemon/src/consent-loading.ts:124': ('package boundary', 'a cap1 package, as above'),
+    'packages/three-surface-poc-core/src/body-read-authority.test.ts:189': ('test oracle', 'a boolean-returning helper named isPlainObject inside an authority test; outside the three names; left so the test does not share a helper with the code it checks; the decision is identical'),
+    'scripts/redis_screening_remeasure.mjs:326': ('outside the workspace packages', 'a plain-JavaScript measurement script under scripts/, outside packages/ and apps/; the decision is identical'),
+    'apps/three-surface-poc/src/polaris-generation/public-source-screening.ts:167': ('not an object-shape predicate', 'an id extractor that returns a list; the census found it by its typeof test'),
+    'packages/polaris-dossier/src/draft-schema.test.ts:94': ('not an object-shape predicate', 'a recursive reference collector that returns a list'),
+    'scripts/differential_line_slot.mjs:73': ('not the same predicate', 'duck-types an object that has fields() and render() functions'),
+}
+ISO_FILES = ['brief', 'check', 'close', 'inventory', 'review', 'session-handover', 'waiting-sessions']
+
+rows = census_b['rows']
+table, seen = [], set()
+for r in rows:
+    key = f"{r['file']}:{r['line']}"
+    if 'shape' in r['kinds'] or (r['name'] == 'isoOf') or (r['name'] == 'isIsoDate'):
+        if r['name'] == 'isoOf':
+            decision, reason, klass = 'merged into packages/polaris-dossier/src/iso-of.ts', 'seven textually identical copies; @syzygy/support cannot hold it (the purity guard forbids the Date constructor)', 3
+        elif r['name'] == 'isIsoDate':
+            decision, reason, klass = 'kept', 'one definition, a validator and not a copy of isoOf; it accepts impossible calendar dates (see dateFinding); a change would change what a gate accepts', 1
+        elif key in SUPPORT_MERGED:
+            decision, reason, klass = MERGED, 'decides identically (differential group); types compile', SUPPORT_MERGED[key]
+        elif key in KEPT:
+            decision, reason, klass = 'kept', KEPT[key][0] + ': ' + KEPT[key][1], None
+        else:
+            problems.append(f'no decision for {key}')
+            continue
+        seen.add(key)
+        table.append({'at': key, 'name': r['name'], 'exactTextSha256': r['exactSha256'], 'decision': decision, 'reason': reason, 'ccRev1Class': klass})
+missing = (set(SUPPORT_MERGED) | set(KEPT)) - seen
+if missing:
+    problems.append('a decision names a row the census does not have: ' + ', '.join(sorted(missing)))
+
+merged = [t for t in table if t['decision'] == MERGED]
+if len(merged) != 17:
+    problems.append(f'{len(merged)} merged, expected 17')
+iso = [t for t in table if t['name'] == 'isoOf']
+if len(iso) != 7 or sorted(os.path.basename(t['at'].split(':')[0])[:-3] for t in iso) != sorted(ISO_FILES):
+    problems.append('isoOf rows are not the seven expected files')
+
+# ---- the differential: the groups the decisions rest on
+obj = diff['object']
+group_of = {m: g for g in obj['groups'] for m in g['members']}
+plain_group = max(obj['groups'], key=lambda g: len(g['members']))
+for t in table:
+    if t['decision'] == MERGED:
+        member = f"{t['at']} {t['name']}"
+        if group_of.get(member) is not plain_group:
+            problems.append(f'merged row outside the plain group: {member}')
+if len(plain_group['members']) != 24 or not plain_group['booleanOnly']:
+    problems.append('the plain group is not 24 boolean-only functions')
+provider = [g for g in obj['groups'] if any('discovery-provider' in m for m in g['members'])][0]
+if provider is plain_group or len(provider['members']) != 1:
+    problems.append('discovery-provider is not alone')
+if len(diff['isoOf']['groups']) != 1 or len(diff['isoOf']['groups'][0]['members']) != 7:
+    problems.append('isoOf copies do not form one group of seven')
+dv = {g['members'][0].split(' ')[-1]: g for g in diff['dateValidators']['groups']}
+if len(diff['dateValidators']['groups']) != 3:
+    problems.append('the date validators are not three distinct groups')
+provider_only = [obj['corpusLabels'][i] for i, (a, b) in enumerate(zip(plain_group['outcomes'], provider['outcomes'])) if a != b]
+
+# ---- date finding
+date_only = dates['pairs']['dateOnly']
+disagree_dates = sorted(k for k, v in date_only.items() if len(set(v.values())) > 1)
+if disagree_dates != ['"1900-02-29"', '"2026-02-29"', '"2026-02-30"', '"2026-02-31"', '"2026-04-31"']:
+    problems.append(f'date-only disagreements are not the five expected: {disagree_dates}')
+
+# ---- equivalence
+if equiv['notEqual'] != sorted(['packages/polaris-dossier/src/iso-of.ts', 'packages/support/src/index.ts', 'packages/support/src/is-record.ts']):
+    problems.append('equivalence exceptions are not the declared three: ' + ', '.join(equiv['notEqual']))
+if equiv['equal'] != 19 or equiv['modified'] != 20:
+    problems.append('the equivalence counts are not 19 of 20 modified')
+
+# ---- mutants
+EQUIVALENT = {
+    'C-authority-artifact-fields-L141n4-A': 'typedAuthority is parsed JSON: an array has no own writeSurface, so reading it as an object yields the same missing field as the original branch; the test feeds an array there and the result is identical',
+    'C-screen-L81n0-A': 'the policy document is parsed JSON: an array has no policyId, so reading it as an object refuses with the same identity-unreadable text as the original branch',
+    'C-screen-L84n2-A': 'source admission is parsed JSON: an array has no deniedPathBasenames, so the next test refuses with the same text',
+    'C-screen-L88n3-A': 'the content classification is parsed JSON: an array has no rules, so rules is the empty list either way',
+    'C-screen-L89n4-A': 'a rules entry is parsed JSON: an array has no class, so it is passed over either way',
+    'C-screen-L90n5-A': 'codeContent[0] is an object or undefined (it comes from the isRecord filter above it); the mutant differs from isRecord only on arrays, which cannot be there',
+    'C-screen-L90n5-B': 'the same: the mutant differs from isRecord only on null, which cannot be there',
+    'C-screen-L100n6-A': 'a detectors entry is parsed JSON: an array has no string id, so it is passed over either way',
+}
+survivors = [m for m in mut_c['mutants'] if not (m['killed'] or m.get('killedByRelated'))]
+surv_ids = sorted(m['id'] for m in survivors)
+if surv_ids != sorted(EQUIVALENT):
+    problems.append(f'survivors are not the explained equivalents: {surv_ids}')
+for m in mut_s['mutants'] + mut_i['mutants']:
+    if not m['killed']:
+        problems.append(f"{m['id']} survived")
+for c in mut_s['controls'] + mut_i['controls'] + mut_c['controls']:
+    if not c['passed_clean']:
+        problems.append(f"control {c['id']} did not pass clean")
+
+# ---- citers
+full = lambda ref: git('rev-parse', ref).decode().strip()
+if not citers['methodsAgree'] or full(citers['baseCommit']) != base or full(citers['codeHeadCommit']) != code:
+    problems.append('digest-citers: methods disagree or another commit')
+reg_before = sha(git('show', f'{base}:{REGISTRY_BOUND}'))
+reg_after = sha(git('show', f'{code}:{REGISTRY_BOUND}'))
+if reg_before != reg_after:
+    problems.append('the registry-bound file changed')
+head_digests = {d['path']: d['sha256'] for d in citers['digests'] if d['at'] == 'head'}
+needles_cited = set(citers['needlesCited'])
+cited_base = sorted({d['path'] for d in citers['digests'] if d['at'] == 'base' and ({d['sha256'], d['gitBlob'], d['sha256'][:12], d['gitBlob'][:12]} & needles_cited)})
+cited_head = sorted({d['path'] for d in citers['digests'] if d['at'] == 'head' and ({d['sha256'], d['gitBlob'], d['sha256'][:12], d['gitBlob'][:12]} & needles_cited)})
+
+# ---- tests
+if not (tests['allBasePassed'] and tests['allHeadPassed']):
+    problems.append('a test did not pass')
+PIN = 'no route and no credential > sweeps a non-empty population of source files'
+if set(tests['changedGeneratedTests']) != {PIN, 'reading the rule > refuses %s'} or tests['removed']:
+    problems.append('the changed test calls are not the pinned list and the refusal table, or a test was removed')
+if runs['headTestsOnBase']['failed'] != [{'file': 'cli.test.ts', 'name': 'no route and no credential sweeps a non-empty population of source files'}]:
+    problems.append('the head tests on base code fail more than the one declared pin')
+if runs['head']['failed'] != 0:
+    problems.append('the head run has failures')
+
+if problems:
+    print('refusing:', *problems, sep='\n  ')
+    sys.exit(1)
+
+changed_files = git('diff', '--name-only', '-z', base, code).decode().split('\0')
+changed_files = [f for f in changed_files if f]
+unchanged_support = git('diff', '--stat', '6ab7a12b', code, '--', 'packages/support/src/is-record.ts', 'packages/support/src/is-record.test.ts', 'packages/polaris-dossier/src/iso-of.ts', 'packages/polaris-dossier/src/iso-of.test.ts').decode().strip()
+
+record = {
+    'format': 'syzygy-bpyt-6-3-stack-4-record/1',
+    'bead': 'syzygy-bpyt.6.3',
+    'subject': 'one object-shape predicate in @syzygy/support, one isoOf in polaris-dossier, and the date validators left where they are',
+    'baseCommit': base,
+    'codeCommit': code,
+    'codeCommits': [c for c in git('log', '--format=%H', '--reverse', f'{base}..{code}').decode().split()],
+    'epistemic': 'Observed for every count, group and mutant below (computed by the tools beside this file, at the commits named); Inferred where a row says so (a validator rebuilt from its line)',
+    'toolDigests': {n: file_sha(n) for n in ['census.mjs', 'census-grep.py', 'differential.mjs', 'date-probe.mjs', 'apply-is-record.mjs', 'apply-iso-of.mjs', 'site-equivalence.mjs', 'mutants.py', 'digest-citers.py', 'test-delta.py', 'test-inventory.mjs']},
+    'outputDigests': {n: file_sha(n) for n in ['census-base.json', 'census-head.json', 'census-grep-base.json', 'census-grep-head.json', 'differential-base.json', 'date-probe-base.json', 'site-equivalence.json', 'mutants-S.json', 'mutants-I.json', 'mutants-C.json', 'digest-citers.json', 'test-delta.json', 'test-runs-summary.json', 'typecheck-all-20-sites-attempt.log', 'typecheck-head.log']},
+    'census': {
+        'method': 'one: TypeScript syntax tree over every tracked .ts/.mjs/.cjs file of packages/, apps/ and scripts/ read from the commit; two: git grep -E over the same paths, reconciled per file',
+        'population': {'base': census_b['summary']['population'], 'head': census_h['summary']['population']},
+        'named': {'base': census_b['summary']['named'], 'head': census_h['summary']['named']},
+        'namedTotal': {'base': census_b['summary']['namedTotal'], 'head': census_h['summary']['namedTotal']},
+        'objectPredicatesUnderPackagesAndApps': {'base': sum(1 for r in rows if 'named' in r['kinds'] and r['name'] in ('isObj', 'isObject', 'isRecord') and not r['file'].startswith('scripts/')), 'baseNote': 'isObj 12 + isObject 6 + isRecord 4 = 22 definitions, 21 under packages/ and apps/ (one is a script)'},
+        'shapeTestingFunctions': {'base': census_b['summary']['shape'], 'head': census_h['summary']['shape']},
+        'shapeUnderOtherNames': census_b['summary']['shapeUnderOtherNames'],
+        'methodsAgreePerFile': {'base': grep_b['namedEqualPerFile'], 'head': grep_h['namedEqualPerFile']},
+        'inlineObjectTestsNotInAnyFunction': {'base': len(grep_b['shapeRemainders']), 'head': len(grep_h['shapeRemainders']), 'note': 'lines that test typeof x === \'object\' inline, inside a larger function; listed in census-grep-base.json; not helpers and not in scope'},
+        'beadPremise': 'The bead names eight files for isIsoDate/isoOf. There are seven isoOf copies (polaris-dossier) and exactly one isIsoDate (act-fields.ts), which validates a date and is not a copy of isoOf.',
+    },
+    'decisions': table,
+    'differential': {
+        'object': {'corpusSize': obj['corpusSize'], 'functions': obj['functions'], 'groups': [{'signatureSha256': g['signatureSha256'], 'members': len(g['members']), 'booleanOnly': g['booleanOnly']} for g in obj['groups']],
+                   'plainGroupMembers': plain_group['members'], 'discoveryProviderDiffersOn': provider_only},
+        'isoOf': {'corpusSize': diff['isoOf']['corpusSize'], 'functions': diff['isoOf']['functions'], 'groups': len(diff['isoOf']['groups'])},
+        'dateValidators': {'corpusSize': diff['dateValidators']['corpusSize'], 'functions': diff['dateValidators']['functions'], 'groups': len(diff['dateValidators']['groups'])},
+    },
+    'dateFinding': {
+        'epistemic': 'Observed for isIsoDate (its exact text, run); Inferred for the consent reader\'s line (rebuilt from its exact text, not run in place)',
+        'claim': 'act-fields isIsoDate accepts calendar dates that do not exist, because it checks the shape and then asks Date.parse, which V8 answers for them; the consent package reader refuses the same strings by a round trip through toISOString. The two authorities decide differently on these date-only strings.',
+        'strings': disagree_dates,
+        'validators': dates['validators'],
+        'acceptedBy': 'isIsoDate: T on each of the five; consent reader day (line 706): F on each',
+        'reach': 'isIsoDate is the date test of the act-instant and expires checks in body-read-authority.ts and walkthrough-judgment.ts (class 1). Not changed here: tightening it changes what a gate accepts, an owner decision (GP-Q0).',
+        'otherValidatorsKeptApart': 'the instant validators (project-shape-observation, dossier check, dossier run-record, package-reader) each accept a different language (offsets, fractional seconds, millisecond form, whole seconds); date-probe-base.json lists the corpus rows where they disagree',
+    },
+    'typecheck': {
+        'attempt': 'with all 20 in-scope sites merged tsc failed in the three files kept local (8 errors); typecheck-all-20-sites-attempt.log',
+        'head': 'npm run typecheck exit 0 at the code commit; typecheck-head.log',
+    },
+    'equivalence': {'tool': 'site-equivalence.mjs', 'changedProductionFiles': equiv['changedSourceFiles'], 'modified': equiv['modified'], 'equalModuloDeclaredEdit': equiv['equal'],
+                    'declaredExceptions': equiv['notEqual'], 'exceptionNote': 'the support index (one added export) and the two new modules; test files are listed, not compared'},
+    'mutants': {
+        'support': {'commit': mut_s['commit'], 'mutants': len(mut_s['mutants']), 'killed': sum(m['killed'] for m in mut_s['mutants']), 'controlsClean': all(c['passed_clean'] for c in mut_s['controls'])},
+        'iso': {'commit': mut_i['commit'], 'mutants': len(mut_i['mutants']), 'killed': sum(m['killed'] for m in mut_i['mutants']), 'controlsClean': all(c['passed_clean'] for c in mut_i['controls'])},
+        'callSites': {'commit': mut_c['commit'], 'mutants': len(mut_c['mutants']), 'killed': len(mut_c['mutants']) - len(survivors), 'survivors': [{'id': m['id'], 'file': m['file'], 'line': m['line'], 'old': m['old'], 'new': m['new'], 'equivalentBecause': EQUIVALENT[m['id']]} for m in survivors],
+                      'escalation': 'a mutant that survived the importer\'s direct test files was re-run against vitest related <file>; none of the eight was killed there either',
+                      'byImporter': {f: sum(1 for m in mut_c['mutants'] if m['file'] == f) for f in sorted({m['file'] for m in mut_c['mutants']})}},
+        'unchangedBetweenSupportRunAndCallSiteRun': unchanged_support == '',
+        'note': 'each row of the three outputs stores file, line, the exact text replaced, its replacement and the commit',
+    },
+    'digestCitersOfEditedFiles': {
+        'population': citers['population'], 'editedFiles': len(citers['editedFiles']), 'needles': citers['needles'], 'methodsAgree': citers['methodsAgree'],
+        'filesWhoseBaseDigestOrBlobIsCited': cited_base, 'filesWhoseHeadDigestOrBlobIsCited': cited_head,
+        'citers': sorted({c for v in citers['needlesCited'].values() for c in v}),
+        'reading': 'every citer is a record of an earlier commit or run (it names its own commit, run or diff); none is a performed act, a manifest row or a script input; the head digests are cited nowhere. The governed-plane citer is a static trace that names its source commit.',
+        'registryBoundFile': {'path': REGISTRY_BOUND, 'sha256AtBase': reg_before, 'sha256AtCode': reg_after, 'equal': reg_before == reg_after},
+    },
+    'tests': {'line': f"Tests: +{len(tests['added'])} ~1 -{len(tests['removed'])}", 'toolLine': tests['line'], 'baseTests': tests['baseTests'], 'headTests': tests['headTests'], 'added': len(tests['added']), 'removed': len(tests['removed']),
+              'changedCalls': tests['changedCalls'], 'runs': runs,
+              'reading': 'the changed text is the pinned list of swept source files in cli.test.ts (iso-of.ts joins it); the 45 other generated tests the tool counts as changed are unchanged rows of the public-source-classification refusal table, which gained five rows counted in +',
+              'headTestsOnBaseCode': 'the call-site tests and every other test of the head pass on the base code but the one pinned list, which expects the new module'},
+    'ccRev1Classes': {
+        'statedBy': 'the author; never finally decided by the author',
+        '1 authority boundaries': ['packages/three-surface-poc-core/src/authority-artifact-fields.ts (reads the consent, policy and registry artifacts of PWB-REQ-005)'],
+        '4 security': ['packages/polaris-generation-core/src/secret-redaction.ts', 'packages/polaris-generation-core/src/public-source-classification.ts', 'packages/polaris-dossier/src/screen.ts'],
+        '3 deterministic observation': 'the other thirteen consumers (dossier run records, checks, reviews, rendering; generation discovery, evaluation and reader questions) and the seven isoOf callers, whose text becomes run-record and brief bytes',
+        '6 public interface': ['packages/support/src/index.ts: a new export of an internal workspace package (no external API)'],
+        'none of': ['2 graph identity', '5 data migration', '7 certificate logic'],
+    },
+    'pocSurfaceVersion': {'base': 'polaris@b3384e7662f1', 'code': 'polaris@64c4c7a6ef72', 'why': 'authority-artifact-fields.ts is in packages/three-surface-poc-core/src, one of the two trees the version addresses; no tracked file carries either value'},
+    'changedFiles': changed_files,
+}
+out = os.path.join(evidence, 'dc4-object-and-iso-helpers-2026-10-28.json')
+json.dump(record, open(out, 'w'), indent=1)
+open(out, 'a').write('\n')
+print('wrote', out, 'sha256', sha(open(out, 'rb').read()))

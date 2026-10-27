@@ -1,0 +1,866 @@
+{
+ "format": "syzygy-bpyt-6-3-stack-4-record/1",
+ "bead": "syzygy-bpyt.6.3",
+ "subject": "one object-shape predicate in @syzygy/support, one isoOf in polaris-dossier, and the date validators left where they are",
+ "baseCommit": "81862261ddbc2b3c8e8481851f3c27129217d477",
+ "codeCommit": "22142d9f8731f1494258bfaa6b58ab0c24a2e607",
+ "codeCommits": [
+  "fefd88b874ac932c495545e50a5840a83bda4e18",
+  "6ab7a12bd09695c636c990e806d52d1a73f80041",
+  "22142d9f8731f1494258bfaa6b58ab0c24a2e607"
+ ],
+ "epistemic": "Observed for every count, group and mutant below (computed by the tools beside this file, at the commits named); Inferred where a row says so (a validator rebuilt from its line)",
+ "toolDigests": {
+  "census.mjs": "2d3727aa68182aaa9119b0e539c2b382cbdbb1c2796c02280a1f3904ba910c54",
+  "census-grep.py": "de0e4e9ab18315438e733c9afdafcd188e952131cadb3a8f1a17edd9f1cd1afa",
+  "differential.mjs": "32c9e1c9c3b20c79031d612806b8ff6c06ea89255003bcb1d599bc25b05769b6",
+  "date-probe.mjs": "5623b3bb41416b766f1a9948a3ef9e853d72a6914a27458204b0d44a2ae8a8a1",
+  "apply-is-record.mjs": "863830189dcfc3931548b1d0f5c8131752dfaa80998e6dfb450b799d9a67e91a",
+  "apply-iso-of.mjs": "9b4a3f1e5a49fd63374731217a748eb6e99e6fdf48d3183b0a1d459b9010f391",
+  "site-equivalence.mjs": "07b65baca73a0ae67869764994fd2494c88bd7d539cd9d200a0226adb7a5bc05",
+  "mutants.py": "6eb0269afbcc954e863ee8c30001892b936b4e72ac4a52787fff1e43c0522f3c",
+  "digest-citers.py": "ca8f62aca8cbc747b328ea15f2020a0dd1aa42be1a7e235c9444bdd810ca3edd",
+  "test-delta.py": "b33eecc1a7e8572039c4b5a6c43a22d766670ec42e3a88052648d907b8530853",
+  "test-inventory.mjs": "dc6dab6d3008431ed3ca3b3e97bdc084944a02dbc71694e1ba32341bc88fdcd9"
+ },
+ "outputDigests": {
+  "census-base.json": "760a268a7776f25f3b57fafd8ca542eed3a1ee483ce4d8853878bd66aa2b0fb8",
+  "census-head.json": "8900e2b6bdfd10012b7d1baaf174c366f62c51233cf3650e8bf13d230ff72ff9",
+  "census-grep-base.json": "88072412e696487606bdeab3e8180ff7577be2d90543b56e30d21e74e1de8071",
+  "census-grep-head.json": "b6b5e20a3f2a966f329e35756a2dfa0233fcdb5c3828ce3a682dd351132412f3",
+  "differential-base.json": "0082d49f66e680c38d042c9fdac28d6a0ec3cfb6f498e12e9218b3fa4bd46013",
+  "date-probe-base.json": "89ca66bc2778b502ee241a11490fe6406dad520f55f7702eea55e398ba789bab",
+  "site-equivalence.json": "2ba61a88f012bff9e6ed9924106628c5fdacf4189fbf01b41b50ad2474dc6f96",
+  "mutants-S.json": "793d564546d2d9659cdc8110d12fc8b803567adc3b2945ed741ac09adb3172a3",
+  "mutants-I.json": "b4d8f4230579564558d5305c2ea6575c356761d31f7e1518b2e96a619143384b",
+  "mutants-C.json": "84bd6b31f9918c6fda6fb38e3a7e1ac62c8dbf9e7849e3f6e930f09875c1b5bc",
+  "digest-citers.json": "173134039482f8d24e1984eaa9d049367ed0312a5066f736b0e420e7db5e404e",
+  "test-delta.json": "26cf9e4c2a00b63a00b72817b8a1562c5cac8dceb52182a9ebc856c351100437",
+  "test-runs-summary.json": "adf8d82ca1622c6ee3b3fcffe8c7510868938c1c1255b5e274027e3106e4d39c",
+  "typecheck-all-20-sites-attempt.log": "a7d4f4c337c2bf174211502800a2e9746b51853f2deee42c0f4110dce28b866f",
+  "typecheck-head.log": "79b077d005b90b64757af0faa8b3899685c6eb30a652eba8969e69ec4607bc69"
+ },
+ "census": {
+  "method": "one: TypeScript syntax tree over every tracked .ts/.mjs/.cjs file of packages/, apps/ and scripts/ read from the commit; two: git grep -E over the same paths, reconciled per file",
+  "population": {
+   "base": "542 tracked .ts, .mjs, .cjs files under packages/, apps/, scripts/",
+   "head": "546 tracked .ts, .mjs, .cjs files under packages/, apps/, scripts/"
+  },
+  "named": {
+   "base": {
+    "isObj": 12,
+    "isObject": 6,
+    "isRecord": 4,
+    "isoOf": 7,
+    "isIsoDate": 1
+   },
+   "head": {
+    "isObj": 3,
+    "isObject": 1,
+    "isRecord": 2,
+    "isoOf": 1,
+    "isIsoDate": 1
+   }
+  },
+  "namedTotal": {
+   "base": 30,
+   "head": 8
+  },
+  "objectPredicatesUnderPackagesAndApps": {
+   "base": 21,
+   "baseNote": "isObj 12 + isObject 6 + isRecord 4 = 22 definitions, 21 under packages/ and apps/ (one is a script)"
+  },
+  "shapeTestingFunctions": {
+   "base": 28,
+   "head": 12
+  },
+  "shapeUnderOtherNames": [
+   "apps/three-surface-poc/src/polaris-generation/public-source-screening.ts:167 (anonymous)",
+   "packages/cap1-core/src/declaration.ts:72 isPlainObject",
+   "packages/cap1-daemon/src/consent-loading.ts:124 isPlainObject",
+   "packages/polaris-dossier/src/draft-schema.test.ts:94 refs",
+   "packages/three-surface-poc-core/src/body-read-authority.test.ts:189 isPlainObject",
+   "scripts/differential_line_slot.mjs:73 isTemplate"
+  ],
+  "methodsAgreePerFile": {
+   "base": true,
+   "head": true
+  },
+  "inlineObjectTestsNotInAnyFunction": {
+   "base": 33,
+   "head": 33,
+   "note": "lines that test typeof x === 'object' inline, inside a larger function; listed in census-grep-base.json; not helpers and not in scope"
+  },
+  "beadPremise": "The bead names eight files for isIsoDate/isoOf. There are seven isoOf copies (polaris-dossier) and exactly one isIsoDate (act-fields.ts), which validates a date and is not a copy of isoOf."
+ },
+ "decisions": [
+  {
+   "at": "apps/three-surface-poc/src/block-provenance-sweep.test.ts:40",
+   "name": "isObj",
+   "exactTextSha256": "b16e0f031852e3f2faacdf2e3794afd0b1453f582eab75d8dfb8cc5e47a96689",
+   "decision": "kept",
+   "reason": "type contract: narrows Json | undefined to the test's own Obj; the support guard narrows to Readonly<Record<string, unknown>> and the typed reads that follow fail (TS2345, TS18047, TS2339 in the attempt log); the decision is identical",
+   "ccRev1Class": null
+  },
+  {
+   "at": "apps/three-surface-poc/src/governing-intent-sweep.test.ts:39",
+   "name": "isObj",
+   "exactTextSha256": "b16e0f031852e3f2faacdf2e3794afd0b1453f582eab75d8dfb8cc5e47a96689",
+   "decision": "kept",
+   "reason": "type contract: the same narrowing as block-provenance-sweep.test.ts",
+   "ccRev1Class": null
+  },
+  {
+   "at": "apps/three-surface-poc/src/polaris-generation/public-source-screening.ts:167",
+   "name": "(anonymous)",
+   "exactTextSha256": "4d2ce589c3adb3095a5eb1b06464720a7a18136dc4bbbd9e7fad78197c2954fc",
+   "decision": "kept",
+   "reason": "not an object-shape predicate: an id extractor that returns a list; the census found it by its typeof test",
+   "ccRev1Class": null
+  },
+  {
+   "at": "packages/cap1-core/src/declaration.ts:72",
+   "name": "isPlainObject",
+   "exactTextSha256": "b6fa25736b47558e7806aa33b36801c1283b7763104a64d3d753603b98ace819",
+   "decision": "kept",
+   "reason": "package boundary: a cap1 package; cap1 packages never import @syzygy/support (cap1-system is an independent oracle); named isPlainObject, outside the three names in the bead; the decision is identical",
+   "ccRev1Class": null
+  },
+  {
+   "at": "packages/cap1-daemon/src/consent-loading.ts:124",
+   "name": "isPlainObject",
+   "exactTextSha256": "b6fa25736b47558e7806aa33b36801c1283b7763104a64d3d753603b98ace819",
+   "decision": "kept",
+   "reason": "package boundary: a cap1 package, as above",
+   "ccRev1Class": null
+  },
+  {
+   "at": "packages/polaris-dossier/src/brief.ts:51",
+   "name": "isoOf",
+   "exactTextSha256": "0cd1ca66d0ef8d5165123be7561cbf5e2e477296a5791792bfebdcdf50322e21",
+   "decision": "merged into packages/polaris-dossier/src/iso-of.ts",
+   "reason": "seven textually identical copies; @syzygy/support cannot hold it (the purity guard forbids the Date constructor)",
+   "ccRev1Class": 3
+  },
+  {
+   "at": "packages/polaris-dossier/src/check.ts:193",
+   "name": "isoOf",
+   "exactTextSha256": "0cd1ca66d0ef8d5165123be7561cbf5e2e477296a5791792bfebdcdf50322e21",
+   "decision": "merged into packages/polaris-dossier/src/iso-of.ts",
+   "reason": "seven textually identical copies; @syzygy/support cannot hold it (the purity guard forbids the Date constructor)",
+   "ccRev1Class": 3
+  },
+  {
+   "at": "packages/polaris-dossier/src/check.ts:194",
+   "name": "isObj",
+   "exactTextSha256": "b3b1a6cebd20316e0c0e78e0ab6989b52d63cb67d1d0d66ffec946b9519f469a",
+   "decision": "merged into @syzygy/support isRecord",
+   "reason": "decides identically (differential group); types compile",
+   "ccRev1Class": 3
+  },
+  {
+   "at": "packages/polaris-dossier/src/close.ts:86",
+   "name": "isObj",
+   "exactTextSha256": "b3b1a6cebd20316e0c0e78e0ab6989b52d63cb67d1d0d66ffec946b9519f469a",
+   "decision": "merged into @syzygy/support isRecord",
+   "reason": "decides identically (differential group); types compile",
+   "ccRev1Class": 3
+  },
+  {
+   "at": "packages/polaris-dossier/src/close.ts:88",
+   "name": "isoOf",
+   "exactTextSha256": "0cd1ca66d0ef8d5165123be7561cbf5e2e477296a5791792bfebdcdf50322e21",
+   "decision": "merged into packages/polaris-dossier/src/iso-of.ts",
+   "reason": "seven textually identical copies; @syzygy/support cannot hold it (the purity guard forbids the Date constructor)",
+   "ccRev1Class": 3
+  },
+  {
+   "at": "packages/polaris-dossier/src/design-review.ts:28",
+   "name": "isObj",
+   "exactTextSha256": "b3b1a6cebd20316e0c0e78e0ab6989b52d63cb67d1d0d66ffec946b9519f469a",
+   "decision": "merged into @syzygy/support isRecord",
+   "reason": "decides identically (differential group); types compile",
+   "ccRev1Class": 3
+  },
+  {
+   "at": "packages/polaris-dossier/src/draft-schema.test.ts:94",
+   "name": "refs",
+   "exactTextSha256": "6cdcd9c75d4c0a8a81343f3a6b758592f4ffc60335be363376a802e6bf8a9a61",
+   "decision": "kept",
+   "reason": "not an object-shape predicate: a recursive reference collector that returns a list",
+   "ccRev1Class": null
+  },
+  {
+   "at": "packages/polaris-dossier/src/execution-flags.ts:43",
+   "name": "isObj",
+   "exactTextSha256": "b3b1a6cebd20316e0c0e78e0ab6989b52d63cb67d1d0d66ffec946b9519f469a",
+   "decision": "merged into @syzygy/support isRecord",
+   "reason": "decides identically (differential group); types compile",
+   "ccRev1Class": 3
+  },
+  {
+   "at": "packages/polaris-dossier/src/inventory.ts:76",
+   "name": "isoOf",
+   "exactTextSha256": "0cd1ca66d0ef8d5165123be7561cbf5e2e477296a5791792bfebdcdf50322e21",
+   "decision": "merged into packages/polaris-dossier/src/iso-of.ts",
+   "reason": "seven textually identical copies; @syzygy/support cannot hold it (the purity guard forbids the Date constructor)",
+   "ccRev1Class": 3
+  },
+  {
+   "at": "packages/polaris-dossier/src/inventory.ts:77",
+   "name": "isObj",
+   "exactTextSha256": "b3b1a6cebd20316e0c0e78e0ab6989b52d63cb67d1d0d66ffec946b9519f469a",
+   "decision": "merged into @syzygy/support isRecord",
+   "reason": "decides identically (differential group); types compile",
+   "ccRev1Class": 3
+  },
+  {
+   "at": "packages/polaris-dossier/src/render.ts:121",
+   "name": "isObj",
+   "exactTextSha256": "b3b1a6cebd20316e0c0e78e0ab6989b52d63cb67d1d0d66ffec946b9519f469a",
+   "decision": "merged into @syzygy/support isRecord",
+   "reason": "decides identically (differential group); types compile",
+   "ccRev1Class": 3
+  },
+  {
+   "at": "packages/polaris-dossier/src/review.ts:60",
+   "name": "isoOf",
+   "exactTextSha256": "0cd1ca66d0ef8d5165123be7561cbf5e2e477296a5791792bfebdcdf50322e21",
+   "decision": "merged into packages/polaris-dossier/src/iso-of.ts",
+   "reason": "seven textually identical copies; @syzygy/support cannot hold it (the purity guard forbids the Date constructor)",
+   "ccRev1Class": 3
+  },
+  {
+   "at": "packages/polaris-dossier/src/review.ts:61",
+   "name": "isObj",
+   "exactTextSha256": "b3b1a6cebd20316e0c0e78e0ab6989b52d63cb67d1d0d66ffec946b9519f469a",
+   "decision": "merged into @syzygy/support isRecord",
+   "reason": "decides identically (differential group); types compile",
+   "ccRev1Class": 3
+  },
+  {
+   "at": "packages/polaris-dossier/src/run-record.ts:136",
+   "name": "isObject",
+   "exactTextSha256": "ab921c813701c592a865456df4c46aa275cd53fdd2c8a8e2556244a834412a3d",
+   "decision": "merged into @syzygy/support isRecord",
+   "reason": "decides identically (differential group); types compile",
+   "ccRev1Class": 3
+  },
+  {
+   "at": "packages/polaris-dossier/src/screen.ts:73",
+   "name": "isObject",
+   "exactTextSha256": "b2c030333a3211497ccfeb5edcc47f824c73f8a5b4ce61508902205a3177ab23",
+   "decision": "merged into @syzygy/support isRecord",
+   "reason": "decides identically (differential group); types compile",
+   "ccRev1Class": 4
+  },
+  {
+   "at": "packages/polaris-dossier/src/session-handover.ts:44",
+   "name": "isoOf",
+   "exactTextSha256": "0cd1ca66d0ef8d5165123be7561cbf5e2e477296a5791792bfebdcdf50322e21",
+   "decision": "merged into packages/polaris-dossier/src/iso-of.ts",
+   "reason": "seven textually identical copies; @syzygy/support cannot hold it (the purity guard forbids the Date constructor)",
+   "ccRev1Class": 3
+  },
+  {
+   "at": "packages/polaris-dossier/src/session-statement.ts:31",
+   "name": "isObj",
+   "exactTextSha256": "b3b1a6cebd20316e0c0e78e0ab6989b52d63cb67d1d0d66ffec946b9519f469a",
+   "decision": "merged into @syzygy/support isRecord",
+   "reason": "decides identically (differential group); types compile",
+   "ccRev1Class": 3
+  },
+  {
+   "at": "packages/polaris-dossier/src/waiting-sessions.ts:70",
+   "name": "isoOf",
+   "exactTextSha256": "0cd1ca66d0ef8d5165123be7561cbf5e2e477296a5791792bfebdcdf50322e21",
+   "decision": "merged into packages/polaris-dossier/src/iso-of.ts",
+   "reason": "seven textually identical copies; @syzygy/support cannot hold it (the purity guard forbids the Date constructor)",
+   "ccRev1Class": 3
+  },
+  {
+   "at": "packages/polaris-dossier/src/waiting-sessions.ts:71",
+   "name": "isObj",
+   "exactTextSha256": "b3b1a6cebd20316e0c0e78e0ab6989b52d63cb67d1d0d66ffec946b9519f469a",
+   "decision": "merged into @syzygy/support isRecord",
+   "reason": "decides identically (differential group); types compile",
+   "ccRev1Class": 3
+  },
+  {
+   "at": "packages/polaris-generation-core/src/discovery-provider.ts:66",
+   "name": "isRecord",
+   "exactTextSha256": "ee11410dffba4a4cb6da63a22dd39ef4a804bd64cca4f4855ce7e5a16c809587",
+   "decision": "kept",
+   "reason": "decides differently: adds a prototype check ([Object.prototype, null].includes(Object.getPrototypeOf(value))); the differential finds 24 of the 62 values on which it differs from the plain test (discoveryProviderDiffersOn): class instances, Date, Map, boxed primitives, objects with another prototype and cross-realm objects it refuses where the plain test admits, and a proxy with trapping handlers it throws on",
+   "ccRev1Class": null
+  },
+  {
+   "at": "packages/polaris-generation-core/src/discovery.ts:219",
+   "name": "isObject",
+   "exactTextSha256": "36a418821ec97765e3c43946121bb3b6f38e7f5b65f8bd83db17deac84c621dd",
+   "decision": "merged into @syzygy/support isRecord",
+   "reason": "decides identically (differential group); types compile",
+   "ccRev1Class": 3
+  },
+  {
+   "at": "packages/polaris-generation-core/src/dossier-evaluation.ts:50",
+   "name": "isRecord",
+   "exactTextSha256": "087de5c8a6de64fcff5913d8fea87de4befb739f42125ba122098b41d46a5cd7",
+   "decision": "merged into @syzygy/support isRecord",
+   "reason": "decides identically (differential group); types compile",
+   "ccRev1Class": 3
+  },
+  {
+   "at": "packages/polaris-generation-core/src/public-source-classification.ts:56",
+   "name": "isObject",
+   "exactTextSha256": "b2c030333a3211497ccfeb5edcc47f824c73f8a5b4ce61508902205a3177ab23",
+   "decision": "merged into @syzygy/support isRecord",
+   "reason": "decides identically (differential group); types compile",
+   "ccRev1Class": 4
+  },
+  {
+   "at": "packages/polaris-generation-core/src/reader-questions.ts:22",
+   "name": "isRecord",
+   "exactTextSha256": "087de5c8a6de64fcff5913d8fea87de4befb739f42125ba122098b41d46a5cd7",
+   "decision": "merged into @syzygy/support isRecord",
+   "reason": "decides identically (differential group); types compile",
+   "ccRev1Class": 3
+  },
+  {
+   "at": "packages/polaris-generation-core/src/secret-redaction.ts:35",
+   "name": "isObject",
+   "exactTextSha256": "b2c030333a3211497ccfeb5edcc47f824c73f8a5b4ce61508902205a3177ab23",
+   "decision": "merged into @syzygy/support isRecord",
+   "reason": "decides identically (differential group); types compile",
+   "ccRev1Class": 4
+  },
+  {
+   "at": "packages/three-surface-poc-core/src/act-fields.ts:39",
+   "name": "isIsoDate",
+   "exactTextSha256": "4849ab4a02385b7af4c0fb0ade4595a3d82a1de83c90047d4df6c36c07d930ba",
+   "decision": "kept",
+   "reason": "one definition, a validator and not a copy of isoOf; it accepts impossible calendar dates (see dateFinding); a change would change what a gate accepts",
+   "ccRev1Class": 1
+  },
+  {
+   "at": "packages/three-surface-poc-core/src/authority-artifact-fields.ts:85",
+   "name": "isRecord",
+   "exactTextSha256": "d83a5dcd3b722e06998b2a8ee99faf280ef7ffd784ad82be84ac7bc96a8d8d70",
+   "decision": "merged into @syzygy/support isRecord",
+   "reason": "decides identically (differential group); types compile",
+   "ccRev1Class": 1
+  },
+  {
+   "at": "packages/three-surface-poc-core/src/body-read-authority.test.ts:189",
+   "name": "isPlainObject",
+   "exactTextSha256": "c579c06d8a141f6f3a10e078bc269aeadfe7616e0087b18ec700dcefd8e62467",
+   "decision": "kept",
+   "reason": "test oracle: a boolean-returning helper named isPlainObject inside an authority test; outside the three names; left so the test does not share a helper with the code it checks; the decision is identical",
+   "ccRev1Class": null
+  },
+  {
+   "at": "packages/three-surface-poc-core/src/response-identity.ts:131",
+   "name": "isObject",
+   "exactTextSha256": "c3cd992f30b6979554da6b3cec7a2c62a02104b5b6ff0aed3246a819fe574140",
+   "decision": "kept",
+   "reason": "type contract: the caller deletes keys from the narrowed value (three sites), which Readonly<Record<string, unknown>> forbids: tsc TS2542 at response-identity.ts 155, 158 and 191 (typecheck-all-20-sites-attempt.log); the decision is identical",
+   "ccRev1Class": null
+  },
+  {
+   "at": "scripts/differential_line_slot.mjs:73",
+   "name": "isTemplate",
+   "exactTextSha256": "95632b83a3bbd66b5951feaae21c4a3f1e6d2b3bd2428f23cfc2c04b83ace46e",
+   "decision": "kept",
+   "reason": "not the same predicate: duck-types an object that has fields() and render() functions",
+   "ccRev1Class": null
+  },
+  {
+   "at": "scripts/redis_screening_remeasure.mjs:326",
+   "name": "isObj",
+   "exactTextSha256": "350411b40edb98e732bc0d6c88ccd6f585c9147621debd8af79414340ac688bf",
+   "decision": "kept",
+   "reason": "outside the workspace packages: a plain-JavaScript measurement script under scripts/, outside packages/ and apps/; the decision is identical",
+   "ccRev1Class": null
+  }
+ ],
+ "differential": {
+  "object": {
+   "corpusSize": 62,
+   "functions": 28,
+   "groups": [
+    {
+     "signatureSha256": "73225e031dbf",
+     "members": 24,
+     "booleanOnly": true
+    },
+    {
+     "signatureSha256": "162868154d2a",
+     "members": 1,
+     "booleanOnly": false
+    },
+    {
+     "signatureSha256": "80de21033d84",
+     "members": 1,
+     "booleanOnly": false
+    },
+    {
+     "signatureSha256": "47fa65586e7c",
+     "members": 1,
+     "booleanOnly": true
+    },
+    {
+     "signatureSha256": "913ed2f689b0",
+     "members": 1,
+     "booleanOnly": true
+    }
+   ],
+   "plainGroupMembers": [
+    "apps/three-surface-poc/src/block-provenance-sweep.test.ts:40 isObj",
+    "apps/three-surface-poc/src/governing-intent-sweep.test.ts:39 isObj",
+    "packages/cap1-core/src/declaration.ts:72 isPlainObject",
+    "packages/cap1-daemon/src/consent-loading.ts:124 isPlainObject",
+    "packages/polaris-dossier/src/check.ts:194 isObj",
+    "packages/polaris-dossier/src/close.ts:86 isObj",
+    "packages/polaris-dossier/src/design-review.ts:28 isObj",
+    "packages/polaris-dossier/src/execution-flags.ts:43 isObj",
+    "packages/polaris-dossier/src/inventory.ts:77 isObj",
+    "packages/polaris-dossier/src/render.ts:121 isObj",
+    "packages/polaris-dossier/src/review.ts:61 isObj",
+    "packages/polaris-dossier/src/run-record.ts:136 isObject",
+    "packages/polaris-dossier/src/screen.ts:73 isObject",
+    "packages/polaris-dossier/src/session-statement.ts:31 isObj",
+    "packages/polaris-dossier/src/waiting-sessions.ts:71 isObj",
+    "packages/polaris-generation-core/src/discovery.ts:219 isObject",
+    "packages/polaris-generation-core/src/dossier-evaluation.ts:50 isRecord",
+    "packages/polaris-generation-core/src/public-source-classification.ts:56 isObject",
+    "packages/polaris-generation-core/src/reader-questions.ts:22 isRecord",
+    "packages/polaris-generation-core/src/secret-redaction.ts:35 isObject",
+    "packages/three-surface-poc-core/src/authority-artifact-fields.ts:85 isRecord",
+    "packages/three-surface-poc-core/src/body-read-authority.test.ts:189 isPlainObject",
+    "packages/three-surface-poc-core/src/response-identity.ts:131 isObject",
+    "scripts/redis_screening_remeasure.mjs:326 isObj"
+   ],
+   "discoveryProviderDiffersOn": [
+    "Object.create({})",
+    "Object.create(Array.prototype)",
+    "Object.create(proto-null-object)",
+    "Uint8Array",
+    "new Number(1)",
+    "new String(s)",
+    "new Boolean(false)",
+    "Object(1n)",
+    "Object(Symbol())",
+    "new Plain()",
+    "Date(0)",
+    "Date(NaN)",
+    "Map",
+    "Set",
+    "WeakMap",
+    "RegExp",
+    "Error",
+    "Promise",
+    "ArrayBuffer",
+    "DataView",
+    "trapping Proxy({})",
+    "other realm {}",
+    "other realm class instance",
+    "other realm Date"
+   ]
+  },
+  "isoOf": {
+   "corpusSize": 29,
+   "functions": 7,
+   "groups": 1
+  },
+  "dateValidators": {
+   "corpusSize": 69,
+   "functions": [
+    "packages/three-surface-poc-core/src/act-fields.ts:39 isIsoDate",
+    "packages/three-surface-poc-core/src/project-shape-observation.ts:348 isIsoInstant",
+    "packages/three-surface-poc-core/src/trajectory-projection.ts:55 recordedInstant"
+   ],
+   "groups": 3
+  }
+ },
+ "dateFinding": {
+  "epistemic": "Observed for isIsoDate (its exact text, run); Inferred for the consent reader's line (rebuilt from its exact text, not run in place)",
+  "claim": "act-fields isIsoDate accepts calendar dates that do not exist, because it checks the shape and then asks Date.parse, which V8 answers for them; the consent package reader refuses the same strings by a round trip through toISOString. The two authorities decide differently on these date-only strings.",
+  "strings": [
+   "\"1900-02-29\"",
+   "\"2026-02-29\"",
+   "\"2026-02-30\"",
+   "\"2026-02-31\"",
+   "\"2026-04-31\""
+  ],
+  "validators": [
+   {
+    "id": "act-fields isIsoDate",
+    "kind": "date",
+    "file": "packages/three-surface-poc-core/src/act-fields.ts",
+    "how": "the function itself, from its exact text",
+    "exactText": "export function isIsoDate(value: string): boolean {\n  return ISO_DATE.test(value) && !Number.isNaN(Date.parse(`${value}T00:00:00Z`));\n}",
+    "exactTextSha256": "4849ab4a02385b7af4c0fb0ade4595a3d82a1de83c90047d4df6c36c07d930ba"
+   },
+   {
+    "id": "package-reader day (line 706)",
+    "kind": "date",
+    "file": "packages/polaris-generation-consent/src/package-reader.ts",
+    "how": "rebuilt from the line: finite parse, then the round trip to the same day",
+    "exactText": "const day = Date.parse(`${date}T00:00:00Z`);\n  if (!Number.isSafeInteger(day) || new Date(day).toISOString().slice(0, 10) !== date",
+    "exactTextSha256": "c47d3522a1f6a4148330dfdfcc2dc147f67554647baaee56d29cd5b40d5da450"
+   },
+   {
+    "id": "project-shape-observation isIsoInstant",
+    "kind": "instant",
+    "file": "packages/three-surface-poc-core/src/project-shape-observation.ts",
+    "how": "the function itself, from its exact text",
+    "exactText": "function isIsoInstant(text: string): boolean {\n  return /^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d+)?(?:Z|[+-]\\d{2}:\\d{2})$/.test(text) && !Number.isNaN(Date.parse(text));\n}",
+    "exactTextSha256": "96fd1e3ca38e61e6528b7ae5d88196e6ce3af8c3354bd77178af973777885504"
+   },
+   {
+    "id": "dossier check issuedAt (line 414)",
+    "kind": "instant",
+    "file": "packages/polaris-dossier/src/check.ts",
+    "how": "rebuilt from the line: the millisecond form, then a finite parse",
+    "exactText": "!/^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{3}Z$/.test(issuedAt) ? Number.NaN : Date.parse(issuedAt)",
+    "exactTextSha256": "8e159cc02e8fd99edd22ecbc7dadbb86d26e2b9e9abc9db5aa75582299b21dc1"
+   },
+   {
+    "id": "dossier run-record pinnedAt (line 154)",
+    "kind": "instant",
+    "file": "packages/polaris-dossier/src/run-record.ts",
+    "how": "rebuilt from the line and its INSTANT constant: the form with optional milliseconds, then a finite parse",
+    "exactText": "const INSTANT = /^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d{3})?Z$/;",
+    "exactTextSha256": "87d2a178cad06389a694c5df3c034d18bd61fce7b1631bcb4f6c23060aee7fb2"
+   },
+   {
+    "id": "package-reader actInstant (line 111)",
+    "kind": "instant",
+    "file": "packages/polaris-generation-consent/src/package-reader.ts",
+    "how": "rebuilt from the lines: whole seconds with Z, the same day as the stated date, finite parse, round trip to the same text",
+    "exactText": "const m = /^(\\d{4}-\\d{2}-\\d{2})T\\d{2}:\\d{2}:\\d{2}Z$/.exec(value);",
+    "exactTextSha256": "9628e795f771a2e30a116cd73630e598db8082c0c53211719e699a6f9e0e67aa"
+   }
+  ],
+  "acceptedBy": "isIsoDate: T on each of the five; consent reader day (line 706): F on each",
+  "reach": "isIsoDate is the date test of the act-instant and expires checks in body-read-authority.ts and walkthrough-judgment.ts (class 1). Not changed here: tightening it changes what a gate accepts, an owner decision (GP-Q0).",
+  "otherValidatorsKeptApart": "the instant validators (project-shape-observation, dossier check, dossier run-record, package-reader) each accept a different language (offsets, fractional seconds, millisecond form, whole seconds); date-probe-base.json lists the corpus rows where they disagree"
+ },
+ "typecheck": {
+  "attempt": "with all 20 in-scope sites merged tsc failed in the three files kept local (8 errors); typecheck-all-20-sites-attempt.log",
+  "head": "npm run typecheck exit 0 at the code commit; typecheck-head.log"
+ },
+ "equivalence": {
+  "tool": "site-equivalence.mjs",
+  "changedProductionFiles": 22,
+  "modified": 20,
+  "equalModuloDeclaredEdit": 19,
+  "declaredExceptions": [
+   "packages/polaris-dossier/src/iso-of.ts",
+   "packages/support/src/index.ts",
+   "packages/support/src/is-record.ts"
+  ],
+  "exceptionNote": "the support index (one added export) and the two new modules; test files are listed, not compared"
+ },
+ "mutants": {
+  "support": {
+   "commit": "6ab7a12bd09695c636c990e806d52d1a73f80041",
+   "mutants": 9,
+   "killed": 9,
+   "controlsClean": true
+  },
+  "iso": {
+   "commit": "6ab7a12bd09695c636c990e806d52d1a73f80041",
+   "mutants": 5,
+   "killed": 5,
+   "controlsClean": true
+  },
+  "callSites": {
+   "commit": "22142d9f8731f1494258bfaa6b58ab0c24a2e607",
+   "mutants": 60,
+   "killed": 52,
+   "survivors": [
+    {
+     "id": "C-authority-artifact-fields-L141n4-A",
+     "file": "packages/three-surface-poc-core/src/authority-artifact-fields.ts",
+     "line": 141,
+     "old": "isRecord(authority)",
+     "new": "(typeof authority === 'object' && authority !== null)",
+     "equivalentBecause": "typedAuthority is parsed JSON: an array has no own writeSurface, so reading it as an object yields the same missing field as the original branch; the test feeds an array there and the result is identical"
+    },
+    {
+     "id": "C-screen-L81n0-A",
+     "file": "packages/polaris-dossier/src/screen.ts",
+     "line": 81,
+     "old": "isRecord(doc)",
+     "new": "(typeof doc === 'object' && doc !== null)",
+     "equivalentBecause": "the policy document is parsed JSON: an array has no policyId, so reading it as an object refuses with the same identity-unreadable text as the original branch"
+    },
+    {
+     "id": "C-screen-L84n2-A",
+     "file": "packages/polaris-dossier/src/screen.ts",
+     "line": 84,
+     "old": "isRecord(admission)",
+     "new": "(typeof admission === 'object' && admission !== null)",
+     "equivalentBecause": "source admission is parsed JSON: an array has no deniedPathBasenames, so the next test refuses with the same text"
+    },
+    {
+     "id": "C-screen-L88n3-A",
+     "file": "packages/polaris-dossier/src/screen.ts",
+     "line": 88,
+     "old": "isRecord(classification)",
+     "new": "(typeof classification === 'object' && classification !== null)",
+     "equivalentBecause": "the content classification is parsed JSON: an array has no rules, so rules is the empty list either way"
+    },
+    {
+     "id": "C-screen-L89n4-A",
+     "file": "packages/polaris-dossier/src/screen.ts",
+     "line": 89,
+     "old": "isRecord(rule)",
+     "new": "(typeof rule === 'object' && rule !== null)",
+     "equivalentBecause": "a rules entry is parsed JSON: an array has no class, so it is passed over either way"
+    },
+    {
+     "id": "C-screen-L90n5-A",
+     "file": "packages/polaris-dossier/src/screen.ts",
+     "line": 90,
+     "old": "isRecord(codeContent[0])",
+     "new": "(typeof codeContent[0] === 'object' && codeContent[0] !== null)",
+     "equivalentBecause": "codeContent[0] is an object or undefined (it comes from the isRecord filter above it); the mutant differs from isRecord only on arrays, which cannot be there"
+    },
+    {
+     "id": "C-screen-L90n5-B",
+     "file": "packages/polaris-dossier/src/screen.ts",
+     "line": 90,
+     "old": "isRecord(codeContent[0])",
+     "new": "(typeof codeContent[0] === 'object' && !Array.isArray(codeContent[0]))",
+     "equivalentBecause": "the same: the mutant differs from isRecord only on null, which cannot be there"
+    },
+    {
+     "id": "C-screen-L100n6-A",
+     "file": "packages/polaris-dossier/src/screen.ts",
+     "line": 100,
+     "old": "isRecord(d)",
+     "new": "(typeof d === 'object' && d !== null)",
+     "equivalentBecause": "a detectors entry is parsed JSON: an array has no string id, so it is passed over either way"
+    }
+   ],
+   "escalation": "a mutant that survived the importer's direct test files was re-run against vitest related <file>; none of the eight was killed there either",
+   "byImporter": {
+    "packages/polaris-dossier/src/screen.ts": 21,
+    "packages/polaris-generation-core/src/public-source-classification.ts": 18,
+    "packages/polaris-generation-core/src/secret-redaction.ts": 6,
+    "packages/three-surface-poc-core/src/authority-artifact-fields.ts": 15
+   }
+  },
+  "unchangedBetweenSupportRunAndCallSiteRun": true,
+  "note": "each row of the three outputs stores file, line, the exact text replaced, its replacement and the commit"
+ },
+ "digestCitersOfEditedFiles": {
+  "population": "6820 tracked files at the population commit, excluding docs/evidence/syzygy-bpyt-6-3-iso/",
+  "editedFiles": 30,
+  "needles": 224,
+  "methodsAgree": true,
+  "filesWhoseBaseDigestOrBlobIsCited": [
+   "packages/polaris-dossier/src/brief.ts",
+   "packages/polaris-dossier/src/check.ts",
+   "packages/polaris-dossier/src/cli.test.ts",
+   "packages/polaris-dossier/src/close.ts",
+   "packages/polaris-dossier/src/design-review.ts",
+   "packages/polaris-dossier/src/execution-flags.ts",
+   "packages/polaris-dossier/src/inventory.ts",
+   "packages/polaris-dossier/src/render.ts",
+   "packages/polaris-dossier/src/review.ts",
+   "packages/polaris-dossier/src/run-record.ts",
+   "packages/polaris-dossier/src/screen.ts",
+   "packages/polaris-dossier/src/session-handover.ts",
+   "packages/polaris-dossier/src/session-statement.ts",
+   "packages/polaris-dossier/src/waiting-sessions.ts",
+   "packages/polaris-generation-core/src/discovery.ts",
+   "packages/polaris-generation-core/src/dossier-evaluation.ts",
+   "packages/polaris-generation-core/src/public-source-classification.test.ts",
+   "packages/polaris-generation-core/src/public-source-classification.ts",
+   "packages/polaris-generation-core/src/public-source-exemption.test.ts",
+   "packages/polaris-generation-core/src/reader-questions.ts",
+   "packages/polaris-generation-core/src/secret-redaction.test.ts",
+   "packages/polaris-generation-core/src/secret-redaction.ts",
+   "packages/support/src/index.ts",
+   "packages/three-surface-poc-core/src/authority-artifact-fields.ts"
+  ],
+  "filesWhoseHeadDigestOrBlobIsCited": [],
+  "citers": [
+   ".syzygy/governance/contracts/candidates/three-surface-poc-governedby-reference-amendment/compatibility/STATIC-TRACE.json",
+   "docs/evidence/discovery-role-prior-2026-10-04.json",
+   "docs/evidence/fence-rules-review-2026-10-27/r1/negctl.json",
+   "docs/evidence/fence-rules-review-2026-10-27/r2/out/neg-pr1-ll.json",
+   "docs/evidence/polaris-dossier-s10b-mutants-2026-10-07.json",
+   "docs/evidence/project-documentation-screen-mutants-2026-10-08.json",
+   "docs/evidence/syzygy-bpyt-6-3/comment-only-merged-a5ab2b28-a5b1d532.json",
+   "docs/evidence/syzygy-bpyt-6-3/comment-only-negative-control.json",
+   "docs/evidence/syzygy-bpyt-6-3/dc3-decode-and-canonical-json-2026-10-25.json",
+   "docs/evidence/syzygy-bpyt-6-3/digest-citers-stack2-repair1.json",
+   "docs/evidence/syzygy-bpyt-6-3/digest-citers-stack2.json",
+   "docs/evidence/syzygy-bpyt-6-3/repair1-neg-pr1-line-level.json",
+   "docs/evidence/syzygy-bpyt-8-1/evidence.json",
+   "docs/evidence/syzygy-bpyt-8-2/path-intent.json",
+   "docs/evidence/utf8-canonical-review-2026-10-27/r1/comment-only-a5ab-2d3f.json",
+   "docs/evidence/utf8-canonical-review-2026-10-27/r1/digest-sweep.json",
+   "docs/evidence/utf8-canonical-review-2026-10-27/r2/comment-only-41932c3b-a5b1d532.json",
+   "docs/evidence/utf8-canonical-review-2026-10-27/r2/comment-only-a5ab2b28-a5b1d532.json",
+   "docs/evidence/utf8-canonical-review-2026-10-27/r2/digest-sweep-abc40c9a.json",
+   "docs/evidence/utf8-canonical-review-2026-10-27/r2/digest-sweep-b81010c8.json",
+   "docs/evidence/utf8-canonical-review-2026-10-27/r2/r2-review.diff"
+  ],
+  "reading": "every citer is a record of an earlier commit or run (it names its own commit, run or diff); none is a performed act, a manifest row or a script input; the head digests are cited nowhere. The governed-plane citer is a static trace that names its source commit.",
+  "registryBoundFile": {
+   "path": "packages/polaris-dossier/src/git-object-reader.ts",
+   "sha256AtBase": "9f33e5fbbf464b1df28b79c3fcf5016b8ad7db1910041734c5fb8e4a790998f3",
+   "sha256AtCode": "9f33e5fbbf464b1df28b79c3fcf5016b8ad7db1910041734c5fb8e4a790998f3",
+   "equal": true
+  }
+ },
+ "tests": {
+  "line": "Tests: +136 ~1 -0",
+  "toolLine": "Tests: +136 ~51 -0",
+  "baseTests": 414,
+  "headTests": 550,
+  "added": 136,
+  "removed": 0,
+  "changedCalls": [
+   {
+    "file": "packages/polaris-dossier/src/cli.test.ts",
+    "call": "no route and no credential > sweeps a non-empty population of source files",
+    "kind": "it"
+   },
+   {
+    "file": "packages/polaris-generation-core/src/public-source-classification.test.ts",
+    "call": "reading the rule > refuses %s",
+    "kind": "each"
+   }
+  ],
+  "runs": {
+   "files": [
+    "packages/polaris-dossier/src/cli.test.ts",
+    "packages/three-surface-poc-core/src/authority-artifact-fields.test.ts",
+    "packages/polaris-generation-core/src/secret-redaction.test.ts",
+    "packages/polaris-generation-core/src/public-source-classification.test.ts",
+    "packages/polaris-generation-core/src/public-source-exemption.test.ts",
+    "packages/polaris-dossier/src/screen.test.ts",
+    "packages/support/src/is-record.test.ts",
+    "packages/polaris-dossier/src/iso-of.test.ts"
+   ],
+   "base": {
+    "checkout": "81862261ddbc2b3c8e8481851f3c27129217d477",
+    "tests": 414,
+    "passed": 414,
+    "failed": 0,
+    "testFiles": [
+     "authority-artifact-fields.test.ts",
+     "cli.test.ts",
+     "public-source-classification.test.ts",
+     "public-source-exemption.test.ts",
+     "screen.test.ts",
+     "secret-redaction.test.ts"
+    ],
+    "reportSha256": "ee5f125a873a252c391c9a152bc06c6f60a7e779a35ecc9fbeb35b28cb6d7727"
+   },
+   "headTestsOnBase": {
+    "checkout": "81862261ddbc2b3c8e8481851f3c27129217d477",
+    "tests": 490,
+    "passed": 489,
+    "failed": [
+     {
+      "file": "cli.test.ts",
+      "name": "no route and no credential sweeps a non-empty population of source files"
+     }
+    ],
+    "testFiles": [
+     "authority-artifact-fields.test.ts",
+     "cli.test.ts",
+     "public-source-classification.test.ts",
+     "public-source-exemption.test.ts",
+     "screen.test.ts",
+     "secret-redaction.test.ts"
+    ],
+    "reportSha256": "82510005fb89726fae67c298c8bcb059ea8ee6aa8051c5ac97c251037da73802"
+   },
+   "head": {
+    "checkout": "22142d9f8731f1494258bfaa6b58ab0c24a2e607",
+    "tests": 550,
+    "passed": 550,
+    "failed": 0,
+    "testFiles": [
+     "authority-artifact-fields.test.ts",
+     "cli.test.ts",
+     "is-record.test.ts",
+     "iso-of.test.ts",
+     "public-source-classification.test.ts",
+     "public-source-exemption.test.ts",
+     "screen.test.ts",
+     "secret-redaction.test.ts"
+    ],
+    "reportSha256": "5cf66a1dd27f5489f94bec828a80328306b8c99464a66af4d3f287833ba21169"
+   },
+   "note": "base: base commit, base tests, the six existing files (the two new ones absent). headTestsOnBase: base commit with the head versions of the six existing test files. head: the code commit, all eight files."
+  },
+  "reading": "the changed text is the pinned list of swept source files in cli.test.ts (iso-of.ts joins it); the 45 other generated tests the tool counts as changed are unchanged rows of the public-source-classification refusal table, which gained five rows counted in +",
+  "headTestsOnBaseCode": "the call-site tests and every other test of the head pass on the base code but the one pinned list, which expects the new module"
+ },
+ "ccRev1Classes": {
+  "statedBy": "the author; never finally decided by the author",
+  "1 authority boundaries": [
+   "packages/three-surface-poc-core/src/authority-artifact-fields.ts (reads the consent, policy and registry artifacts of PWB-REQ-005)"
+  ],
+  "4 security": [
+   "packages/polaris-generation-core/src/secret-redaction.ts",
+   "packages/polaris-generation-core/src/public-source-classification.ts",
+   "packages/polaris-dossier/src/screen.ts"
+  ],
+  "3 deterministic observation": "the other thirteen consumers (dossier run records, checks, reviews, rendering; generation discovery, evaluation and reader questions) and the seven isoOf callers, whose text becomes run-record and brief bytes",
+  "6 public interface": [
+   "packages/support/src/index.ts: a new export of an internal workspace package (no external API)"
+  ],
+  "none of": [
+   "2 graph identity",
+   "5 data migration",
+   "7 certificate logic"
+  ]
+ },
+ "pocSurfaceVersion": {
+  "base": "polaris@b3384e7662f1",
+  "code": "polaris@64c4c7a6ef72",
+  "why": "authority-artifact-fields.ts is in packages/three-surface-poc-core/src, one of the two trees the version addresses; no tracked file carries either value"
+ },
+ "changedFiles": [
+  "packages/polaris-dossier/src/brief.ts",
+  "packages/polaris-dossier/src/check.ts",
+  "packages/polaris-dossier/src/cli.test.ts",
+  "packages/polaris-dossier/src/close.ts",
+  "packages/polaris-dossier/src/design-review.ts",
+  "packages/polaris-dossier/src/execution-flags.ts",
+  "packages/polaris-dossier/src/inventory.ts",
+  "packages/polaris-dossier/src/iso-of.test.ts",
+  "packages/polaris-dossier/src/iso-of.ts",
+  "packages/polaris-dossier/src/render.ts",
+  "packages/polaris-dossier/src/review.ts",
+  "packages/polaris-dossier/src/run-record.ts",
+  "packages/polaris-dossier/src/screen.test.ts",
+  "packages/polaris-dossier/src/screen.ts",
+  "packages/polaris-dossier/src/session-handover.ts",
+  "packages/polaris-dossier/src/session-statement.ts",
+  "packages/polaris-dossier/src/waiting-sessions.ts",
+  "packages/polaris-generation-core/src/discovery.ts",
+  "packages/polaris-generation-core/src/dossier-evaluation.ts",
+  "packages/polaris-generation-core/src/public-source-classification.test.ts",
+  "packages/polaris-generation-core/src/public-source-classification.ts",
+  "packages/polaris-generation-core/src/public-source-exemption.test.ts",
+  "packages/polaris-generation-core/src/reader-questions.ts",
+  "packages/polaris-generation-core/src/secret-redaction.test.ts",
+  "packages/polaris-generation-core/src/secret-redaction.ts",
+  "packages/support/src/index.ts",
+  "packages/support/src/is-record.test.ts",
+  "packages/support/src/is-record.ts",
+  "packages/three-surface-poc-core/src/authority-artifact-fields.test.ts",
+  "packages/three-surface-poc-core/src/authority-artifact-fields.ts"
+ ]
+}
