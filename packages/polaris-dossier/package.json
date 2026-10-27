@@ -5,16 +5,19 @@
   "type": "module",
   "exports": {
     ".": {
+      "source": "./src/index.ts",
       "types": "./dist/index.d.ts",
       "import": "./dist/index.js",
       "default": "./dist/index.js"
     },
     "./argv": {
+      "source": "./src/argv.ts",
       "types": "./dist/argv.d.ts",
       "import": "./dist/argv.js",
       "default": "./dist/argv.js"
     },
     "./state-directory": {
+      "source": "./src/state-directory.ts",
       "types": "./dist/state-directory.d.ts",
       "import": "./dist/state-directory.js",
       "default": "./dist/state-directory.js"

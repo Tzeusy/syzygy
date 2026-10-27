@@ -39,14 +39,19 @@ for (const parent of ['apps', 'packages']) {
 }
 export const WORKSPACE: Workspace = { manifests, isFile };
 
-/** The one target an `exports` or `imports` entry names: a string, or an object whose conditions other than `types` all name the
- * same string. Node takes the first condition it matches, so `node` or `module-sync` ahead of `import` changes what it loads. */
+/** The one target an `exports` or `imports` entry names: a string, or an object whose conditions other than `types` and `source`
+ * all name the same string. Node takes the first condition it matches, so `node` or `module-sync` ahead of `import` changes what it
+ * loads. `source` is the workspace's own condition, which tests and tools resolve (syzygy-bpyt.4.2): it must name the `src/X.ts`
+ * module that target's `./dist/X.js` reads as, or the entry names none, so a module reads the same under either resolution. */
 function targetOf(entry: unknown): string | undefined {
   if (typeof entry === 'string') return entry;
   if (typeof entry !== 'object' || entry === null || Array.isArray(entry)) return undefined;
-  const targets = Object.entries(entry).filter(([condition]) => condition !== 'types').map(([, target]) => target);
+  const targets = Object.entries(entry).filter(([condition]) => condition !== 'types' && condition !== 'source').map(([, target]) => target);
   const [first] = targets;
-  return typeof first === 'string' && targets.every((target) => target === first) ? first : undefined;
+  if (typeof first !== 'string' || !targets.every((target) => target === first)) return undefined;
+  const source: unknown = (entry as Record<string, unknown>)['source'];
+  if (source === undefined) return first;
+  return source === first.replace(/^\.\/dist\//u, './src/').replace(/\.js$/u, '.ts') ? first : undefined;
 }
 
 /** The module a package's own `./dist/X.js` target names, `src/X.ts`, or undefined for any other target. */

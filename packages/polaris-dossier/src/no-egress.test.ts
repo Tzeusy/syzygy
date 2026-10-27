@@ -27,23 +27,12 @@ beforeAll(async () => {
   dir = fs.realpathSync(fs.mkdtempSync(path.join(tmpdir(), 'dossier-no-egress-')));
   ({ clone, commit } = makeClone(path.join(dir, 'repo')));
   bundle = path.join(dir, 'driver.mjs');
-  const src = (relative: string): string => path.join(REAL_ROOT, relative);
   await build({
     entryPoints: [path.join(REAL_ROOT, 'packages/polaris-dossier/test-support/no-egress-driver.ts')],
     bundle: true, platform: 'node', format: 'esm', target: 'node22', outfile: bundle, logLevel: 'silent',
     banner: { js: 'import { createRequire as __createRequire } from \'node:module\'; const require = __createRequire(import.meta.url);' },
-    alias: {
-      '@syzygy/polaris-generation-core/live': src('packages/polaris-generation-core/src/live.ts'),
-      '@syzygy/polaris-generation-core': src('packages/polaris-generation-core/src/index.ts'),
-      '@syzygy/polaris-generation-consent/live': src('packages/polaris-generation-consent/src/live.ts'),
-      '@syzygy/polaris-generation-consent': src('packages/polaris-generation-consent/src/index.ts'),
-      '@syzygy/polaris-dossier': src('packages/polaris-dossier/src/index.ts'),
-      '@syzygy/cap1-core': src('packages/cap1-core/src/index.ts'),
-      '@syzygy/cap1-daemon': src('packages/cap1-daemon/src/index.ts'),
-      '@syzygy/http-host': src('packages/http-host/src/index.ts'),
-      '@syzygy/three-surface-poc-core': src('packages/three-surface-poc-core/src/index.ts'),
-      '@syzygy/support': src('packages/support/src/index.ts'),
-    },
+    // Each workspace package from its source, as the tests load it (syzygy-bpyt.4.2): its `source` export condition.
+    conditions: ['source'],
   });
 });
 afterAll(() => { if (dir !== undefined) fs.rmSync(dir, { recursive: true, force: true }); });

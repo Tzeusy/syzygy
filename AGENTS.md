@@ -301,9 +301,12 @@ sweep lessons added 2026-09-23; the raw-head digest lesson the same day.
   stale; no evidence → Unknown.
 - Conformance expected values are hard-coded literals, never imported from
   the module under test.
-- Root Vitest `test.projects` must alias `@syzygy/cap1-core`,
-  `@syzygy/cap1-daemon` and `@syzygy/http-host` to source; verify with
-  every `dist/` absent.
+- Tests, the typecheck and the no-egress bundle load every `@syzygy/*`
+  package by the `source` condition its `exports` lists first, never its
+  `dist/` (`syzygy-bpyt.4.2`). Vitest takes it from `ssr.resolve.conditions`;
+  a top-level `resolve.conditions` never reaches the test runner. A new
+  export needs its `source` entry, or the tree's-own-exports row of
+  `workspace-reach.test.ts` fails. Verify with every `dist/` absent.
 - Butlers' pytest needs its own `.venv/bin/python`.
 - Never wire `WORKER_CHANGE_SEAM` test-artifact evidence into the unrelated
   identity-resolution entities in `model.ts` — false "Verified" (reverted
@@ -316,10 +319,12 @@ sweep lessons added 2026-09-23; the raw-head digest lesson the same day.
   (`syzygy-bpyt.7.2` removed `write-guard.ts`). `authorizeWrite` survives
   only as test support (`@syzygy/cap1-core/testing`) and compares raw
   `startsWith`; a future write path must normalize first.
-- App typecheck (`tsc --noEmit -p apps/three-surface-poc`) resolves both
-  `packages/three-surface-poc-core` and `packages/polaris-generation-core`
-  through `dist` declarations: run `tsc -b` on each (or `npm run build:poc`)
-  first after either changes, or a stale `dist` reports phantom errors.
+- `npm run typecheck` is one noEmit program over every workspace's `src/`,
+  tests among them (the root `tsconfig.json`); it reads no `dist`
+  declaration, so it needs no build first. Each package `tsconfig.json` is
+  the product build alone and excludes `src/**/*.test.ts`; TypeScript still
+  emits any module a built one imports, so no built module may import a test
+  (`product-build.test.ts`).
 - Ledger semantics: a refused read is not a counted pass; phase-B breaches
   are typed findings and do not set the degradation state; catalog
   extraction keys off the basename `v1.md`. The tailnet mount is detected

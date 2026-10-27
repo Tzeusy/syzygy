@@ -1,5 +1,5 @@
 import { readFileSync } from 'node:fs';
-import { join } from 'node:path';
+import { join, posix } from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { describe, expect, it } from 'vitest';
 import { ROOT, WORKSPACE, resolve, resolveIn, type Manifest, type Workspace } from './workspace-reach.testkit.js';
@@ -132,5 +132,38 @@ describe('the shared workspace resolver', () => {
   it('resolves an export whose conditions other than types all name one target', () => {
     expect(resolveIn(workspace({}, { types: './dist/argv.d.ts', import: './dist/argv.js', default: './dist/argv.js' }), 'apps/app/src/main.ts', '@syzygy/lib'))
       .toBe('packages/lib/src/argv.ts');
+  });
+
+  // syzygy-bpyt.4.2: tests and tools resolve the `source` condition, which names the module itself. It must be the one the other
+  // conditions' `./dist/X.js` reads as, so a module reaches the same edges whichever condition loads it.
+  it('resolves an export whose source condition names the module its other conditions build to', () => {
+    expect(resolveIn(workspace({}, { source: './src/argv.ts', types: './dist/argv.d.ts', import: './dist/argv.js', default: './dist/argv.js' }), 'apps/app/src/main.ts', '@syzygy/lib'))
+      .toBe('packages/lib/src/argv.ts');
+  });
+
+  it.each([
+    ['another module', './src/index.ts'],
+    ['the built target', './dist/argv.js'],
+    ['a module outside src', './argv.ts'],
+    ['further conditions', { default: './src/argv.ts' }],
+  ])('reads an export whose source condition names %s as naming no module', (_form, source) => {
+    expect(resolveIn(workspace({}, { source, types: './dist/argv.d.ts', import: './dist/argv.js', default: './dist/argv.js' }), 'apps/app/src/main.ts', '@syzygy/lib'))
+      .toBeUndefined();
+  });
+});
+
+// syzygy-bpyt.4.2: the typecheck, the suite and the no-egress bundle load every workspace package by its `source` condition, and
+// Node loads the built product by `import` or `default`. Every export of the tree's own manifests names one module either way.
+describe("the tree's own exports", () => {
+  it('put a source condition first in every entry, naming the module the built target is read as', () => {
+    const entries = [...WORKSPACE.manifests.values()].flatMap((manifest) =>
+      Object.entries(manifest.exports ?? {}).map(([subpath, entry]) => ({ manifest, subpath, entry: entry as Record<string, unknown> })));
+    expect(entries.length).toBeGreaterThanOrEqual(17);
+    const wrong = entries.filter(({ manifest, subpath, entry }) => {
+      const specifier = subpath === '.' ? manifest.name : `${manifest.name}${subpath.slice(1)}`;
+      return Object.keys(entry)[0] !== 'source' || typeof entry['source'] !== 'string'
+        || resolveIn(WORKSPACE, `${manifest.dir}/src/index.ts`, specifier) !== posix.join(manifest.dir, entry['source']);
+    });
+    expect(wrong.map(({ manifest, subpath }) => `${manifest.name} ${subpath}`)).toEqual([]);
   });
 });
