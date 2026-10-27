@@ -31,11 +31,18 @@
    "conclusion": "exit 1"
   }
  ],
- "rule": "DECISIONS.json is decide.py's output at the base; HEAD-SITE-DURATIONS.json is site_durations.py run over the base census and the\nrecords re-measured at the head (5 alone runs of each file with a removal), which HEAD-RECORDS-DIR holds; FULL-RUNS.json is ci_durations.py --local over saved\nlogs of full `npx vitest run` runs at the head, where every removed timeout has fallen back to vitest's default. A removal holds when\n\n  alone   the head records observed it at least 5 times, every observation passed, and its worst is at or under its threshold;\n  full    in every full run the site is bounded at or under its threshold: a test by its own line, which must be a pass (in a\n          file that passed, no line means under 300 ms; a file with a failure lists every test, so there no line bounds nothing),\n          and a hook by its file's duration less the tests listed beneath it.",
+ "later": {
+  "path": "docs/evidence/syzygy-bpyt-4-31/later-observations.json",
+  "sites": [
+   "apps/three-surface-poc/src/polaris-generation/dossier-cap-measure.test.ts:12"
+  ]
+ },
+ "rule": "DECISIONS.json is decide.py's output at the base; HEAD-SITE-DURATIONS.json is site_durations.py run over the base census and the\nrecords re-measured at the head (5 alone runs of each file with a removal), which HEAD-RECORDS-DIR holds; FULL-RUNS.json is ci_durations.py --local over saved\nlogs of full `npx vitest run` runs at the head, where every removed timeout has fallen back to vitest's default; LATER.json lists\nobservations of removed sites made after those runs, each with its source. A removal holds when\n\n  alone   the head records observed it at least 5 times, every observation passed, and its worst is at or under its threshold;\n  full    in every full run the site is bounded at or under its threshold: a test by its own line, which must be a pass (in a\n          file that passed, no line means under 300 ms; a file with a failure lists every test, so there no line bounds nothing),\n          and a hook by its file's duration less the tests listed beneath it;\n  later   no observation in LATER.json ran past its threshold.",
  "removals": 58,
- "holding": 49,
+ "holding": 48,
  "notHolding": [
   "apps/three-surface-poc/src/polaris-accessibility.browser.test.ts:91",
+  "apps/three-surface-poc/src/polaris-generation/dossier-cap-measure.test.ts:12",
   "apps/three-surface-poc/src/polaris-generation/draft-preview.browser.test.ts:47",
   "apps/three-surface-poc/src/polaris-generation/self-corpus.test.ts:46",
   "apps/three-surface-poc/src/polaris-opening-index.browser.test.ts:316",
@@ -96,6 +103,10 @@
      }
     ]
    },
+   "later": {
+    "holds": true,
+    "observations": "none listed"
+   },
    "holds": true
   },
   {
@@ -147,6 +158,10 @@
       "why": "no line in a passing file: under 300 ms"
      }
     ]
+   },
+   "later": {
+    "holds": true,
+    "observations": "none listed"
    },
    "holds": true
   },
@@ -200,6 +215,10 @@
      }
     ]
    },
+   "later": {
+    "holds": true,
+    "observations": "none listed"
+   },
    "holds": true
   },
   {
@@ -251,6 +270,10 @@
       "why": "no line in a passing file: under 300 ms"
      }
     ]
+   },
+   "later": {
+    "holds": true,
+    "observations": "none listed"
    },
    "holds": true
   },
@@ -304,6 +327,10 @@
      }
     ]
    },
+   "later": {
+    "holds": true,
+    "observations": "none listed"
+   },
    "holds": true
   },
   {
@@ -355,6 +382,10 @@
       "why": "no line in a passing file: under 300 ms"
      }
     ]
+   },
+   "later": {
+    "holds": true,
+    "observations": "none listed"
    },
    "holds": true
   },
@@ -408,6 +439,10 @@
      }
     ]
    },
+   "later": {
+    "holds": true,
+    "observations": "none listed"
+   },
    "holds": true
   },
   {
@@ -459,6 +494,10 @@
       "why": "no line in a passing file: under 300 ms"
      }
     ]
+   },
+   "later": {
+    "holds": true,
+    "observations": "none listed"
    },
    "holds": true
   },
@@ -512,6 +551,10 @@
      }
     ]
    },
+   "later": {
+    "holds": true,
+    "observations": "none listed"
+   },
    "holds": true
   },
   {
@@ -563,6 +606,10 @@
       "why": "no line in a passing file: under 300 ms"
      }
     ]
+   },
+   "later": {
+    "holds": true,
+    "observations": "none listed"
    },
    "holds": true
   },
@@ -616,6 +663,10 @@
      }
     ]
    },
+   "later": {
+    "holds": true,
+    "observations": "none listed"
+   },
    "holds": true
   },
   {
@@ -667,6 +718,10 @@
       "why": "no line in a passing file: under 300 ms"
      }
     ]
+   },
+   "later": {
+    "holds": true,
+    "observations": "none listed"
    },
    "holds": true
   },
@@ -720,6 +775,10 @@
      }
     ]
    },
+   "later": {
+    "holds": true,
+    "observations": "none listed"
+   },
    "holds": true
   },
   {
@@ -771,6 +830,10 @@
       "why": "no line in a passing file: under 300 ms"
      }
     ]
+   },
+   "later": {
+    "holds": true,
+    "observations": "none listed"
    },
    "holds": true
   },
@@ -824,6 +887,10 @@
      }
     ]
    },
+   "later": {
+    "holds": true,
+    "observations": "none listed"
+   },
    "holds": true
   },
   {
@@ -875,6 +942,10 @@
       "why": "no line in a passing file: under 300 ms"
      }
     ]
+   },
+   "later": {
+    "holds": true,
+    "observations": "none listed"
    },
    "holds": true
   },
@@ -928,6 +999,10 @@
      }
     ]
    },
+   "later": {
+    "holds": true,
+    "observations": "none listed"
+   },
    "holds": true
   },
   {
@@ -979,6 +1054,10 @@
       "why": "no line in a passing file: under 300 ms"
      }
     ]
+   },
+   "later": {
+    "holds": true,
+    "observations": "none listed"
    },
    "holds": true
   },
@@ -1032,6 +1111,10 @@
      }
     ]
    },
+   "later": {
+    "holds": true,
+    "observations": "none listed"
+   },
    "holds": true
   },
   {
@@ -1083,6 +1166,10 @@
       "why": "own lines [348]"
      }
     ]
+   },
+   "later": {
+    "holds": true,
+    "observations": "none listed"
    },
    "holds": true
   },
@@ -1136,6 +1223,10 @@
      }
     ]
    },
+   "later": {
+    "holds": true,
+    "observations": "none listed"
+   },
    "holds": true
   },
   {
@@ -1187,6 +1278,10 @@
       "why": "own lines [329]"
      }
     ]
+   },
+   "later": {
+    "holds": true,
+    "observations": "none listed"
    },
    "holds": true
   },
@@ -1240,6 +1335,10 @@
      }
     ]
    },
+   "later": {
+    "holds": true,
+    "observations": "none listed"
+   },
    "holds": true
   },
   {
@@ -1291,6 +1390,10 @@
       "why": "own lines [348]"
      }
     ]
+   },
+   "later": {
+    "holds": true,
+    "observations": "none listed"
    },
    "holds": true
   },
@@ -1344,6 +1447,10 @@
      }
     ]
    },
+   "later": {
+    "holds": true,
+    "observations": "none listed"
+   },
    "holds": true
   },
   {
@@ -1395,6 +1502,10 @@
       "why": "own lines [615]"
      }
     ]
+   },
+   "later": {
+    "holds": true,
+    "observations": "none listed"
    },
    "holds": true
   },
@@ -1448,6 +1559,10 @@
      }
     ]
    },
+   "later": {
+    "holds": true,
+    "observations": "none listed"
+   },
    "holds": true
   },
   {
@@ -1499,6 +1614,10 @@
       "why": "no line in a passing file: under 300 ms"
      }
     ]
+   },
+   "later": {
+    "holds": true,
+    "observations": "none listed"
    },
    "holds": true
   },
@@ -1552,6 +1671,10 @@
      }
     ]
    },
+   "later": {
+    "holds": true,
+    "observations": "none listed"
+   },
    "holds": true
   },
   {
@@ -1603,6 +1726,10 @@
       "why": "own lines [420]"
      }
     ]
+   },
+   "later": {
+    "holds": true,
+    "observations": "none listed"
    },
    "holds": true
   },
@@ -1658,6 +1785,10 @@
       "why": "file 2018 ms less 0 tests listed"
      }
     ]
+   },
+   "later": {
+    "holds": true,
+    "observations": "none listed"
    },
    "holds": true
   },
@@ -1716,6 +1847,10 @@
      }
     ]
    },
+   "later": {
+    "holds": true,
+    "observations": "none listed"
+   },
    "holds": true
   },
   {
@@ -1772,6 +1907,10 @@
       "why": "file 335259 ms less 12 tests listed"
      }
     ]
+   },
+   "later": {
+    "holds": true,
+    "observations": "none listed"
    },
    "holds": false
   },
@@ -1830,6 +1969,10 @@
      }
     ]
    },
+   "later": {
+    "holds": true,
+    "observations": "none listed"
+   },
    "holds": true
   },
   {
@@ -1885,7 +2028,16 @@
      }
     ]
    },
-   "holds": true
+   "later": {
+    "holds": false,
+    "worstMs": 5107,
+    "source": {
+     "path": "docs/reviews/R-GP-IMPL-TEST-TIMEOUTS-1-RAW.md",
+     "section": "3.4 The removal sample",
+     "sha256": "0ca96c9a5c8b8701f7c21605f21b113976aebab61ec0548280be419a7dbb55cf"
+    }
+   },
+   "holds": false
   },
   {
    "site": "apps/three-surface-poc/src/polaris-generation/draft-preview.browser.test.ts:47",
@@ -1934,6 +2086,10 @@
       "why": "failed: ['× renders the pipeline draft with working diagram, source and keyboard deep-dive paths at both widths 5059ms']"
      }
     ]
+   },
+   "later": {
+    "holds": true,
+    "observations": "none listed"
    },
    "holds": false
   },
@@ -1987,6 +2143,10 @@
      }
     ]
    },
+   "later": {
+    "holds": true,
+    "observations": "none listed"
+   },
    "holds": true
   },
   {
@@ -2038,6 +2198,10 @@
       "why": "no line in a passing file: under 300 ms"
      }
     ]
+   },
+   "later": {
+    "holds": true,
+    "observations": "none listed"
    },
    "holds": true
   },
@@ -2091,6 +2255,10 @@
      }
     ]
    },
+   "later": {
+    "holds": true,
+    "observations": "none listed"
+   },
    "holds": true
   },
   {
@@ -2142,6 +2310,10 @@
       "why": "no line in a passing file: under 300 ms"
      }
     ]
+   },
+   "later": {
+    "holds": true,
+    "observations": "none listed"
    },
    "holds": true
   },
@@ -2195,6 +2367,10 @@
      }
     ]
    },
+   "later": {
+    "holds": true,
+    "observations": "none listed"
+   },
    "holds": true
   },
   {
@@ -2247,6 +2423,10 @@
      }
     ]
    },
+   "later": {
+    "holds": true,
+    "observations": "none listed"
+   },
    "holds": true
   },
   {
@@ -2298,6 +2478,10 @@
       "why": "failed: ['× zero-egress Syzygy self-corpus proof > refuses a 1 MB corpus budget without truncation or a scripted send, then completes on sufficient budget and isolates one source perturbation 5893ms']"
      }
     ]
+   },
+   "later": {
+    "holds": true,
+    "observations": "none listed"
    },
    "holds": false
   },
@@ -2356,6 +2540,10 @@
      }
     ]
    },
+   "later": {
+    "holds": true,
+    "observations": "none listed"
+   },
    "holds": false
   },
   {
@@ -2407,6 +2595,10 @@
       "why": "own lines [2105, 1727]"
      }
     ]
+   },
+   "later": {
+    "holds": true,
+    "observations": "none listed"
    },
    "holds": false
   },
@@ -2460,6 +2652,10 @@
      }
     ]
    },
+   "later": {
+    "holds": true,
+    "observations": "none listed"
+   },
    "holds": true
   },
   {
@@ -2511,6 +2707,10 @@
       "why": "own lines [2650, 971]"
      }
     ]
+   },
+   "later": {
+    "holds": true,
+    "observations": "none listed"
    },
    "holds": false
   },
@@ -2564,6 +2764,10 @@
      }
     ]
    },
+   "later": {
+    "holds": true,
+    "observations": "none listed"
+   },
    "holds": true
   },
   {
@@ -2615,6 +2819,10 @@
       "why": "own lines [828]"
      }
     ]
+   },
+   "later": {
+    "holds": true,
+    "observations": "none listed"
    },
    "holds": true
   },
@@ -2668,6 +2876,10 @@
      }
     ]
    },
+   "later": {
+    "holds": true,
+    "observations": "none listed"
+   },
    "holds": true
   },
   {
@@ -2719,6 +2931,10 @@
       "why": "own lines [720]"
      }
     ]
+   },
+   "later": {
+    "holds": true,
+    "observations": "none listed"
    },
    "holds": true
   },
@@ -2775,6 +2991,10 @@
      }
     ]
    },
+   "later": {
+    "holds": true,
+    "observations": "none listed"
+   },
    "holds": true
   },
   {
@@ -2826,6 +3046,10 @@
       "why": "failed: ['× surface routes > counts the post-JavaScript DOM on all three served surfaces and kills an unmarked Orrery region 5026ms']"
      }
     ]
+   },
+   "later": {
+    "holds": true,
+    "observations": "none listed"
    },
    "holds": false
   },
@@ -2884,6 +3108,10 @@
      }
     ]
    },
+   "later": {
+    "holds": true,
+    "observations": "none listed"
+   },
    "holds": true
   },
   {
@@ -2938,6 +3166,10 @@
       "why": "file 2493 ms less 1 tests listed"
      }
     ]
+   },
+   "later": {
+    "holds": true,
+    "observations": "none listed"
    },
    "holds": true
   },
@@ -2994,6 +3226,10 @@
      }
     ]
    },
+   "later": {
+    "holds": true,
+    "observations": "none listed"
+   },
    "holds": true
   },
   {
@@ -3046,6 +3282,10 @@
      }
     ]
    },
+   "later": {
+    "holds": true,
+    "observations": "none listed"
+   },
    "holds": false
   },
   {
@@ -3097,6 +3337,10 @@
       "why": "failed: ['× no provider call and no transmission (S10): an operating-system capture of a full fixture run > sees the canary: one loopback datagram sent before the same run is in the capture 5038ms']"
      }
     ]
+   },
+   "later": {
+    "holds": true,
+    "observations": "none listed"
    },
    "holds": false
   }

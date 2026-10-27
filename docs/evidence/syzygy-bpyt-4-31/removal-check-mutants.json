@@ -1,21 +1,22 @@
 {
  "tool": "check_removals_mutants.py",
- "commit": "d0ccce69fa991f60d62ec59759371bffff9e3e52",
+ "commit": "d627a6b415b21644b9a07769b9328933ca748d1c",
  "subject": {
   "path": "docs/evidence/syzygy-bpyt-4-31/tools/check_removals.py",
-  "sha256": "d770c349726da24e895fc1afd32fe0cf5e0a31069fd62d5da0b6cc5905eb7965"
+  "sha256": "e12d1f5b274d48de4cd4d5380729aa140b4b74d7af669e9ad5e0ecf789aa84f7"
  },
  "inputs": {
   "decisions-546f1ff0.json": "03f0da52c62ee79a1844b3d8a9273641dc01fd9f8912ea6426f5a973b1f6a92d",
   "site-durations-head.json": "288c83e60402e5d5e354e95f6675abd3b999e723f4b9bfbe83e55de55632cfdb",
-  "full-runs.json": "6853affccf9ea39dffaaf7de6f76500090a978ba5ee0f09378447f994bd5c91e"
+  "full-runs.json": "6853affccf9ea39dffaaf7de6f76500090a978ba5ee0f09378447f994bd5c91e",
+  "later-observations.json": "0950a337ee82890f21b1bca706bae4acacedba5becd53e94f0d38dc5a386c79a"
  },
  "testSite": "apps/three-surface-poc/src/cdp-browser.test.ts:335",
  "hookSite": "apps/three-surface-poc/src/governing-intent-sweep.test.ts:168",
- "unmutatedHolding": 49,
+ "unmutatedHolding": 48,
  "unmutatedRows": 58,
- "killed": 9,
- "controlsHeld": 2,
+ "killed": 10,
+ "controlsHeld": 3,
  "rows": [
   {
    "id": "M1",
@@ -174,6 +175,21 @@
    "outcome": "control held"
   },
   {
+   "id": "M10",
+   "predicate": "later: an observation past the threshold refutes the removal",
+   "site": "apps/three-surface-poc/src/governing-intent-sweep.test.ts:168",
+   "change": {
+    "input": "LATER",
+    "path": "rows[site=apps/three-surface-poc/src/governing-intent-sweep.test.ts:168].worstMs",
+    "old": null,
+    "new": 5001
+   },
+   "expectedHolds": false,
+   "holds": false,
+   "otherRowsUnchanged": true,
+   "outcome": "killed"
+  },
+  {
    "id": "C2",
    "predicate": "control: a hook's file time less its tests exactly at the threshold holds",
    "site": "apps/three-surface-poc/src/governing-intent-sweep.test.ts:168",
@@ -181,6 +197,21 @@
     "input": "FULL-RUNS",
     "path": "runs[0].files[17]",
     "old": 1025,
+    "new": 5000
+   },
+   "expectedHolds": true,
+   "holds": true,
+   "otherRowsUnchanged": true,
+   "outcome": "control held"
+  },
+  {
+   "id": "C3",
+   "predicate": "control: a later observation exactly at the threshold holds",
+   "site": "apps/three-surface-poc/src/governing-intent-sweep.test.ts:168",
+   "change": {
+    "input": "LATER",
+    "path": "rows[site=apps/three-surface-poc/src/governing-intent-sweep.test.ts:168].worstMs",
+    "old": null,
     "new": 5000
    },
    "expectedHolds": true,

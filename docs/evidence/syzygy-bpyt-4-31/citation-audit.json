@@ -1,11 +1,11 @@
 {
  "tool": "citation_audit.py",
- "census": "d0ccce69fa991f60d62ec59759371bffff9e3e52",
- "rule": "The coordinator's ruling of 2026-10-27: a kept reason may cite a commit or a retained record, of this bead or another, only\nif it holds a measurement for that specific site, by its test name or its file, and a duration. Every kept site of CENSUS.json\n(a census at the head) outside the files DECISIONS.json marks blocked is audited, over every citation its reason carries.\n\nNames the site. A test match is a string that is the site's title, or ends in it after a space or a `>` (vitest's full name\njoins suites and title with a space, its slow-test lines with ` > `). A file match is a string holding the site's path, file\nname or file stem as a whole token (a config site is named by its package directory). A test match outranks a file match.\n\nA duration. A numeric value, or a list of numbers, under a key that ends `ms`/`Ms`/`MS` or `seconds`/`Seconds`, or holds\n`duration` in any case; a key that names a configured value (timeout, threshold, budget, limit, bound, margin, default) never\ncounts, whatever it ends in.\n\n  record   the JSON file at the census commit measures the site when one of these holds:\n           - an object carries a duration and, directly beside it, a string value that names the site;\n           - an object has a key that names the site, whose value is an object carrying a duration, or is itself a duration\n             value under a duration key somewhere above it;\n           - its top-level `subject` names the site (for a test match the title may sit anywhere in it), and it carries a\n             duration anywhere;\n           - RECORD_READINGS, read by hand, points at a duration value in it, and the record names the site's file.\n  commit   READINGS, read by hand, quotes the text in the commit that measures the site: the quote must occur in its message\n           or its added lines (comment leaders dropped, whitespace folded), carry a duration (`N ms`, `N s`, `N.N s`,\n           `N-M s`), and the commit must change the site's file.\n\nEach reading's `identifies` says how the text is tied to the site. A citation that measures by none of these is unmeasured,\nand a site none of whose citations measures it is a counted residual. `--mutants` runs one input mutant per predicate on the\nreal results and fails unless each is killed for that predicate's reason.",
- "sites": 74,
- "citations": 76,
- "measuredByTest": 58,
- "measuredByFileOnly": 14,
+ "census": "d627a6b415b21644b9a07769b9328933ca748d1c",
+ "rule": "The coordinator's ruling of 2026-10-27: a kept reason may cite a commit or a retained record, of this bead or another, only\nif it holds a measurement for that specific site, by its test name or its file, and a duration. Every kept site of CENSUS.json\n(a census at the head) outside the files DECISIONS.json marks blocked is audited, over every citation its reason carries.\n\nNames the site. A test match is a string that is the site's title, or ends in it after a space or a `>` (vitest's full name\njoins suites and title with a space, its slow-test lines with ` > `). A file match is a string holding the site's full path or\nits file name as a whole token, never its stem, so `x.browser.test.ts` is not named by `x.test.ts` (a config site is named by\nits package directory). A test match outranks a file match. A file match counts only for a site with no test name of its own,\na hook, a suite or a config: a titled test needs a test match, and one with only a file match is a counted residual.\n\nA duration. A numeric value, or a list of numbers, under a key that ends `ms`/`Ms`/`MS` or `seconds`/`Seconds`, or holds\n`duration` in any case; a key that names a configured value (timeout, threshold, budget, limit, bound, margin, default) never\ncounts, whatever it ends in.\n\n  record   the JSON file at the census commit measures the site when one of these holds:\n           - an object carries a duration and, directly beside it, a string value that names the site;\n           - an object has a key that names the site, whose value is an object carrying a duration, or is itself a duration\n             value under a duration key somewhere above it;\n           - its top-level `subject` names the site (for a test match the title may sit anywhere in it), and it carries a\n             duration anywhere;\n           - RECORD_READINGS, read by hand, points at a duration value in it under a duration key, and the record carries\n             the reading's label as a key or inside a string (or names the site's file, when the reading gives no label);\n             a test reading's filter must be in the site's title.\n  commit   READINGS, read by hand, quotes the text in the commit that measures the site: the quote must occur in its message\n           or its added lines (comment leaders dropped, whitespace folded), carry a duration (`N ms`, `N s`, `N.N s`,\n           `N-M s`), and the commit must change the site's file.\n\nEach reading's `identifies` says how the text is tied to the site. A citation that measures by none of these is unmeasured,\nand a site none of whose citations measures it is a counted residual. `--mutants` runs one input mutant per predicate on the\nreal results and fails unless each is killed for that predicate's reason.",
+ "sites": 75,
+ "citations": 78,
+ "measuredByTest": 60,
+ "measuredByFileOnly": 13,
  "residuals": [
   "apps/three-surface-poc/src/polaris-opening-index.browser.test.ts:424",
   "packages/three-surface-poc-core/src/test-artifact-verification.live.test.ts:139"
@@ -467,19 +467,46 @@
      "citation": "docs/evidence/shared-fixture-models-k66p-2026-10-03.json",
      "type": "record",
      "measured": "file",
-     "matches": 6,
+     "matches": 1,
      "evidence": {
-      "rule": "key",
+      "rule": "reading",
       "kind": "file",
       "at": [
        "runs",
        0,
        "targetFiles",
-       "polaris-first-reading"
+       "polaris-first-reading",
+       "fileMs"
       ],
-      "name": "polaris-first-reading",
+      "name": "syzygy-k66p: 5 s default per-test timeouts under full-suite load (tuple-encoding, polaris-narrative, polaris-first-reading)",
+      "duration": 12661,
+      "identifies": "the record names its three files by stem, as its subject lists them: runs[].targetFiles.<stem>.fileMs is the file's duration under load, and sharedBuildMsUnderLoad.<stem> the shared fixture build this beforeAll (shared.prepare) runs; this is the one test file with that stem"
+     }
+    }
+   ],
+   "measured": "file"
+  },
+  {
+   "site": "apps/three-surface-poc/src/polaris-generation/dossier-cap-measure.test.ts:12",
+   "kind": "hook",
+   "title": null,
+   "audits": [
+    {
+     "citation": "docs/evidence/syzygy-bpyt-4-31/repair-durations/dossier-cap-measure.test.hooks.json",
+     "type": "record",
+     "measured": "file",
+     "matches": 5,
+     "evidence": {
+      "rule": "beside",
+      "kind": "file",
+      "at": [
+       "runs",
+       0,
+       "command"
+      ],
+      "name": "npx vitest run --project @syzygy/three-surface-poc-app apps/three-surface-poc/src/polaris-generation/dossier-cap-measure.test.ts --reporter=<tmp>/hook-reporter.mjs --testTimeout=600000 --hookTimeout=6",
       "duration": {
-       "fileMs": 12661
+       "wallSeconds": 2.5
       }
      }
     }
@@ -633,28 +660,24 @@
     {
      "citation": "docs/evidence/pipeline-demo-onramp-budget-2026-10-15.json",
      "type": "record",
-     "measured": "file",
-     "matches": 1,
+     "measured": "test",
+     "matches": 2,
      "evidence": {
-      "rule": "subject",
-      "kind": "file",
+      "rule": "reading",
+      "kind": "test",
       "at": [
-       "subject"
+       "postChangeVerification",
+       "runs",
+       0,
+       "wallSeconds"
       ],
-      "name": "apps/three-surface-poc/src/polaris-generation/pipeline-demo.test.ts README-onramp test budget (syzygy-128g)",
-      "duration": {
-       "at": [
-        "postChangeVerification",
-        "runs",
-        0,
-        "wallSeconds"
-       ],
-       "value": 183
-      }
+      "name": "npx vitest run apps/three-surface-poc/src/polaris-generation/pipeline-demo.test.ts -t 'README command'",
+      "duration": 183,
+      "identifies": "the record's postChangeVerification.command runs the file with vitest's -t filter 'README command', which this title holds and no other title in the file does"
      }
     }
    ],
-   "measured": "file"
+   "measured": "test"
   },
   {
    "site": "apps/three-surface-poc/src/polaris-generation/self-corpus.test.ts:32",
@@ -692,7 +715,7 @@
      "citation": "docs/evidence/syzygy-bpyt-4-31/full-runs.json",
      "type": "record",
      "measured": "test",
-     "matches": 62,
+     "matches": 15,
      "evidence": {
       "rule": "beside",
       "kind": "test",
@@ -723,20 +746,20 @@
      "citation": "docs/evidence/shared-fixture-models-k66p-2026-10-03.json",
      "type": "record",
      "measured": "file",
-     "matches": 6,
+     "matches": 1,
      "evidence": {
-      "rule": "key",
+      "rule": "reading",
       "kind": "file",
       "at": [
        "runs",
        0,
        "targetFiles",
-       "polaris-narrative"
+       "polaris-narrative",
+       "fileMs"
       ],
-      "name": "polaris-narrative",
-      "duration": {
-       "fileMs": 20792
-      }
+      "name": "syzygy-k66p: 5 s default per-test timeouts under full-suite load (tuple-encoding, polaris-narrative, polaris-first-reading)",
+      "duration": 20792,
+      "identifies": "the record names its three files by stem, as its subject lists them: runs[].targetFiles.<stem>.fileMs is the file's duration under load, and sharedBuildMsUnderLoad.<stem> the shared fixture build this beforeAll (shared.prepare) runs; this is the one test file with that stem"
      }
     }
    ],
@@ -903,24 +926,51 @@
    "title": "re-evaluates an unchanged repository twice: two distinct named identities, the first result unchanged (syzygy-u05.2)",
    "audits": [
     {
-     "citation": "docs/evidence/poc-test-timeouts-2026-10-03.json",
+     "citation": "docs/evidence/syzygy-bpyt-4-31/full-runs.json",
      "type": "record",
-     "measured": "file",
-     "matches": 17,
+     "measured": "test",
+     "matches": 15,
      "evidence": {
-      "rule": "key",
-      "kind": "file",
+      "rule": "beside",
+      "kind": "test",
       "at": [
-       "worstFullRunDurationMsPerTest",
-       "before",
-       "production-reobserve.test.ts > keeps the production probe identity bound to the captured observation instant"
+       "runs",
+       0,
+       "files",
+       24,
+       "slowTests",
+       2,
+       "name"
       ],
-      "name": "production-reobserve.test.ts > keeps the production probe identity bound to the captured observation instant",
-      "duration": 6
+      "name": "production-owned capture-to-model re-observation seam > re-evaluates an unchanged repository twice: two distinct named identities, the first result unchanged (syzygy-u05.2)",
+      "duration": {
+       "ms": 3929
+      }
+     }
+    },
+    {
+     "citation": "docs/evidence/syzygy-bpyt-4-31/repair-durations/production-reobserve.test.tests.json",
+     "type": "record",
+     "measured": "test",
+     "matches": 10,
+     "evidence": {
+      "rule": "beside",
+      "kind": "test",
+      "at": [
+       "runs",
+       0,
+       "tests",
+       3,
+       "name"
+      ],
+      "name": "production-owned capture-to-model re-observation seam re-evaluates an unchanged repository twice: two distinct named identities, the first result unchanged (syzygy-u05.2)",
+      "duration": {
+       "durationMs": 1569
+      }
      }
     }
    ],
-   "measured": "file"
+   "measured": "test"
   },
   {
    "site": "apps/three-surface-poc/src/production-reobserve.test.ts:182",
@@ -1239,20 +1289,20 @@
      "citation": "docs/evidence/shared-fixture-models-k66p-2026-10-03.json",
      "type": "record",
      "measured": "file",
-     "matches": 6,
+     "matches": 1,
      "evidence": {
-      "rule": "key",
+      "rule": "reading",
       "kind": "file",
       "at": [
        "runs",
        0,
        "targetFiles",
-       "tuple-encoding"
+       "tuple-encoding",
+       "fileMs"
       ],
-      "name": "tuple-encoding",
-      "duration": {
-       "fileMs": 14058
-      }
+      "name": "syzygy-k66p: 5 s default per-test timeouts under full-suite load (tuple-encoding, polaris-narrative, polaris-first-reading)",
+      "duration": 14058,
+      "identifies": "the record names its three files by stem, as its subject lists them: runs[].targetFiles.<stem>.fileMs is the file's duration under load, and sharedBuildMsUnderLoad.<stem> the shared fixture build this beforeAll (shared.prepare) runs; this is the one test file with that stem"
      }
     }
    ],
@@ -1296,7 +1346,7 @@
      "citation": "docs/evidence/syzygy-bpyt-4-31/durations/cap1-system.hooks.json",
      "type": "record",
      "measured": "test",
-     "matches": 25,
+     "matches": 20,
      "evidence": {
       "rule": "beside",
       "kind": "test",
@@ -1317,7 +1367,7 @@
      "citation": "docs/evidence/syzygy-bpyt-4-31/ci-durations.json",
      "type": "record",
      "measured": "test",
-     "matches": 20,
+     "matches": 15,
      "evidence": {
       "rule": "beside",
       "kind": "test",
@@ -2055,8 +2105,7 @@
     "everyString": {
      "old": [
       "apps/three-surface-poc/src/polaris-accessibility.browser.test.ts",
-      "polaris-accessibility.browser.test.ts",
-      "polaris-accessibility"
+      "polaris-accessibility.browser.test.ts"
      ],
      "new": "syzygy-mutant"
     }
@@ -2120,13 +2169,54 @@
   {
    "id": "A7",
    "predicate": "a record reading's path must end at a duration key",
-   "site": "apps/three-surface-poc/src/surface-routes.test.ts:420",
-   "citation": "docs/evidence/syzygy-bul-browser-ci-correction-2026-09-23.json",
+   "site": "apps/three-surface-poc/src/polaris-generation/pipeline-demo.test.ts:73",
+   "citation": "docs/evidence/pipeline-demo-onramp-budget-2026-10-15.json",
    "rule": "reading",
    "change": {
-    "readingKey": "renamed count"
+    "readingKey": {
+     "at": [
+      "postChangeVerification",
+      "runs",
+      0,
+      "wallSeconds"
+     ],
+     "old": "wallSeconds",
+     "new": "count"
+    }
    },
    "before": "test",
+   "after": "file",
+   "outcome": "killed"
+  },
+  {
+   "id": "A12",
+   "predicate": "a titled test with only a file match is a counted residual",
+   "site": "apps/three-surface-poc/src/keyboard-sweep-record.test.ts:59",
+   "citation": "docs/evidence/syzygy-bpyt-4-31/durations/keyboard-sweep-record.test.tests.json",
+   "change": {
+    "everyString": {
+     "old": "reads the Butlers revision and evaluation identity a served Polaris page renders, on both mounts",
+     "new": "decodes the escaped footer and refuses a page that names no evaluation, two, or an abbreviated revision (moved)"
+    }
+   },
+   "before": "test",
+   "bestMatchAfter": "file",
+   "after": null,
+   "outcome": "killed"
+  },
+  {
+   "id": "A13",
+   "predicate": "a file match needs the site's full path or file name, never its stem",
+   "site": "apps/three-surface-poc/src/polaris-opening-index.browser.test.ts:316",
+   "citation": "docs/evidence/syzygy-bpyt-4-31/full-runs.json",
+   "change": {
+    "everyString": {
+     "old": "polaris-opening-index.browser.test.ts",
+     "new": "polaris-opening-index.test.ts"
+    }
+   },
+   "before": "file",
+   "bestMatchAfter": null,
    "after": null,
    "outcome": "killed"
   },

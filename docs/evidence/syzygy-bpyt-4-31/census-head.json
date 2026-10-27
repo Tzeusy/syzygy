@@ -3,15 +3,15 @@
   "name": "timeout_census.mjs",
   "sha256": "6e503285dfe1d3faf64d317f95faf17841991db0901bc1b55822870f96cbbc3a"
  },
- "commit": "d0ccce69fa991f60d62ec59759371bffff9e3e52",
+ "commit": "d627a6b415b21644b9a07769b9328933ca748d1c",
  "population": {
   "files": 514,
   "parsed": 514,
   "testFiles": 255
  },
  "summary": {
-  "sites": 91,
-  "files": 33,
+  "sites": 92,
+  "files": 34,
   "withoutReason": 6,
   "filesWithoutReason": 2,
   "withoutCitation": 17,
@@ -24,10 +24,10 @@
     "cited": 61
    },
    "hook": {
-    "sites": 11,
-    "files": 10,
-    "withReason": 10,
-    "cited": 10
+    "sites": 12,
+    "files": 11,
+    "withReason": 11,
+    "cited": 11
    },
    "suite": {
     "sites": 1,
@@ -799,6 +799,29 @@
    "precedingComment": null
   },
   {
+   "path": "apps/three-surface-poc/src/polaris-generation/dossier-cap-measure.test.ts",
+   "line": 12,
+   "callLine": 9,
+   "kind": "hook",
+   "callee": "beforeAll",
+   "form": "second-argument",
+   "expression": "120_000",
+   "valueMs": 120000,
+   "constant": null,
+   "suites": [],
+   "reason": {
+    "where": "apps/three-surface-poc/src/polaris-generation/dossier-cap-measure.test.ts:12",
+    "text": "builds a git fixture and runs dossier discovery over it: up to 1.1 s in 5 alone runs at load1 22-24 (docs/evidence/syzygy-bpyt-4-31/repair-durations/dossier-cap-measure.test.hooks.json), but 5.1 s, past half the 10 s hook default, in one review run at load1 46-55 (docs/reviews/R-GP-IMPL-TEST-TIMEOUTS-1-RAW.md §3.4)"
+   },
+   "citations": {
+    "commits": [],
+    "measurements": [
+     "docs/evidence/syzygy-bpyt-4-31/repair-durations/dossier-cap-measure.test.hooks.json"
+    ]
+   },
+   "precedingComment": null
+  },
+  {
    "path": "apps/three-surface-poc/src/polaris-generation/draft-preview.browser.test.ts",
    "line": 47,
    "callLine": 12,
@@ -1267,13 +1290,14 @@
     "production-owned capture-to-model re-observation seam"
    ],
    "reason": {
-    "where": "apps/three-surface-poc/src/production-reobserve.test.ts:70",
-    "text": "// Each test below runs two full production builds (about 1.4 s each alone; // the observer root is the real tree), so no cheaper fixture keeps what they // test. Measured worst case 18.0 s under the parallel-load protocol // (syzygy-4d15, docs/evidence/poc-test-timeouts-2026-10-03.json)."
+    "where": "apps/three-surface-poc/src/production-reobserve.test.ts:160",
+    "text": "this test: up to 8.5 s in 5 full-suite runs at load1 38-71, over the 5 s default in 3 of them; up to 1.6 s in 5 alone runs at load1 22-24 (docs/evidence/syzygy-bpyt-4-31/full-runs.json, docs/evidence/syzygy-bpyt-4-31/repair-durations/production-reobserve.test.tests.json)"
    },
    "citations": {
     "commits": [],
     "measurements": [
-     "docs/evidence/poc-test-timeouts-2026-10-03.json"
+     "docs/evidence/syzygy-bpyt-4-31/full-runs.json",
+     "docs/evidence/syzygy-bpyt-4-31/repair-durations/production-reobserve.test.tests.json"
     ]
    },
    "precedingComment": null
@@ -2445,8 +2469,8 @@
   }
  ],
  "secondMethod": {
-  "regexLines": 114,
-  "matched": 84,
+  "regexLines": 115,
+  "matched": 85,
   "onlyByRegex": [
    {
     "path": "apps/three-surface-poc/src/main.test.ts",
