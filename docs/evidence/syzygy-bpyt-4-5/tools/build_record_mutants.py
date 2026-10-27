@@ -8,7 +8,8 @@ TypeScript). The last five arguments are build_record.py's own. For each mutant 
 working tree (never a git object), runs `python3 -I docs/evidence/syzygy-bpyt-4-5/tools/build_record.py TREE BASE MAIN
 EVIDENCE PRIOR ROUND1`, records the exit code and the last output line, and restores the evidence directory with
 `git checkout`. Each edit is recorded as its file, its JSON pointer, the value it replaced and the value it wrote, with
-the commit, so any mutant can be re-run by hand. `expect` is what a sound check must do: `fail` (build_record exits
+the commit, so any mutant can be re-run by hand (`oldAbsent` marks a key the edit added; a `new` of null deletes
+the entry). `expect` is what a sound check must do: `fail` (build_record exits
 non-zero) when the edit breaks a claim the docstring says it checks, `pass` for the control and a wording-only edit.
 K1-K13 are rev-532b's (R-GP-IMPL-TEST-CLOCKS-2, section 3.6); K3, K4, K5 and K7 survived there. The tree is checked
 clean before and after.
@@ -84,8 +85,8 @@ MUTANTS = [
     ('K27-de-head-S4-skipped', [E('daemon-entry-head.json', result('S4-else-runtime-hook-after-dossier', 'skipped'), 'old occurs 0 times')], 'fail', 'S4 recorded as skipped in the new run'),
     ('K28-de-relabel-S5', [E(f, result('S5-else-createRequire-flag-after-polaris', 'mutant', 'kind'), 'equivalent') for f in DE], 'fail', 'S5 relabelled an equivalent in all four runs'),
     ('K29-de-round1-from', [E('daemon-entry-round1-test.json', lambda d: ['testFileFrom'], args[3])], 'fail', 'the round-1 run names the prior commit as its test source'),
-    ('K31-de-head-S7-passes', [E('daemon-entry-head.json', result('S7-else-split-specifier-after-dossier', 'failed'), [])], 'fail', 'S7 recorded as passing the new test'),
     ('K30-de-old-drops-L3', [E('daemon-entry-base-test.json', result('L3-nested-try-in-polaris'), None)], 'fail', "L3's row removed from the old-test run"),
+    ('K31-de-head-S7-passes', [E('daemon-entry-head.json', result('S7-else-split-specifier-after-dossier', 'failed'), [])], 'fail', 'S7 recorded as passing the new test'),
 ]
 
 def get(d, path):
@@ -103,7 +104,9 @@ for mid, edits, expect, note in MUTANTS:
             found = path_fn(d)
             for path in (found if found and isinstance(found[0], list) else [found]):
                 parent, key = get(d, path[:-1]), path[-1]
-                recorded.append({'file': rel, 'pointer': '/' + '/'.join(str(p) for p in path), 'old': copy.deepcopy(parent[key]), 'new': value})
+                absent = isinstance(parent, dict) and key not in parent
+                recorded.append({'file': rel, 'pointer': '/' + '/'.join(str(p) for p in path), 'old': None if absent else copy.deepcopy(parent[key]),
+                                 **({'oldAbsent': True} if absent else {}), 'new': value})
                 if value is None: del parent[key]
                 else: parent[key] = value
         for rel, d in docs.items(): open(os.path.join(tree, EV, rel), 'w', encoding='utf8').write(json.dumps(d, indent=1))

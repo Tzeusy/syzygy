@@ -144,7 +144,7 @@
   },
   {
    "path": "docs/evidence/syzygy-bpyt-4-5/tools/build_record_mutants.py",
-   "sha256": "97efa3f2a90d482a50a6d2541abdba1917b243174b00c43ed58bff975fc38821"
+   "sha256": "2c2719049b7060f27573deff60b12c4a641206b46adb38644f15ee268cc042a3"
   },
   {
    "path": "docs/evidence/syzygy-bpyt-4-5/tools/cpu_separation.py",
