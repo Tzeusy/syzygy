@@ -83,7 +83,7 @@ beforeAll(async () => {
   ({ clone, commit } = makeClone(path.join(dir, 'repo')));
   bundle = path.join(dir, 'driver.mjs');
   await bundleDriver(bundle);
-}, 120_000);
+});
 afterAll(() => { if (dir !== undefined) fs.rmSync(dir, { recursive: true, force: true }); });
 
 interface Capture { readonly status: number | null; readonly stdout: string; readonly stderr: string; readonly calls: readonly string[]; readonly tasks: number }
@@ -120,7 +120,7 @@ describe.skipIf(!HAVE_STRACE)('no provider call and no transmission (S10): an op
     expect(run.calls.filter((line) => INTERNET_FAMILY.test(line))).toEqual([]);
     // One line in the test log saying the proof ran, and over what population.
     console.log(`no-egress proof ran under strace: ${run.calls.length} network-class calls, traced calls from ${run.tasks} task(s), 0 Internet-family`);
-  }, 240_000);
+  }, 240_000); // a full fixture run under strace: timed out at the 5 s default in 1 of 5 full-suite runs at load1 38-71, up to 4.8 s in the others (docs/evidence/syzygy-bpyt-4-31/full-runs.json)
 
   it('sees the canary: one loopback datagram sent before the same run is in the capture', async () => {
     const run = await captured('canary', true);
@@ -128,7 +128,7 @@ describe.skipIf(!HAVE_STRACE)('no provider call and no transmission (S10): an op
     const internet = run.calls.filter((line) => INTERNET_FAMILY.test(line));
     expect(internet.some((line) => line.startsWith('socket(AF_INET'))).toBe(true);
     expect(internet.some((line) => /^(sendto|sendmsg)\(.*inet_addr\("127\.0\.0\.1"\)/u.test(line))).toBe(true);
-  }, 240_000);
+  }, 240_000); // the same run with the canary: timed out at the 5 s default in 3 of 5 full-suite runs at load1 38-71, up to 3.5 s in the others (docs/evidence/syzygy-bpyt-4-31/full-runs.json)
 });
 
 // What the capture runs is bundled from the workspace sources the packages' own entries name; this needs no strace.

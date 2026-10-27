@@ -24,8 +24,6 @@ const OTHER_NS = String(Number(NS) + 1);
 const sweeping = it.skipIf(ownNamespace() === undefined);
 
 describe('fixture directories a killed run left behind (syzygy-bpyt.4.10)', () => {
-  // 30 s each, as in test-model-fixture.test.ts: importing the config took more than the 5 s default under a load
-  // average of 95, and many of these tests wait for a child node process to start and exit.
   const privateTmp: string[] = [];
   afterEach(() => {
     vi.restoreAllMocks();
@@ -60,7 +58,7 @@ describe('fixture directories a killed run left behind (syzygy-bpyt.4.10)', () =
     make(tmp, `${FIXTURE_PREFIX}p${dead}-n${NS}-AbCdEf`, `${FIXTURE_PREFIX}template-p${dead}-n${NS}-AbCdEf`);
     removeFixturesOfDeadProcesses(tmp);
     expect(entries(tmp)).toEqual([]);
-  }, 30_000);
+  });
 
   it('keeps the directories of a live process, the current one included', () => {
     const tmp = newTmp();
@@ -68,7 +66,7 @@ describe('fixture directories a killed run left behind (syzygy-bpyt.4.10)', () =
     make(tmp, ...mine);
     removeFixturesOfDeadProcesses(tmp);
     expect(entries(tmp)).toEqual([...mine].sort());
-  }, 30_000);
+  });
 
   it('keeps a name that carries no pid and namespace segment, whatever its suffix', async () => {
     const tmp = newTmp();
@@ -91,7 +89,7 @@ describe('fixture directories a killed run left behind (syzygy-bpyt.4.10)', () =
     make(tmp, ...kept);
     removeFixturesOfDeadProcesses(tmp);
     expect(entries(tmp)).toEqual([...kept].sort());
-  }, 30_000);
+  });
 
   it('keeps a directory whose pid fails with anything but ESRCH', async () => {
     const tmp = newTmp();
@@ -106,7 +104,7 @@ describe('fixture directories a killed run left behind (syzygy-bpyt.4.10)', () =
     });
     removeFixturesOfDeadProcesses(tmp);
     expect(entries(tmp)).toEqual([denied, outOfRange].sort());
-  }, 30_000);
+  });
 
   sweeping('follows no symlink and removes no file: only a directory with a dead pid in its name goes', async () => {
     const tmp = newTmp();
@@ -125,7 +123,7 @@ describe('fixture directories a killed run left behind (syzygy-bpyt.4.10)', () =
     expect(entries(swept)).toEqual([file, link].sort());
     expect(lstatSync(join(swept, link)).isSymbolicLink()).toBe(true);
     expect(existsSync(join(outside, 'precious', 'keep.txt'))).toBe(true);
-  }, 30_000);
+  });
 
   sweeping('keeps the directories of a dead pid that belong to another PID namespace, whatever the neighbouring value', async () => {
     const tmp = newTmp();
@@ -139,7 +137,7 @@ describe('fixture directories a killed run left behind (syzygy-bpyt.4.10)', () =
     make(tmp, ...foreign, `${FIXTURE_PREFIX}p${dead}-n${NS}-Own123`);
     removeFixturesOfDeadProcesses(tmp);
     expect(entries(tmp)).toEqual([...foreign].sort());
-  }, 30_000);
+  });
 
   // A reading that is absent (no /proc, a tmpfs over it) and one that names no inode are the same to the sweep.
   it.each([
@@ -183,7 +181,7 @@ describe('fixture directories a killed run left behind (syzygy-bpyt.4.10)', () =
     }
     expect(entries(tmp)).toEqual([...unread].sort());
     expect(listings).toEqual([]);
-  }, 30_000);
+  });
 
   it('keeps a directory that belongs to another user, the sweep never descending into it', async () => {
     const tmp = newTmp();
@@ -195,7 +193,7 @@ describe('fixture directories a killed run left behind (syzygy-bpyt.4.10)', () =
     removeFixturesOfDeadProcesses(tmp);
     expect(entries(tmp)).toEqual([theirs]);
     expect(existsSync(join(tmp, theirs, 'repo', 'README.md'))).toBe(true);
-  }, 30_000);
+  });
 
   sweeping('checks no user where the system has no user ids, and removes the dead process\'s directory', async () => {
     const tmp = newTmp();
@@ -209,7 +207,7 @@ describe('fixture directories a killed run left behind (syzygy-bpyt.4.10)', () =
       Object.defineProperty(process, 'getuid', { value: original, configurable: true, writable: true });
     }
     expect(entries(tmp)).toEqual([]);
-  }, 30_000);
+  });
 
   it('does not fail the run when the temp directory cannot be listed', async () => {
     const tmp = newTmp();
@@ -224,7 +222,7 @@ describe('fixture directories a killed run left behind (syzygy-bpyt.4.10)', () =
       chmodSync(tmp, 0o755);
     }
     expect(entries(tmp)).toEqual([stuck]);
-  }, 30_000);
+  });
 
   it('lists only the directory it is given: nothing beside it, nothing below a non-fixture entry', async () => {
     const tmp = newTmp();
@@ -238,7 +236,7 @@ describe('fixture directories a killed run left behind (syzygy-bpyt.4.10)', () =
     removeFixturesOfDeadProcesses(swept);
     expect(existsSync(join(tmp, beside))).toBe(true);
     expect(existsSync(join(swept, below))).toBe(true);
-  }, 30_000);
+  });
 
   sweeping('does not fail the run when a dead process\'s directory cannot be removed', async () => {
     const tmp = newTmp();
@@ -253,7 +251,7 @@ describe('fixture directories a killed run left behind (syzygy-bpyt.4.10)', () =
     } finally {
       chmodSync(join(tmp, stuck), 0o755);
     }
-  }, 30_000);
+  });
 
   sweeping('sweeps the temp directory the process runs under when the global setup runs, and keeps the live and the legacy', async () => {
     const tmp = newTmp();
@@ -263,7 +261,7 @@ describe('fixture directories a killed run left behind (syzygy-bpyt.4.10)', () =
     vi.stubEnv('TMPDIR', tmp);
     removeFixturesOfKilledRuns();
     expect(entries(tmp)).toEqual([...survivors].sort());
-  }, 30_000);
+  });
 
   sweeping('asks the operating system for the temp directory, so it sweeps the same directory the copies are made in when TMPDIR is unset', async () => {
     const tmp = newTmp();
@@ -281,7 +279,7 @@ describe('fixture directories a killed run left behind (syzygy-bpyt.4.10)', () =
       vi.resetModules();
     }
     expect(entries(tmp)).toEqual([live]);
-  }, 30_000);
+  });
 
   it('is registered as a global setup of the app project and of no other project, so it runs once per run', async () => {
     const config = (await import(/* @vite-ignore */ new URL('../../../vitest.config.ts', import.meta.url).href)).default as {
@@ -293,5 +291,5 @@ describe('fixture directories a killed run left behind (syzygy-bpyt.4.10)', () =
     const files = withSetup[0]?.test.globalSetup ?? [];
     expect(files).toHaveLength(1);
     expect(files[0]?.endsWith('/apps/three-surface-poc/src/test-fixture-sweep.global-setup.ts')).toBe(true);
-  }, 30_000);
+  }, 30_000); // importing the config timed out at the 5 s default at load 95 (3f08143c)
 });

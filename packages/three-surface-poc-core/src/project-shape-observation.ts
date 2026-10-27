@@ -24,7 +24,7 @@
 
 import { execFileSync } from 'node:child_process';
 import { createHash } from 'node:crypto';
-import { deepFreeze, sha256 } from '@syzygy/support';
+import { decodeUtf8, deepFreeze, sha256 } from '@syzygy/support';
 
 import type { AuthorityKind, AuthorityState, BodyReadAuthorityEvaluation } from './body-read-authority.js';
 import type { PhaseAClassification } from './content-classification.js';
@@ -111,16 +111,6 @@ export function gitRunnerFor(repoRoot: string): GitRunner {
 }
 
 const OBJECT_ID = /^[0-9a-f]{40}$|^[0-9a-f]{64}$/;
-const STRICT_UTF8 = new TextDecoder('utf-8', { fatal: true });
-
-function decodeUtf8(bytes: Uint8Array): string | undefined {
-  try {
-    return STRICT_UTF8.decode(bytes);
-  } catch {
-    return undefined;
-  }
-}
-
 // Git's own blob identity: `blob <length>\0<bytes>` hashed with the object
 // format the id length reveals. Checking it proves the bytes the runner
 // returned are the exact object the tree named.

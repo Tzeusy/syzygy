@@ -15,9 +15,13 @@ const read = (name: string): string => readFileSync(new URL(name, SRC), 'utf8');
 
 const ALLOWED_SPECIFIER = /^(?:node:crypto|\.\/[a-z0-9-]+\.js)$/u;
 // Every name the package's code may use: its own declarations and parameters, the hash's `createHash().update().digest()`,
-// and `Object`'s freeze walk. A global (`globalThis`, `process`, `console`, `fetch`, `WebSocket`, `performance`), another
+// `Object`'s freeze walk, and the strict decoder's `new TextDecoder('utf-8', { fatal: true }).decode()`, which reads only the
+// bytes it is given. Any other global (`globalThis`, `process`, `console`, `fetch`, `WebSocket`, `performance`), another
 // export of `node:crypto` (`randomBytes`) or a loader (`require`, `eval`, `Function`) is a name not on it.
-const ALLOWED_IDENTIFIERS = new Set(['Object', 'T', 'Uint8Array', 'createHash', 'deepFreeze', 'digest', 'freeze', 'isFrozen', 'member', 'sha256', 'update', 'value', 'values']);
+const ALLOWED_IDENTIFIERS = new Set([
+  'Object', 'STRICT_UTF8', 'T', 'TextDecoder', 'Uint8Array', 'bytes', 'createHash', 'decode', 'decodeUtf8', 'deepFreeze', 'digest', 'fatal',
+  'freeze', 'isFrozen', 'member', 'sha256', 'undefined', 'update', 'value', 'values',
+]);
 
 /** Every identifier a module's code names, sorted: declarations, references, property names and type names alike. Comments
  * and the contents of strings are not code. */
@@ -33,7 +37,7 @@ function identifiersOf(name: string, source: string): string[] {
 
 describe('@syzygy/support stays a pure leaf', () => {
   it('scans every source module under src, at any depth, not an empty list', () => {
-    expect(SOURCES).toEqual(expect.arrayContaining(['deep-freeze.ts', 'index.ts', 'sha256.ts']));
+    expect(SOURCES).toEqual(expect.arrayContaining(['decode-utf8.ts', 'deep-freeze.ts', 'index.ts', 'sha256.ts']));
   });
 
   it('names no module but node:crypto and a module beside it in any literal specifier of any source', () => {
