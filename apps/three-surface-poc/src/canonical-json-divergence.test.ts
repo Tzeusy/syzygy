@@ -3,16 +3,22 @@ import { describe, expect, it } from 'vitest';
 import { canonicalJson } from '@syzygy/three-surface-poc-core';
 import { CanonicalJsonError, encodeCanonicalJson } from '@syzygy/polaris-generation-core/live';
 
-// syzygy-bpyt.6.3 (DC-3): the repository has two key-sorted JSON encoders, kept apart on purpose.
+// syzygy-bpyt.6.3 (DC-3): the repository has three key-sorted JSON encoders, kept apart on purpose.
 //   lenient  `canonicalJson`        (three-surface-poc-core, project-shape-manifest.ts): a total function; drops
 //                                   undefined members, flattens any object, leans on JSON.stringify; the one form of
 //                                   every PWB sha256 identity.
 //   strict   `encodeCanonicalJson`  (polaris-generation-core, canonical-json.ts): a validating encoder with limits;
 //                                   rejects what it cannot spell exactly; the one form of every Polaris generation digest.
-// This file pins where they agree and where they do not. Every expected value is typed here, from the language rules
-// (ECMAScript [[OwnPropertyKeys]] order, JSON.stringify), not read back from either encoder. A change that moves
-// one encoder toward the other fails here and must go through the owner: it changes digests (GP-Q0).
-// The record of the same comparison over the whole test suite's calls: docs/evidence/syzygy-bpyt-6-3/dc3-canonical-json-2026-10-25.json.
+//   cap1     `deterministicLayer`   (cap1-core, evaluation.ts, not exported from the barrel): the independent oracle's own
+//                                   encoder, left out of this file on purpose (cap1 imports nothing shared). No test here
+//                                   pins it; canonical-json-probe.mjs compares it with the lenient encoder.
+// This file pins where the first two agree and where they do not. Every expected value is typed here, from the language rules
+// (ECMAScript [[OwnPropertyKeys]] order, JSON.stringify), not read back from either encoder. A change that moves one
+// encoder toward the other changes an output or a refusal on some input, so it is not behaviour-preserving (GP-Q0) and goes to
+// the owner: a merge would make the strict encoder refuse what the lenient one spells (an undefined member, a BigInt) and
+// reorder array-index keys. On the calls the whole test suite made, both encoders spell three PWB identities alike
+// (canonicalManifestJson, resourceLimitsDigest, walkthroughEvaluationIdentity); the other two carry undefined members or a BigInt.
+// The record of the same comparison over the whole test suite's calls: docs/evidence/syzygy-bpyt-6-3/dc3-decode-and-canonical-json-2026-10-25.json.
 
 const GENEROUS = { maxBytes: 64_000_000, maxNodes: 4_000_000, maxDepth: 256 } as const;
 type Outcome = { readonly ok: string } | { readonly returns: string } | { readonly error: string };

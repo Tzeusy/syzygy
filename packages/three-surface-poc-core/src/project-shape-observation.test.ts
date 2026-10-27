@@ -670,6 +670,25 @@ describe('the seed reader widens phase A only after a validated root index (syzy
     expect(reads.map((record) => record.outcome)).toEqual(['secret-matched', 'refused']);
   });
 
+  it('a seed with a leading byte-order mark is read without it', () => {
+    // EF BB BF is the UTF-8 byte-order mark; the decoded text starts at the byte after it.
+    const bytes = Uint8Array.from([0xef, 0xbb, 0xbf, 0x61, 0x0a]);
+    const objectId = sha1Blob(bytes);
+    const tree = TREE.map((entry) => entry.path === 'about/README.md' ? { ...entry, objectId, sizeBytes: bytes.byteLength } : entry);
+    const { read, reads } = reader({ tree, blobOverrides: { [objectId]: bytes } });
+    expect(read({ path: 'about/README.md', objectId })).toMatchObject({ kind: 'text', text: 'a\n' });
+    expect(reads).toEqual([{ path: 'about/README.md', objectId, outcome: 'read', bytes: 5 }]);
+  });
+
+  it('a seed whose bytes are not UTF-8 is refused with its reason and a not-utf-8 read record', () => {
+    const bytes = Uint8Array.from([0x23, 0x20, 0xff, 0xfe, 0x0a]);
+    const objectId = sha1Blob(bytes);
+    const tree = TREE.map((entry) => entry.path === 'about/README.md' ? { ...entry, objectId, sizeBytes: bytes.byteLength } : entry);
+    const { read, reads } = reader({ tree, blobOverrides: { [objectId]: bytes } });
+    expect(read({ path: 'about/README.md', objectId })).toEqual({ kind: 'unavailable', reason: 'seed is not valid UTF-8' });
+    expect(reads).toEqual([{ path: 'about/README.md', objectId, outcome: 'not-utf-8', bytes: 5 }]);
+  });
+
   it('a root index that fails NUL validation declares nothing either', () => {
     const bytes = encoder.encode(`${TEXTS['about/README.md'] ?? ''}\u0000`);
     const objectId = sha1Blob(bytes);

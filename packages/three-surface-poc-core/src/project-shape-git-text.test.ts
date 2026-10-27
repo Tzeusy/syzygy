@@ -45,11 +45,21 @@ describe('observeProjectShapeSources decoding of git output', () => {
     expect(observe({ ...good, 'ls-tree': 'throw' }).result).toMatchObject({ failureState: 'gitCaptureFailed', detail: 'git ls-tree failed: stop at ls-tree' });
   });
 
-  it('goes on past a rev-parse answer that is well-formed, with or without a byte-order mark', () => {
-    for (const answer of [good['rev-parse'], Uint8Array.from([0xef, 0xbb, 0xbf, ...good['rev-parse']])]) {
-      const observed = observe({ 'rev-parse': answer });
-      expect(observed.calls).toEqual(['rev-parse', 'show']);
-      expect(observed.result).toMatchObject({ detail: 'git show failed: stop at show' });
-    }
+  it('goes on past a rev-parse answer that is well-formed', () => {
+    const observed = observe({ 'rev-parse': good['rev-parse'] });
+    expect(observed.calls).toEqual(['rev-parse', 'show']);
+    expect(observed.result).toMatchObject({ detail: 'git show failed: stop at show' });
+  });
+
+  it('drops one leading byte-order mark from the tree listing before parsing it', () => {
+    // The rev-parse and show answers are trimmed, and trimming removes a byte-order mark, so only the listing can tell
+    // a decoder that keeps one: its first record would start with U+FEFF and fail the parse.
+    const record = enc.encode(`100644 blob ${'1'.repeat(40)}      12\tREADME.md\0`);
+    const plain = observe({ ...good, 'ls-tree': record });
+    const withBom = observe({ ...good, 'ls-tree': Uint8Array.from([0xef, 0xbb, 0xbf, ...record]) });
+    expect(plain.result.kind).toBe('observed');
+    expect(withBom.result.kind).toBe('observed');
+    expect(withBom.result).toEqual(plain.result);
+    expect(withBom.calls).toEqual(['rev-parse', 'show', 'ls-tree']);
   });
 });

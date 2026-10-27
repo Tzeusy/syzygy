@@ -118,9 +118,15 @@ function defaultRunGit(repoRoot: string, args: readonly string[]): string {
     maxBuffer: 256 * 1024 * 1024,
     stdio: ['ignore', 'pipe', 'ignore'],
   });
-  const text = decodeUtf8(withoutGitlinkRecords(bytes));
-  if (text === undefined) throw new NonUtf8GitOutput();
-  return text;
+  // The gitlink filter runs inside the try, as the decode always did: a copy it cannot allocate is reported like the bytes that
+  // could not be decoded, so the Unknown reason for a failure here is the one this module has always given.
+  try {
+    const text = decodeUtf8(withoutGitlinkRecords(bytes));
+    if (text !== undefined) return text;
+  } catch {
+    // falls through to the refusal below
+  }
+  throw new NonUtf8GitOutput();
 }
 
 const SHA1_OBJECT_ID = /^[0-9a-f]{40}$/;

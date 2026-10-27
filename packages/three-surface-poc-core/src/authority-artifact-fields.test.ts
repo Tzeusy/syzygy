@@ -19,7 +19,7 @@ const NOT_UTF8: ReadonlyArray<readonly [string, number[]]> = [
 ];
 
 describe('parseConsentArtifact decoding', () => {
-  it('reads well-formed text, with or without a leading byte-order mark', () => {
+  it('reads well-formed text, with or without a leading byte-order mark (the parser trims every line, so the mark cannot change the result)', () => {
     const parsed = { kind: 'parsed', fields: {
       observingProject: { kind: 'present', value: 'project:syzygy' },
       configuredRepository: { kind: 'present', value: 'repository:butlers' },
