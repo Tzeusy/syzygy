@@ -57,3 +57,50 @@ describe('parsePolicyArtifact and parseRegistryArtifact decoding', () => {
     expect(parseRegistryArtifact(enc.encode('['))).toEqual({ kind: 'undecodable', detail: 'not JSON' });
   });
 });
+
+// The call sites of the object test in @syzygy/support (syzygy-bpyt.6.3 stack 4): each parser reads a JSON container as an object only
+// when it is one. An array, null or a primitive in an object's place is surfaced as the malformed container it is, never read as if
+// it were an object and never thrown on. Expected values are typed here from the parsers' own comments above, not read back.
+const json = (value: unknown): Uint8Array => enc.encode(JSON.stringify(value));
+const registryOf = (value: unknown) => parseRegistryArtifact(json(value));
+const present = (value: unknown) => ({ kind: 'present', value });
+const MISSING = { kind: 'missing' };
+const NOT_OBJECTS: ReadonlyArray<readonly [string, unknown]> = [['an array', []], ['null', null], ['a string', 'x'], ['a number', 1], ['true', true]];
+
+describe('the parsers read a JSON container as an object only when it is one', () => {
+  it.each(NOT_OBJECTS)('refuse a policy document that is %s', (_label, value) => {
+    expect(parsePolicyArtifact(json(value))).toEqual({ kind: 'undecodable', detail: 'policy document is not an object' });
+  });
+
+  it.each(NOT_OBJECTS)('refuse a registry document that is %s', (_label, value) => {
+    expect(registryOf(value)).toEqual({ kind: 'undecodable', detail: 'registry document is not an object' });
+  });
+
+  it.each(NOT_OBJECTS)('surface a first registry entry that is %s as the malformed entries list', (_label, entry) => {
+    expect(registryOf({ entries: [entry] })).toEqual({
+      kind: 'parsed',
+      fields: { governanceHome: MISSING, project: MISSING, repository: present([entry]), readOnlyAuthority: MISSING, writeSurface: MISSING },
+    });
+  });
+
+  it.each(NOT_OBJECTS)('surface an entry subject that is %s as the repository field', (_label, subject) => {
+    expect(registryOf({ entries: [{ subject }] })).toMatchObject({ kind: 'parsed', fields: { repository: present(subject), readOnlyAuthority: MISSING, writeSurface: MISSING } });
+  });
+
+  it('read the observed repository of an entry subject that is an object, and none from one without a subject', () => {
+    expect(registryOf({ entries: [{ subject: { observedRepository: 'r' } }] })).toMatchObject({ fields: { repository: present('r') } });
+    expect(registryOf({ entries: [{ subject: {} }] })).toMatchObject({ fields: { repository: MISSING } });
+    expect(registryOf({ entries: [{}] })).toMatchObject({ fields: { repository: MISSING } });
+  });
+
+  it.each(NOT_OBJECTS)('surface typed authority that is %s as present, with no write surface', (_label, authority) => {
+    expect(registryOf({ entries: [{ typedAuthority: authority }] })).toMatchObject({ kind: 'parsed', fields: { readOnlyAuthority: present(authority), writeSurface: MISSING } });
+  });
+
+  it('read the write surface of typed authority that is an object', () => {
+    expect(registryOf({ entries: [{ typedAuthority: { writeSurface: 'w' } }] })).toMatchObject({
+      fields: { readOnlyAuthority: present({ writeSurface: 'w' }), writeSurface: present('w') },
+    });
+    expect(registryOf({ entries: [{ typedAuthority: {} }] })).toMatchObject({ fields: { readOnlyAuthority: present({}), writeSurface: MISSING } });
+  });
+});

@@ -61,6 +61,30 @@ describe('reading the exemption', () => {
     const read = readCodeContentExemption(scope(), SOURCE(ALL));
     expect(read.ok).toBe(false);
   });
+  // The object test in @syzygy/support decides at three reads (syzygy-bpyt.6.3 stack 4): a scope, or its active-content part, that is not
+  // an object declares no exemption, and a declaration that is not an object is refused in its own words. An array that carries a field
+  // by name is still an array.
+  it.each<[string, () => unknown]>([
+    ['a scope that is null', () => null],
+    ['a scope that is a string', () => 'x'],
+    ['a scope that is an array', () => []],
+    ['a scope that is an array carrying activeContent', () => Object.assign([], { activeContent: ALL['activeContent'] })],
+    ['active content that is null', () => ({ activeContent: null })],
+    ['active content that is a string', () => ({ activeContent: 'x' })],
+    ['active content that is an array', () => ({ activeContent: [] })],
+    ['active content that is an array carrying the exemption', () => ({ activeContent: Object.assign([], { codeContentExemption: exemptionOf(ALL) }) })],
+  ])('reads none from %s', (_name, scope) => {
+    expect(readCodeContentExemption(scope(), SOURCE(ALL))).toEqual({ ok: true, exemption: null });
+  });
+  it.each<[string, () => unknown]>([
+    ['an array', () => []],
+    ['null', () => null],
+    ['a string', () => 'x'],
+    ['a number', () => 1],
+    ['an array carrying every field', () => Object.assign([], exemptionOf(ALL))],
+  ])('refuses, in its own words, an exemption that is %s', (_name, exemption) => {
+    expect(readCodeContentExemption(withExemption(ALL, exemption()), SOURCE(ALL))).toEqual({ ok: false, why: 'its code-content exemption is not an object' });
+  });
   // R-PR409-DOSSIER-BLOCKERS-INSTALL-1 N4: the shape is the reader's own check, so a caller whose sourceExtensions carry a slash (which
   // codeContentExempt's final-segment match could never meet) is refused here rather than relying on that caller's validation.
   it.each([['x/y.c'], ['.x/c'], ['. c'], ['..c'], ['c'], ['.']])('refuses an exempt extension %j shaped other than a dot and a name, even when the caller lists it', entry => {

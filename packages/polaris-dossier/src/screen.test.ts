@@ -87,6 +87,41 @@ describe('the screen', () => {
   });
 });
 
+// The object test in @syzygy/support decides at every container the loader reads (syzygy-bpyt.6.3 stack 4): a container that is an array,
+// null or a primitive is refused, or passed over, in the loader's own words; it is never read as an object and never thrown on. The policy
+// arrives as JSON bytes, so an array here never carries a field by name.
+describe('the loader reads each container as an object only when it is one', () => {
+  const REFUSED = (why: string) => ({ ok: false, why: `the screening policy cannot be applied: ${why}` });
+  const NOT_OBJECTS: ReadonlyArray<readonly [string, unknown]> = [['an array', []], ['null', null], ['a string', 'x'], ['a number', 1]];
+  const CODE_CONTENT = { class: 'code-content', sourceExtensions: ['.c', '.txt'] };
+
+  it.each(NOT_OBJECTS)('refuses a policy document that is %s', (_label, doc) => {
+    expect(buildDossierScreen(encode(JSON.stringify(doc)))).toEqual(REFUSED('its identity is unreadable'));
+  });
+  it.each(NOT_OBJECTS)('refuses a public-source scope that is %s', (_label, scope) => {
+    expect(buildDossierScreen(encode(policyOf(scope)))).toEqual(REFUSED('it carries no publicSourceScope'));
+  });
+  it.each(NOT_OBJECTS)('refuses source admission that is %s', (_label, admission) => {
+    expect(buildDossierScreen(encode(policyOf(undefined, { sourceAdmission: admission })))).toEqual(REFUSED('its denied-path rules are unreadable'));
+  });
+  it.each(NOT_OBJECTS)('refuses a content classification that is %s, which names no code-content rule', (_label, classification) => {
+    expect(buildDossierScreen(encode(policyOf({ contentClassification: classification })))).toEqual(REFUSED('its code-content sourceExtensions are unreadable'));
+  });
+  it('refuses a classification with no rules at all, which names no code-content rule', () => {
+    expect(buildDossierScreen(encode(policyOf({ contentClassification: { rules: [] } })))).toEqual(REFUSED('its code-content sourceExtensions are unreadable'));
+  });
+  it('passes over a rules entry that is not an object, as if it were not there', () => {
+    const noisy = buildDossierScreen(encode(policyOf({ contentClassification: { rules: [null, 'x', 1, true, [], CODE_CONTENT] } })));
+    expect(noisy.ok).toBe(true);
+    expect(noisy.ok && noisy.screen.screenPath('src/server.c')).toBeUndefined();
+    expect(noisy.ok && noisy.screen.screenPath('README.md')).toBe('unknown-extraction-class');
+  });
+  it('passes over a detector entry that is not an object when it collects the detector ids, and leaves the refusal to the compiler', () => {
+    const loaded = buildDossierScreen(encode(policyOf(undefined, { detectors: [null, 'x', 1] })));
+    expect(loaded).toMatchObject({ ok: false, why: expect.stringContaining('its detectors do not compile') });
+  });
+});
+
 describe('the project-documentation class (syzygy-2coz)', () => {
   const build = (inForce: boolean) => {
     const loaded = buildDossierScreen(encode(policyOf(DOC_SCOPE)), inForce);
