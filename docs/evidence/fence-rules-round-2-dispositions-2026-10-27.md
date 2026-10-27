@@ -30,12 +30,20 @@ git's own merge, path for path. The whole PR, `git diff f7477f52 815d93bb`, is
 32 files and hashes to
 `93a98321d52803de6a0dba2a522555da5cec359f6b3ac19f7e1b2536b2b062ae`.
 
-At landing the branch took one merge of main `d38d7a3c`. Round 2 had observed
-that none of the 238 paths main changed since `f7477f52` is a PR path.
-[Observed] After the merge, `git diff origin/main HEAD | sha256sum` printed the
-whole-PR digest above. Hosted `checks` and `node` passed at `815d93bb`. The
-battery ran on the landing commit (rule 7), and hosted CI on the landing
-commit was checked before the merge.
+At landing the branch took two merges of main:
+- `d38d7a3c`, before the landing commit. Round 2 had observed that none of the
+  238 paths main changed since `f7477f52` is a PR path. [Observed] After this
+  merge, `git diff origin/main HEAD | sha256sum` printed the whole-PR digest
+  above.
+- `eb8fb6cb` (#539), after it. #539 touched none of the PR's 32 paths.
+  [Observed] After this merge, the diff from main over the PR's 32 paths
+  printed the same digest. The only other paths that differ from main are
+  this record, the two raws, the retained review evidence and
+  `docs/README.md`.
+
+Hosted `checks` and `node` passed at `815d93bb`. The battery ran on the final
+landing commit (rule 7), and hosted CI on that commit was checked before the
+merge.
 
 Round 2 found round 1's two blocking findings repaired, and every routed note
 repaired or routed. It added seven notes and no blocking finding. Under the
