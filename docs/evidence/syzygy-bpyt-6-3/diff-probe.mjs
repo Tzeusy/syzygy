@@ -1,6 +1,10 @@
 // Old-versus-new differential probe for syzygy-bpyt.6.3 (DC-3): model, rendered bytes, response identity.
 // Usage: node diff-probe.mjs <built clone> <out.json> <governance revision>
 //   TMPDIR must be a short private directory: the fixture builders copy a fixture repository under it.
+//   The output depends on the TMPDIR string: the fixture repository sits at <TMPDIR>/probe-fixed-fixture-repo and that path
+//   enters 24 of the 68 compared rows (every model row). Two outputs are comparable only when made under the same TMPDIR.
+//   The committed probe-output.json was made with TMPDIR=/tmp/lc63x (a directory you create); the same tree under another
+//   TMPDIR differs from it in those 24 rows and in no other, which is not a behaviour change.
 // Run once in a clone at the base commit and once at the head, each built with `npm run build:poc`, then
 // compare the two outputs with compare-probe.py. Every digest below is taken with node:crypto directly,
 // never through the helper under test.
