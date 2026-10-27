@@ -85,6 +85,7 @@ record = {
     "subject": "acceptance criterion 2 of syzygy-bpyt.4.2: a stale dist cannot change a POC tool's behaviour",
     "commit": subprocess.run(["git", "rev-parse", "HEAD"], capture_output=True, text=True).stdout.strip(),
     "worktreeClean": subprocess.run(["git", "status", "--porcelain"], capture_output=True, text=True).stdout == "",
+    "subjectSha256": {path: hashlib.sha256(open(path, "rb").read()).hexdigest() for path in ("scripts/clean_build.mjs", "package.json")},
     "buildPocScript": scripts["build:poc"],
     "builtProjects": BUILT,
     "tsc": subprocess.run(["npx", "tsc", "-v"], capture_output=True, text=True).stdout.strip(),
