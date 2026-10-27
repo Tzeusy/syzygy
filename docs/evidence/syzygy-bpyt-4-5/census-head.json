@@ -3,7 +3,7 @@
   "name": "timing_census.py",
   "sha256": "79aad9c52e1a11f8887d8fe5475a86e93bd742ac8aec436089a69cb098840f48"
  },
- "commit": "2b56a253f81bb4e6d71b46556f0d675a07dfb7c2",
+ "commit": "ba9d990a2b80b9aa5b3d78801b938280ee9988d7",
  "population": 256,
  "summary": {
   "timeout-arg": {

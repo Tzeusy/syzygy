@@ -1,9 +1,9 @@
 {
  "tool": {
   "name": "daemon_entry_probe.py",
-  "sha256": "993367c2c3e822ea00c13d1243dda8de20c4de40e59f00710480e1b4cedd84e7"
+  "sha256": "67978df49b5f825821a9ef759c7eeae434982991be7313af2dd04737e858f803"
  },
- "commit": "2b56a253f81bb4e6d71b46556f0d675a07dfb7c2",
+ "commit": "ba9d990a2b80b9aa5b3d78801b938280ee9988d7",
  "testFileFrom": "c104771ff90f47ffd070f2339c36010458679c71",
  "testFileSha256": "c1ff7e4d915b10fb1185241bfe61425f2bea99b64b9593926611edaf2be4821d",
  "results": [
@@ -11,8 +11,8 @@
    "mutant": null,
    "exit": 0,
    "killedAfterLimit": false,
-   "seconds": 5.3,
-   "load1Start": 63.93,
+   "seconds": 8.8,
+   "load1Start": 35.33,
    "rows": [
     {
      "title": "daemon entry: every invocation but `dossier` is unchanged [\"--help\"] prints the usage and exits 0",
@@ -104,8 +104,8 @@
    },
    "exit": 1,
    "killedAfterLimit": false,
-   "seconds": 5.4,
-   "load1Start": 64.1,
+   "seconds": 9.4,
+   "load1Start": 38.9,
    "rows": [
     {
      "title": "daemon entry: every invocation but `dossier` is unchanged [\"--help\"] prints the usage and exits 0",
@@ -180,7 +180,7 @@
     {
      "title": "daemon entry: the one changed input, `dossier` as the first argument the daemon path never loads the POC app: each import is dynamic and inside the `dossier` or `polaris` branch",
      "status": "failed",
-     "failure": "AssertionError: expected [ \u2026(3) ] to deeply equal [ \u2026(2) ]\n    at /tmp/laneb-45r2/clone/packages/cap1-system/src/daemon-entry-unchanged.system.test.ts:217:22\n    at file:///tmp/laneb-45r2/clone/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///tmp/laneb-45r2/clone/node_modules/@v"
+     "failure": "AssertionError: expected [ \u2026(3) ] to deeply equal [ \u2026(2) ]\n    at /tmp/laneb-45r3/clone/packages/cap1-system/src/daemon-entry-unchanged.system.test.ts:217:22\n    at file:///tmp/laneb-45r3/clone/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///tmp/laneb-45r3/clone/node_modules/@v"
     }
    ],
    "failed": [
@@ -199,8 +199,8 @@
    },
    "exit": 1,
    "killedAfterLimit": false,
-   "seconds": 4.2,
-   "load1Start": 61.18,
+   "seconds": 6.7,
+   "load1Start": 42.71,
    "rows": [
     {
      "title": "daemon entry: every invocation but `dossier` is unchanged [\"--help\"] prints the usage and exits 0",
@@ -275,7 +275,7 @@
     {
      "title": "daemon entry: the one changed input, `dossier` as the first argument the daemon path never loads the POC app: each import is dynamic and inside the `dossier` or `polaris` branch",
      "status": "failed",
-     "failure": "AssertionError: expected [ \u2026(3) ] to deeply equal [ \u2026(2) ]\n    at /tmp/laneb-45r2/clone/packages/cap1-system/src/daemon-entry-unchanged.system.test.ts:217:22\n    at file:///tmp/laneb-45r2/clone/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///tmp/laneb-45r2/clone/node_modules/@v"
+     "failure": "AssertionError: expected [ \u2026(3) ] to deeply equal [ \u2026(2) ]\n    at /tmp/laneb-45r3/clone/packages/cap1-system/src/daemon-entry-unchanged.system.test.ts:217:22\n    at file:///tmp/laneb-45r3/clone/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///tmp/laneb-45r3/clone/node_modules/@v"
     }
    ],
    "failed": [
@@ -294,8 +294,8 @@
    },
    "exit": 1,
    "killedAfterLimit": false,
-   "seconds": 4.2,
-   "load1Start": 61.96,
+   "seconds": 9.2,
+   "load1Start": 43.86,
    "rows": [
     {
      "title": "daemon entry: every invocation but `dossier` is unchanged [\"--help\"] prints the usage and exits 0",
@@ -370,7 +370,7 @@
     {
      "title": "daemon entry: the one changed input, `dossier` as the first argument the daemon path never loads the POC app: each import is dynamic and inside the `dossier` or `polaris` branch",
      "status": "failed",
-     "failure": "AssertionError: expected [ \u2026(3) ] to deeply equal [ \u2026(2) ]\n    at /tmp/laneb-45r2/clone/packages/cap1-system/src/daemon-entry-unchanged.system.test.ts:217:22\n    at file:///tmp/laneb-45r2/clone/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///tmp/laneb-45r2/clone/node_modules/@v"
+     "failure": "AssertionError: expected [ \u2026(3) ] to deeply equal [ \u2026(2) ]\n    at /tmp/laneb-45r3/clone/packages/cap1-system/src/daemon-entry-unchanged.system.test.ts:217:22\n    at file:///tmp/laneb-45r3/clone/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///tmp/laneb-45r3/clone/node_modules/@v"
     }
    ],
    "failed": [
@@ -389,8 +389,8 @@
    },
    "exit": 1,
    "killedAfterLimit": false,
-   "seconds": 4.0,
-   "load1Start": 59.48,
+   "seconds": 6.8,
+   "load1Start": 42.67,
    "rows": [
     {
      "title": "daemon entry: every invocation but `dossier` is unchanged [\"--help\"] prints the usage and exits 0",
@@ -465,7 +465,7 @@
     {
      "title": "daemon entry: the one changed input, `dossier` as the first argument the daemon path never loads the POC app: each import is dynamic and inside the `dossier` or `polaris` branch",
      "status": "failed",
-     "failure": "AssertionError: expected [ \u2026(3) ] to deeply equal [ \u2026(2) ]\n    at /tmp/laneb-45r2/clone/packages/cap1-system/src/daemon-entry-unchanged.system.test.ts:217:22\n    at file:///tmp/laneb-45r2/clone/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///tmp/laneb-45r2/clone/node_modules/@v"
+     "failure": "AssertionError: expected [ \u2026(3) ] to deeply equal [ \u2026(2) ]\n    at /tmp/laneb-45r3/clone/packages/cap1-system/src/daemon-entry-unchanged.system.test.ts:217:22\n    at file:///tmp/laneb-45r3/clone/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///tmp/laneb-45r3/clone/node_modules/@v"
     }
    ],
    "failed": [
@@ -484,8 +484,8 @@
    },
    "exit": 1,
    "killedAfterLimit": false,
-   "seconds": 4.4,
-   "load1Start": 57.04,
+   "seconds": 7.8,
+   "load1Start": 40.28,
    "rows": [
     {
      "title": "daemon entry: every invocation but `dossier` is unchanged [\"--help\"] prints the usage and exits 0",
@@ -560,7 +560,7 @@
     {
      "title": "daemon entry: the one changed input, `dossier` as the first argument the daemon path never loads the POC app: each import is dynamic and inside the `dossier` or `polaris` branch",
      "status": "failed",
-     "failure": "AssertionError: expected [ \u2026(3) ] to deeply equal [ \u2026(2) ]\n    at /tmp/laneb-45r2/clone/packages/cap1-system/src/daemon-entry-unchanged.system.test.ts:217:22\n    at file:///tmp/laneb-45r2/clone/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///tmp/laneb-45r2/clone/node_modules/@v"
+     "failure": "AssertionError: expected [ \u2026(3) ] to deeply equal [ \u2026(2) ]\n    at /tmp/laneb-45r3/clone/packages/cap1-system/src/daemon-entry-unchanged.system.test.ts:217:22\n    at file:///tmp/laneb-45r3/clone/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///tmp/laneb-45r3/clone/node_modules/@v"
     }
    ],
    "failed": [
@@ -579,8 +579,8 @@
    },
    "exit": 1,
    "killedAfterLimit": false,
-   "seconds": 6.5,
-   "load1Start": 55.2,
+   "seconds": 5.4,
+   "load1Start": 38.6,
    "rows": [
     {
      "title": "daemon entry: every invocation but `dossier` is unchanged [\"--help\"] prints the usage and exits 0",
@@ -655,7 +655,7 @@
     {
      "title": "daemon entry: the one changed input, `dossier` as the first argument the daemon path never loads the POC app: each import is dynamic and inside the `dossier` or `polaris` branch",
      "status": "failed",
-     "failure": "AssertionError: expected [ \u2026(3) ] to deeply equal [ \u2026(2) ]\n    at /tmp/laneb-45r2/clone/packages/cap1-system/src/daemon-entry-unchanged.system.test.ts:217:22\n    at file:///tmp/laneb-45r2/clone/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///tmp/laneb-45r2/clone/node_modules/@v"
+     "failure": "AssertionError: expected [ \u2026(3) ] to deeply equal [ \u2026(2) ]\n    at /tmp/laneb-45r3/clone/packages/cap1-system/src/daemon-entry-unchanged.system.test.ts:217:22\n    at file:///tmp/laneb-45r3/clone/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///tmp/laneb-45r3/clone/node_modules/@v"
     }
    ],
    "failed": [
@@ -674,8 +674,8 @@
    },
    "exit": 1,
    "killedAfterLimit": false,
-   "seconds": 5.7,
-   "load1Start": 55.1,
+   "seconds": 5.4,
+   "load1Start": 38.07,
    "rows": [
     {
      "title": "daemon entry: every invocation but `dossier` is unchanged [\"--help\"] prints the usage and exits 0",
@@ -750,7 +750,7 @@
     {
      "title": "daemon entry: the one changed input, `dossier` as the first argument the daemon path never loads the POC app: each import is dynamic and inside the `dossier` or `polaris` branch",
      "status": "failed",
-     "failure": "AssertionError: expected [ \u2026(3) ] to deeply equal [ \u2026(2) ]\n    at /tmp/laneb-45r2/clone/packages/cap1-system/src/daemon-entry-unchanged.system.test.ts:217:22\n    at file:///tmp/laneb-45r2/clone/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///tmp/laneb-45r2/clone/node_modules/@v"
+     "failure": "AssertionError: expected [ \u2026(3) ] to deeply equal [ \u2026(2) ]\n    at /tmp/laneb-45r3/clone/packages/cap1-system/src/daemon-entry-unchanged.system.test.ts:217:22\n    at file:///tmp/laneb-45r3/clone/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///tmp/laneb-45r3/clone/node_modules/@v"
     }
    ],
    "failed": [
@@ -769,8 +769,8 @@
    },
    "exit": 1,
    "killedAfterLimit": false,
-   "seconds": 7.2,
-   "load1Start": 54.19,
+   "seconds": 5.5,
+   "load1Start": 36.57,
    "rows": [
     {
      "title": "daemon entry: every invocation but `dossier` is unchanged [\"--help\"] prints the usage and exits 0",
@@ -845,7 +845,7 @@
     {
      "title": "daemon entry: the one changed input, `dossier` as the first argument the daemon path never loads the POC app: each import is dynamic and inside the `dossier` or `polaris` branch",
      "status": "failed",
-     "failure": "AssertionError: expected [ \u2026(3) ] to deeply equal [ \u2026(2) ]\n    at /tmp/laneb-45r2/clone/packages/cap1-system/src/daemon-entry-unchanged.system.test.ts:217:22\n    at file:///tmp/laneb-45r2/clone/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///tmp/laneb-45r2/clone/node_modules/@v"
+     "failure": "AssertionError: expected [ \u2026(3) ] to deeply equal [ \u2026(2) ]\n    at /tmp/laneb-45r3/clone/packages/cap1-system/src/daemon-entry-unchanged.system.test.ts:217:22\n    at file:///tmp/laneb-45r3/clone/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///tmp/laneb-45r3/clone/node_modules/@v"
     }
    ],
    "failed": [
@@ -864,8 +864,8 @@
    },
    "exit": 0,
    "killedAfterLimit": false,
-   "seconds": 5.8,
-   "load1Start": 53.61,
+   "seconds": 6.5,
+   "load1Start": 39.44,
    "rows": [
     {
      "title": "daemon entry: every invocation but `dossier` is unchanged [\"--help\"] prints the usage and exits 0",
@@ -957,8 +957,8 @@
    },
    "exit": 0,
    "killedAfterLimit": false,
-   "seconds": 7.6,
-   "load1Start": 52.5,
+   "seconds": 6.9,
+   "load1Start": 38.92,
    "rows": [
     {
      "title": "daemon entry: every invocation but `dossier` is unchanged [\"--help\"] prints the usage and exits 0",
@@ -1050,8 +1050,8 @@
    },
    "exit": 0,
    "killedAfterLimit": false,
-   "seconds": 8.4,
-   "load1Start": 55.83,
+   "seconds": 8.2,
+   "load1Start": 37.84,
    "rows": [
     {
      "title": "daemon entry: every invocation but `dossier` is unchanged [\"--help\"] prints the usage and exits 0",
@@ -1143,8 +1143,8 @@
    },
    "exit": 1,
    "killedAfterLimit": false,
-   "seconds": 7.6,
-   "load1Start": 54.61,
+   "seconds": 6.0,
+   "load1Start": 36.6,
    "rows": [
     {
      "title": "daemon entry: every invocation but `dossier` is unchanged [\"--help\"] prints the usage and exits 0",
@@ -1219,7 +1219,7 @@
     {
      "title": "daemon entry: the one changed input, `dossier` as the first argument the daemon path never loads the POC app: each import is dynamic and inside the `dossier` or `polaris` branch",
      "status": "failed",
-     "failure": "AssertionError: expected [ \u2026(3) ] to deeply equal [ \u2026(2) ]\n    at /tmp/laneb-45r2/clone/packages/cap1-system/src/daemon-entry-unchanged.system.test.ts:217:22\n    at file:///tmp/laneb-45r2/clone/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///tmp/laneb-45r2/clone/node_modules/@v"
+     "failure": "AssertionError: expected [ \u2026(3) ] to deeply equal [ \u2026(2) ]\n    at /tmp/laneb-45r3/clone/packages/cap1-system/src/daemon-entry-unchanged.system.test.ts:217:22\n    at file:///tmp/laneb-45r3/clone/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///tmp/laneb-45r3/clone/node_modules/@v"
     }
    ],
    "failed": [
@@ -1238,8 +1238,8 @@
    },
    "exit": 1,
    "killedAfterLimit": false,
-   "seconds": 7.1,
-   "load1Start": 57.92,
+   "seconds": 5.6,
+   "load1Start": 35.77,
    "rows": [
     {
      "title": "daemon entry: every invocation but `dossier` is unchanged [\"--help\"] prints the usage and exits 0",
@@ -1314,7 +1314,7 @@
     {
      "title": "daemon entry: the one changed input, `dossier` as the first argument the daemon path never loads the POC app: each import is dynamic and inside the `dossier` or `polaris` branch",
      "status": "failed",
-     "failure": "AssertionError: expected [ \u2026(3) ] to deeply equal [ \u2026(2) ]\n    at /tmp/laneb-45r2/clone/packages/cap1-system/src/daemon-entry-unchanged.system.test.ts:217:22\n    at file:///tmp/laneb-45r2/clone/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///tmp/laneb-45r2/clone/node_modules/@v"
+     "failure": "AssertionError: expected [ \u2026(3) ] to deeply equal [ \u2026(2) ]\n    at /tmp/laneb-45r3/clone/packages/cap1-system/src/daemon-entry-unchanged.system.test.ts:217:22\n    at file:///tmp/laneb-45r3/clone/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///tmp/laneb-45r3/clone/node_modules/@v"
     }
    ],
    "failed": [
@@ -1333,8 +1333,8 @@
    },
    "exit": 1,
    "killedAfterLimit": false,
-   "seconds": 7.9,
-   "load1Start": 57.58,
+   "seconds": 6.4,
+   "load1Start": 35.94,
    "rows": [
     {
      "title": "daemon entry: every invocation but `dossier` is unchanged [\"--help\"] prints the usage and exits 0",
@@ -1409,7 +1409,7 @@
     {
      "title": "daemon entry: the one changed input, `dossier` as the first argument the daemon path never loads the POC app: each import is dynamic and inside the `dossier` or `polaris` branch",
      "status": "failed",
-     "failure": "AssertionError: expected [ \u2026(3) ] to deeply equal [ \u2026(2) ]\n    at /tmp/laneb-45r2/clone/packages/cap1-system/src/daemon-entry-unchanged.system.test.ts:217:22\n    at file:///tmp/laneb-45r2/clone/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///tmp/laneb-45r2/clone/node_modules/@v"
+     "failure": "AssertionError: expected [ \u2026(3) ] to deeply equal [ \u2026(2) ]\n    at /tmp/laneb-45r3/clone/packages/cap1-system/src/daemon-entry-unchanged.system.test.ts:217:22\n    at file:///tmp/laneb-45r3/clone/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///tmp/laneb-45r3/clone/node_modules/@v"
     }
    ],
    "failed": [
@@ -1428,8 +1428,8 @@
    },
    "exit": 1,
    "killedAfterLimit": false,
-   "seconds": 4.1,
-   "load1Start": 57.37,
+   "seconds": 5.5,
+   "load1Start": 37.14,
    "rows": [
     {
      "title": "daemon entry: every invocation but `dossier` is unchanged [\"--help\"] prints the usage and exits 0",
@@ -1504,7 +1504,7 @@
     {
      "title": "daemon entry: the one changed input, `dossier` as the first argument the daemon path never loads the POC app: each import is dynamic and inside the `dossier` or `polaris` branch",
      "status": "failed",
-     "failure": "AssertionError: expected [ \u2026(3) ] to deeply equal [ \u2026(2) ]\n    at /tmp/laneb-45r2/clone/packages/cap1-system/src/daemon-entry-unchanged.system.test.ts:217:22\n    at file:///tmp/laneb-45r2/clone/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///tmp/laneb-45r2/clone/node_modules/@v"
+     "failure": "AssertionError: expected [ \u2026(3) ] to deeply equal [ \u2026(2) ]\n    at /tmp/laneb-45r3/clone/packages/cap1-system/src/daemon-entry-unchanged.system.test.ts:217:22\n    at file:///tmp/laneb-45r3/clone/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///tmp/laneb-45r3/clone/node_modules/@v"
     }
    ],
    "failed": [
@@ -1523,8 +1523,8 @@
    },
    "exit": 1,
    "killedAfterLimit": false,
-   "seconds": 5.9,
-   "load1Start": 57.98,
+   "seconds": 4.9,
+   "load1Start": 35.08,
    "rows": [
     {
      "title": "daemon entry: every invocation but `dossier` is unchanged [\"--help\"] prints the usage and exits 0",
@@ -1599,7 +1599,7 @@
     {
      "title": "daemon entry: the one changed input, `dossier` as the first argument the daemon path never loads the POC app: each import is dynamic and inside the `dossier` or `polaris` branch",
      "status": "failed",
-     "failure": "AssertionError: expected [ \u2026(3) ] to deeply equal [ \u2026(2) ]\n    at /tmp/laneb-45r2/clone/packages/cap1-system/src/daemon-entry-unchanged.system.test.ts:217:22\n    at file:///tmp/laneb-45r2/clone/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///tmp/laneb-45r2/clone/node_modules/@v"
+     "failure": "AssertionError: expected [ \u2026(3) ] to deeply equal [ \u2026(2) ]\n    at /tmp/laneb-45r3/clone/packages/cap1-system/src/daemon-entry-unchanged.system.test.ts:217:22\n    at file:///tmp/laneb-45r3/clone/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///tmp/laneb-45r3/clone/node_modules/@v"
     }
    ],
    "failed": [
@@ -1619,7 +1619,7 @@
    "exit": 1,
    "killedAfterLimit": false,
    "seconds": 6.1,
-   "load1Start": 56.56,
+   "load1Start": 33.79,
    "rows": [
     {
      "title": "daemon entry: every invocation but `dossier` is unchanged [\"--help\"] prints the usage and exits 0",
@@ -1694,7 +1694,7 @@
     {
      "title": "daemon entry: the one changed input, `dossier` as the first argument the daemon path never loads the POC app: each import is dynamic and inside the `dossier` or `polaris` branch",
      "status": "failed",
-     "failure": "AssertionError: expected [ \u2026(2) ] to deeply equal [ \u2026(2) ]\n    at /tmp/laneb-45r2/clone/packages/cap1-system/src/daemon-entry-unchanged.system.test.ts:217:22\n    at file:///tmp/laneb-45r2/clone/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///tmp/laneb-45r2/clone/node_modules/@v"
+     "failure": "AssertionError: expected [ \u2026(2) ] to deeply equal [ \u2026(2) ]\n    at /tmp/laneb-45r3/clone/packages/cap1-system/src/daemon-entry-unchanged.system.test.ts:217:22\n    at file:///tmp/laneb-45r3/clone/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///tmp/laneb-45r3/clone/node_modules/@v"
     }
    ],
    "failed": [
@@ -1713,8 +1713,8 @@
    },
    "exit": 1,
    "killedAfterLimit": false,
-   "seconds": 4.6,
-   "load1Start": 56.11,
+   "seconds": 6.6,
+   "load1Start": 32.04,
    "rows": [
     {
      "title": "daemon entry: every invocation but `dossier` is unchanged [\"--help\"] prints the usage and exits 0",
@@ -1789,7 +1789,7 @@
     {
      "title": "daemon entry: the one changed input, `dossier` as the first argument the daemon path never loads the POC app: each import is dynamic and inside the `dossier` or `polaris` branch",
      "status": "failed",
-     "failure": "AssertionError: expected [ \u2026(3) ] to deeply equal [ \u2026(2) ]\n    at /tmp/laneb-45r2/clone/packages/cap1-system/src/daemon-entry-unchanged.system.test.ts:217:22\n    at file:///tmp/laneb-45r2/clone/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///tmp/laneb-45r2/clone/node_modules/@v"
+     "failure": "AssertionError: expected [ \u2026(3) ] to deeply equal [ \u2026(2) ]\n    at /tmp/laneb-45r3/clone/packages/cap1-system/src/daemon-entry-unchanged.system.test.ts:217:22\n    at file:///tmp/laneb-45r3/clone/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///tmp/laneb-45r3/clone/node_modules/@v"
     }
    ],
    "failed": [
@@ -1808,8 +1808,8 @@
    },
    "exit": 1,
    "killedAfterLimit": false,
-   "seconds": 5.0,
-   "load1Start": 53.17,
+   "seconds": 5.9,
+   "load1Start": 33.27,
    "rows": [
     {
      "title": "daemon entry: every invocation but `dossier` is unchanged [\"--help\"] prints the usage and exits 0",
@@ -1884,7 +1884,7 @@
     {
      "title": "daemon entry: the one changed input, `dossier` as the first argument the daemon path never loads the POC app: each import is dynamic and inside the `dossier` or `polaris` branch",
      "status": "failed",
-     "failure": "AssertionError: expected [ \u2026(3) ] to deeply equal [ \u2026(2) ]\n    at /tmp/laneb-45r2/clone/packages/cap1-system/src/daemon-entry-unchanged.system.test.ts:217:22\n    at file:///tmp/laneb-45r2/clone/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///tmp/laneb-45r2/clone/node_modules/@v"
+     "failure": "AssertionError: expected [ \u2026(3) ] to deeply equal [ \u2026(2) ]\n    at /tmp/laneb-45r3/clone/packages/cap1-system/src/daemon-entry-unchanged.system.test.ts:217:22\n    at file:///tmp/laneb-45r3/clone/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///tmp/laneb-45r3/clone/node_modules/@v"
     }
    ],
    "failed": [
@@ -1903,8 +1903,8 @@
    },
    "exit": 1,
    "killedAfterLimit": false,
-   "seconds": 7.6,
-   "load1Start": 55.88,
+   "seconds": 7.3,
+   "load1Start": 32.3,
    "rows": [
     {
      "title": "daemon entry: every invocation but `dossier` is unchanged [\"--help\"] prints the usage and exits 0",
@@ -1979,7 +1979,7 @@
     {
      "title": "daemon entry: the one changed input, `dossier` as the first argument the daemon path never loads the POC app: each import is dynamic and inside the `dossier` or `polaris` branch",
      "status": "failed",
-     "failure": "AssertionError: expected [ \u2026(3) ] to deeply equal [ \u2026(2) ]\n    at /tmp/laneb-45r2/clone/packages/cap1-system/src/daemon-entry-unchanged.system.test.ts:217:22\n    at file:///tmp/laneb-45r2/clone/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///tmp/laneb-45r2/clone/node_modules/@v"
+     "failure": "AssertionError: expected [ \u2026(3) ] to deeply equal [ \u2026(2) ]\n    at /tmp/laneb-45r3/clone/packages/cap1-system/src/daemon-entry-unchanged.system.test.ts:217:22\n    at file:///tmp/laneb-45r3/clone/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///tmp/laneb-45r3/clone/node_modules/@v"
     }
    ],
    "failed": [
@@ -1998,8 +1998,8 @@
    },
    "exit": 1,
    "killedAfterLimit": false,
-   "seconds": 8.4,
-   "load1Start": 55.82,
+   "seconds": 6.1,
+   "load1Start": 33.14,
    "rows": [
     {
      "title": "daemon entry: every invocation but `dossier` is unchanged [\"--help\"] prints the usage and exits 0",
@@ -2074,7 +2074,7 @@
     {
      "title": "daemon entry: the one changed input, `dossier` as the first argument the daemon path never loads the POC app: each import is dynamic and inside the `dossier` or `polaris` branch",
      "status": "failed",
-     "failure": "AssertionError: expected [ \u2026(3) ] to deeply equal [ \u2026(2) ]\n    at /tmp/laneb-45r2/clone/packages/cap1-system/src/daemon-entry-unchanged.system.test.ts:217:22\n    at file:///tmp/laneb-45r2/clone/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///tmp/laneb-45r2/clone/node_modules/@v"
+     "failure": "AssertionError: expected [ \u2026(3) ] to deeply equal [ \u2026(2) ]\n    at /tmp/laneb-45r3/clone/packages/cap1-system/src/daemon-entry-unchanged.system.test.ts:217:22\n    at file:///tmp/laneb-45r3/clone/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///tmp/laneb-45r3/clone/node_modules/@v"
     }
    ],
    "failed": [
@@ -2093,8 +2093,8 @@
    },
    "exit": 1,
    "killedAfterLimit": false,
-   "seconds": 11.8,
-   "load1Start": 55.08,
+   "seconds": 5.4,
+   "load1Start": 32.95,
    "rows": [
     {
      "title": "daemon entry: every invocation but `dossier` is unchanged [\"--help\"] prints the usage and exits 0",
@@ -2169,7 +2169,7 @@
     {
      "title": "daemon entry: the one changed input, `dossier` as the first argument the daemon path never loads the POC app: each import is dynamic and inside the `dossier` or `polaris` branch",
      "status": "failed",
-     "failure": "AssertionError: expected [ \u2026(3) ] to deeply equal [ \u2026(2) ]\n    at /tmp/laneb-45r2/clone/packages/cap1-system/src/daemon-entry-unchanged.system.test.ts:217:22\n    at file:///tmp/laneb-45r2/clone/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///tmp/laneb-45r2/clone/node_modules/@v"
+     "failure": "AssertionError: expected [ \u2026(3) ] to deeply equal [ \u2026(2) ]\n    at /tmp/laneb-45r3/clone/packages/cap1-system/src/daemon-entry-unchanged.system.test.ts:217:22\n    at file:///tmp/laneb-45r3/clone/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///tmp/laneb-45r3/clone/node_modules/@v"
     }
    ],
    "failed": [
@@ -2188,8 +2188,8 @@
    },
    "exit": 1,
    "killedAfterLimit": false,
-   "seconds": 7.9,
-   "load1Start": 58.16,
+   "seconds": 6.4,
+   "load1Start": 31.75,
    "rows": [
     {
      "title": "daemon entry: every invocation but `dossier` is unchanged [\"--help\"] prints the usage and exits 0",
@@ -2264,7 +2264,7 @@
     {
      "title": "daemon entry: the one changed input, `dossier` as the first argument the daemon path never loads the POC app: each import is dynamic and inside the `dossier` or `polaris` branch",
      "status": "failed",
-     "failure": "AssertionError: expected [ \u2026(3) ] to deeply equal [ \u2026(2) ]\n    at /tmp/laneb-45r2/clone/packages/cap1-system/src/daemon-entry-unchanged.system.test.ts:217:22\n    at file:///tmp/laneb-45r2/clone/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///tmp/laneb-45r2/clone/node_modules/@v"
+     "failure": "AssertionError: expected [ \u2026(3) ] to deeply equal [ \u2026(2) ]\n    at /tmp/laneb-45r3/clone/packages/cap1-system/src/daemon-entry-unchanged.system.test.ts:217:22\n    at file:///tmp/laneb-45r3/clone/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///tmp/laneb-45r3/clone/node_modules/@v"
     }
    ],
    "failed": [
@@ -2283,8 +2283,8 @@
    },
    "exit": 0,
    "killedAfterLimit": false,
-   "seconds": 9.9,
-   "load1Start": 60.2,
+   "seconds": 6.9,
+   "load1Start": 32.13,
    "rows": [
     {
      "title": "daemon entry: every invocation but `dossier` is unchanged [\"--help\"] prints the usage and exits 0",
@@ -2376,8 +2376,8 @@
    },
    "exit": 1,
    "killedAfterLimit": false,
-   "seconds": 7.8,
-   "load1Start": 62.41,
+   "seconds": 7.0,
+   "load1Start": 30.89,
    "rows": [
     {
      "title": "daemon entry: every invocation but `dossier` is unchanged [\"--help\"] prints the usage and exits 0",
@@ -2452,7 +2452,7 @@
     {
      "title": "daemon entry: the one changed input, `dossier` as the first argument the daemon path never loads the POC app: each import is dynamic and inside the `dossier` or `polaris` branch",
      "status": "failed",
-     "failure": "AssertionError: expected [ \u2026(3) ] to deeply equal [ \u2026(2) ]\n    at /tmp/laneb-45r2/clone/packages/cap1-system/src/daemon-entry-unchanged.system.test.ts:217:22\n    at file:///tmp/laneb-45r2/clone/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///tmp/laneb-45r2/clone/node_modules/@v"
+     "failure": "AssertionError: expected [ \u2026(3) ] to deeply equal [ \u2026(2) ]\n    at /tmp/laneb-45r3/clone/packages/cap1-system/src/daemon-entry-unchanged.system.test.ts:217:22\n    at file:///tmp/laneb-45r3/clone/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///tmp/laneb-45r3/clone/node_modules/@v"
     }
    ],
    "failed": [
@@ -2471,8 +2471,8 @@
    },
    "exit": 0,
    "killedAfterLimit": false,
-   "seconds": 7.5,
-   "load1Start": 64.46,
+   "seconds": 6.5,
+   "load1Start": 31.18,
    "rows": [
     {
      "title": "daemon entry: every invocation but `dossier` is unchanged [\"--help\"] prints the usage and exits 0",
@@ -2564,8 +2564,8 @@
    },
    "exit": 1,
    "killedAfterLimit": false,
-   "seconds": 7.7,
-   "load1Start": 61.43,
+   "seconds": 7.1,
+   "load1Start": 32.41,
    "rows": [
     {
      "title": "daemon entry: every invocation but `dossier` is unchanged [\"--help\"] prints the usage and exits 0",
@@ -2640,7 +2640,7 @@
     {
      "title": "daemon entry: the one changed input, `dossier` as the first argument the daemon path never loads the POC app: each import is dynamic and inside the `dossier` or `polaris` branch",
      "status": "failed",
-     "failure": "AssertionError: expected [ \u2026(2) ] to deeply equal [ \u2026(2) ]\n    at /tmp/laneb-45r2/clone/packages/cap1-system/src/daemon-entry-unchanged.system.test.ts:217:22\n    at file:///tmp/laneb-45r2/clone/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///tmp/laneb-45r2/clone/node_modules/@v"
+     "failure": "AssertionError: expected [ \u2026(2) ] to deeply equal [ \u2026(2) ]\n    at /tmp/laneb-45r3/clone/packages/cap1-system/src/daemon-entry-unchanged.system.test.ts:217:22\n    at file:///tmp/laneb-45r3/clone/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///tmp/laneb-45r3/clone/node_modules/@v"
     }
    ],
    "failed": [
@@ -2659,8 +2659,8 @@
    },
    "exit": 1,
    "killedAfterLimit": false,
-   "seconds": 8.0,
-   "load1Start": 60.43,
+   "seconds": 7.0,
+   "load1Start": 32.62,
    "rows": [
     {
      "title": "daemon entry: every invocation but `dossier` is unchanged [\"--help\"] prints the usage and exits 0",
@@ -2735,7 +2735,482 @@
     {
      "title": "daemon entry: the one changed input, `dossier` as the first argument the daemon path never loads the POC app: each import is dynamic and inside the `dossier` or `polaris` branch",
      "status": "failed",
-     "failure": "AssertionError: expected [ \u2026(2) ] to deeply equal [ \u2026(2) ]\n    at /tmp/laneb-45r2/clone/packages/cap1-system/src/daemon-entry-unchanged.system.test.ts:217:22\n    at file:///tmp/laneb-45r2/clone/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///tmp/laneb-45r2/clone/node_modules/@v"
+     "failure": "AssertionError: expected [ \u2026(2) ] to deeply equal [ \u2026(2) ]\n    at /tmp/laneb-45r3/clone/packages/cap1-system/src/daemon-entry-unchanged.system.test.ts:217:22\n    at file:///tmp/laneb-45r3/clone/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///tmp/laneb-45r3/clone/node_modules/@v"
+    }
+   ],
+   "failed": [
+    "daemon entry: the one changed input, `dossier` as the first argument the daemon path never loads the POC app: each import is dynamic and inside the `dossier` or `polaris` branch"
+   ],
+   "passed": 14
+  },
+  {
+   "mutant": {
+    "id": "Y1-dossier-serve-falls-through",
+    "kind": "defect",
+    "file": "apps/syzygy/src/main.ts",
+    "old": "    return runDossierCli(argv.slice(1), {\n",
+    "new": "    if (argv[1] === 'serve') {\n      // `syzygy dossier serve \u2026` serves the daemon below, with the renderer loaded for its routes.\n      await import('@syzygy/three-surface-poc-app/dossier-site');\n      process.argv.splice(2, 2);\n    } else return runDossierCli(argv.slice(1), {\n",
+    "note": "a missing `return`: `dossier serve` loads the app in the dossier then-block, drops its two words from process.argv and falls through to the daemon path"
+   },
+   "exit": 1,
+   "killedAfterLimit": false,
+   "seconds": 6.6,
+   "load1Start": 34.29,
+   "rows": [
+    {
+     "title": "daemon entry: every invocation but `dossier` is unchanged [\"--help\"] prints the usage and exits 0",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: every invocation but `dossier` is unchanged [\"-h\"] prints the usage and exits 0",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: every invocation but `dossier` is unchanged [\"--help\",\"dossier\"] prints the usage and exits 0",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: every invocation but `dossier` is unchanged [\"--bogus\"] is refused with exit 1 and the same message",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: every invocation but `dossier` is unchanged [\"--port\",\"0\",\"dossier\"] is refused with exit 1 and the same message",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: every invocation but `dossier` is unchanged [\"Dossier\"] is refused with exit 1 and the same message",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: every invocation but `dossier` is unchanged [\"--port\"] is refused with exit 1 and the same message",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: every invocation but `dossier` is unchanged [\"--port\",\"70000\"] is refused with exit 1 and the same message",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: every invocation but `dossier` is unchanged a state directory inside the governed plane is refused with the same message",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: every invocation but `dossier` is unchanged with no arguments it serves from the working directory, writes the same state and shuts down the same way",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: every invocation but `dossier` is unchanged with explicit flags it serves, writes the same state and shuts down the same way",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: the one changed input, `dossier` as the first argument `dossier` alone is a dossier usage error (exit 2), not the daemon's refusal",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: the one changed input, `dossier` as the first argument `dossier status <missing>` is a dossier refusal (exit 1) and starts no daemon",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: the one changed input, `dossier` as the first argument `dossier render <missing>` reaches the run with the renderer injected, and starts no daemon",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: the one changed input, `dossier` as the first argument the daemon path never loads the POC app: each import is dynamic and inside the `dossier` or `polaris` branch",
+     "status": "failed",
+     "failure": "AssertionError: expected [ \u2026(3) ] to deeply equal [ \u2026(2) ]\n    at /tmp/laneb-45r3/clone/packages/cap1-system/src/daemon-entry-unchanged.system.test.ts:217:22\n    at file:///tmp/laneb-45r3/clone/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///tmp/laneb-45r3/clone/node_modules/@v"
+    }
+   ],
+   "failed": [
+    "daemon entry: the one changed input, `dossier` as the first argument the daemon path never loads the POC app: each import is dynamic and inside the `dossier` or `polaris` branch"
+   ],
+   "passed": 14
+  },
+  {
+   "mutant": {
+    "id": "Y2-dossier-serve-reenters-main",
+    "kind": "defect",
+    "file": "apps/syzygy/src/main.ts",
+    "old": "  if (argv[0] === 'dossier') {\n",
+    "new": "  if (argv[0] === 'dossier') {\n    if (argv[1] === 'serve') {\n      // `syzygy dossier serve \u2026`: load the renderer, then serve the daemon with the rest of argv.\n      await import('@syzygy/three-surface-poc-app/dossier-site');\n      process.argv.splice(2, 2);\n      return main();\n    }\n",
+    "note": "the then-block returns, but through `return main()` after loading the app, so the daemon path runs in the same process"
+   },
+   "exit": 1,
+   "killedAfterLimit": false,
+   "seconds": 8.7,
+   "load1Start": 35.12,
+   "rows": [
+    {
+     "title": "daemon entry: every invocation but `dossier` is unchanged [\"--help\"] prints the usage and exits 0",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: every invocation but `dossier` is unchanged [\"-h\"] prints the usage and exits 0",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: every invocation but `dossier` is unchanged [\"--help\",\"dossier\"] prints the usage and exits 0",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: every invocation but `dossier` is unchanged [\"--bogus\"] is refused with exit 1 and the same message",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: every invocation but `dossier` is unchanged [\"--port\",\"0\",\"dossier\"] is refused with exit 1 and the same message",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: every invocation but `dossier` is unchanged [\"Dossier\"] is refused with exit 1 and the same message",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: every invocation but `dossier` is unchanged [\"--port\"] is refused with exit 1 and the same message",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: every invocation but `dossier` is unchanged [\"--port\",\"70000\"] is refused with exit 1 and the same message",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: every invocation but `dossier` is unchanged a state directory inside the governed plane is refused with the same message",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: every invocation but `dossier` is unchanged with no arguments it serves from the working directory, writes the same state and shuts down the same way",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: every invocation but `dossier` is unchanged with explicit flags it serves, writes the same state and shuts down the same way",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: the one changed input, `dossier` as the first argument `dossier` alone is a dossier usage error (exit 2), not the daemon's refusal",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: the one changed input, `dossier` as the first argument `dossier status <missing>` is a dossier refusal (exit 1) and starts no daemon",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: the one changed input, `dossier` as the first argument `dossier render <missing>` reaches the run with the renderer injected, and starts no daemon",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: the one changed input, `dossier` as the first argument the daemon path never loads the POC app: each import is dynamic and inside the `dossier` or `polaris` branch",
+     "status": "failed",
+     "failure": "AssertionError: expected [ \u2026(3) ] to deeply equal [ \u2026(2) ]\n    at /tmp/laneb-45r3/clone/packages/cap1-system/src/daemon-entry-unchanged.system.test.ts:217:22\n    at file:///tmp/laneb-45r3/clone/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///tmp/laneb-45r3/clone/node_modules/@v"
+    }
+   ],
+   "failed": [
+    "daemon entry: the one changed input, `dossier` as the first argument the daemon path never loads the POC app: each import is dynamic and inside the `dossier` or `polaris` branch"
+   ],
+   "passed": 14
+  },
+  {
+   "mutant": {
+    "id": "Y3-flag-rewrites-argv-into-dossier",
+    "kind": "defect",
+    "file": "apps/syzygy/src/main.ts",
+    "old": "  const argv = process.argv.slice(2);\n  if (argv[0] === 'dossier') {\n",
+    "new": "  const argv = process.env.SYZYGY_PRELOAD_RENDERER === '1' ? ['dossier', '--preload'] : process.argv.slice(2);\n  if (argv[0] === 'dossier') {\n    if (argv[1] === '--preload') {\n      // SYZYGY_PRELOAD_RENDERER=1 warms the renderer, then serves the daemon as asked.\n      await import('@syzygy/three-surface-poc-app/dossier-site');\n      delete process.env.SYZYGY_PRELOAD_RENDERER;\n      return main();\n    }\n",
+    "note": "a rewritten argv: with the flag set, a plain daemon invocation enters the dossier then-block, loads the app and re-enters main() as the daemon"
+   },
+   "exit": 1,
+   "killedAfterLimit": false,
+   "seconds": 7.1,
+   "load1Start": 36.39,
+   "rows": [
+    {
+     "title": "daemon entry: every invocation but `dossier` is unchanged [\"--help\"] prints the usage and exits 0",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: every invocation but `dossier` is unchanged [\"-h\"] prints the usage and exits 0",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: every invocation but `dossier` is unchanged [\"--help\",\"dossier\"] prints the usage and exits 0",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: every invocation but `dossier` is unchanged [\"--bogus\"] is refused with exit 1 and the same message",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: every invocation but `dossier` is unchanged [\"--port\",\"0\",\"dossier\"] is refused with exit 1 and the same message",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: every invocation but `dossier` is unchanged [\"Dossier\"] is refused with exit 1 and the same message",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: every invocation but `dossier` is unchanged [\"--port\"] is refused with exit 1 and the same message",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: every invocation but `dossier` is unchanged [\"--port\",\"70000\"] is refused with exit 1 and the same message",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: every invocation but `dossier` is unchanged a state directory inside the governed plane is refused with the same message",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: every invocation but `dossier` is unchanged with no arguments it serves from the working directory, writes the same state and shuts down the same way",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: every invocation but `dossier` is unchanged with explicit flags it serves, writes the same state and shuts down the same way",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: the one changed input, `dossier` as the first argument `dossier` alone is a dossier usage error (exit 2), not the daemon's refusal",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: the one changed input, `dossier` as the first argument `dossier status <missing>` is a dossier refusal (exit 1) and starts no daemon",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: the one changed input, `dossier` as the first argument `dossier render <missing>` reaches the run with the renderer injected, and starts no daemon",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: the one changed input, `dossier` as the first argument the daemon path never loads the POC app: each import is dynamic and inside the `dossier` or `polaris` branch",
+     "status": "failed",
+     "failure": "AssertionError: expected [ \u2026(3) ] to deeply equal [ \u2026(2) ]\n    at /tmp/laneb-45r3/clone/packages/cap1-system/src/daemon-entry-unchanged.system.test.ts:217:22\n    at file:///tmp/laneb-45r3/clone/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///tmp/laneb-45r3/clone/node_modules/@v"
+    }
+   ],
+   "failed": [
+    "daemon entry: the one changed input, `dossier` as the first argument the daemon path never loads the POC app: each import is dynamic and inside the `dossier` or `polaris` branch"
+   ],
+   "passed": 14
+  },
+  {
+   "mutant": {
+    "id": "Y4-polaris-labelled-break",
+    "kind": "defect",
+    "file": "apps/syzygy/src/main.ts",
+    "old": "    const { runPolarisCli } = await import('@syzygy/polaris-dossier');\n    const { renderLocalDossier } = await import('@syzygy/three-surface-poc-app/dossier-site');\n    return runPolarisCli(argv.slice(1), { renderer: renderLocalDossier });\n  }\n",
+    "new": "    polaris: {\n      if (argv[1] === '--serve') {\n        // `syzygy polaris --serve \u2026`: the daemon below, with the renderer loaded for its routes.\n        await import('@syzygy/three-surface-poc-app/dossier-site');\n        process.argv.splice(2, 2);\n        break polaris;\n      }\n      const { runPolarisCli } = await import('@syzygy/polaris-dossier');\n      const { renderLocalDossier } = await import('@syzygy/three-surface-poc-app/dossier-site');\n      return runPolarisCli(argv.slice(1), { renderer: renderLocalDossier });\n    }\n  }\n",
+    "note": "a nested labelled block in the polaris then-block: `break` leaves the branch after loading the app, and control falls through to the daemon path"
+   },
+   "exit": 1,
+   "killedAfterLimit": false,
+   "seconds": 7.4,
+   "load1Start": 37.51,
+   "rows": [
+    {
+     "title": "daemon entry: every invocation but `dossier` is unchanged [\"--help\"] prints the usage and exits 0",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: every invocation but `dossier` is unchanged [\"-h\"] prints the usage and exits 0",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: every invocation but `dossier` is unchanged [\"--help\",\"dossier\"] prints the usage and exits 0",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: every invocation but `dossier` is unchanged [\"--bogus\"] is refused with exit 1 and the same message",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: every invocation but `dossier` is unchanged [\"--port\",\"0\",\"dossier\"] is refused with exit 1 and the same message",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: every invocation but `dossier` is unchanged [\"Dossier\"] is refused with exit 1 and the same message",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: every invocation but `dossier` is unchanged [\"--port\"] is refused with exit 1 and the same message",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: every invocation but `dossier` is unchanged [\"--port\",\"70000\"] is refused with exit 1 and the same message",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: every invocation but `dossier` is unchanged a state directory inside the governed plane is refused with the same message",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: every invocation but `dossier` is unchanged with no arguments it serves from the working directory, writes the same state and shuts down the same way",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: every invocation but `dossier` is unchanged with explicit flags it serves, writes the same state and shuts down the same way",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: the one changed input, `dossier` as the first argument `dossier` alone is a dossier usage error (exit 2), not the daemon's refusal",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: the one changed input, `dossier` as the first argument `dossier status <missing>` is a dossier refusal (exit 1) and starts no daemon",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: the one changed input, `dossier` as the first argument `dossier render <missing>` reaches the run with the renderer injected, and starts no daemon",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: the one changed input, `dossier` as the first argument the daemon path never loads the POC app: each import is dynamic and inside the `dossier` or `polaris` branch",
+     "status": "failed",
+     "failure": "AssertionError: expected [ \u2026(3) ] to deeply equal [ \u2026(2) ]\n    at /tmp/laneb-45r3/clone/packages/cap1-system/src/daemon-entry-unchanged.system.test.ts:217:22\n    at file:///tmp/laneb-45r3/clone/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///tmp/laneb-45r3/clone/node_modules/@v"
+    }
+   ],
+   "failed": [
+    "daemon entry: the one changed input, `dossier` as the first argument the daemon path never loads the POC app: each import is dynamic and inside the `dossier` or `polaris` branch"
+   ],
+   "passed": 14
+  },
+  {
+   "mutant": {
+    "id": "Y5-dossier-serve-callback-after-branch",
+    "kind": "defect",
+    "file": "apps/syzygy/src/main.ts",
+    "old": "    return runDossierCli(argv.slice(1), {\n",
+    "new": "    if (argv[1] === 'serve') {\n      // `syzygy dossier serve \u2026` serves the daemon below; the renderer loads once it is up.\n      setImmediate(() => void import('@syzygy/three-surface-poc-app/dossier-site'));\n      process.argv.splice(2, 2);\n    } else return runDossierCli(argv.slice(1), {\n",
+    "note": "a callback scheduled in the dossier then-block that runs after the branch, while the daemon starts"
+   },
+   "exit": 1,
+   "killedAfterLimit": false,
+   "seconds": 7.5,
+   "load1Start": 39.88,
+   "rows": [
+    {
+     "title": "daemon entry: every invocation but `dossier` is unchanged [\"--help\"] prints the usage and exits 0",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: every invocation but `dossier` is unchanged [\"-h\"] prints the usage and exits 0",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: every invocation but `dossier` is unchanged [\"--help\",\"dossier\"] prints the usage and exits 0",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: every invocation but `dossier` is unchanged [\"--bogus\"] is refused with exit 1 and the same message",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: every invocation but `dossier` is unchanged [\"--port\",\"0\",\"dossier\"] is refused with exit 1 and the same message",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: every invocation but `dossier` is unchanged [\"Dossier\"] is refused with exit 1 and the same message",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: every invocation but `dossier` is unchanged [\"--port\"] is refused with exit 1 and the same message",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: every invocation but `dossier` is unchanged [\"--port\",\"70000\"] is refused with exit 1 and the same message",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: every invocation but `dossier` is unchanged a state directory inside the governed plane is refused with the same message",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: every invocation but `dossier` is unchanged with no arguments it serves from the working directory, writes the same state and shuts down the same way",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: every invocation but `dossier` is unchanged with explicit flags it serves, writes the same state and shuts down the same way",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: the one changed input, `dossier` as the first argument `dossier` alone is a dossier usage error (exit 2), not the daemon's refusal",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: the one changed input, `dossier` as the first argument `dossier status <missing>` is a dossier refusal (exit 1) and starts no daemon",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: the one changed input, `dossier` as the first argument `dossier render <missing>` reaches the run with the renderer injected, and starts no daemon",
+     "status": "passed",
+     "failure": ""
+    },
+    {
+     "title": "daemon entry: the one changed input, `dossier` as the first argument the daemon path never loads the POC app: each import is dynamic and inside the `dossier` or `polaris` branch",
+     "status": "failed",
+     "failure": "AssertionError: expected [ \u2026(3) ] to deeply equal [ \u2026(2) ]\n    at /tmp/laneb-45r3/clone/packages/cap1-system/src/daemon-entry-unchanged.system.test.ts:217:22\n    at file:///tmp/laneb-45r3/clone/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///tmp/laneb-45r3/clone/node_modules/@v"
     }
    ],
    "failed": [
@@ -2754,8 +3229,8 @@
    },
    "exit": 1,
    "killedAfterLimit": false,
-   "seconds": 5.3,
-   "load1Start": 59.77,
+   "seconds": 8.1,
+   "load1Start": 40.07,
    "rows": [
     {
      "title": "daemon entry: every invocation but `dossier` is unchanged [\"--help\"] prints the usage and exits 0",
@@ -2830,7 +3305,7 @@
     {
      "title": "daemon entry: the one changed input, `dossier` as the first argument the daemon path never loads the POC app: each import is dynamic and inside the `dossier` or `polaris` branch",
      "status": "failed",
-     "failure": "AssertionError: expected 7481 to be greater than 7758\n    at /tmp/laneb-45r2/clone/packages/cap1-system/src/daemon-entry-unchanged.system.test.ts:222:21\n    at file:///tmp/laneb-45r2/clone/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///tmp/laneb-45r2/clone/node_modules/@vitest"
+     "failure": "AssertionError: expected 7481 to be greater than 7758\n    at /tmp/laneb-45r3/clone/packages/cap1-system/src/daemon-entry-unchanged.system.test.ts:222:21\n    at file:///tmp/laneb-45r3/clone/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///tmp/laneb-45r3/clone/node_modules/@vitest"
     }
    ],
    "failed": [

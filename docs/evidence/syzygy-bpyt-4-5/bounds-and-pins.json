@@ -1,10 +1,10 @@
 {
- "schema": "syzygy-bpyt-4-5-bounds-and-pins/2",
+ "schema": "syzygy-bpyt-4-5-bounds-and-pins/3",
  "bead": "syzygy-bpyt.4.5",
  "subject": {
   "base": "c104771ff90f47ffd070f2339c36010458679c71",
   "main": "d38d7a3ce632a34c2a41bdb77ad323ba0b05b777",
-  "evidenceCommit": "2b56a253f81bb4e6d71b46556f0d675a07dfb7c2",
+  "evidenceCommit": "ba9d990a2b80b9aa5b3d78801b938280ee9988d7",
   "testFiles": [
    {
     "path": "apps/three-surface-poc/src/capture-test-artifact-main.test.ts",
@@ -24,7 +24,7 @@
    },
    {
     "path": "packages/cap1-system/src/daemon-entry-unchanged.system.test.ts",
-    "sha256": "97a02eba0337e5e6a73db3ab605dbf8e0e3a5b4f21e39310edca3f699c232e26"
+    "sha256": "a05821cb1115018c7a92f38b50709f99a9bad344805760da8c5a70a416cb02bd"
    },
    {
     "path": "packages/polaris-dossier/src/git-object-reader.test.ts",
@@ -47,24 +47,55 @@
     "sha256": "b3b4cd4e4467a4d65542f222116de2d68dccb1556c3e25864e1ae78179f11b4b"
    }
   ],
-  "testDiffSha256": "ba2c4091a8f7917cb3e0da6ec515fb370f3497e69fe1e3bf056b310797249f72",
+  "testDiffSha256": "4903d2370d178e5357df683d664299627e3bc9ef8e9aeeeeb8caa785c3f1a9d0",
   "note": "The test files are the subject; no product file differs between base and the evidence commit."
+ },
+ "mainMovedSince": {
+  "laterMain": "d621bfa267f24ff68f6f83ac7bfba44b81a32a34",
+  "paths": [
+   {
+    "path": "apps/three-surface-poc/src/main.test.ts",
+    "commits": [
+     "3fa4817c8ad02e8b8579d0f20ccc7d59e5738499 test: reach the host through @syzygy/http-host in the POC tests, and drop the POC's cap1-daemon edge [syzygy-bpyt.7.15]"
+    ]
+   },
+   {
+    "path": "packages/http-host/src/shutdown.ts",
+    "commits": [
+     "adf908c6c30c322766ee0a1d5841b920579c43d5 docs: describe the generic host in server.ts, and say why only shutdown is shared [syzygy-bpyt.7.15]"
+    ]
+   },
+   {
+    "path": "packages/polaris-generation-core/src/dossier-evaluation.test.ts",
+    "commits": [
+     "b214ef1015c134dbc821c4f4dec654a16314c354 test: pin the digest and freeze predicates the support-leaf lane's tools caught and the suite missed [syzygy-bpyt.6.13]"
+    ]
+   },
+   {
+    "path": "packages/polaris-generation-core/src/dossier-profile.test.ts",
+    "commits": [
+     "b214ef1015c134dbc821c4f4dec654a16314c354 test: pin the digest and freeze predicates the support-leaf lane's tools caught and the suite missed [syzygy-bpyt.6.13]"
+    ]
+   }
+  ],
+  "over": "the change's files and the daemon-entry runs' bound inputs (main.ts, state-directory.ts, shutdown.ts, the daemon-entry test)",
+  "note": "The subject stays MAIN_COMMIT: no result here re-ran against laterMain, and the base side was not re-run, so build_record with laterMain as MAIN refuses where a listed path is one of the change's files."
  },
  "productFilesChanged": [],
  "resultsRanAt": {
-  "mutants": "2b56a253f81bb4e6d71b46556f0d675a07dfb7c2",
-  "censusHead": "2b56a253f81bb4e6d71b46556f0d675a07dfb7c2",
-  "daemonEntryHead": "2b56a253f81bb4e6d71b46556f0d675a07dfb7c2",
-  "daemonEntryOldTest": "2b56a253f81bb4e6d71b46556f0d675a07dfb7c2",
-  "daemonEntryPriorTest": "2b56a253f81bb4e6d71b46556f0d675a07dfb7c2",
-  "daemonEntryRoundOneTest": "2b56a253f81bb4e6d71b46556f0d675a07dfb7c2",
+  "mutants": "ba9d990a2b80b9aa5b3d78801b938280ee9988d7",
+  "censusHead": "ba9d990a2b80b9aa5b3d78801b938280ee9988d7",
+  "daemonEntryHead": "ba9d990a2b80b9aa5b3d78801b938280ee9988d7",
+  "daemonEntryOldTest": "ba9d990a2b80b9aa5b3d78801b938280ee9988d7",
+  "daemonEntryPriorTest": "ba9d990a2b80b9aa5b3d78801b938280ee9988d7",
+  "daemonEntryRoundOneTest": "ba9d990a2b80b9aa5b3d78801b938280ee9988d7",
   "cpuSeparation": "722231fe0365eccd0239fb63edee92e7c5239531",
   "cpuSeparationNode22": "bb5df68080b00a08557f64156c9bf3b4d9d25ed4"
  },
  "files": [
   {
    "path": "docs/evidence/syzygy-bpyt-4-5/bound-and-pin-mutants.json",
-   "sha256": "6126bb9f5e2fdfdcfbab427b4fcdefbbc2113d0589bdfc5fe08f7d4c5b2aa1b8"
+   "sha256": "20246330b5d1f02b98b2e0db778e0f95b0affc274e100baba51060e1341d5675"
   },
   {
    "path": "docs/evidence/syzygy-bpyt-4-5/build-record-mutants.json",
@@ -76,7 +107,7 @@
   },
   {
    "path": "docs/evidence/syzygy-bpyt-4-5/census-head.json",
-   "sha256": "6a275dd6683aaadce099b7cb7a623cb0c168f9a24eb08a5c85baa89ecad7927d"
+   "sha256": "5e0b3a0c3a04438d0819c199460e8dedb5b78ae0041f3b3cfa62bbfe805ca2a4"
   },
   {
    "path": "docs/evidence/syzygy-bpyt-4-5/cpu-separation-node22.json",
@@ -88,19 +119,19 @@
   },
   {
    "path": "docs/evidence/syzygy-bpyt-4-5/daemon-entry-base-test.json",
-   "sha256": "4fc7074723826455716e8c77ab422560ad189dd836128accd5baf22fda8d114f"
+   "sha256": "94c37d5aa50ba91548613e3ba4d26275d63a390d1d9a56e988b64c11d11744e6"
   },
   {
    "path": "docs/evidence/syzygy-bpyt-4-5/daemon-entry-head.json",
-   "sha256": "3ff57c0ac117999c15fde82eac17ed64cb951712c367be8582014683bf822329"
+   "sha256": "0f74714483187e7c874611f197320410a8e2dab52751a031b2aa16637c8fcbbb"
   },
   {
    "path": "docs/evidence/syzygy-bpyt-4-5/daemon-entry-prior-test.json",
-   "sha256": "4a6cc0d6cc583be5e0aba9efbe13a976652aee57bbf60c528f128ab8ab9526c5"
+   "sha256": "66d145ae6ca9bf5cd9220a6662d6ae163295f718d8fcd6282df9d505f591df11"
   },
   {
    "path": "docs/evidence/syzygy-bpyt-4-5/daemon-entry-round1-test.json",
-   "sha256": "511c18fd2d602425f465653fd608b29e7158271408baf66a1bfc20c7ac1e1d5c"
+   "sha256": "7bb64966f6e99d90eacd15b3a9565934329925275a56ddaea7c93f9cabd6a483"
   },
   {
    "path": "docs/evidence/syzygy-bpyt-4-5/durations/dossier-profile.json",
@@ -139,16 +170,20 @@
    "sha256": "1006b288d4565608149eb1b93743c4710df408b1ec38d06674878da22ca9062c"
   },
   {
+   "path": "docs/evidence/syzygy-bpyt-4-5/full-suite/attempt-7.json",
+   "sha256": "e45bde7f7297f3f38e4fb7ec86fb068e3227f4f8efb13469dade7f0a34d562a8"
+  },
+  {
    "path": "docs/evidence/syzygy-bpyt-4-5/tools/bound_and_pin_mutants.py",
    "sha256": "c496ba4072b31347e2f7c3ac9d58efd750a4fa2f71cc3a188c8c05167980ff47"
   },
   {
    "path": "docs/evidence/syzygy-bpyt-4-5/tools/build_record.py",
-   "sha256": "c96019b66f4da95382cdd0a5cf99124aa36c0a3ce78cd6cce304a05deb09e8e7"
+   "sha256": "5d38450172e54475d36d2543dc136393cd879d6f1647093d2610cc199cc0cf1c"
   },
   {
    "path": "docs/evidence/syzygy-bpyt-4-5/tools/build_record_mutants.py",
-   "sha256": "2c2719049b7060f27573deff60b12c4a641206b46adb38644f15ee268cc042a3"
+   "sha256": "0cd76a110d67a381f71032d2c4ad22380135352bbb063575734ecbf691f4276a"
   },
   {
    "path": "docs/evidence/syzygy-bpyt-4-5/tools/cpu_separation.py",
@@ -156,7 +191,7 @@
   },
   {
    "path": "docs/evidence/syzygy-bpyt-4-5/tools/daemon_entry_probe.py",
-   "sha256": "993367c2c3e822ea00c13d1243dda8de20c4de40e59f00710480e1b4cedd84e7"
+   "sha256": "67978df49b5f825821a9ef759c7eeae434982991be7313af2dd04737e858f803"
   },
   {
    "path": "docs/evidence/syzygy-bpyt-4-5/tools/emit_equal.mjs",
@@ -254,28 +289,28 @@
    "regex": "hrtime|performance\\.now\\(\\)|Date\\.now\\(\\) *-|elapsed|getTime\\(\\) *-|[cC]puUsage",
    "over": "apps/*.test.* and packages/*.test.* at the evidence commit, git grep -E",
    "lines": [
-    "2b56a253f81bb4e6d71b46556f0d675a07dfb7c2:apps/three-surface-poc/src/capture-test-artifact-main.test.ts:379:    // The message names the lstat refusal, made before any open. No elapsed-time bound: a blocking open never",
-    "2b56a253f81bb4e6d71b46556f0d675a07dfb7c2:packages/polaris-dossier/src/status.test.ts:111:    expect(before.ok && before.report.limitsSpent.deadline).toBe('PT3H from the brief, ending at 2026-10-07T13:00:00.000Z on Syzygy\\'s clock; elapsed time not recorded');",
-    "2b56a253f81bb4e6d71b46556f0d675a07dfb7c2:packages/polaris-dossier/src/status.test.ts:115:    expect(after.ok && after.report.limitsSpent.deadline).toBe('PT3H from the brief, ended at 2026-10-07T13:00:00.000Z on Syzygy\\'s clock; elapsed time not recorded');",
-    "2b56a253f81bb4e6d71b46556f0d675a07dfb7c2:packages/polaris-generation-core/src/dossier-profile.test.ts:13:/** CPU time so far: this thread's (`process.threadCpuUsage`, Node 23.9 and later) or, where `process.threadCpuUsage` is absent",
-    "2b56a253f81bb4e6d71b46556f0d675a07dfb7c2:packages/polaris-generation-core/src/dossier-profile.test.ts:14: * (Node before 23.9), the whole process's (`process.cpuUsage`), which also counts the worker's other threads; each bound keeps",
-    "2b56a253f81bb4e6d71b46556f0d675a07dfb7c2:packages/polaris-generation-core/src/dossier-profile.test.ts:16:const cpuUsage = (from?: NodeJS.CpuUsage): NodeJS.CpuUsage =>",
-    "2b56a253f81bb4e6d71b46556f0d675a07dfb7c2:packages/polaris-generation-core/src/dossier-profile.test.ts:17:  (typeof process.threadCpuUsage === 'function' ? process.threadCpuUsage(from) : process.cpuUsage(from));",
-    "2b56a253f81bb4e6d71b46556f0d675a07dfb7c2:packages/polaris-generation-core/src/dossier-profile.test.ts:19:const cpuMsSince = (from: NodeJS.CpuUsage): number => { const { user, system } = cpuUsage(from); return (user + system) / 1000; };",
-    "2b56a253f81bb4e6d71b46556f0d675a07dfb7c2:packages/polaris-generation-core/src/dossier-profile.test.ts:175:    const cpu = cpuUsage();",
-    "2b56a253f81bb4e6d71b46556f0d675a07dfb7c2:packages/polaris-generation-core/src/excerpt.test.ts:6:/** CPU time so far: this thread's (`process.threadCpuUsage`, Node 23.9 and later) or, where `process.threadCpuUsage` is absent",
-    "2b56a253f81bb4e6d71b46556f0d675a07dfb7c2:packages/polaris-generation-core/src/excerpt.test.ts:7: * (Node before 23.9), the whole process's (`process.cpuUsage`), which also counts the worker's other threads; each bound keeps",
-    "2b56a253f81bb4e6d71b46556f0d675a07dfb7c2:packages/polaris-generation-core/src/excerpt.test.ts:9:const cpuUsage = (from?: NodeJS.CpuUsage): NodeJS.CpuUsage =>",
-    "2b56a253f81bb4e6d71b46556f0d675a07dfb7c2:packages/polaris-generation-core/src/excerpt.test.ts:10:  (typeof process.threadCpuUsage === 'function' ? process.threadCpuUsage(from) : process.cpuUsage(from));",
-    "2b56a253f81bb4e6d71b46556f0d675a07dfb7c2:packages/polaris-generation-core/src/excerpt.test.ts:12:const cpuMsSince = (from: NodeJS.CpuUsage): number => { const { user, system } = cpuUsage(from); return (user + system) / 1000; };",
-    "2b56a253f81bb4e6d71b46556f0d675a07dfb7c2:packages/polaris-generation-core/src/excerpt.test.ts:271:      const cpu = cpuUsage();",
-    "2b56a253f81bb4e6d71b46556f0d675a07dfb7c2:packages/three-surface-poc-core/src/test-artifact-verification.test.ts:23:/** CPU time so far: this thread's (`process.threadCpuUsage`, Node 23.9 and later) or, where `process.threadCpuUsage` is absent",
-    "2b56a253f81bb4e6d71b46556f0d675a07dfb7c2:packages/three-surface-poc-core/src/test-artifact-verification.test.ts:24: * (Node before 23.9), the whole process's (`process.cpuUsage`), which also counts the worker's other threads; each bound keeps",
-    "2b56a253f81bb4e6d71b46556f0d675a07dfb7c2:packages/three-surface-poc-core/src/test-artifact-verification.test.ts:26:const cpuUsage = (from?: NodeJS.CpuUsage): NodeJS.CpuUsage =>",
-    "2b56a253f81bb4e6d71b46556f0d675a07dfb7c2:packages/three-surface-poc-core/src/test-artifact-verification.test.ts:27:  (typeof process.threadCpuUsage === 'function' ? process.threadCpuUsage(from) : process.cpuUsage(from));",
-    "2b56a253f81bb4e6d71b46556f0d675a07dfb7c2:packages/three-surface-poc-core/src/test-artifact-verification.test.ts:29:const cpuMsSince = (from: NodeJS.CpuUsage): number => { const { user, system } = cpuUsage(from); return (user + system) / 1000; };",
-    "2b56a253f81bb4e6d71b46556f0d675a07dfb7c2:packages/three-surface-poc-core/src/test-artifact-verification.test.ts:109:    const cpu = cpuUsage();",
-    "2b56a253f81bb4e6d71b46556f0d675a07dfb7c2:packages/three-surface-poc-core/src/test-artifact-verification.test.ts:116:    const cpu = cpuUsage();"
+    "ba9d990a2b80b9aa5b3d78801b938280ee9988d7:apps/three-surface-poc/src/capture-test-artifact-main.test.ts:379:    // The message names the lstat refusal, made before any open. No elapsed-time bound: a blocking open never",
+    "ba9d990a2b80b9aa5b3d78801b938280ee9988d7:packages/polaris-dossier/src/status.test.ts:111:    expect(before.ok && before.report.limitsSpent.deadline).toBe('PT3H from the brief, ending at 2026-10-07T13:00:00.000Z on Syzygy\\'s clock; elapsed time not recorded');",
+    "ba9d990a2b80b9aa5b3d78801b938280ee9988d7:packages/polaris-dossier/src/status.test.ts:115:    expect(after.ok && after.report.limitsSpent.deadline).toBe('PT3H from the brief, ended at 2026-10-07T13:00:00.000Z on Syzygy\\'s clock; elapsed time not recorded');",
+    "ba9d990a2b80b9aa5b3d78801b938280ee9988d7:packages/polaris-generation-core/src/dossier-profile.test.ts:13:/** CPU time so far: this thread's (`process.threadCpuUsage`, Node 23.9 and later) or, where `process.threadCpuUsage` is absent",
+    "ba9d990a2b80b9aa5b3d78801b938280ee9988d7:packages/polaris-generation-core/src/dossier-profile.test.ts:14: * (Node before 23.9), the whole process's (`process.cpuUsage`), which also counts the worker's other threads; each bound keeps",
+    "ba9d990a2b80b9aa5b3d78801b938280ee9988d7:packages/polaris-generation-core/src/dossier-profile.test.ts:16:const cpuUsage = (from?: NodeJS.CpuUsage): NodeJS.CpuUsage =>",
+    "ba9d990a2b80b9aa5b3d78801b938280ee9988d7:packages/polaris-generation-core/src/dossier-profile.test.ts:17:  (typeof process.threadCpuUsage === 'function' ? process.threadCpuUsage(from) : process.cpuUsage(from));",
+    "ba9d990a2b80b9aa5b3d78801b938280ee9988d7:packages/polaris-generation-core/src/dossier-profile.test.ts:19:const cpuMsSince = (from: NodeJS.CpuUsage): number => { const { user, system } = cpuUsage(from); return (user + system) / 1000; };",
+    "ba9d990a2b80b9aa5b3d78801b938280ee9988d7:packages/polaris-generation-core/src/dossier-profile.test.ts:175:    const cpu = cpuUsage();",
+    "ba9d990a2b80b9aa5b3d78801b938280ee9988d7:packages/polaris-generation-core/src/excerpt.test.ts:6:/** CPU time so far: this thread's (`process.threadCpuUsage`, Node 23.9 and later) or, where `process.threadCpuUsage` is absent",
+    "ba9d990a2b80b9aa5b3d78801b938280ee9988d7:packages/polaris-generation-core/src/excerpt.test.ts:7: * (Node before 23.9), the whole process's (`process.cpuUsage`), which also counts the worker's other threads; each bound keeps",
+    "ba9d990a2b80b9aa5b3d78801b938280ee9988d7:packages/polaris-generation-core/src/excerpt.test.ts:9:const cpuUsage = (from?: NodeJS.CpuUsage): NodeJS.CpuUsage =>",
+    "ba9d990a2b80b9aa5b3d78801b938280ee9988d7:packages/polaris-generation-core/src/excerpt.test.ts:10:  (typeof process.threadCpuUsage === 'function' ? process.threadCpuUsage(from) : process.cpuUsage(from));",
+    "ba9d990a2b80b9aa5b3d78801b938280ee9988d7:packages/polaris-generation-core/src/excerpt.test.ts:12:const cpuMsSince = (from: NodeJS.CpuUsage): number => { const { user, system } = cpuUsage(from); return (user + system) / 1000; };",
+    "ba9d990a2b80b9aa5b3d78801b938280ee9988d7:packages/polaris-generation-core/src/excerpt.test.ts:271:      const cpu = cpuUsage();",
+    "ba9d990a2b80b9aa5b3d78801b938280ee9988d7:packages/three-surface-poc-core/src/test-artifact-verification.test.ts:23:/** CPU time so far: this thread's (`process.threadCpuUsage`, Node 23.9 and later) or, where `process.threadCpuUsage` is absent",
+    "ba9d990a2b80b9aa5b3d78801b938280ee9988d7:packages/three-surface-poc-core/src/test-artifact-verification.test.ts:24: * (Node before 23.9), the whole process's (`process.cpuUsage`), which also counts the worker's other threads; each bound keeps",
+    "ba9d990a2b80b9aa5b3d78801b938280ee9988d7:packages/three-surface-poc-core/src/test-artifact-verification.test.ts:26:const cpuUsage = (from?: NodeJS.CpuUsage): NodeJS.CpuUsage =>",
+    "ba9d990a2b80b9aa5b3d78801b938280ee9988d7:packages/three-surface-poc-core/src/test-artifact-verification.test.ts:27:  (typeof process.threadCpuUsage === 'function' ? process.threadCpuUsage(from) : process.cpuUsage(from));",
+    "ba9d990a2b80b9aa5b3d78801b938280ee9988d7:packages/three-surface-poc-core/src/test-artifact-verification.test.ts:29:const cpuMsSince = (from: NodeJS.CpuUsage): number => { const { user, system } = cpuUsage(from); return (user + system) / 1000; };",
+    "ba9d990a2b80b9aa5b3d78801b938280ee9988d7:packages/three-surface-poc-core/src/test-artifact-verification.test.ts:109:    const cpu = cpuUsage();",
+    "ba9d990a2b80b9aa5b3d78801b938280ee9988d7:packages/three-surface-poc-core/src/test-artifact-verification.test.ts:116:    const cpu = cpuUsage();"
    ]
   },
   "refusedWithinCallSites": {
@@ -501,7 +536,8 @@
      "mutantMinMs": 60019.1,
      "mutantMinIsLowerBound": true,
      "boundOverHeadMax": 21.5,
-     "mutantMinOverBound": 31.6
+     "mutantMinOverBound": 31.6,
+     "geometricMeanNowMs": 2300
     }
    }
   },
@@ -567,7 +603,8 @@
      "mutantMinMs": 17314.492,
      "mutantMinIsLowerBound": false,
      "boundOverHeadMax": 85.8,
-     "mutantMinOverBound": 123.7
+     "mutantMinOverBound": 123.7,
+     "geometricMeanNowMs": 160
     }
    }
   },
@@ -634,7 +671,8 @@
      "mutantMinMs": 60007.8,
      "mutantMinIsLowerBound": true,
      "boundOverHeadMax": 23.2,
-     "mutantMinOverBound": 40.0
+     "mutantMinOverBound": 40.0,
+     "geometricMeanNowMs": 1900
     }
    }
   },
@@ -685,7 +723,8 @@
      "mutantMinMs": 60008.8,
      "mutantMinIsLowerBound": true,
      "boundOverHeadMax": 15.7,
-     "mutantMinOverBound": 20.0
+     "mutantMinOverBound": 20.0,
+     "geometricMeanNowMs": 3300
     }
    }
   },
@@ -817,6 +856,8 @@
   "The near-miss tag-names case runs under TAG_SCAN_CPU_MS with no mutant that fails it: the replaced scan is linear on that input too, so the bound rests on the other two cases; the test says so in a comment.",
   "A capped mutant run gives a lower bound on its region, not the region: the mutant minimum for those bounds is at least the cap, so each bound sits at least as far from the mutant as recorded.",
   "The kept daemon-entry text row also fails mutants that load nothing: a type-only import naming the POC app at module top (E-type-only-import) and a header comment naming it outside the two branches (C1-comment-outside-branches). The equivalents it passes are in daemonEntry.",
+  "The compiler-API text row and the load-hook row both pass rev-532c's Y1-Y5: a then-block that loads the POC app and then reaches the daemon path, by falling through, re-entering main(), breaking out of a label, scheduling a callback or rewriting argv under a flag. The text row checks where each mention lies, not whether control leaves the branch, and the load-hook row never drives those argv. Only the base's old pin, restored byte for byte under round 3's stopping rule, fails them (daemonEntry.pinRowAlone.defects), because each adds a line naming the app; a version that adds no such line passes all three rows (rev-532c's N1, a follow-up).",
+  "The restored pin reads main.ts by exact line, so it also fails five mutants that load nothing and that the other two rows pass: a comment naming the POC app in the dossier branch (E-comment-in-branch), the renderer bound under another name (E-renamed-binding), the two branches swapped (E-branch-swap), the dossier import in a nested function (L2) and the polaris import in a nested try (L3) (daemonEntry.pinRowAlone.knownFalseRefusals). A legitimate refactor of either branch turns it red, as it did at the base; that cost was accepted with the stopping rule.",
   "A load in http-host's close-failure branch (packages/http-host/src/shutdown.ts, X2-close-failure-in-http-host) passes every row of the new test, the old pin and both earlier tests: main's #529 moved the shutdown handler out of main.ts, the one file the text row reads, and no row drives a failing close. A load in main.ts's closeFailed callback (X1) still fails the text row, and one in http-host's shutdown function (X3) the load-hook row. Extending the check to closeOnSignal is round 1's N5 follow-up, not this bead.",
   "dossier-evaluation's INDEX and DEEP fixtures are ASCII, so a module that counted string length instead of UTF-8 bytes would pass every byte assertion there, at the base (literals) and at the head (counts) alike.",
   "A FIFO capture with the lstat refusal removed blocks in a synchronous open at both sides: the row fails by the test timeout or the run is killed, never by a fast refusal (fifo-blocking-open).",
@@ -835,6 +876,7 @@
     "kind": null,
     "newHookRow": "pass",
     "newTextRow": "pass",
+    "newPinRow": "pass",
     "newOtherRows": [],
     "oldTextPin": "pass",
     "oldOtherRows": [],
@@ -847,6 +889,7 @@
     "kind": "defect",
     "newHookRow": "fail",
     "newTextRow": "fail",
+    "newPinRow": "fail",
     "newOtherRows": [],
     "oldTextPin": "fail",
     "oldOtherRows": [],
@@ -865,6 +908,7 @@
     "kind": "defect",
     "newHookRow": "fail",
     "newTextRow": "fail",
+    "newPinRow": "fail",
     "newOtherRows": [],
     "oldTextPin": "fail",
     "oldOtherRows": [],
@@ -883,6 +927,7 @@
     "kind": "defect",
     "newHookRow": "fail",
     "newTextRow": "fail",
+    "newPinRow": "fail",
     "newOtherRows": [],
     "oldTextPin": "fail",
     "oldOtherRows": [],
@@ -900,6 +945,7 @@
     "kind": "defect",
     "newHookRow": "fail",
     "newTextRow": "fail",
+    "newPinRow": "fail",
     "newOtherRows": [],
     "oldTextPin": "fail",
     "oldOtherRows": [],
@@ -918,6 +964,7 @@
     "kind": "defect",
     "newHookRow": "fail",
     "newTextRow": "fail",
+    "newPinRow": "fail",
     "newOtherRows": [],
     "oldTextPin": "fail",
     "oldOtherRows": [],
@@ -936,6 +983,7 @@
     "kind": "defect",
     "newHookRow": "pass",
     "newTextRow": "fail",
+    "newPinRow": "fail",
     "newOtherRows": [],
     "oldTextPin": "fail",
     "oldOtherRows": [],
@@ -952,6 +1000,7 @@
     "kind": "defect",
     "newHookRow": "pass",
     "newTextRow": "fail",
+    "newPinRow": "fail",
     "newOtherRows": [],
     "oldTextPin": "fail",
     "oldOtherRows": [],
@@ -968,6 +1017,7 @@
     "kind": "defect",
     "newHookRow": "pass",
     "newTextRow": "fail",
+    "newPinRow": "fail",
     "newOtherRows": [],
     "oldTextPin": "fail",
     "oldOtherRows": [],
@@ -984,6 +1034,7 @@
     "kind": "defect",
     "newHookRow": "fail",
     "newTextRow": "pass",
+    "newPinRow": "pass",
     "newOtherRows": [],
     "oldTextPin": "pass",
     "oldOtherRows": [],
@@ -1000,6 +1051,7 @@
     "kind": "residual",
     "newHookRow": "pass",
     "newTextRow": "pass",
+    "newPinRow": "pass",
     "newOtherRows": [],
     "oldTextPin": "pass",
     "oldOtherRows": [],
@@ -1012,6 +1064,7 @@
     "kind": "defect",
     "newHookRow": "fail",
     "newTextRow": "pass",
+    "newPinRow": "pass",
     "newOtherRows": [],
     "oldTextPin": "pass",
     "oldOtherRows": [],
@@ -1028,6 +1081,7 @@
     "kind": "defect",
     "newHookRow": "pass",
     "newTextRow": "fail",
+    "newPinRow": "fail",
     "newOtherRows": [],
     "oldTextPin": "fail",
     "oldOtherRows": [],
@@ -1042,6 +1096,7 @@
     "kind": "defect",
     "newHookRow": "pass",
     "newTextRow": "fail",
+    "newPinRow": "fail",
     "newOtherRows": [],
     "oldTextPin": "fail",
     "oldOtherRows": [],
@@ -1056,6 +1111,7 @@
     "kind": "defect",
     "newHookRow": "pass",
     "newTextRow": "fail",
+    "newPinRow": "fail",
     "newOtherRows": [],
     "oldTextPin": "fail",
     "oldOtherRows": [],
@@ -1070,6 +1126,7 @@
     "kind": "equivalent",
     "newHookRow": "pass",
     "newTextRow": "fail",
+    "newPinRow": "fail",
     "newOtherRows": [],
     "oldTextPin": "fail",
     "oldOtherRows": [],
@@ -1086,6 +1143,7 @@
     "kind": "equivalent",
     "newHookRow": "pass",
     "newTextRow": "pass",
+    "newPinRow": "fail",
     "newOtherRows": [],
     "oldTextPin": "fail",
     "oldOtherRows": [],
@@ -1098,6 +1156,7 @@
     "kind": "equivalent",
     "newHookRow": "pass",
     "newTextRow": "pass",
+    "newPinRow": "fail",
     "newOtherRows": [],
     "oldTextPin": "fail",
     "oldOtherRows": [],
@@ -1110,6 +1169,7 @@
     "kind": "defect",
     "newHookRow": "pass",
     "newTextRow": "fail",
+    "newPinRow": "fail",
     "newOtherRows": [],
     "oldTextPin": "fail",
     "oldOtherRows": [],
@@ -1122,6 +1182,7 @@
     "kind": "defect",
     "newHookRow": "pass",
     "newTextRow": "fail",
+    "newPinRow": "fail",
     "newOtherRows": [],
     "oldTextPin": "fail",
     "oldOtherRows": [],
@@ -1134,6 +1195,7 @@
     "kind": "defect",
     "newHookRow": "pass",
     "newTextRow": "fail",
+    "newPinRow": "fail",
     "newOtherRows": [],
     "oldTextPin": "fail",
     "oldOtherRows": [],
@@ -1146,6 +1208,7 @@
     "kind": "defect",
     "newHookRow": "pass",
     "newTextRow": "fail",
+    "newPinRow": "fail",
     "newOtherRows": [],
     "oldTextPin": "fail",
     "oldOtherRows": [],
@@ -1158,6 +1221,7 @@
     "kind": "defect",
     "newHookRow": "pass",
     "newTextRow": "fail",
+    "newPinRow": "fail",
     "newOtherRows": [],
     "oldTextPin": "fail",
     "oldOtherRows": [],
@@ -1170,6 +1234,7 @@
     "kind": "defect",
     "newHookRow": "pass",
     "newTextRow": "fail",
+    "newPinRow": "fail",
     "newOtherRows": [],
     "oldTextPin": "fail",
     "oldOtherRows": [],
@@ -1182,6 +1247,7 @@
     "kind": "defect",
     "newHookRow": "pass",
     "newTextRow": "fail",
+    "newPinRow": "pass",
     "newOtherRows": [],
     "oldTextPin": "pass",
     "oldOtherRows": [],
@@ -1194,6 +1260,7 @@
     "kind": "equivalent",
     "newHookRow": "pass",
     "newTextRow": "fail",
+    "newPinRow": "fail",
     "newOtherRows": [],
     "oldTextPin": "fail",
     "oldOtherRows": [],
@@ -1210,6 +1277,7 @@
     "kind": "equivalent",
     "newHookRow": "pass",
     "newTextRow": "pass",
+    "newPinRow": "pass",
     "newOtherRows": [],
     "oldTextPin": "pass",
     "oldOtherRows": [],
@@ -1226,6 +1294,7 @@
     "kind": "equivalent",
     "newHookRow": "pass",
     "newTextRow": "pass",
+    "newPinRow": "fail",
     "newOtherRows": [],
     "oldTextPin": "fail",
     "oldOtherRows": [],
@@ -1238,6 +1307,72 @@
     "kind": "equivalent",
     "newHookRow": "pass",
     "newTextRow": "pass",
+    "newPinRow": "fail",
+    "newOtherRows": [],
+    "oldTextPin": "fail",
+    "oldOtherRows": [],
+    "priorTest": "pass",
+    "roundOneTest": "pass",
+    "roundOneTextRow": "pass"
+   },
+   {
+    "id": "Y1-dossier-serve-falls-through",
+    "kind": "defect",
+    "newHookRow": "pass",
+    "newTextRow": "pass",
+    "newPinRow": "fail",
+    "newOtherRows": [],
+    "oldTextPin": "fail",
+    "oldOtherRows": [],
+    "priorTest": "pass",
+    "roundOneTest": "pass",
+    "roundOneTextRow": "pass"
+   },
+   {
+    "id": "Y2-dossier-serve-reenters-main",
+    "kind": "defect",
+    "newHookRow": "pass",
+    "newTextRow": "pass",
+    "newPinRow": "fail",
+    "newOtherRows": [],
+    "oldTextPin": "fail",
+    "oldOtherRows": [],
+    "priorTest": "pass",
+    "roundOneTest": "pass",
+    "roundOneTextRow": "pass"
+   },
+   {
+    "id": "Y3-flag-rewrites-argv-into-dossier",
+    "kind": "defect",
+    "newHookRow": "pass",
+    "newTextRow": "pass",
+    "newPinRow": "fail",
+    "newOtherRows": [],
+    "oldTextPin": "fail",
+    "oldOtherRows": [],
+    "priorTest": "pass",
+    "roundOneTest": "pass",
+    "roundOneTextRow": "pass"
+   },
+   {
+    "id": "Y4-polaris-labelled-break",
+    "kind": "defect",
+    "newHookRow": "pass",
+    "newTextRow": "pass",
+    "newPinRow": "fail",
+    "newOtherRows": [],
+    "oldTextPin": "fail",
+    "oldOtherRows": [],
+    "priorTest": "pass",
+    "roundOneTest": "pass",
+    "roundOneTextRow": "pass"
+   },
+   {
+    "id": "Y5-dossier-serve-callback-after-branch",
+    "kind": "defect",
+    "newHookRow": "pass",
+    "newTextRow": "pass",
+    "newPinRow": "fail",
     "newOtherRows": [],
     "oldTextPin": "fail",
     "oldOtherRows": [],
@@ -1250,6 +1385,7 @@
     "kind": "equivalent",
     "newHookRow": "pass",
     "newTextRow": "pass",
+    "newPinRow": "fail",
     "newOtherRows": [],
     "oldTextPin": "fail",
     "oldOtherRows": [],
@@ -1262,6 +1398,7 @@
     "kind": "hook",
     "newHookRow": "fail",
     "newTextRow": "pass",
+    "newPinRow": "pass",
     "newOtherRows": [],
     "oldTextPin": "skipped",
     "oldOtherRows": [],
@@ -1278,6 +1415,7 @@
     "kind": "hook",
     "newHookRow": "fail",
     "newTextRow": "pass",
+    "newPinRow": "pass",
     "newOtherRows": [],
     "oldTextPin": "skipped",
     "oldOtherRows": [],
@@ -1293,13 +1431,23 @@
   "priorTestFrom": "447d9f083fb120c14ddd8da646c03675f3ce7bc7",
   "roundOneTestFrom": "9e00252ae134accc4a42604445a4db66f68d5100",
   "note": "defect: the daemon path loads the POC app on some argv or event; equivalent: nothing on any daemon path loads it; hook: the load hook itself is broken; residual: a daemon-path load no row reaches, disclosed in `residuals`.",
-  "pinKillsDropped": [
-   "E-comment-in-branch",
-   "E-renamed-binding",
-   "L2-nested-function-in-dossier",
-   "L3-nested-try-in-polaris",
-   "E-branch-swap"
-  ],
+  "pinRowAlone": {
+   "defects": [
+    "Y1-dossier-serve-falls-through",
+    "Y2-dossier-serve-reenters-main",
+    "Y3-flag-rewrites-argv-into-dossier",
+    "Y4-polaris-labelled-break",
+    "Y5-dossier-serve-callback-after-branch"
+   ],
+   "knownFalseRefusals": [
+    "E-comment-in-branch",
+    "E-renamed-binding",
+    "L2-nested-function-in-dossier",
+    "L3-nested-try-in-polaris",
+    "E-branch-swap"
+   ],
+   "note": "the mutants only the restored pin fails: the defects are loads both other rows pass, and the equivalents are its known false refusals, which load nothing"
+  },
   "pinMisses": [
    "X3-shutdown-in-http-host",
    "X2-close-failure-in-http-host",
@@ -1310,7 +1458,7 @@
  "rowDelta": {
   "tool": "row_delta.py",
   "base": "d38d7a3ce632a34c2a41bdb77ad323ba0b05b777",
-  "head": "2b56a253f81bb4e6d71b46556f0d675a07dfb7c2",
+  "head": "ba9d990a2b80b9aa5b3d78801b938280ee9988d7",
   "lines": [
    "apps/three-surface-poc/src/capture-test-artifact-main.test.ts + 0 ~ 1 - 0",
    "   ~ capture-test-artifact never starts the observed project (run check) > refuses a FIFO without opening it, so a pipe nobody writes cannot hang the inges",
@@ -1319,10 +1467,9 @@
    "apps/three-surface-poc/src/polaris-generation/redis-shaped-discovery.test.ts + 0 ~ 1 - 0",
    "   ~ discovery on a synthetic tree shaped like a large C key-value server > under the dossier byte cap (400,000 bytes of quotable text) > keeps the selecti",
    "apps/three-surface-poc/src/polaris-generation/self-corpus.test.ts + 0 ~ 0 - 0",
-   "packages/cap1-system/src/daemon-entry-unchanged.system.test.ts + 2 ~ 0 - 1",
+   "packages/cap1-system/src/daemon-entry-unchanged.system.test.ts + 2 ~ 0 - 0",
    "   + daemon entry: the one changed input, `dossier` as the first argument > every mention of the POC app in main.ts lies inside the `dossier` or the `polar",
    "   + daemon entry: the one changed input, `dossier` as the first argument > the daemon path never loads the POC app, and the `dossier render` branch does",
-   "   - daemon entry: the one changed input, `dossier` as the first argument > the daemon path never loads the POC app: each import is dynamic and inside the ",
    "packages/polaris-dossier/src/git-object-reader.test.ts + 0 ~ 8 - 0",
    "   ~ each call is bounded: bytes inflated, delta depth, objects visited (finding 4) > a delta chain one past the depth cap refuses, by default (1,000) and ",
    "   ~ each call is bounded: bytes inflated, delta depth, objects visited (finding 4) > a reference delta naming itself refuses at the depth cap, quickly",
@@ -1342,7 +1489,7 @@
    "packages/three-surface-poc-core/src/test-artifact-verification.test.ts + 0 ~ 2 - 0",
    "   ~ parseJUnitRootTotals > refuses input over the ceiling without scanning it",
    "   ~ parseJUnitRootTotals > scans one tag body that is a single word run at the ceiling in linear time",
-   "Tests: +2 ~17 -1"
+   "Tests: +2 ~17 -0"
   ]
  },
  "wallDurations": [
@@ -7384,6 +7531,39 @@
      "exit": 0,
      "end": "2026-10-27T17:12:00+08:00",
      "load1End": 49.39,
+     "success": true,
+     "totals": {
+      "numTotalTestSuites": 869,
+      "numFailedTestSuites": 0,
+      "numTotalTests": 5379,
+      "numPassedTests": 5374,
+      "numFailedTests": 0,
+      "numPendingTests": 5,
+      "numTodoTests": 0
+     },
+     "failedTests": [],
+     "failedFilesWithoutFailedTest": [],
+     "failuresInChangedFiles": 0
+    }
+   ]
+  },
+  {
+   "tool": "suite_summary.py",
+   "attempt": "attempt 7: the round-3 repair, run once, default timeouts",
+   "cpus": 12,
+   "changedFilesBetween": [
+    "c104771f",
+    "ba9d990a"
+   ],
+   "runs": [
+    {
+     "name": "round3-head",
+     "commit": "ba9d990a2b80b9aa5b3d78801b938280ee9988d7",
+     "start": "2026-10-27T22:27:30+08:00",
+     "load1Start": 33.36,
+     "exit": 0,
+     "end": "2026-10-27T22:31:46+08:00",
+     "load1End": 36.26,
      "success": true,
      "totals": {
       "numTotalTestSuites": 869,
