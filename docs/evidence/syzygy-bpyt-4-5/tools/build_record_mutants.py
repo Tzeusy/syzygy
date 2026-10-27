@@ -1,22 +1,23 @@
 #!/usr/bin/env python3
 """Rule-6 mutants against build_record.py's checks (syzygy-bpyt.4.5). Evidence tool, not authority.
 
-usage: python3 -I build_record_mutants.py TREE OUT.json BASE MAIN EVIDENCE PRIOR ROUND1
+usage: python3 -I build_record_mutants.py TREE OUT.json BASE MAIN EVIDENCE PRIOR ROUND1 LATER_MAIN
 
 TREE is a clean checkout of the evidence head with node_modules installed (tools/emit_equal.mjs loads the tree's
-TypeScript). The last five arguments are build_record.py's own. For each mutant it edits retained result files in the
+TypeScript). The last six arguments are build_record.py's own. For each mutant it edits retained result files in the
 working tree (never a git object), runs `python3 -I docs/evidence/syzygy-bpyt-4-5/tools/build_record.py TREE BASE MAIN
-EVIDENCE PRIOR ROUND1`, records the exit code and the last output line, and restores the evidence directory with
-`git checkout`. Each edit is recorded as its file, its JSON pointer, the value it replaced and the value it wrote, with
-the commit, so any mutant can be re-run by hand (`oldAbsent` marks a key the edit added; a `new` of null deletes
-the entry). `expect` is what a sound check must do: `fail` (build_record exits
+EVIDENCE PRIOR ROUND1 LATER_MAIN`, records the exit code and the last output line, and restores the evidence directory
+with `git checkout`. Each edit is recorded as its file, its JSON pointer, the value it replaced and the value it wrote,
+with the commit, so any mutant can be re-run by hand (`oldAbsent` marks a key the edit added; a `new` of null deletes
+the entry, and NULL writes a JSON null). `expect` is what a sound check must do: `fail` (build_record exits
 non-zero) when the edit breaks a claim the docstring says it checks, `pass` for the control and a wording-only edit.
-K1-K13 are rev-532b's (R-GP-IMPL-TEST-CLOCKS-2, section 3.6); K3, K4, K5 and K7 survived there. The tree is checked
-clean before and after.
+K1-K13 are rev-532b's (R-GP-IMPL-TEST-CLOCKS-2, section 3.6); K3, K4, K5 and K7 survived there. B3 and B4 are rev-532c's
+(R-GP-IMPL-TEST-CLOCKS-3, F2 and F3), which survived there. The tree is checked clean before and after.
 """
 import copy, json, os, subprocess, sys
 
-tree, out_path, args = os.path.abspath(sys.argv[1]), sys.argv[2], sys.argv[3:8]
+tree, out_path, args = os.path.abspath(sys.argv[1]), sys.argv[2], sys.argv[3:9]
+NULL = object()
 EV = 'docs/evidence/syzygy-bpyt-4-5'
 ATTR, EDGE = 'ATTRIBUTE_SCAN_CPU_MS', 'EDGE_TRIM_CPU_MS'
 git = lambda *a: subprocess.run(['git', *a], cwd=tree, capture_output=True, text=True)
@@ -44,9 +45,22 @@ def fastest_reached_row(bound):
         g = next(i for i, g in enumerate(runs[k]['regions']) if g['bound'] == bound and g['cpuMs'] == entry['mutantMinMs'])
         return [*s, 'mutants', m, 'runs', k, 'regions', g, 'cpuMs']
     return path
+TAG = 'TAG_SCAN_CPU_MS'
+def plural(*rest):
+    """The thread-CPU TAG_SCAN mutant row on unterminated plural tags (rev-532c's B3 row)."""
+    def path(d):
+        s = site(TAG)(d)
+        return [*s, 'mutants', next(i for i, m in enumerate(d['sites'][s[1]]['mutants']) if 'plural' in m['title']), *rest]
+    return path
+def plural_runs(field):
+    def path(d):
+        row = plural()(d)
+        return [[*row, 'runs', k, field] for k in range(len(get(d, row)['runs']))]
+    return path
 DE = ('daemon-entry-head.json', 'daemon-entry-base-test.json', 'daemon-entry-prior-test.json', 'daemon-entry-round1-test.json')
 TEXT = 'daemon entry: the one changed input, `dossier` as the first argument > every mention of the POC app in main.ts lies inside the `dossier` or the `polaris` branch, x'
 HOOK = 'daemon entry: the one changed input, `dossier` as the first argument > the daemon path never loads the POC app, and the `dossier render` branch does'
+PIN = 'daemon entry: the one changed input, `dossier` as the first argument > the daemon path never loads the POC app: each import is dynamic and inside the `dossier` or `polaris` branch'
 E = lambda file, path, value: (file, path, value)
 MUTANTS = [
     ('control', [], 'pass', 'no edit: the rebuild exits 0'),
@@ -87,6 +101,24 @@ MUTANTS = [
     ('K29-de-round1-from', [E('daemon-entry-round1-test.json', lambda d: ['testFileFrom'], args[3])], 'fail', 'the round-1 run names the prior commit as its test source'),
     ('K30-de-old-drops-L3', [E('daemon-entry-base-test.json', result('L3-nested-try-in-polaris'), None)], 'fail', "L3's row removed from the old-test run"),
     ('K31-de-head-S7-passes', [E('daemon-entry-head.json', result('S7-else-split-specifier-after-dossier', 'failed'), [])], 'fail', 'S7 recorded as passing the new test'),
+    ('B3-thread-tag-plural-row-under-bound', [E('cpu-separation.json', plural_runs('exit'), 0), E('cpu-separation.json', plural_runs('capped'), NULL),
+                                              E('cpu-separation.json', plural_runs('regions'), [{'line': 110, 'bound': TAG, 'cpuMs': 600.0}]),
+                                              E('cpu-separation.json', plural('min'), 600.0), E('cpu-separation.json', plural('cappedRuns'), 0),
+                                              E('cpu-separation.json', plural('reached'), False)], 'fail',
+     "rev-532c's B3: thread-CPU TAG_SCAN's `plural` row finishes its runs uncapped at 600 ms, under the 1,500 bound, every summary agreeing"),
+    ('B4-thread-attr-geometric-mean', [E('cpu-separation.json', site(ATTR, 'proposedBoundMs'), 9900)], 'fail',
+     "rev-532c's B4: thread-CPU ATTRIBUTE_SCAN's recorded geometric mean 2900 -> 9900, which its runs do not give"),
+    ('K32-de-head-Y2-fails-hook-not-pin', [E('daemon-entry-head.json', result('Y2-dossier-serve-reenters-main', 'failed'), [HOOK])], 'fail',
+     'Y2 recorded as failing the load-hook row and passing the restored pin'),
+    ('K33-de-head-Y3-fails-text-row-too', [E('daemon-entry-head.json', result('Y3-flag-rewrites-argv-into-dossier', 'failed'), [PIN, TEXT])], 'fail',
+     'Y3 recorded as failing the text row as well as the restored pin'),
+    ('K34-de-old-Y4-passes-pin', [E('daemon-entry-base-test.json', result('Y4-polaris-labelled-break', 'failed'), [])], 'fail', 'Y4 recorded as passing the old pin'),
+    ('K35-de-head-L2-passes-pin', [E('daemon-entry-head.json', result('L2-nested-function-in-dossier', 'failed'), [])], 'fail',
+     'L2, a known false refusal of the restored pin, recorded as passing it'),
+    ('K36-de-head-E-comment-fails-text-too', [E('daemon-entry-head.json', result('E-comment-in-branch', 'failed'), [PIN, TEXT])], 'fail',
+     'E-comment-in-branch recorded as failing the text row as well as the restored pin'),
+    ('K37-de-head-C1-passes-pin', [E('daemon-entry-head.json', result('C1-comment-outside-branches', 'failed'), [TEXT])], 'fail',
+     'C1 recorded as failing the text row and passing the restored pin'),
 ]
 
 def get(d, path):
@@ -105,10 +137,11 @@ for mid, edits, expect, note in MUTANTS:
             for path in (found if found and isinstance(found[0], list) else [found]):
                 parent, key = get(d, path[:-1]), path[-1]
                 absent = isinstance(parent, dict) and key not in parent
+                written = None if value is NULL else value
                 recorded.append({'file': rel, 'pointer': '/' + '/'.join(str(p) for p in path), 'old': None if absent else copy.deepcopy(parent[key]),
-                                 **({'oldAbsent': True} if absent else {}), 'new': value})
+                                 **({'oldAbsent': True} if absent else {}), 'new': written, **({'newIsJsonNull': True} if value is NULL else {})})
                 if value is None: del parent[key]
-                else: parent[key] = value
+                else: parent[key] = written
         for rel, d in docs.items(): open(os.path.join(tree, EV, rel), 'w', encoding='utf8').write(json.dumps(d, indent=1))
         run = subprocess.run([sys.executable, '-I', os.path.join(tree, EV, 'tools/build_record.py'), tree, *args], capture_output=True, text=True)
         last = (run.stderr.strip().splitlines() or run.stdout.strip().splitlines() or [''])[-1][:400]

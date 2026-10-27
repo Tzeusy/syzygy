@@ -33,6 +33,8 @@ POLARIS = ("    const { runPolarisCli } = await import('@syzygy/polaris-dossier'
 SHUT = 'packages/http-host/src/shutdown.ts'
 FLAG = "process.env.SYZYGY_PRELOAD_RENDERER === '1'"
 DOSSIER_END = "    }, { renderer: renderLocalDossier });\n  }\n"
+ARGV, DOSSIER_OPEN = "  const argv = process.argv.slice(2);\n", "  if (argv[0] === 'dossier') {\n"
+DOSSIER_RETURN = "    return runDossierCli(argv.slice(1), {\n"
 POLARIS_END = "    return runPolarisCli(argv.slice(1), { renderer: renderLocalDossier });\n  }\n"
 POLARIS_HEAD = ("  }\n\n"
                 "  // `syzygy polaris <url>` is the one-command launched run (prototype under\n"
@@ -131,6 +133,54 @@ MUTANTS = [
              "      return runPolarisCli(argv.slice(1), { renderer: renderLocalDossier });\n"
              "    } catch (cause: unknown) {\n      throw cause;\n    }\n"),
      'note': 'the polaris import inside a nested try block in the branch'},
+    # Y1-Y5 are rev-532c's (R-GP-IMPL-TEST-CLOCKS-3, F1; the bytes of rev-532c/tools/r3_variants.py): a then-block that loads
+    # the POC app and then reaches the daemon path in the same process. The compiler-API row and the load-hook row pass each;
+    # the restored base pin fails each, since each adds a line naming the app.
+    {'id': 'Y1-dossier-serve-falls-through', 'kind': 'defect', 'file': MAIN, 'old': DOSSIER_RETURN,
+     'new': ("    if (argv[1] === 'serve') {\n"
+             "      // `syzygy dossier serve …` serves the daemon below, with the renderer loaded for its routes.\n"
+             f"      await import({SITE});\n"
+             "      process.argv.splice(2, 2);\n"
+             "    } else return runDossierCli(argv.slice(1), {\n"),
+     'note': 'a missing `return`: `dossier serve` loads the app in the dossier then-block, drops its two words from process.argv and falls through to the daemon path'},
+    {'id': 'Y2-dossier-serve-reenters-main', 'kind': 'defect', 'file': MAIN, 'old': DOSSIER_OPEN,
+     'new': (DOSSIER_OPEN + "    if (argv[1] === 'serve') {\n"
+             "      // `syzygy dossier serve …`: load the renderer, then serve the daemon with the rest of argv.\n"
+             f"      await import({SITE});\n"
+             "      process.argv.splice(2, 2);\n"
+             "      return main();\n"
+             "    }\n"),
+     'note': 'the then-block returns, but through `return main()` after loading the app, so the daemon path runs in the same process'},
+    {'id': 'Y3-flag-rewrites-argv-into-dossier', 'kind': 'defect', 'file': MAIN, 'old': ARGV + DOSSIER_OPEN,
+     'new': (f"  const argv = {FLAG} ? ['dossier', '--preload'] : process.argv.slice(2);\n" + DOSSIER_OPEN +
+             "    if (argv[1] === '--preload') {\n"
+             "      // SYZYGY_PRELOAD_RENDERER=1 warms the renderer, then serves the daemon as asked.\n"
+             f"      await import({SITE});\n"
+             "      delete process.env.SYZYGY_PRELOAD_RENDERER;\n"
+             "      return main();\n"
+             "    }\n"),
+     'note': "a rewritten argv: with the flag set, a plain daemon invocation enters the dossier then-block, loads the app and re-enters main() as the daemon"},
+    {'id': 'Y4-polaris-labelled-break', 'kind': 'defect', 'file': MAIN, 'old': POLARIS + "  }\n",
+     'new': ("    polaris: {\n"
+             "      if (argv[1] === '--serve') {\n"
+             "        // `syzygy polaris --serve …`: the daemon below, with the renderer loaded for its routes.\n"
+             f"        await import({SITE});\n"
+             "        process.argv.splice(2, 2);\n"
+             "        break polaris;\n"
+             "      }\n"
+             "      const { runPolarisCli } = await import('@syzygy/polaris-dossier');\n"
+             f"      const {{ renderLocalDossier }} = await import({SITE});\n"
+             "      return runPolarisCli(argv.slice(1), { renderer: renderLocalDossier });\n"
+             "    }\n"
+             "  }\n"),
+     'note': 'a nested labelled block in the polaris then-block: `break` leaves the branch after loading the app, and control falls through to the daemon path'},
+    {'id': 'Y5-dossier-serve-callback-after-branch', 'kind': 'defect', 'file': MAIN, 'old': DOSSIER_RETURN,
+     'new': ("    if (argv[1] === 'serve') {\n"
+             "      // `syzygy dossier serve …` serves the daemon below; the renderer loads once it is up.\n"
+             f"      setImmediate(() => void import({SITE}));\n"
+             "      process.argv.splice(2, 2);\n"
+             "    } else return runDossierCli(argv.slice(1), {\n"),
+     'note': 'a callback scheduled in the dossier then-block that runs after the branch, while the daemon starts'},
     {'id': 'H-hook-blind', 'kind': 'hook', 'file': TEST, 'note': "the hook's POC-app prefix points at a directory nothing loads from",
      'old': "    const app = `${pathToFileURL(realpathSync(path.join(REPO_ROOT, 'apps', 'three-surface-poc'))).href}/`;\n",
      'new': "    const app = `${pathToFileURL(realpathSync(path.join(REPO_ROOT, 'apps', 'three-surface-poc'))).href}/no-such-dir/`;\n"},

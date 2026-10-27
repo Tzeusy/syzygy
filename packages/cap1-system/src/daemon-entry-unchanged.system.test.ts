@@ -270,4 +270,26 @@ describe('daemon entry: the one changed input, `dossier` as the first argument',
     const lineAt = (at: number): string => text.slice(text.lastIndexOf('\n', at) + 1, text.indexOf('\n', at));
     expect(mentions.filter((at) => !blocks.some(([start, end]) => at > start && at < end)).map(lineAt)).toEqual([]);
   });
+
+  // Restored from the base byte for byte (syzygy-bpyt.4.5, round 3's stopping rule). The two rows above pass a then-block
+  // that loads the POC app and then falls through, re-enters main(), breaks out of a label or schedules a callback
+  // (rev-532c's Y1-Y5); this pin fails each, since each adds a line naming the app. Its known false refusals, which the
+  // rows above pass: a comment naming the app in the dossier branch, the renderer bound under another name, the two
+  // branches swapped, the dossier import in a nested function and the polaris import in a nested try.
+  // The `polaris` branch (prototype, POLARIS-DOSSIER-ONE-COMMAND-RUN-2026-10-14) injects the same renderer the same way.
+  it('the daemon path never loads the POC app: each import is dynamic and inside the `dossier` or `polaris` branch', () => {
+    const main = readFileSync(path.join(REPO_ROOT, 'apps/syzygy/src/main.ts'), 'utf8');
+    const line = "    const { renderLocalDossier } = await import('@syzygy/three-surface-poc-app/dossier-site');";
+    const mentions = main.split('\n').filter((text) => text.includes('three-surface-poc-app'));
+    expect(mentions).toEqual([line, line]);
+    const daemon = main.indexOf('let parsed = parseCli(');
+    const first = main.indexOf(line), second = main.indexOf(line, first + 1);
+    const dossier = main.indexOf("if (argv[0] === 'dossier') {"), polaris = main.indexOf("if (argv[0] === 'polaris') {");
+    expect(dossier).toBeGreaterThan(-1);
+    expect(polaris).toBeGreaterThan(dossier);
+    expect(first).toBeGreaterThan(dossier);
+    expect(first).toBeLessThan(polaris);
+    expect(second).toBeGreaterThan(polaris);
+    expect(second).toBeLessThan(daemon);
+  });
 });
