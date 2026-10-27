@@ -1,41 +1,55 @@
 import { readdirSync, readFileSync } from 'node:fs';
+import ts from 'typescript';
 import { describe, expect, it } from 'vitest';
+import { FORBIDDEN, specifiersOf } from './purity.testkit.js';
 
 // The package is a leaf that every importer inherits (the owner-act drafter's own purity test
-// stops at `@syzygy/support`), so what it may import is pinned here, not left to the closure guard,
-// which admits `node:fs` (syzygy-bpyt.6.3, review R-GP-IMPL-SUPPORT-LEAF-1 N3).
+// stops at `@syzygy/support`), so what it may import and name is pinned here, not left to the closure guard,
+// which admits `node:fs` (syzygy-bpyt.6.3, review R-GP-IMPL-SUPPORT-LEAF-1 N3). Every source module under `src` is
+// read, at any depth and with any JavaScript or TypeScript extension; the test files and the one testkit are test
+// support (syzygy-bpyt.6.14, the PR 530 round-2 review's N9).
 const SRC = new URL('./', import.meta.url);
-const SOURCES = readdirSync(SRC).filter((name) => name.endsWith('.ts') && !name.endsWith('.test.ts')).sort();
+const SOURCES = readdirSync(SRC, { recursive: true, encoding: 'utf8' })
+  .filter((name) => /\.[cm]?[jt]sx?$/u.test(name) && !name.endsWith('.test.ts') && name !== 'purity.testkit.ts').sort();
+const read = (name: string): string => readFileSync(new URL(name, SRC), 'utf8');
 
 const ALLOWED_SPECIFIER = /^(?:node:crypto|\.\/[a-z0-9-]+\.js)$/u;
-// The owner-act drafter's forbidden list (owner-act-drafter.test.ts), applied to every file of the package.
-const FORBIDDEN = [/\brequire\(/, /\bimport\(/, /\bfetch\(/, /\bwriteFile/, /\bappendFile/, /\bmkdir/, /\bprocess\./, /\bDate\b/, /\b(?:node:)?(?:fs|net|http|https|child_process|os)['"`]/];
+// Every name the package's code may use: its own declarations and parameters, the hash's `createHash().update().digest()`,
+// and `Object`'s freeze walk. A global (`globalThis`, `process`, `console`, `fetch`, `WebSocket`, `performance`), another
+// export of `node:crypto` (`randomBytes`) or a loader (`require`, `eval`, `Function`) is a name not on it.
+const ALLOWED_IDENTIFIERS = new Set(['Object', 'T', 'Uint8Array', 'createHash', 'deepFreeze', 'digest', 'freeze', 'isFrozen', 'member', 'sha256', 'update', 'value', 'values']);
 
-/** Every module specifier of a source text, whatever the quote: `from` imports and re-exports, side-effect imports, `import()` and `require()`. */
-function specifiersOf(source: string): string[] {
-  const code = source.split('\n').filter((line) => !line.trimStart().startsWith('//')).join('\n');
-  return [
-    ...[...code.matchAll(/\b(?:import|export)\b[^;]*?\bfrom\s*['"`]([^'"`]+)['"`]/g)].map((match) => match[1]!),
-    ...[...code.matchAll(/^\s*import\s*['"`]([^'"`]+)['"`]/gm)].map((match) => match[1]!),
-    ...[...code.matchAll(/\b(?:import|require)\s*\(\s*['"`]([^'"`]+)['"`]/g)].map((match) => match[1]!),
-  ];
+/** Every identifier a module's code names, sorted: declarations, references, property names and type names alike. Comments
+ * and the contents of strings are not code. */
+function identifiersOf(name: string, source: string): string[] {
+  const names = new Set<string>();
+  const visit = (node: ts.Node): void => {
+    if (ts.isIdentifier(node) || ts.isPrivateIdentifier(node)) names.add(node.text);
+    ts.forEachChild(node, visit);
+  };
+  visit(ts.createSourceFile(name, source, ts.ScriptTarget.Latest, false));
+  return [...names].sort();
 }
 
 describe('@syzygy/support stays a pure leaf', () => {
-  it('scans the package sources, not an empty list', () => {
+  it('scans every source module under src, at any depth, not an empty list', () => {
     expect(SOURCES).toEqual(expect.arrayContaining(['deep-freeze.ts', 'index.ts', 'sha256.ts']));
   });
 
-  it('imports only node:crypto and its own modules, so no file read, no workspace package and no network', () => {
-    const imports = SOURCES.flatMap((file) => specifiersOf(readFileSync(new URL(file, SRC), 'utf8')).map((specifier) => ({ file, specifier })));
+  it('names no module but node:crypto and a module beside it in any literal specifier of any source', () => {
+    const imports = SOURCES.flatMap((file) => specifiersOf(read(file)).map((specifier) => ({ file, specifier })));
     expect(imports.filter(({ specifier }) => !ALLOWED_SPECIFIER.test(specifier))).toEqual([]);
     // The one external module is the hash.
     expect([...new Set(imports.map(({ specifier }) => specifier).filter((specifier) => !specifier.startsWith('./')))]).toEqual(['node:crypto']);
   });
 
-  it('names no write, process, clock, network or file-system token in any source', () => {
+  it('names no identifier outside its literal list in any source', () => {
+    expect(SOURCES.flatMap((file) => identifiersOf(file, read(file)).filter((name) => !ALLOWED_IDENTIFIERS.has(name)).map((name) => `${file}: ${name}`))).toEqual([]);
+  });
+
+  it('names none of the forbidden tokens it shares with the owner-act drafter in any source', () => {
     for (const name of SOURCES) {
-      const source = readFileSync(new URL(name, SRC), 'utf8');
+      const source = read(name);
       for (const forbidden of FORBIDDEN) expect(source, `${name} ${String(forbidden)}`).not.toMatch(forbidden);
     }
   });
@@ -45,6 +59,11 @@ describe('@syzygy/support stays a pure leaf', () => {
     for (const key of ['dependencies', 'devDependencies', 'peerDependencies', 'optionalDependencies']) expect(manifest[key] ?? {}, key).toEqual({});
     const tsconfig = JSON.parse(readFileSync(new URL('../tsconfig.json', import.meta.url), 'utf8')) as Record<string, unknown>;
     expect(tsconfig['references'] ?? []).toEqual([]);
+  });
+
+  it('exports exactly the "." entry, index.js, so no other module is an entry', () => {
+    const manifest = JSON.parse(readFileSync(new URL('../package.json', import.meta.url), 'utf8')) as Record<string, unknown>;
+    expect(manifest['exports']).toEqual({ '.': { types: './dist/index.d.ts', import: './dist/index.js', default: './dist/index.js' } });
   });
 });
 
@@ -63,5 +82,18 @@ describe('the specifier reader this guard stands on', () => {
   ];
   it.each(CASES)('reads %j', (source, expected) => {
     expect(specifiersOf(source)).toEqual(expected);
+  });
+});
+
+describe('the identifier reader the allowlist stands on', () => {
+  const CASES: readonly (readonly [string, readonly string[]])[] = [
+    ["const h = globalThis['process']; // console.log(h)", ['globalThis', 'h']],
+    ['/** fetch(url) */\nexport const a = b.c?.(`${d}e`);', ['a', 'b', 'c', 'd']],
+    ['class K { #p = 1; m<T>(v: T): T { return v; } }', ['#p', 'K', 'T', 'm', 'v']],
+    ['import { randomBytes as r } from "node:crypto";', ['r', 'randomBytes']],
+    ['const \\u0070rocess = 1;', ['process']],
+  ];
+  it.each(CASES)('reads %j', (source, expected) => {
+    expect(identifiersOf('case.ts', source)).toEqual(expected);
   });
 });

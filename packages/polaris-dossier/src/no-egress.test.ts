@@ -1,8 +1,9 @@
 import * as fs from 'node:fs';
 import { tmpdir } from 'node:os';
 import * as path from 'node:path';
-import { build } from 'esbuild';
+import { build, type Plugin } from 'esbuild';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
+import { WORKSPACE, resolve } from '../../polaris-generation-core/src/workspace-reach.testkit.js';
 import { exited } from './child-process.testkit.js';
 import { FULL_RUN_ROOT_ENV, REAL_ROOT, makeClone } from './full-run.testkit.js';
 
@@ -17,6 +18,60 @@ import { FULL_RUN_ROOT_ENV, REAL_ROOT, makeClone } from './full-run.testkit.js';
 const STRACE = await exited('strace', ['-V']);
 const HAVE_STRACE = STRACE.status === 0;
 const INTERNET_FAMILY = /\bAF_INET6?\b/u;
+// The checkout's real path: esbuild resolves through symbolic links, so the guard below compares real paths.
+const SOURCE_ROOT = fs.realpathSync(REAL_ROOT);
+
+/** The bundle's alias map, derived from each workspace package's own `exports` (or its `main`, where it has no `exports`) by the island
+ * guards' resolver, which reads `./dist/X.js` as `src/X.ts`. So the proof bundles the source of the module Node loads for each
+ * specifier, whatever its entry is named. An entry that resolver cannot read throws here (syzygy-bpyt.6.14, the PR 530 round-2
+ * review's N10). */
+function workspaceAliases(): Record<string, string> {
+  const aliases: Record<string, string> = {};
+  for (const manifest of WORKSPACE.manifests.values()) {
+    if (manifest.dir === '.') continue;
+    const subpaths = manifest.exports !== undefined ? Object.keys(manifest.exports) : manifest.main !== undefined ? ['.'] : [];
+    for (const subpath of subpaths) {
+      const specifier = subpath === '.' ? manifest.name : `${manifest.name}${subpath.slice(1)}`;
+      const module = resolve(`${manifest.dir}/package.json`, specifier);
+      if (typeof module !== 'string') throw new Error(`${specifier}: its entry is not a ./dist/X.js whose src/X.ts exists`);
+      aliases[specifier] = path.join(SOURCE_ROOT, module);
+    }
+  }
+  return aliases;
+}
+
+const SOURCES_ONLY = 'resolving within the workspace sources';
+/** Fails the bundle when an `@syzygy/` specifier resolves outside every workspace package's `src` (`packages/<name>/src`,
+ * `apps/<name>/src`). One the alias map does not name reads its package's `dist` through `node_modules`, which is not the source
+ * this proof is about (syzygy-bpyt.6.14, N10). */
+function sourcesOnly(root: string): Plugin {
+  return {
+    name: 'workspace-sources-only',
+    setup(bundler) {
+      bundler.onResolve({ filter: /^@syzygy\// }, async (args) => {
+        if (args.pluginData === SOURCES_ONLY) return undefined;
+        const resolved = await bundler.resolve(args.path, { kind: args.kind, importer: args.importer, resolveDir: args.resolveDir, pluginData: SOURCES_ONLY });
+        if (resolved.errors.length > 0) return { errors: resolved.errors };
+        const relative = path.relative(root, resolved.path).split(path.sep).join('/');
+        if (resolved.external || !/^(?:packages|apps)\/[^/]+\/src\//u.test(relative)) {
+          return { errors: [{ text: `${args.path} resolves outside packages/*/src and apps/*/src: ${relative}` }] };
+        }
+        return { path: resolved.path, namespace: resolved.namespace, sideEffects: resolved.sideEffects };
+      });
+    },
+  };
+}
+
+/** Bundles the driver into `outfile`, every `@syzygy/*` specifier by the derived aliases and inside the workspace sources. */
+async function bundleDriver(outfile: string): Promise<void> {
+  await build({
+    entryPoints: [path.join(REAL_ROOT, 'packages/polaris-dossier/test-support/no-egress-driver.ts')],
+    bundle: true, platform: 'node', format: 'esm', target: 'node22', outfile, logLevel: 'silent',
+    banner: { js: 'import { createRequire as __createRequire } from \'node:module\'; const require = __createRequire(import.meta.url);' },
+    alias: workspaceAliases(),
+    plugins: [sourcesOnly(SOURCE_ROOT)],
+  });
+}
 
 let dir: string;
 let bundle: string;
@@ -27,24 +82,7 @@ beforeAll(async () => {
   dir = fs.realpathSync(fs.mkdtempSync(path.join(tmpdir(), 'dossier-no-egress-')));
   ({ clone, commit } = makeClone(path.join(dir, 'repo')));
   bundle = path.join(dir, 'driver.mjs');
-  const src = (relative: string): string => path.join(REAL_ROOT, relative);
-  await build({
-    entryPoints: [path.join(REAL_ROOT, 'packages/polaris-dossier/test-support/no-egress-driver.ts')],
-    bundle: true, platform: 'node', format: 'esm', target: 'node22', outfile: bundle, logLevel: 'silent',
-    banner: { js: 'import { createRequire as __createRequire } from \'node:module\'; const require = __createRequire(import.meta.url);' },
-    alias: {
-      '@syzygy/polaris-generation-core/live': src('packages/polaris-generation-core/src/live.ts'),
-      '@syzygy/polaris-generation-core': src('packages/polaris-generation-core/src/index.ts'),
-      '@syzygy/polaris-generation-consent/live': src('packages/polaris-generation-consent/src/live.ts'),
-      '@syzygy/polaris-generation-consent': src('packages/polaris-generation-consent/src/index.ts'),
-      '@syzygy/polaris-dossier': src('packages/polaris-dossier/src/index.ts'),
-      '@syzygy/cap1-core': src('packages/cap1-core/src/index.ts'),
-      '@syzygy/cap1-daemon': src('packages/cap1-daemon/src/index.ts'),
-      '@syzygy/http-host': src('packages/http-host/src/index.ts'),
-      '@syzygy/three-surface-poc-core': src('packages/three-surface-poc-core/src/index.ts'),
-      '@syzygy/support': src('packages/support/src/index.ts'),
-    },
-  });
+  await bundleDriver(bundle);
 }, 120_000);
 afterAll(() => { if (dir !== undefined) fs.rmSync(dir, { recursive: true, force: true }); });
 
@@ -91,6 +129,50 @@ describe.skipIf(!HAVE_STRACE)('no provider call and no transmission (S10): an op
     expect(internet.some((line) => line.startsWith('socket(AF_INET'))).toBe(true);
     expect(internet.some((line) => /^(sendto|sendmsg)\(.*inet_addr\("127\.0\.0\.1"\)/u.test(line))).toBe(true);
   }, 240_000);
+});
+
+// What the capture runs is bundled from the workspace sources the packages' own entries name; this needs no strace.
+describe('the S10 bundle takes each workspace package from the source its entry names (syzygy-bpyt.6.14)', () => {
+  it('aliases every workspace package entry to the src module its exports, or its main, names', () => {
+    const relative = Object.fromEntries(Object.entries(workspaceAliases()).map(([specifier, target]) => [specifier, path.relative(SOURCE_ROOT, target).split(path.sep).join('/')]));
+    expect(relative).toEqual({
+      '@syzygy/app': 'apps/syzygy/src/main.ts',
+      '@syzygy/three-surface-poc-app': 'apps/three-surface-poc/src/main.ts',
+      '@syzygy/three-surface-poc-app/dossier-render': 'apps/three-surface-poc/src/polaris-generation/dossier-render.ts',
+      '@syzygy/three-surface-poc-app/dossier-site': 'apps/three-surface-poc/src/polaris-generation/dossier-site.ts',
+      '@syzygy/cap1-core': 'packages/cap1-core/src/index.ts',
+      '@syzygy/cap1-core/testing': 'packages/cap1-core/src/testing.ts',
+      '@syzygy/cap1-daemon': 'packages/cap1-daemon/src/index.ts',
+      '@syzygy/http-host': 'packages/http-host/src/index.ts',
+      '@syzygy/polaris-dossier': 'packages/polaris-dossier/src/index.ts',
+      '@syzygy/polaris-dossier/argv': 'packages/polaris-dossier/src/argv.ts',
+      '@syzygy/polaris-dossier/state-directory': 'packages/polaris-dossier/src/state-directory.ts',
+      '@syzygy/polaris-generation-consent': 'packages/polaris-generation-consent/src/index.ts',
+      '@syzygy/polaris-generation-consent/live': 'packages/polaris-generation-consent/src/live.ts',
+      '@syzygy/polaris-generation-consent/testing': 'packages/polaris-generation-consent/src/testing.ts',
+      '@syzygy/polaris-generation-core': 'packages/polaris-generation-core/src/index.ts',
+      '@syzygy/polaris-generation-core/live': 'packages/polaris-generation-core/src/live.ts',
+      '@syzygy/support': 'packages/support/src/index.ts',
+      '@syzygy/three-surface-poc-core': 'packages/three-surface-poc-core/src/index.ts',
+    });
+  });
+
+  it('bundles the driver with every @syzygy specifier inside packages/*/src or apps/*/src', async () => {
+    const out = fs.realpathSync(fs.mkdtempSync(path.join(tmpdir(), 'dossier-no-egress-bundle-')));
+    try {
+      await expect(bundleDriver(path.join(out, 'driver.mjs'))).resolves.toBeUndefined();
+    } finally {
+      fs.rmSync(out, { recursive: true, force: true });
+    }
+  }, 120_000);
+
+  it('fails the bundle when an @syzygy specifier resolves outside them', async () => {
+    const outside = build({
+      stdin: { contents: "import '@syzygy/support';", resolveDir: SOURCE_ROOT, loader: 'ts' }, bundle: true, write: false, platform: 'node', format: 'esm', logLevel: 'silent',
+      alias: { '@syzygy/support': path.join(SOURCE_ROOT, 'packages/support/package.json') }, plugins: [sourcesOnly(SOURCE_ROOT)],
+    });
+    await expect(outside).rejects.toThrow('@syzygy/support resolves outside packages/*/src and apps/*/src: packages/support/package.json');
+  });
 });
 
 // Under CI the proof is required: node-ci installs strace, so its absence there is a failure, never a skip.
