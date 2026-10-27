@@ -1100,7 +1100,7 @@
    "removed": 0,
    "wholePrOverMain": "+41 ~0 -0 (36 in the four new files, which now hold 6, 5, 4 and 21 tests, and 5 added to git-object-reader, project-shape-observation and code-structure)",
    "changedFilesFiveTimes": "docs/evidence/syzygy-bpyt-6-3/repair1-new-tests-5x.log (7 files, 162 tests, 5 runs, each all passed)",
-   "typecheck": "docs/evidence/syzygy-bpyt-6-3/repair1-typecheck.log (npm run typecheck, exit 0)"
+   "typecheck": "docs/evidence/syzygy-bpyt-6-3/utf8-repair1-typecheck.log (npm run typecheck, exit 0). Renamed from repair1-typecheck.log: pull request 533 created a file of that name, and the merge kept its bytes"
   }
  },
  "everyChangedOutput": "none. The decoder returns the same text or the same refusal on all 12,841 differential rows, so nothing computed from the decoded text can differ [Inferred: from the row equality, not a separate digest run]; the existing response-identity, manifest and generation tests that pin digests and rendered bytes pass unchanged; canonicalJson and encodeCanonicalJson differ from the base only in two comment lines (comment-only emit equality). Round-1 repair: the one output the review found changed, the Unknown reason of observeCodeStructure when withoutGitlinkRecords cannot allocate its copy, is the base's again (the filter runs inside the converting try); production code differs from the reviewed head in code-structure.ts only.",
@@ -1155,6 +1155,11 @@
    "sha256": "54c90c545ffb1e08272765fbfce077cc24bcaf49aab4c18267b5347ab032cf07"
   },
   {
+   "path": "docs/evidence/syzygy-bpyt-6-3/comment-only-merged-a5ab2b28-a5b1d532.json",
+   "bytes": 7498,
+   "sha256": "4a767765d9cfa609718e79eedb9eb00eb6fd093aba460679c1b4e22db495a1c1"
+  },
+  {
    "path": "docs/evidence/syzygy-bpyt-6-3/comment-only-stack2-a.json",
    "bytes": 1324,
    "sha256": "cffbedd31c8775bca1278cae6c2e6b3d9541bde6d94f2e63107077e310abb034"
@@ -1190,14 +1195,14 @@
    "sha256": "cfeae5b0798ebda0872011bb89e065d89588e17b19f64eab088795b19e0382a7"
   },
   {
+   "path": "docs/evidence/syzygy-bpyt-6-3/merge2-resolution-check-a5b1d532.json",
+   "bytes": 4521,
+   "sha256": "3aef5fa22bd22d84844f9989eaad82ad34d0e14fc18840e9bccb6977c9f2a17b"
+  },
+  {
    "path": "docs/evidence/syzygy-bpyt-6-3/repair1-new-tests-5x.log",
    "bytes": 280,
    "sha256": "22e0a0eb98953d85fb5cbdb0008bc8c9bb404f4161ede4eb0858ae5f850f0eb1"
-  },
-  {
-   "path": "docs/evidence/syzygy-bpyt-6-3/repair1-typecheck.log",
-   "bytes": 307,
-   "sha256": "f21762922bb179fa5dc8c33e881c4f062ef1c33bf48c7d3dad2dd0e5cd30ee98"
   },
   {
    "path": "docs/evidence/syzygy-bpyt-6-3/utf8-canonical-mutants-2ea14d94.json",
@@ -1258,6 +1263,11 @@
    "path": "docs/evidence/syzygy-bpyt-6-3/utf8-repair-mutants.py",
    "bytes": 10579,
    "sha256": "fe41cfce5165d88a465b878ebc9572c2090bc7d9c74e72abd3852dad88b60e68"
+  },
+  {
+   "path": "docs/evidence/syzygy-bpyt-6-3/utf8-repair1-typecheck.log",
+   "bytes": 307,
+   "sha256": "f21762922bb179fa5dc8c33e881c4f062ef1c33bf48c7d3dad2dd0e5cd30ee98"
   }
  ],
  "roundOneRepair": {
@@ -1273,9 +1283,62 @@
    ]
   },
   "mergeOfMain": {
-   "mainCommit": "d38d7a3ce632a34c2a41bdb77ad323ba0b05b777",
-   "mainSubject": "Merge pull request #487 from Tzeusy/prep/p115-offer-2026-10-21",
-   "note": "origin/main is merged into the branch after this record is committed (never rebased); the merge commit is the pull request head and is named in the pull request body, not here. Pull request 533 had not landed when the merge was made, so no hand resolution of AGENTS.md was needed; whichever of the two lands second resolves AGENTS.md by keeping both bullets and re-runs comment-only.mjs over the merged project-shape-manifest.ts (review N7)"
+   "note": "origin/main is merged into the branch after the record is committed (never rebased); the merge commits are the pull request head chain and are named in the pull request body, not here. The first merge (main d38d7a3c) was made before pull request 533 landed, so it needed no hand resolution of AGENTS.md (this entry, as first written, said whichever lands second resolves it). Pull request 533 has since landed; secondMerge records the second merge.",
+   "firstMerge": {
+    "mainCommit": "d38d7a3ce632a34c2a41bdb77ad323ba0b05b777",
+    "mainSubject": "Merge pull request #487 from Tzeusy/prep/p115-offer-2026-10-21"
+   },
+   "secondMerge": {
+    "mainCommit": "41932c3b5aba567376fea3b32a80a54f8b6b30ab",
+    "mainSubject": "Merge pull request #533 from Tzeusy/agent/syzygy-bpyt.6.3-fence",
+    "mergeCommit": "a5b1d5328a7585e1ad03e90fc5df1847d85b9a21",
+    "parents": [
+     "e6afa657d63cc9a47afce06636ef6f0c0c19491d",
+     "41932c3b5aba567376fea3b32a80a54f8b6b30ab"
+    ],
+    "conflicts": [
+     "AGENTS.md (content)",
+     "docs/evidence/syzygy-bpyt-6-3/repair1-typecheck.log (add/add: both pull requests created the name)"
+    ],
+    "resolution": {
+     "AGENTS.md": "kept both bullets: this pull request's JSON-encoders bullet, then main's Markdown-fences bullet, each byte-equal to its side",
+     "repair1-typecheck.log": "main's bytes kept at the name; this pull request's log is committed as utf8-repair1-typecheck.log with its own bytes and sha256 (files table)"
+    },
+    "mergeResolutionCheck": {
+     "file": "docs/evidence/syzygy-bpyt-6-3/merge2-resolution-check-a5b1d532.json",
+     "paths": 5927,
+     "pathsEqualToGitsOwnMerge": 5925,
+     "conflictedPathsResolvedByHand": 2,
+     "otherDifferences": 0,
+     "how": "the merged tree is recomputed from the two parents by merge-resolution-check.py (git merge-tree), and every path of the committed tree is compared with it"
+    },
+    "commentOnly": {
+     "file": "docs/evidence/syzygy-bpyt-6-3/comment-only-merged-a5ab2b28-a5b1d532.json",
+     "base": "a5ab2b28, an ancestor of the previously pushed head e6afa657 (subject: evidence: the merge of main (PR 529) is what git computes, except one hand-resolved conflict)",
+     "head": "a5b1d532 (the second merge)",
+     "changedFiles": 890,
+     "productionFilesChanged": 15,
+     "commentOnly": 8,
+     "notCommentOnly": [
+      "packages/polaris-generation-core/src/workspace-reach.testkit.ts",
+      "packages/support/src/decode-utf8.ts",
+      "packages/support/src/index.ts",
+      "packages/three-surface-poc-core/src/authority-artifact-fields.ts",
+      "packages/three-surface-poc-core/src/code-structure.ts",
+      "packages/three-surface-poc-core/src/git-object-reader.ts",
+      "packages/three-surface-poc-core/src/project-shape-observation.ts"
+     ],
+     "projectShapeManifest": "emit-equal, so comment-only: source sha256 c32ab4e3 to a6401c01, the same emitted sha256 d4b1ba58",
+     "note": "the interval holds this pull request's own changes and the changes main took in; project-shape-manifest.ts is not among the files that are not comment-only"
+    },
+    "commentOnlyMjsUnchanged": "docs/evidence/syzygy-bpyt-6-3/comment-only.mjs is byte-equal to main's copy (the files table row is unchanged)",
+    "checksOnMergedTree": {
+     "typecheck": "npm run typecheck exit 0 after npm ci",
+     "changedTestFilesFiveTimes": "7 files, 162 tests passed on each of 5 runs",
+     "check_governance": "32 OK / 21 WARN / 0 FAIL",
+     "check_quotations": "exit 0"
+    }
+   }
   },
   "items": [
    {
@@ -1326,7 +1389,7 @@
    },
    {
     "id": "N7",
-    "what": "PR body corrected: this PR shares AGENTS.md, project-shape-manifest.ts and comment-only.mjs with #533; the merge of main is recorded (mergeOfMain)"
+    "what": "PR body corrected: this PR shares AGENTS.md, project-shape-manifest.ts and comment-only.mjs with #533; the merge of main is recorded (mergeOfMain). #533 landed after the repair was pushed, so main was merged a second time and AGENTS.md was resolved by hand (mergeOfMain.secondMerge)"
    },
    {
     "id": "N8",
