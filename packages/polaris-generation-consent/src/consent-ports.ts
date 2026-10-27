@@ -1,5 +1,5 @@
-import { createHash } from 'node:crypto';
 import { digestCanonicalJson, type AdmissionDecision, type AttemptInput, type DispatchPermit, type GenerationSource, type PipelinePorts, type PipelineRequest } from '@syzygy/polaris-generation-core';
+import { sha256 } from '@syzygy/support';
 import { COMMIT_OBJECT_ID, parseAdmissionRecords, type AdmissionRecord, type AdmissionRecordReader } from './admission-record.js';
 import { effective, ref, type Dead } from './in-force.js';
 
@@ -57,7 +57,6 @@ export interface ConsentPorts {
 }
 
 const LIMITS = { maxBytes: 4_000_000, maxNodes: 200_000, maxDepth: 16 };
-const sha256 = (text: string): string => createHash('sha256').update(text, 'utf8').digest('hex');
 /** Every property of the source, with bodies and span texts replaced by their digests, so the
  * digest binds what would be sent (bodies, spans, classification basis, any segment fields), not just names. */
 const sourceKey = (s: GenerationSource): Record<string, unknown> => {

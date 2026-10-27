@@ -1,6 +1,6 @@
-import { createHash } from 'node:crypto';
 import * as fs from 'node:fs';
 import * as path from 'node:path';
+import { sha256 } from '@syzygy/support';
 import { RUN_LAYOUT } from './state-directory.js';
 
 /** Launched runs (candidate REQ-polaris-generation-040 to 044; prototype under owner direction
@@ -15,8 +15,6 @@ import { RUN_LAYOUT } from './state-directory.js';
 export const LAUNCHED_FORMAT = 'polaris-dossier-launched/1';
 export const LAUNCH_RECORD_FORMAT = 'polaris-dossier-launch-record/1';
 export const SYZYGY_LAUNCHED = 'syzygy-launched' as const;
-
-const sha256 = (text: string): string => createHash('sha256').update(text, 'utf8').digest('hex');
 
 export interface LaunchedMarker {
   readonly format: typeof LAUNCHED_FORMAT;

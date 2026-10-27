@@ -1,4 +1,4 @@
-import { createHash } from 'node:crypto';
+import { sha256 } from '@syzygy/support';
 
 /** The public-source screening scope's `project-documentation` class (policy version 2, `publicSourceScope.contentClassification`,
  * the rule whose `class` is `project-documentation`; RFC5-14 as amended 2026-10-07), shared by the any-repo reader's screen and the
@@ -54,7 +54,6 @@ export interface ProjectDocumentationRule {
 export type ProjectDocumentationRead = { readonly ok: true; readonly rule: ProjectDocumentationRule | null } | { readonly ok: false; readonly why: string };
 
 const isObject = (value: unknown): value is Readonly<Record<string, unknown>> => value !== null && typeof value === 'object' && !Array.isArray(value);
-const sha256 = (text: string): string => createHash('sha256').update(text, 'utf8').digest('hex');
 // Never matchable against a folded path: an A-Z letter (folded away), a separator of segments, or a backslash (matches nothing).
 const unmatchable = (entry: string): boolean => /[A-Z/\\]/u.test(entry);
 const names = (value: unknown, minimum: number, valid: (entry: string) => boolean): value is readonly string[] =>

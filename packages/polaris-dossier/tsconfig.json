@@ -18,6 +18,9 @@
     },
     {
       "path": "../three-surface-poc-core"
+    },
+    {
+      "path": "../support"
     }
   ]
 }

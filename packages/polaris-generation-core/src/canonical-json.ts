@@ -1,5 +1,5 @@
-import { createHash } from 'node:crypto';
 import { types } from 'node:util';
+import { sha256 } from '@syzygy/support';
 
 export const CANONICAL_JSON_ENCODING = 'polaris-json-v1' as const;
 
@@ -122,6 +122,6 @@ export function digestCanonicalJson(value: unknown, limits: CanonicalJsonLimits)
   return {
     encoding: CANONICAL_JSON_ENCODING,
     algorithm: 'sha256',
-    digest: createHash('sha256').update(encodeCanonicalJson(value, limits), 'utf8').digest('hex'),
+    digest: sha256(encodeCanonicalJson(value, limits)),
   };
 }

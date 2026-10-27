@@ -49,7 +49,6 @@
 // instruction-text rules. Admitting a body is not consent to send it:
 // `contentClass` names its class for whoever gates egress by consent; this
 // reader has no production caller that hands its corpus on.
-import { createHash } from 'node:crypto';
 import { readFile } from 'node:fs/promises';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -57,6 +56,7 @@ import { fileURLToPath } from 'node:url';
 import { POLICY_ACT_FORMS, readClassActState, readPolicyActChain } from '@syzygy/polaris-generation-consent';
 import { codeContentExempt, compileEveryOffsetMatcher, publicSourceContentClass, readCodeContentExemption, readProjectDocumentationRule, readSecretRedaction, redactBody, type PipelinePorts, type PublicSourceContentClass, type RedactionDetector } from '@syzygy/polaris-generation-core';
 import { compileDetectors, deniedPathReason, detectSecrets, scanActiveContent, type DeniedPathRules, type SecretDetector } from '@syzygy/three-surface-poc-core';
+import { sha256 } from '@syzygy/support';
 
 import { excludedSourceId, newGenerationRunKey } from './run-key.js';
 import { CorpusRefusal, readRepoCorpus, type CorpusScreen, type ReaderConfig, type RepoCorpus, type RepoCorpusPorts } from './repo-corpus.js';
@@ -143,7 +143,7 @@ export async function loadPublicSourceScreen(port: PublicSourcePolicyActPort = c
     || !act.includes('\nProject identity: `project:syzygy`\n')) refuse('act record is not a public-source scope approve-policy act');
   const digests = [...act.matchAll(EXACT_DIGEST)].map(match => match[1]!);
   if (digests.length !== 1) refuse('act record does not name exactly one exact digest');
-  const policySha256 = createHash('sha256').update(policy!).digest('hex');
+  const policySha256 = sha256(policy!);
   if (policySha256 !== digests[0]) refuse('policy bytes do not hash to the act argument');
   let doc: Record<string, unknown>;
   try { doc = JSON.parse(new TextDecoder('utf-8', { fatal: true }).decode(policy!)) as Record<string, unknown>; } catch { return refuse('policy is not UTF-8 JSON'); }
