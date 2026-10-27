@@ -157,7 +157,7 @@ describe('production-owned capture-to-model re-observation seam', () => {
     expect(once.clocks).toEqual({ butlersHead: fixture.revision, workingTreeDigest: 'working-tree-a', doltRevision: 'dolt-fixture-revision' });
     expect(once.moved).toEqual({ butlersHead: 'unchanged', workingTreeDigest: 'unchanged', doltRevision: 'unchanged' });
     expect(twice.moved).toEqual({ butlersHead: 'unchanged', workingTreeDigest: 'moved', doltRevision: 'unchanged' });
-  }, PRODUCTION_BUILD_TIMEOUT_MS);
+  }, PRODUCTION_BUILD_TIMEOUT_MS); // this test: up to 8.5 s in 5 full-suite runs at load1 38-71, over the 5 s default in 3 of them; up to 1.6 s in 5 alone runs at load1 22-24 (docs/evidence/syzygy-bpyt-4-31/full-runs.json, docs/evidence/syzygy-bpyt-4-31/repair-durations/production-reobserve.test.tests.json)
 
   it('retains the prior production model and non-zero drift when the production build fails', async () => {
     const fixture = fixtureRepoWithGit(cleanups);

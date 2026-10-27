@@ -31,7 +31,7 @@ export class CanonicalJsonError extends Error {
 /**
  * Encodes JSON data, not a parsed/authorized generator record. Objects have sorted
  * UTF-16 keys; arrays retain order; ECMAScript JSON primitive spelling is used.
- * No normalization, toJSON call, getters, or source identity interpretation occurs.
+ * No normalization, toJSON call, getters, or source identity interpretation occurs. Not the PWB encoder (canonicalJson): the two differ on purpose (docs/evidence/syzygy-bpyt-6-3/dc3-decode-and-canonical-json-2026-10-25.json).
  */
 export function encodeCanonicalJson(value: unknown, limits: CanonicalJsonLimits): string {
   if (![limits.maxBytes, limits.maxNodes].every((n) => Number.isSafeInteger(n) && n > 0)

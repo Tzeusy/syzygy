@@ -44,4 +44,4 @@ it.skipIf(executable === undefined)('renders the pipeline draft with working dia
     try { await browser?.close(); }
     finally { await rm(directory, { recursive: true, force: true }); }
   }
-}, 30_000);
+}, 30_000); // a pipeline draft in a real browser: timed out at the 5 s default in 1 of 5 full-suite runs at load1 38-71, up to 4.1 s in the others (docs/evidence/syzygy-bpyt-4-31/full-runs.json)

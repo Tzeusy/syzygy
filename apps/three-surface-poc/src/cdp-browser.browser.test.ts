@@ -79,7 +79,7 @@ describe.skipIf(executable === undefined || process.platform !== 'linux')('dispo
       // A failure before close() would otherwise leak this browser.
       if (!closeAttempted) await browser.close().catch(() => undefined);
     }
-  }, 60_000);
+  }, 60_000); // a real Chrome launch and forced teardown: worst 15.8 s over 5 alone runs at load1 91-138, the worst run failing not by timeout (docs/evidence/syzygy-bpyt-4-31/durations/cdp-browser.browser.test.tests.json)
 
   it('leaves no Chrome singleton directory behind when the leader is killed', async () => {
     const browser = await launchBrowser(executable as string);
@@ -109,5 +109,5 @@ describe.skipIf(executable === undefined || process.platform !== 'linux')('dispo
       for (const pid of frozen.filter(alive)) process.kill(pid, 'SIGKILL');
       if (!closeAttempted) await browser.close().catch(() => undefined);
     }
-  }, 60_000);
+  }, 60_000); // a real Chrome launch and forced teardown: worst 12.6 s over 5 alone runs at load1 91-138 (docs/evidence/syzygy-bpyt-4-31/durations/cdp-browser.browser.test.tests.json)
 });

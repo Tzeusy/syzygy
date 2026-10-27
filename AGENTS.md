@@ -181,13 +181,26 @@ sweep lessons added 2026-09-23; the raw-head digest lesson the same day.
   the barrel; conformance fixtures build through
   `packages/cap1-conformance/src/fixtures/` (inputs only, expected values
   stay literals).
-- `packages/support/` (`@syzygy/support`): the one `sha256` and the one
-  `deepFreeze`, a leaf with no workspace dependency, imported by the PWB
-  core, the Polaris generation packages, the dossier and the POC app. The
-  cap1 packages never import it (`cap1-system` is an independent oracle).
+- `packages/support/` (`@syzygy/support`): the one `sha256`, the one
+  `deepFreeze` and a shared strict `decodeUtf8`, a leaf with no workspace
+  dependency, imported by the PWB core, the Polaris generation packages,
+  the dossier and the POC app. `decodeUtf8` is the one named helper, not
+  the only strict decoder: 20 `fatal: true` `TextDecoder` constructions
+  remain inline or as module constants, converted by no PR yet (the sites
+  are listed in `docs/evidence/syzygy-bpyt-6-3/dc3-decode-and-canonical-json-2026-10-25.json`).
+  The cap1 packages never import it (`cap1-system` is an independent oracle).
   After a merge that adds a workspace package, run `npm ci` in every checkout
   that builds or serves from it: until the `node_modules/@syzygy/` link
   exists, the package does not resolve.
+- Three key-sorted JSON encoders are kept apart on purpose: `canonicalJson`
+  (PWB identities) drops `undefined` members and flattens any object;
+  `encodeCanonicalJson` (Polaris generation digests) refuses what it cannot
+  spell and sorts every key by code unit; cap1's own `deterministicLayer`
+  is left out of the divergence test (cap1 imports nothing shared), and
+  only `canonical-json-probe.mjs` compares it. A merge makes one encoder
+  refuse what another spells (an `undefined` member, a BigInt) or reorders
+  array-index keys, so it changes an output or a refusal and goes to the
+  owner (GP-Q0). `canonical-json-divergence.test.ts` pins the first two.
 - Markdown fences are read by five separate rules, kept apart on purpose:
   `markdown-code-context.ts` (the PWB-REQ-006 profile, the only one a clause
   states), the manifest's `stripFences`, the extractor's `parseDoc`, the

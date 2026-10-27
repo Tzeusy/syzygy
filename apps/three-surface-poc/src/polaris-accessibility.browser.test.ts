@@ -88,7 +88,7 @@ describe.skipIf(executable === undefined)('Polaris keyboard, non-visual and cont
     const warm = await browser.newPage();
     try { await warm.navigate(pageUrl(ACCESSIBILITY_VARIANTS[0] as AccessibilityVariant).url); }
     finally { await warm.close(); }
-  }, 60_000);
+  }, 60_000); // launches Chrome and loads one page: up to 2.8 s in 10 alone runs, but a full-suite run at load1 56-58 left up to 8.0 s of its file's time to its hooks (docs/evidence/syzygy-bpyt-4-31/full-runs.json)
 
   afterAll(async () => {
     await browser?.close();
@@ -307,7 +307,7 @@ describe.skipIf(executable === undefined)('Polaris keyboard, non-visual and cont
       expect(report.activations.filter((activation, index) => index > 0 && activation.href === report.activations[index - 1]?.href)).toHaveLength(6);
       expect(report.violations).toEqual([]);
     } finally { await page.close(); }
-  }, 240_000);
+  }, 240_000); // over two hundred fragment activations in a real browser: worst 74.6 s over 5 alone runs at load1 20-91 (docs/evidence/syzygy-bpyt-4-31/durations/polaris-accessibility.browser.test.tests.json)
 
   for (const variant of ACCESSIBILITY_VARIANTS) {
     it(`${variant.id}: every distinction is keyboard-operable, named for assistive technology, and AA-contrasting`, async () => {
@@ -329,6 +329,6 @@ describe.skipIf(executable === undefined)('Polaris keyboard, non-visual and cont
       expect(expectedTargets.length).toBeGreaterThan(0);
 
       expect(report.violations).toEqual([]);
-    }, 240_000);
+    }, 240_000); // a full keyboard, accessibility-tree and contrast sweep of one page: worst 77.4 s over 30 alone runs (6 variants) at load1 20-91 (docs/evidence/syzygy-bpyt-4-31/durations/polaris-accessibility.browser.test.tests.json)
   }
 });
