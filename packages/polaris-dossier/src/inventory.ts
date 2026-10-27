@@ -15,6 +15,7 @@ import {
 } from './draft-schema.js';
 import { PERMITTING_ARM_ENABLED, decideExecutionRule, executionRuleSection, type ExecutionRule } from './execution-rule.js';
 import { RECORDS_WITHIN_REACH, type GateSources } from './gate-sources.js';
+import { isoOf } from './iso-of.js';
 import { expectedLaunch, launchFormRefusal, launchedMarkerState } from './launched.js';
 import type { Outcome } from './outcome.js';
 import { recheckSessionStatement, type SessionStatementOfRecord } from './session-statement.js';
@@ -73,7 +74,6 @@ export const INVENTORY_CHECKS = path.join(RUN_LAYOUT.inventory, 'checks');
 const RECORD_JSON_LIMITS = Object.freeze({ maxBytes: 262_144, maxNodes: 4096, maxDepth: 8 });
 const DRAFT_JSON_LIMITS = Object.freeze({ maxBytes: 4 * 1024 * 1024, maxNodes: 500_000, maxDepth: 16 });
 
-const isoOf = (instant: number): string => new Date(instant).toISOString();
 export const errno = (cause: unknown): string => (cause as NodeJS.ErrnoException).code ?? 'unknown-error';
 
 /** A run step's common opening: the run directory, the pinned revision verified again, a brief issued and its deadline not passed.

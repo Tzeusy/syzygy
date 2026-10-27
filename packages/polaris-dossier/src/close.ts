@@ -7,6 +7,7 @@ import { executionFlags } from './execution-flags.js';
 import type { CredentialProbe } from './execution-rule.js';
 import { RECORDS_WITHIN_REACH } from './gate-sources.js';
 import { errno, logStep, openRun, readRecord } from './inventory.js';
+import { isoOf } from './iso-of.js';
 import type { Outcome } from './outcome.js';
 import { latestPassedDraft, type ReviewDeps } from './review.js';
 import type { ReverifyRefusal } from './reverify.js';
@@ -84,7 +85,6 @@ const DISCLOSURES = [
 ];
 
 const text = (value: unknown): string | undefined => (typeof value === 'string' ? value : undefined);
-const isoOf = (instant: number): string => new Date(instant).toISOString();
 
 /** A declared usage figure: a positive integer, written in decimal without sign or leading zero; a description of the fault otherwise. */
 export function parseUsageFigure(name: string, value: string | undefined): number | null | string {

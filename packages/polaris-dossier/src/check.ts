@@ -9,6 +9,7 @@ import { EXECUTION_FLAGS_BASIS, executionFlags, type ExecutionFlags } from './ex
 import type { CredentialProbe } from './execution-rule.js';
 import { RECORDS_WITHIN_REACH, type GateSources } from './gate-sources.js';
 import { GitObjectReadRefusal, openPinnedObjectReader, type PinnedObjectReader, type PinnedObjectReaderOptions, type TreeEntry } from './git-object-reader.js';
+import { isoOf } from './iso-of.js';
 import type { Outcome } from './outcome.js';
 import { reverifyPinnedRevision, type ReverifyRefusal } from './reverify.js';
 import type { RunConfig } from './run-config.js';
@@ -190,7 +191,6 @@ const DISCLOSURES = [
   'The clone read is the one the run record names, as the operator supplied it at init; the record is within the agent sessions\' write reach, so the location is Inferred, and only objects re-hashed from the pinned commit are used.',
 ];
 
-const isoOf = (instant: number): string => new Date(instant).toISOString();
 const list = (value: unknown): readonly unknown[] => (Array.isArray(value) ? value : []);
 const text = (value: unknown): string | undefined => (typeof value === 'string' ? value : undefined);
 const line = (value: unknown): number | undefined => (typeof value === 'number' && Number.isSafeInteger(value) && value >= 1 ? value : undefined);

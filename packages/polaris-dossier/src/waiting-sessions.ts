@@ -8,6 +8,7 @@ import {
   INVENTORY_BRIEF_FILE, checkInventory, errno, latestInventorySession, logStep, openRun, promptRecordName, readRecord, sessionsRoot,
   type InventoryCheckResult,
 } from './inventory.js';
+import { isoOf } from './iso-of.js';
 import type { Outcome } from './outcome.js';
 import type { ReverifyOptions, ReverifyRefusal } from './reverify.js';
 import {
@@ -66,8 +67,6 @@ export const PLAIN_PATH = /^\/[A-Za-z0-9._/-]+$/u;
 const SIGNOFF_RECORD = /^POLARIS-DOSSIER-LOCAL-AGENT-MODE-SIGNOFF-v([0-9]+)\.([0-9]+)\.md$/u;
 const DECISIONS = path.join('.syzygy', 'governance', 'decisions');
 const DELIVERY_JSON_LIMITS = Object.freeze({ maxBytes: 65_536, maxNodes: 256, maxDepth: 4 });
-
-const isoOf = (instant: number): string => new Date(instant).toISOString();
 
 const SIGNOFF_PACKAGE = 'polaris-dossier-local-agent-mode';
 const AGGREGATE = 'ACCEPTANCE-ACT-RECORD.md';
