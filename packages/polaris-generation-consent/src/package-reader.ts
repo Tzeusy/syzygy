@@ -58,7 +58,7 @@ const refuse = (): never => { throw new AdmissionRecordError('invalid-records');
 /** The text with every fenced code block and every HTML comment blanked. Fences follow CommonMark: one opens on a line of three or
  * more backticks or tildes, up to three spaces in (a backtick opener's info string holds no backtick), and closes only on a run of
  * the same character at least as long, with nothing but whitespace after it; an unclosed fence or comment runs to the end. Line
- * count is kept. */
+ * count is kept. (One of five fence readers, each with its own rule: docs/evidence/syzygy-bpyt-6-3/dc3-fence-rules-2026-10-25.json.) */
 function outsideFences(text: string): string {
   let open: string | null = null;
   const unfenced = text.split('\n').map(line => {
