@@ -1,0 +1,127 @@
+{
+ "baseTests": 241,
+ "headTests": 264,
+ "added": [
+  [
+   "packages/three-surface-poc-core/src/git-object-reader.test.ts",
+   "a CRLF or CR blob gets the outcome its LF form gets CR: a 200,000-line closed fence holding a script element reads as text, under the read limit",
+   0
+  ],
+  [
+   "packages/three-surface-poc-core/src/git-object-reader.test.ts",
+   "a CRLF or CR blob gets the outcome its LF form gets CR: a script element after a 200,000-line closed fence is found, with a body-free record",
+   0
+  ],
+  [
+   "packages/three-surface-poc-core/src/git-object-reader.test.ts",
+   "a CRLF or CR blob gets the outcome its LF form gets CR: scanActiveContent over a 200,000-line closed fence finds nothing inside it",
+   0
+  ],
+  [
+   "packages/three-surface-poc-core/src/git-object-reader.test.ts",
+   "a CRLF or CR blob gets the outcome its LF form gets CRLF: a 200,000-line closed fence holding a script element reads as text, under the read limit",
+   0
+  ],
+  [
+   "packages/three-surface-poc-core/src/git-object-reader.test.ts",
+   "a CRLF or CR blob gets the outcome its LF form gets CRLF: a script element after a 200,000-line closed fence is found, with a body-free record",
+   0
+  ],
+  [
+   "packages/three-surface-poc-core/src/git-object-reader.test.ts",
+   "a CRLF or CR blob gets the outcome its LF form gets CRLF: scanActiveContent over a 200,000-line closed fence finds nothing inside it",
+   0
+  ],
+  [
+   "packages/three-surface-poc-core/src/git-object-reader.test.ts",
+   "a CRLF or CR blob gets the outcome its LF form gets LF: a 200,000-line closed fence holding a script element reads as text, under the read limit",
+   0
+  ],
+  [
+   "packages/three-surface-poc-core/src/git-object-reader.test.ts",
+   "a CRLF or CR blob gets the outcome its LF form gets LF: a script element after a 200,000-line closed fence is found, with a body-free record",
+   0
+  ],
+  [
+   "packages/three-surface-poc-core/src/git-object-reader.test.ts",
+   "a CRLF or CR blob gets the outcome its LF form gets LF: scanActiveContent over a 200,000-line closed fence finds nothing inside it",
+   0
+  ],
+  [
+   "packages/three-surface-poc-core/src/markdown-code-context.test.ts",
+   "a very long closed fence CR: 200,000 lines are blanked, every line end and the text after the fence kept",
+   0
+  ],
+  [
+   "packages/three-surface-poc-core/src/markdown-code-context.test.ts",
+   "a very long closed fence CR: a script element inside the fence is blanked, and the line after the fence keeps its own",
+   0
+  ],
+  [
+   "packages/three-surface-poc-core/src/markdown-code-context.test.ts",
+   "a very long closed fence CR: the same lines left unclosed are still malformed at the opener",
+   0
+  ],
+  [
+   "packages/three-surface-poc-core/src/markdown-code-context.test.ts",
+   "a very long closed fence CRLF: 200,000 lines are blanked, every line end and the text after the fence kept",
+   0
+  ],
+  [
+   "packages/three-surface-poc-core/src/markdown-code-context.test.ts",
+   "a very long closed fence CRLF: a script element inside the fence is blanked, and the line after the fence keeps its own",
+   0
+  ],
+  [
+   "packages/three-surface-poc-core/src/markdown-code-context.test.ts",
+   "a very long closed fence CRLF: the same lines left unclosed are still malformed at the opener",
+   0
+  ],
+  [
+   "packages/three-surface-poc-core/src/markdown-code-context.test.ts",
+   "a very long closed fence LF: 200,000 lines are blanked, every line end and the text after the fence kept",
+   0
+  ],
+  [
+   "packages/three-surface-poc-core/src/markdown-code-context.test.ts",
+   "a very long closed fence LF: a script element inside the fence is blanked, and the line after the fence keeps its own",
+   0
+  ],
+  [
+   "packages/three-surface-poc-core/src/markdown-code-context.test.ts",
+   "a very long closed fence LF: the same lines left unclosed are still malformed at the opener",
+   0
+  ],
+  [
+   "packages/three-surface-poc-core/src/project-shape-extraction.test.ts",
+   "a source whose class holds 130,000 items is extracted, every item kept in class order",
+   0
+  ],
+  [
+   "packages/three-surface-poc-core/src/project-shape-model.test.ts",
+   "a very long fence or list does not abort the observation CR: a 200,000-line closed fence at the end of vision.md is classified as a 10-line one is",
+   0
+  ],
+  [
+   "packages/three-surface-poc-core/src/project-shape-model.test.ts",
+   "a very long fence or list does not abort the observation CRLF: a 200,000-line closed fence at the end of vision.md is classified as a 10-line one is",
+   0
+  ],
+  [
+   "packages/three-surface-poc-core/src/project-shape-model.test.ts",
+   "a very long fence or list does not abort the observation LF: a 200,000-line closed fence at the end of vision.md is classified as a 10-line one is",
+   0
+  ],
+  [
+   "packages/three-surface-poc-core/src/project-shape-model.test.ts",
+   "a very long fence or list does not abort the observation a 130,000-item success list is extracted whole",
+   0
+  ]
+ ],
+ "removed": [],
+ "changedCalls": [],
+ "changedGeneratedTests": {},
+ "line": "Tests: +23 ~0 -0",
+ "allBasePassed": true,
+ "allHeadPassed": true
+}

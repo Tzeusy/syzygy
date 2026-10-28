@@ -268,6 +268,13 @@ sweep lessons added 2026-09-23; the raw-head digest lesson the same day.
 - Fresh `git worktree`: run `npm ci` inside it first, or `NodeNext` silently
   resolves `@syzygy/*` to the main checkout's `node_modules`.
 - `git ls-tree` needs `-z`, or quoted paths break the parser.
+- Never hand a whole array to one call (`out.push(...lines)`): the argument
+  list is bounded by the stack, so past roughly 125,000 elements at node's
+  default stack (half that at half the stack; the boundary moves a little with
+  the process) it throws a `RangeError` that nothing between the reader and the
+  daemon catches. Loop instead. `syzygy-bpyt.1.18` did it for the mask and the
+  extractor; `syzygy-bpyt.54` carries the other 31 calls, and a fix there that
+  turns a crash into a decision goes to the owner.
 - `npm run poc:pwb-*-mutation-*` rewrites sources in place (~35 min): never
   edit or commit while it runs.
 - CDP headless: enable `Emulation.setFocusEmulationEnabled` or focus never
