@@ -1,5 +1,5 @@
 {
- "commit": "cfc79988c3e6db13038c68ed34fd654ce13ee073",
+ "commit": "52d8b96f6ad91c765a6b4675d5eea72ea2067732",
  "dist": "present",
  "distDirs": [
   "apps/syzygy/dist",
@@ -19,8 +19,8 @@
  },
  "node": "v24.6.0",
  "summary": {
-  "rows": 29,
-  "asExpected": 29,
+  "rows": 33,
+  "asExpected": 33,
   "unexpected": []
  },
  "statusAfter": "",
@@ -33,9 +33,9 @@
    "failing": [],
    "asExpected": true,
    "exit": 0,
-   "passed": 78,
+   "passed": 81,
    "failed": 0,
-   "total": 78,
+   "total": 81,
    "failedFiles": [],
    "fileMessages": [],
    "error": null,
@@ -103,7 +103,7 @@
    "failedFiles": null,
    "fileMessages": null,
    "error": null,
-   "stdout": "v24.6.0 regexes true true cases 13/13 mismatches 0"
+   "stdout": "v24.6.0 regexes true true cases 15/15 mismatches 0"
   },
   {
    "id": "E1-segment-check-dropped",
@@ -117,17 +117,19 @@
    ],
    "expected": [
     "the workspace entry modules throws on a /../ segment that the resolver would join away, since Node refuses the entry",
+    "the workspace entry modules throws on a condition key with a /../ segment, at any depth",
     "the workspace entry modules throws on such a target under a condition Node does not read, or in a main, and names the one Node refuses first"
    ],
    "failing": [
     "the workspace entry modules throws on a /../ segment that the resolver would join away, since Node refuses the entry",
+    "the workspace entry modules throws on a condition key with a /../ segment, at any depth",
     "the workspace entry modules throws on such a target under a condition Node does not read, or in a main, and names the one Node refuses first"
    ],
    "asExpected": true,
    "exit": 1,
-   "passed": 76,
-   "failed": 2,
-   "total": 78,
+   "passed": 78,
+   "failed": 3,
+   "total": 81,
    "failedFiles": [
     "packages/polaris-generation-core/src/workspace-reach.test.ts"
    ],
@@ -146,8 +148,10 @@
     }
    ],
    "expected": [
+    "the segment rules the entry reader copies from Node 24's exports resolver reads \"./dist/\" as Node does: it warns",
     "the segment rules the entry reader copies from Node 24's exports resolver reads \"./dist/%2E/index.js\" as Node does: it refuses",
     "the segment rules the entry reader copies from Node 24's exports resolver reads \"./dist/%2e%2e/index.js\" as Node does: it refuses",
+    "the segment rules the entry reader copies from Node 24's exports resolver reads \"./dist/%4Eode_modules/index.js\" as Node does: it refuses",
     "the segment rules the entry reader copies from Node 24's exports resolver reads \"./dist/%6eode_modules/index.js\" as Node does: it refuses",
     "the segment rules the entry reader copies from Node 24's exports resolver reads \"./dist/./index.js\" as Node does: it refuses",
     "the segment rules the entry reader copies from Node 24's exports resolver reads \"./dist//index.js\" as Node does: it warns",
@@ -159,8 +163,10 @@
     "the workspace entry modules throws on such a target under a condition Node does not read, or in a main, and names the one Node refuses first"
    ],
    "failing": [
+    "the segment rules the entry reader copies from Node 24's exports resolver reads \"./dist/\" as Node does: it warns",
     "the segment rules the entry reader copies from Node 24's exports resolver reads \"./dist/%2E/index.js\" as Node does: it refuses",
     "the segment rules the entry reader copies from Node 24's exports resolver reads \"./dist/%2e%2e/index.js\" as Node does: it refuses",
+    "the segment rules the entry reader copies from Node 24's exports resolver reads \"./dist/%4Eode_modules/index.js\" as Node does: it refuses",
     "the segment rules the entry reader copies from Node 24's exports resolver reads \"./dist/%6eode_modules/index.js\" as Node does: it refuses",
     "the segment rules the entry reader copies from Node 24's exports resolver reads \"./dist/./index.js\" as Node does: it refuses",
     "the segment rules the entry reader copies from Node 24's exports resolver reads \"./dist//index.js\" as Node does: it warns",
@@ -173,9 +179,9 @@
    ],
    "asExpected": true,
    "exit": 1,
-   "passed": 67,
-   "failed": 11,
-   "total": 78,
+   "passed": 68,
+   "failed": 13,
+   "total": 81,
    "failedFiles": [
     "packages/polaris-generation-core/src/workspace-reach.test.ts"
    ],
@@ -201,9 +207,9 @@
    ],
    "asExpected": true,
    "exit": 1,
-   "passed": 77,
+   "passed": 80,
    "failed": 1,
-   "total": 78,
+   "total": 81,
    "failedFiles": [
     "packages/polaris-generation-core/src/workspace-reach.test.ts"
    ],
@@ -222,8 +228,10 @@
     }
    ],
    "expected": [
+    "the segment rules the entry reader copies from Node 24's exports resolver reads \"./dist/\" as Node does: it warns",
     "the segment rules the entry reader copies from Node 24's exports resolver reads \"./dist/%2E/index.js\" as Node does: it refuses",
     "the segment rules the entry reader copies from Node 24's exports resolver reads \"./dist/%2e%2e/index.js\" as Node does: it refuses",
+    "the segment rules the entry reader copies from Node 24's exports resolver reads \"./dist/%4Eode_modules/index.js\" as Node does: it refuses",
     "the segment rules the entry reader copies from Node 24's exports resolver reads \"./dist/%6eode_modules/index.js\" as Node does: it refuses",
     "the segment rules the entry reader copies from Node 24's exports resolver reads \"./dist/./index.js\" as Node does: it refuses",
     "the segment rules the entry reader copies from Node 24's exports resolver reads \"./dist//index.js\" as Node does: it warns",
@@ -233,8 +241,10 @@
     "the workspace entry modules throws on such a target under a condition Node does not read, or in a main, and names the one Node refuses first"
    ],
    "failing": [
+    "the segment rules the entry reader copies from Node 24's exports resolver reads \"./dist/\" as Node does: it warns",
     "the segment rules the entry reader copies from Node 24's exports resolver reads \"./dist/%2E/index.js\" as Node does: it refuses",
     "the segment rules the entry reader copies from Node 24's exports resolver reads \"./dist/%2e%2e/index.js\" as Node does: it refuses",
+    "the segment rules the entry reader copies from Node 24's exports resolver reads \"./dist/%4Eode_modules/index.js\" as Node does: it refuses",
     "the segment rules the entry reader copies from Node 24's exports resolver reads \"./dist/%6eode_modules/index.js\" as Node does: it refuses",
     "the segment rules the entry reader copies from Node 24's exports resolver reads \"./dist/./index.js\" as Node does: it refuses",
     "the segment rules the entry reader copies from Node 24's exports resolver reads \"./dist//index.js\" as Node does: it warns",
@@ -245,9 +255,9 @@
    ],
    "asExpected": true,
    "exit": 1,
-   "passed": 69,
-   "failed": 9,
-   "total": 78,
+   "passed": 70,
+   "failed": 11,
+   "total": 81,
    "failedFiles": [
     "packages/polaris-generation-core/src/workspace-reach.test.ts"
    ],
@@ -267,17 +277,19 @@
    ],
    "expected": [
     "the segment rules the entry reader copies from Node 24's exports resolver reads \"./dist/%2E/index.js\" as Node does: it refuses",
+    "the segment rules the entry reader copies from Node 24's exports resolver reads \"./dist/%4Eode_modules/index.js\" as Node does: it refuses",
     "the segment rules the entry reader copies from Node 24's exports resolver reads \"./dist/NODE_MODULES/index.js\" as Node does: it refuses"
    ],
    "failing": [
     "the segment rules the entry reader copies from Node 24's exports resolver reads \"./dist/%2E/index.js\" as Node does: it refuses",
+    "the segment rules the entry reader copies from Node 24's exports resolver reads \"./dist/%4Eode_modules/index.js\" as Node does: it refuses",
     "the segment rules the entry reader copies from Node 24's exports resolver reads \"./dist/NODE_MODULES/index.js\" as Node does: it refuses"
    ],
    "asExpected": true,
    "exit": 1,
-   "passed": 76,
-   "failed": 2,
-   "total": 78,
+   "passed": 78,
+   "failed": 3,
+   "total": 81,
    "failedFiles": [
     "packages/polaris-generation-core/src/workspace-reach.test.ts"
    ],
@@ -296,16 +308,107 @@
     }
    ],
    "expected": [
+    "the segment rules the entry reader copies from Node 24's exports resolver reads \"./dist/\" as Node does: it warns",
     "the segment rules the entry reader copies from Node 24's exports resolver reads \"./dist//index.js\" as Node does: it warns"
    ],
    "failing": [
+    "the segment rules the entry reader copies from Node 24's exports resolver reads \"./dist/\" as Node does: it warns",
     "the segment rules the entry reader copies from Node 24's exports resolver reads \"./dist//index.js\" as Node does: it warns"
    ],
    "asExpected": true,
    "exit": 1,
-   "passed": 77,
+   "passed": 79,
+   "failed": 2,
+   "total": 81,
+   "failedFiles": [
+    "packages/polaris-generation-core/src/workspace-reach.test.ts"
+   ],
+   "fileMessages": [],
+   "error": null,
+   "stdout": null
+  },
+  {
+   "id": "RX3-both-rules-drop-encoded-capital-n",
+   "test": "packages/polaris-generation-core/src/workspace-reach.test.ts",
+   "edits": [
+    {
+     "path": "packages/polaris-generation-core/src/workspace-reach.testkit.ts",
+     "old": "export const INVALID_SEGMENT = /(^|\\\\|\\/)((\\.|%2e)(\\.|%2e)?|(n|%6e|%4e)",
+     "new": "export const INVALID_SEGMENT = /(^|\\\\|\\/)((\\.|%2e)(\\.|%2e)?|(n|%6e)"
+    },
+    {
+     "path": "packages/polaris-generation-core/src/workspace-reach.testkit.ts",
+     "old": "export const REFUSED_SEGMENT = /(^|\\\\|\\/)((\\.|%2e)(\\.|%2e)?|(n|%6e|%4e)",
+     "new": "export const REFUSED_SEGMENT = /(^|\\\\|\\/)((\\.|%2e)(\\.|%2e)?|(n|%6e)"
+    }
+   ],
+   "expected": [
+    "the segment rules the entry reader copies from Node 24's exports resolver reads \"./dist/%4Eode_modules/index.js\" as Node does: it refuses"
+   ],
+   "failing": [
+    "the segment rules the entry reader copies from Node 24's exports resolver reads \"./dist/%4Eode_modules/index.js\" as Node does: it refuses"
+   ],
+   "asExpected": true,
+   "exit": 1,
+   "passed": 80,
    "failed": 1,
-   "total": 78,
+   "total": 81,
+   "failedFiles": [
+    "packages/polaris-generation-core/src/workspace-reach.test.ts"
+   ],
+   "fileMessages": [],
+   "error": null,
+   "stdout": null
+  },
+  {
+   "id": "RX4-require-not-a-node-condition",
+   "test": "packages/polaris-generation-core/src/workspace-reach.test.ts",
+   "edits": [
+    {
+     "path": "packages/polaris-generation-core/src/workspace-reach.testkit.ts",
+     "old": "'node', 'import', 'require',",
+     "new": "'node', 'import',"
+    }
+   ],
+   "expected": [
+    "the workspace entry modules throws on such a target under a condition Node does not read, or in a main, and names the one Node refuses first"
+   ],
+   "failing": [
+    "the workspace entry modules throws on such a target under a condition Node does not read, or in a main, and names the one Node refuses first"
+   ],
+   "asExpected": true,
+   "exit": 1,
+   "passed": 80,
+   "failed": 1,
+   "total": 81,
+   "failedFiles": [
+    "packages/polaris-generation-core/src/workspace-reach.test.ts"
+   ],
+   "fileMessages": [],
+   "error": null,
+   "stdout": null
+  },
+  {
+   "id": "K1-condition-key-check-dropped",
+   "test": "packages/polaris-generation-core/src/workspace-reach.test.ts",
+   "edits": [
+    {
+     "path": "packages/polaris-generation-core/src/workspace-reach.testkit.ts",
+     "old": ".filter(([, key]) => key.includes('/../'))",
+     "new": ".filter(() => false)"
+    }
+   ],
+   "expected": [
+    "the workspace entry modules throws on a condition key with a /../ segment, at any depth"
+   ],
+   "failing": [
+    "the workspace entry modules throws on a condition key with a /../ segment, at any depth"
+   ],
+   "asExpected": true,
+   "exit": 1,
+   "passed": 80,
+   "failed": 1,
+   "total": 81,
    "failedFiles": [
     "packages/polaris-generation-core/src/workspace-reach.test.ts"
    ],
@@ -331,9 +434,9 @@
    ],
    "asExpected": true,
    "exit": 1,
-   "passed": 77,
+   "passed": 80,
    "failed": 1,
-   "total": 78,
+   "total": 81,
    "failedFiles": [
     "packages/polaris-generation-core/src/workspace-reach.test.ts"
    ],
@@ -359,9 +462,9 @@
    ],
    "asExpected": true,
    "exit": 1,
-   "passed": 77,
+   "passed": 80,
    "failed": 1,
-   "total": 78,
+   "total": 81,
    "failedFiles": [
     "packages/polaris-generation-core/src/workspace-reach.test.ts"
    ],
@@ -387,9 +490,9 @@
    ],
    "asExpected": true,
    "exit": 1,
-   "passed": 77,
+   "passed": 80,
    "failed": 1,
-   "total": 78,
+   "total": 81,
    "failedFiles": [
     "packages/polaris-generation-core/src/workspace-reach.test.ts"
    ],
@@ -403,8 +506,8 @@
    "edits": [
     {
      "path": "packages/polaris-generation-core/src/workspace-reach.testkit.ts",
-     "old": "faults.sort((a, b) => a.rank - b.rank)[0]?.message",
-     "new": "faults[0]?.message"
+     "old": "[...faults, ...keyFaults].sort((a, b) => a.rank - b.rank)[0]?.message",
+     "new": "[...faults, ...keyFaults][0]?.message"
     }
    ],
    "expected": [
@@ -415,9 +518,9 @@
    ],
    "asExpected": true,
    "exit": 1,
-   "passed": 77,
+   "passed": 80,
    "failed": 1,
-   "total": 78,
+   "total": 81,
    "failedFiles": [
     "packages/polaris-generation-core/src/workspace-reach.test.ts"
    ],
@@ -443,9 +546,9 @@
    ],
    "asExpected": true,
    "exit": 1,
-   "passed": 77,
+   "passed": 80,
    "failed": 1,
-   "total": 78,
+   "total": 81,
    "failedFiles": [
     "packages/polaris-generation-core/src/workspace-reach.test.ts"
    ],
@@ -459,23 +562,25 @@
    "edits": [
     {
      "path": "packages/polaris-generation-core/src/workspace-reach.testkit.ts",
-     "old": "[1, 'which Node loads with a deprecation warning (DEP0166)']",
+     "old": "[1, 'which Node accepts with a deprecation warning (DEP0166)']",
      "new": "[0, 'which Node refuses (ERR_INVALID_PACKAGE_TARGET)']"
     }
    ],
    "expected": [
+    "the segment rules the entry reader copies from Node 24's exports resolver reads \"./dist/\" as Node does: it warns",
     "the segment rules the entry reader copies from Node 24's exports resolver reads \"./dist//index.js\" as Node does: it warns",
     "the workspace entry modules throws on such a target under a condition Node does not read, or in a main, and names the one Node refuses first"
    ],
    "failing": [
+    "the segment rules the entry reader copies from Node 24's exports resolver reads \"./dist/\" as Node does: it warns",
     "the segment rules the entry reader copies from Node 24's exports resolver reads \"./dist//index.js\" as Node does: it warns",
     "the workspace entry modules throws on such a target under a condition Node does not read, or in a main, and names the one Node refuses first"
    ],
    "asExpected": true,
    "exit": 1,
-   "passed": 76,
-   "failed": 2,
-   "total": 78,
+   "passed": 78,
+   "failed": 3,
+   "total": 81,
    "failedFiles": [
     "packages/polaris-generation-core/src/workspace-reach.test.ts"
    ],
@@ -501,9 +606,9 @@
    ],
    "asExpected": true,
    "exit": 1,
-   "passed": 77,
+   "passed": 80,
    "failed": 1,
-   "total": 78,
+   "total": 81,
    "failedFiles": [
     "packages/polaris-generation-core/src/workspace-reach.test.ts"
    ],
@@ -619,9 +724,9 @@
    ],
    "asExpected": true,
    "exit": 1,
-   "passed": 84,
+   "passed": 87,
    "failed": 2,
-   "total": 86,
+   "total": 89,
    "failedFiles": [
     "packages/polaris-generation-core/src/workspace-reach.test.ts",
     "apps/three-surface-poc/src/sync-child-process-guard.test.ts"
@@ -651,9 +756,9 @@
    ],
    "asExpected": true,
    "exit": 1,
-   "passed": 85,
+   "passed": 88,
    "failed": 1,
-   "total": 86,
+   "total": 89,
    "failedFiles": [
     "apps/three-surface-poc/src/sync-child-process-guard.test.ts"
    ],
@@ -750,6 +855,33 @@
    "stdout": null
   },
   {
+   "id": "RX7-projects-reordered",
+   "test": "apps/three-surface-poc/src/sync-child-process-guard.test.ts",
+   "edits": [
+    {
+     "path": "vitest.config.ts",
+     "old": "      {\n        extends: true,\n        test: {\n          name: '@syzygy/three-surface-poc-app',\n          include: ['apps/three-surface-poc/src/**/*.test.ts'],\n          // Once per run: removes the fixture directories of killed runs (syzygy-bpyt.4.10).\n          globalSetup: [fileURLToPath(new URL('./apps/three-surface-poc/src/test-fixture-sweep.global-setup.ts', import.meta.url))],\n        },\n      },\n    ],\n",
+     "new": "    ],\n"
+    },
+    {
+     "path": "vitest.config.ts",
+     "old": "    projects: [\n",
+     "new": "    projects: [\n      {\n        extends: true,\n        test: {\n          name: '@syzygy/three-surface-poc-app',\n          include: ['apps/three-surface-poc/src/**/*.test.ts'],\n          // Once per run: removes the fixture directories of killed runs (syzygy-bpyt.4.10).\n          globalSetup: [fileURLToPath(new URL('./apps/three-surface-poc/src/test-fixture-sweep.global-setup.ts', import.meta.url))],\n        },\n      },\n"
+    }
+   ],
+   "expected": [],
+   "failing": [],
+   "asExpected": true,
+   "exit": 0,
+   "passed": 8,
+   "failed": 0,
+   "total": 8,
+   "failedFiles": [],
+   "fileMessages": [],
+   "error": null,
+   "stdout": null
+  },
+  {
    "id": "T1-pin-tool-test-expectation-changed",
    "test": "tool",
    "edits": [
@@ -769,7 +901,7 @@
    "failedFiles": null,
    "fileMessages": null,
    "error": null,
-   "stdout": "v24.6.0 regexes true true cases 12/13 mismatches 1"
+   "stdout": "v24.6.0 regexes true true cases 14/15 mismatches 1"
   },
   {
    "id": "T2-pin-tool-refused-rule-case-sensitive",
@@ -791,7 +923,7 @@
    "failedFiles": null,
    "fileMessages": null,
    "error": null,
-   "stdout": "v24.6.0 regexes true false cases 11/13 mismatches 3"
+   "stdout": "v24.6.0 regexes true false cases 12/15 mismatches 4"
   },
   {
    "id": "T3-pin-tool-empty-segment-rule-dropped",
@@ -813,7 +945,7 @@
    "failedFiles": null,
    "fileMessages": null,
    "error": null,
-   "stdout": "v24.6.0 regexes false true cases 12/13 mismatches 2"
+   "stdout": "v24.6.0 regexes false true cases 13/15 mismatches 3"
   }
  ]
 }
