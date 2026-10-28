@@ -2,10 +2,11 @@
 """Builds dc4-object-and-iso-helpers-2026-10-28.json, the record of syzygy-bpyt.6.3 stack 4, from the outputs beside it.
 Every digest and total is computed; the decision table is the only hand-written part and is checked against the census.
 
-Usage: build-record.py <git repo> <base commit> <code commit> <evidence dir> <repair commit> <reviewed commit>
+Usage: build-record.py <git repo> <base commit> <code commit> <evidence dir> <repair commit> <reviewed commit> <merge commit> <allow-list commit> <SM4 commit>
 The code commit is the one the census, differential and equivalence results are about; the repair commit is the one that answers round 1
 of the review (R-GP-IMPL-OBJECT-ISO-HELPERS-1) and is the commit the mutants, tests, typecheck and digest sweep of the repair ran at; the
-reviewed commit is the head that review was made over.
+reviewed commit is the head that review was made over. After #545 merged, three commits follow the evidence of the repair: the merge of main (merge commit), the
+allow-list names of the support purity test (allow-list commit) and the self-test case that kills SM4 (SM4 commit, the commit the equivalence mutants ran at).
 Refuses (exit 1) unless the outputs say what the record is about to say: the two census methods agree per file at both commits, every
 census row of the object-shape and ISO populations has a decision, the differential groups are the ones the decisions rest on, every
 non-equivalent mutant is killed, both digest-citer methods agree, the equivalence check names only the declared exceptions, every
@@ -17,9 +18,10 @@ import os
 import subprocess
 import sys
 
-repo, base_arg, code_arg, evidence, repair_arg, reviewed_arg = sys.argv[1:]
+repo, base_arg, code_arg, evidence, repair_arg, reviewed_arg, merge_arg, allow_arg, sm4_arg = sys.argv[1:]
 REGISTRY_BOUND = 'packages/polaris-dossier/src/git-object-reader.ts'
 # The reviewer's strict file (R-GP-IMPL-OBJECT-ISO-HELPERS-1 raw, F1 fix, rev-548/tools/site-equivalence-strict.mjs), as the coordinator's repair list states it.
+# It is the tool at the repair commit; the SM4 commit adds one self-test case to it, so the tool is no longer these bytes.
 REVIEWER_STRICT_TOOL_SHA256 = 'fbcee6fc821dfb35f7461f0fa5cbab4eb7e828d9eef1d866cd48b8db51adb942'
 REVIEW_RAW_SHA256 = '157563c5e445b201d56c49ead8685d4dd0fbec3c2a80a1b215e358f5fcff56df'
 REPAIR_PRODUCTION_FILES = sorted([
@@ -53,6 +55,9 @@ base = git('rev-parse', base_arg).decode().strip()
 code = git('rev-parse', code_arg).decode().strip()
 repair = git('rev-parse', repair_arg).decode().strip()
 reviewed = git('rev-parse', reviewed_arg).decode().strip()
+merge = git('rev-parse', merge_arg).decode().strip()
+allow = git('rev-parse', allow_arg).decode().strip()
+sm4 = git('rev-parse', sm4_arg).decode().strip()
 problems = []
 
 census_b, census_h = load('census-base.json'), load('census-head.json')
@@ -163,19 +168,34 @@ if equiv['equal'] != 19 or equiv['modified'] != 20:
     problems.append('the equivalence counts are not 19 of 20 modified')
 if (equiv['base'], equiv['head']) != (base, code):
     problems.append('site-equivalence.json is of another pair of commits')
-if file_sha('site-equivalence.mjs') != REVIEWER_STRICT_TOOL_SHA256:
-    problems.append('site-equivalence.mjs is not the reviewer\'s strict file byte for byte')
+TOOL_PATH = 'docs/evidence/syzygy-bpyt-6-3-iso/site-equivalence.mjs'
+tool_at_repair = git('show', f'{repair}:{TOOL_PATH}')
+tool_at_sm4 = git('show', f'{sm4}:{TOOL_PATH}')
+if sha(tool_at_repair) != REVIEWER_STRICT_TOOL_SHA256:
+    problems.append('site-equivalence.mjs at the repair commit is not the reviewer\'s strict file byte for byte')
+if file_sha('site-equivalence.mjs') != sha(tool_at_sm4) or sha(tool_at_sm4) == REVIEWER_STRICT_TOOL_SHA256:
+    problems.append('site-equivalence.mjs beside the record is not the SM4 commit\'s, or is still the reviewer\'s bytes')
+sm4_added = [l for l in __import__('difflib').unified_diff(tool_at_repair.decode().splitlines(), tool_at_sm4.decode().splitlines(), lineterm='', n=0) if l[:1] in '+-' and l[:3] not in ('+++', '---')]
+if len(sm4_added) != 5 or any(l[0] != '+' for l in sm4_added):
+    problems.append('the SM4 commit does not only add five lines to the tool')
+if subprocess.run(['git', '-C', repo, 'merge-base', '--is-ancestor', repair, merge]).returncode != 0:
+    problems.append('the repair commit is not an ancestor of the merge commit')
+if [full(x + '^') for x in (allow, sm4)] != [merge, allow]:
+    problems.append('the allow-list and SM4 commits are not the two commits after the merge, in that order')
 if se_selftest != 'site-equivalence selftest ok\n':
     problems.append('the equivalence tool selftest output is not its one ok line')
 by_id = {r['id']: r for r in se_mut['rows']}
 PAIR = {'modified': 20, 'equal': 19, 'notEqual': 3, 'exit': 1}
 pair = se_mut['summary']['pair']
-if se_mut['summary']['ranAt'] != repair or pair is None or (full(pair['base']), full(pair['head'])) != (base, code):
+if se_mut['summary']['ranAt'] != sm4 or pair is None or (full(pair['base']), full(pair['head'])) != (base, code):
     problems.append('the equivalence mutants ran at another commit or on another pair')
 if not se_mut['summary']['controlsClean'] or by_id['C0-unmutated']['onThePair'] != PAIR or by_id['N0-trailing-comment']['onThePair'] != PAIR:
     problems.append('the equivalence mutant controls are not clean on the pair')
-if sorted(se_mut['summary']['killedBySelftest']) != ['SM1-rename-guard-removed', 'SM2-blank-line-filter-restored', 'SM3-definition-removed-without-its-line-end'] or se_mut['summary']['survivedSelftest'] != ['SM4-iso-import-removed-without-its-line-end']:
-    problems.append('the equivalence mutants are not three killed by the selftest and SM4 surviving it')
+if sorted(se_mut['summary']['killedBySelftest']) != ['SM1-rename-guard-removed', 'SM2-blank-line-filter-restored', 'SM3-definition-removed-without-its-line-end', 'SM4-iso-import-removed-without-its-line-end'] or se_mut['summary']['survivedSelftest'] != [] or se_mut['summary']['killed'] != 4:
+    problems.append('the equivalence mutants are not four killed by the selftest')
+sm4_row = by_id['SM4-iso-import-removed-without-its-line-end']
+if not (sm4_row['killed'] and sm4_row['exit'] != 0 and 'isoOf definition replaced by its import' in sm4_row['firstLine']):
+    problems.append('SM4 is not killed by the new self-test case')
 if by_id['SM4-iso-import-removed-without-its-line-end']['onThePair']['equal'] == 19 or by_id['SM3-definition-removed-without-its-line-end']['onThePair']['equal'] == 19:
     problems.append('SM3 or SM4 does not change the result on the pair')
 
@@ -345,12 +365,14 @@ record = {
     'equivalence': {'tool': 'site-equivalence.mjs', 'changedProductionFiles': equiv['changedSourceFiles'], 'modified': equiv['modified'], 'equalModuloDeclaredEdit': equiv['equal'],
                     'declaredExceptions': equiv['notEqual'], 'exceptionNote': 'the support index (one added export) and the two new modules; test files are listed, not compared',
                     'pair': {'base': base, 'head': code},
-                    'toolIsTheReviewersStrictFile': {'sha256': file_sha('site-equivalence.mjs'), 'equalsReviewersFile': True,
-                                                     'what': 'each censused definition and each import line is removed with its own line end, no blank-line filter is applied, and before the rename the tool counts matches of the old names against Identifier nodes in the base emit and refuses a file where an old name occurs elsewhere (RENAME-GUARD)'},
-                    'selftest': se_selftest.strip(),
+                    'toolIsTheReviewersStrictFile': {'sha256': file_sha('site-equivalence.mjs'), 'equalsReviewersFile': False,
+                                                     'reviewersSha256': REVIEWER_STRICT_TOOL_SHA256, 'equalAtTheRepairCommit': True,
+                                                     'sm4Commit': sm4, 'addedAtTheSm4Commit': 'exactly five lines before the final console.log of selftest(): the isoOf case (a local definition against its import line is equal; a changed isoOf call is not), checked by this script',
+                                                     'what': 'the reviewer\'s strict file plus that one case; the reviewer\'s description of the strict file: ' + 'each censused definition and each import line is removed with its own line end, no blank-line filter is applied, and before the rename the tool counts matches of the old names against Identifier nodes in the base emit and refuses a file where an old name occurs elsewhere (RENAME-GUARD)'},
+                    'selftest': se_selftest.strip(), 'selftestRanAt': sm4,
                     'rule6': {'ranAt': se_mut['summary']['ranAt'], 'mutants': se_mut['summary']['mutants'], 'killedBySelftest': se_mut['summary']['killedBySelftest'], 'survivedSelftest': se_mut['summary']['survivedSelftest'],
                               'onThePair': {r['id']: r['onThePair'] for r in se_mut['rows']},
-                              'reading': 'SM1 (the rename guard removed) and SM2 (the blank-line filter restored) are killed by the selftest and leave the pair at 20 modified, 19 equal [Observed]; the reading is that no string or template literal of the reviewed pair is touched, so the guard and the filter protect and are not active here [Inferred: the review\'s own raw-source check found the same]. SM3 (a definition removed without its line end) is killed and changes the pair to 0 equal. SM4 (the isoOf import removed without its line end) survives the reviewer\'s selftest, which holds no isoOf import case, and changes the pair from 19 equal to 12: the real run sees what the selftest cannot. The selftest is kept byte for byte; a case for the isoOf import line end is a follow-up.'}},
+                              'reading': 'SM1 (the rename guard removed) and SM2 (the blank-line filter restored) are killed by the selftest and leave the pair at 20 modified, 19 equal [Observed]; the reading is that no string or template literal of the reviewed pair is touched, so the guard and the filter protect and are not active here [Inferred: the review\'s own raw-source check found the same]. SM3 (a definition removed without its line end) is killed and changes the pair to 0 equal. SM4 (the isoOf import removed without its line end) survived the reviewer\'s selftest, which held no isoOf import case, and changes the pair from 19 equal to 12 [Observed at the repair commit]; the SM4 commit adds the case and the selftest now kills it (the first failing line is the new case). The tool is no longer the reviewer\'s bytes.'}},
     'mutants': {
         'support': {'commit': mut_s['commit'], 'mutants': len(mut_s['mutants']), 'killed': sum(m['killed'] for m in mut_s['mutants']), 'controlsClean': all(c['passed_clean'] for c in mut_s['controls'])},
         'iso': {'commit': mut_i['commit'], 'mutants': len(mut_i['mutants']), 'killed': sum(m['killed'] for m in mut_i['mutants']), 'controlsClean': all(c['passed_clean'] for c in mut_i['controls'])},
@@ -405,7 +427,7 @@ record = {
         'changedFiles': sorted(f for f in git('diff', '--name-only', '-z', reviewed, repair).decode().split('\0') if f),
         'isRecordEmitsTheSameCode': is_record_emit_equal,
         'items': {
-            'F1': 'site-equivalence.mjs is the reviewer\'s strict file byte for byte; its selftest, its rule-6 rows and the regenerated site-equivalence.json are in equivalence',
+            'F1': 'site-equivalence.mjs was the reviewer\'s strict file byte for byte at the repair commit; its selftest, its rule-6 rows and the regenerated site-equivalence.json are in equivalence (the SM4 commit later added one case: round2)',
             'F2': 'three PR-body sentences replaced with the reviewer\'s text (the PR body; the surface-version sweep is in pocSurfaceVersion)',
             'N1 N2': 'mutants.py: the occurrence note, and a --tmpdir argument or TMPDIR in place of a fixed path',
             'N3': 'a function-that-carries-every-field row in secret-redaction.test.ts; mutants.repairRows.o8',
@@ -416,7 +438,13 @@ record = {
             'classes': 'ccRev1Classes.reviewerRuling',
             'notTaken': 'N4, N7 and N9 are the coordinator\'s, by the repair list',
         },
-        'followUps': ['a selftest case for the isoOf import line end in site-equivalence.mjs (SM4 survives the reviewer\'s selftest and is seen only on the pair)'],
+        'followUps': [],
+        'round2': {
+            'what': 'the steps that follow the merge of #545 (a1b9bde2), in the order the coordinator fixed: one merge of main, the five names the support purity test now meets, the SM4 self-test case. No other file changes',
+            'mergeCommit': merge, 'mergedMain': 'a1b9bde272f21dd5f110498c39e95f9f827344f4',
+            'allowListCommit': allow, 'allowList': 'packages/support/src/support-purity.test.ts: Array, Readonly, Record, isArray and isRecord added to ALLOWED_IDENTIFIERS (the object predicate\'s names); support-purity.test.ts and the dossier no-egress test pass on the result',
+            'sm4Commit': sm4, 'sm4': 'site-equivalence.mjs gains the isoOf import case; the strict tool\'s selftest, the pair (20 modified, 19 equal, 3 exceptions) and the four rule-6 rows were re-run at that commit',
+        },
     },
     'changedFiles': changed_files,
 }

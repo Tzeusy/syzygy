@@ -17,7 +17,7 @@
   "date-probe.mjs": "5623b3bb41416b766f1a9948a3ef9e853d72a6914a27458204b0d44a2ae8a8a1",
   "apply-is-record.mjs": "863830189dcfc3931548b1d0f5c8131752dfaa80998e6dfb450b799d9a67e91a",
   "apply-iso-of.mjs": "9b4a3f1e5a49fd63374731217a748eb6e99e6fdf48d3183b0a1d459b9010f391",
-  "site-equivalence.mjs": "fbcee6fc821dfb35f7461f0fa5cbab4eb7e828d9eef1d866cd48b8db51adb942",
+  "site-equivalence.mjs": "121a3d57cfc8eb5375858b80ba1ec84fdf2d62ee8098979253d12fd37809ac00",
   "site-equivalence-mutants.mjs": "341672d9a202691eb8c5b2e015dae9e7690a9ae1c467e7a1aabffef90edced11",
   "mutants.py": "75540f36e09dba2148adb0add4922504434894ef133de6e9f8eba892699c122e",
   "digest-citers.py": "2dc5c1d8e91072ca86d1dac9f2ab97b7997bf7f4dc2cbc680524b63157474eca",
@@ -34,7 +34,7 @@
   "date-probe-base.json": "89ca66bc2778b502ee241a11490fe6406dad520f55f7702eea55e398ba789bab",
   "site-equivalence.json": "7864c27fb50eb2ef483e8ff63cb5a8804879572258b6f4c8161af5fdde007726",
   "site-equivalence-selftest-output.txt": "7951c38a5f1e9975174844c8060a3769a84ad362b7d711e2a90014153c8b7a47",
-  "site-equivalence-mutants.json": "e1921945963d145a5e8314de7d17e6dcb2601131cf72b11096d11a1938d77e3f",
+  "site-equivalence-mutants.json": "4db55c94232905b9c78423382f53fb29db3653c225690fdf6c535d90037738dd",
   "mutants-S.json": "03974bc6605807625496feb51414306f0d483f55ed2111e950a51f7a7a2552c2",
   "mutants-I.json": "5aaaf1b0c4a2411c191d89db1cdbe3fb05f26eff9021f9e4fb94b294896da9d5",
   "mutants-C.json": "00807c9ddeb4a6fe32cd755fc109def53d2dd9c4cfd9f9f0da4672527f788485",
@@ -574,22 +574,26 @@
    "head": "22142d9f8731f1494258bfaa6b58ab0c24a2e607"
   },
   "toolIsTheReviewersStrictFile": {
-   "sha256": "fbcee6fc821dfb35f7461f0fa5cbab4eb7e828d9eef1d866cd48b8db51adb942",
-   "equalsReviewersFile": true,
-   "what": "each censused definition and each import line is removed with its own line end, no blank-line filter is applied, and before the rename the tool counts matches of the old names against Identifier nodes in the base emit and refuses a file where an old name occurs elsewhere (RENAME-GUARD)"
+   "sha256": "121a3d57cfc8eb5375858b80ba1ec84fdf2d62ee8098979253d12fd37809ac00",
+   "equalsReviewersFile": false,
+   "reviewersSha256": "fbcee6fc821dfb35f7461f0fa5cbab4eb7e828d9eef1d866cd48b8db51adb942",
+   "equalAtTheRepairCommit": true,
+   "sm4Commit": "2d9039bbde4371ce9eb7ed3fb0c3315ff3a76818",
+   "addedAtTheSm4Commit": "exactly five lines before the final console.log of selftest(): the isoOf case (a local definition against its import line is equal; a changed isoOf call is not), checked by this script",
+   "what": "the reviewer's strict file plus that one case; the reviewer's description of the strict file: each censused definition and each import line is removed with its own line end, no blank-line filter is applied, and before the rename the tool counts matches of the old names against Identifier nodes in the base emit and refuses a file where an old name occurs elsewhere (RENAME-GUARD)"
   },
   "selftest": "site-equivalence selftest ok",
+  "selftestRanAt": "2d9039bbde4371ce9eb7ed3fb0c3315ff3a76818",
   "rule6": {
-   "ranAt": "28024ade30ac30ffeac3bb09fe0833fe63a43981",
+   "ranAt": "2d9039bbde4371ce9eb7ed3fb0c3315ff3a76818",
    "mutants": 4,
    "killedBySelftest": [
     "SM1-rename-guard-removed",
     "SM2-blank-line-filter-restored",
-    "SM3-definition-removed-without-its-line-end"
-   ],
-   "survivedSelftest": [
+    "SM3-definition-removed-without-its-line-end",
     "SM4-iso-import-removed-without-its-line-end"
    ],
+   "survivedSelftest": [],
    "onThePair": {
     "C0-unmutated": {
      "modified": 20,
@@ -628,7 +632,7 @@
      "exit": 1
     }
    },
-   "reading": "SM1 (the rename guard removed) and SM2 (the blank-line filter restored) are killed by the selftest and leave the pair at 20 modified, 19 equal [Observed]; the reading is that no string or template literal of the reviewed pair is touched, so the guard and the filter protect and are not active here [Inferred: the review's own raw-source check found the same]. SM3 (a definition removed without its line end) is killed and changes the pair to 0 equal. SM4 (the isoOf import removed without its line end) survives the reviewer's selftest, which holds no isoOf import case, and changes the pair from 19 equal to 12: the real run sees what the selftest cannot. The selftest is kept byte for byte; a case for the isoOf import line end is a follow-up."
+   "reading": "SM1 (the rename guard removed) and SM2 (the blank-line filter restored) are killed by the selftest and leave the pair at 20 modified, 19 equal [Observed]; the reading is that no string or template literal of the reviewed pair is touched, so the guard and the filter protect and are not active here [Inferred: the review's own raw-source check found the same]. SM3 (a definition removed without its line end) is killed and changes the pair to 0 equal. SM4 (the isoOf import removed without its line end) survived the reviewer's selftest, which held no isoOf import case, and changes the pair from 19 equal to 12 [Observed at the repair commit]; the SM4 commit adds the case and the selftest now kills it (the first failing line is the new case). The tool is no longer the reviewer's bytes."
   }
  },
  "mutants": {
@@ -1053,7 +1057,7 @@
   ],
   "isRecordEmitsTheSameCode": true,
   "items": {
-   "F1": "site-equivalence.mjs is the reviewer's strict file byte for byte; its selftest, its rule-6 rows and the regenerated site-equivalence.json are in equivalence",
+   "F1": "site-equivalence.mjs was the reviewer's strict file byte for byte at the repair commit; its selftest, its rule-6 rows and the regenerated site-equivalence.json are in equivalence (the SM4 commit later added one case: round2)",
    "F2": "three PR-body sentences replaced with the reviewer's text (the PR body; the surface-version sweep is in pocSurfaceVersion)",
    "N1 N2": "mutants.py: the occurrence note, and a --tmpdir argument or TMPDIR in place of a fixed path",
    "N3": "a function-that-carries-every-field row in secret-redaction.test.ts; mutants.repairRows.o8",
@@ -1064,9 +1068,16 @@
    "classes": "ccRev1Classes.reviewerRuling",
    "notTaken": "N4, N7 and N9 are the coordinator's, by the repair list"
   },
-  "followUps": [
-   "a selftest case for the isoOf import line end in site-equivalence.mjs (SM4 survives the reviewer's selftest and is seen only on the pair)"
-  ]
+  "followUps": [],
+  "round2": {
+   "what": "the steps that follow the merge of #545 (a1b9bde2), in the order the coordinator fixed: one merge of main, the five names the support purity test now meets, the SM4 self-test case. No other file changes",
+   "mergeCommit": "d6242fb03b9f9f81ee95133f43fd84461da85ab4",
+   "mergedMain": "a1b9bde272f21dd5f110498c39e95f9f827344f4",
+   "allowListCommit": "2f33f13729cc03c0bee68bc9e596b020194d4be7",
+   "allowList": "packages/support/src/support-purity.test.ts: Array, Readonly, Record, isArray and isRecord added to ALLOWED_IDENTIFIERS (the object predicate's names); support-purity.test.ts and the dossier no-egress test pass on the result",
+   "sm4Commit": "2d9039bbde4371ce9eb7ed3fb0c3315ff3a76818",
+   "sm4": "site-equivalence.mjs gains the isoOf import case; the strict tool's selftest, the pair (20 modified, 19 equal, 3 exceptions) and the four rule-6 rows were re-run at that commit"
+  }
  },
  "changedFiles": [
   "packages/polaris-dossier/src/brief.ts",
