@@ -1,17 +1,19 @@
 import { execFile, execFileSync } from 'node:child_process';
 import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, symlinkSync, writeFileSync } from 'node:fs';
+import { createRequire } from 'node:module';
 import { tmpdir } from 'node:os';
 import { dirname, join } from 'node:path';
 import { promisify } from 'node:util';
 import ts from 'typescript';
-import { afterEach, describe, expect, it } from 'vitest';
+import { afterEach, beforeAll, describe, expect, it } from 'vitest';
 
 import { ROOT, readModule, resolve } from '../../../packages/polaris-generation-core/src/workspace-reach.testkit.js';
 
 // syzygy-bpyt.4.2: `npm run build` emits the product, with no test and no test-support module but two kits a reader takes from
-// dist, and `npm run typecheck` is the one program that reads the tests. TypeScript emits every module a project's tsconfig
-// names and every module of the project one of those imports, whatever `exclude` says, so a build emits no test support only
-// while each project excludes it and no module it builds imports it. A tool runs over a dist the build has just written whole:
+// dist, and `npm run typecheck` is the one program that reads the tests. TypeScript emits every module of the project in the
+// program a tsconfig builds: the modules it names and every module one of those imports or names in a triple-slash reference,
+// whatever `exclude` says, so a build emits no test support only while each project excludes it and no module it builds reaches
+// it. A tool runs over a dist the build has just written whole:
 // scripts/clean_build.mjs removes every dist `tsc -b` will build before it builds, where `tsc -b --force` kept an output whose
 // source was gone and `tsc -b` alone also kept one altered since it was written.
 
@@ -57,23 +59,23 @@ const cleanups: string[] = [];
 afterEach(() => { for (const directory of cleanups.splice(0)) rmSync(directory, { recursive: true, force: true }); });
 
 const importsOf = (from: string): string[] => ts.preProcessFile(readModule(from), true, true).importedFiles.map(({ fileName }) => fileName);
-// The modules a project's build emits: the files its tsconfig.json names, as TypeScript reads it, and every module of the
-// project that one of them imports, transitively.
-function emitted(project: string): string[] {
-  const path = join(ROOT, project, 'tsconfig.json');
+// The modules a project's build emits: every source file of the project's own src/ in the program TypeScript builds from its
+// tsconfig.json, the files it names and every one they reach by an import or a triple-slash reference (syzygy-bpyt.65; a model
+// that followed imports alone missed the PR 549 review's X10). A declaration file emits nothing.
+function emitted(project: string, root: string = ROOT): string[] {
+  const base = root.endsWith('/') ? root : `${root}/`;
+  const path = join(base, project, 'tsconfig.json');
   const parsed = ts.parseJsonConfigFileContent(ts.readConfigFile(path, ts.sys.readFile).config, ts.sys, dirname(path));
-  const seen = new Set(parsed.fileNames.map((file) => file.slice(ROOT.length)));
-  const queue = [...seen];
-  for (let from = queue.shift(); from !== undefined; from = queue.shift()) {
-    for (const specifier of importsOf(from)) {
-      const to = resolve(from, specifier);
-      if (typeof to === 'string' && to.startsWith(`${project}/src/`) && !seen.has(to)) { seen.add(to); queue.push(to); }
-    }
-  }
-  return [...seen].sort();
+  const program = ts.createProgram({ rootNames: parsed.fileNames, options: parsed.options, projectReferences: parsed.projectReferences });
+  return program.getSourceFiles().map(({ fileName }) => fileName)
+    .filter((file) => file.startsWith(`${base}${project}/src/`) && !file.endsWith('.d.ts')).map((file) => file.slice(base.length)).sort();
 }
 
 describe('the product build', () => {
+  // One program per project, built once: two rows read them, and under load they take longer than a test's default timeout.
+  let modules: string[] = [];
+  beforeAll(() => { modules = projects.flatMap((project) => emitted(project)); }, 120_000);
+
   it('builds every workspace project with a tsconfig, each excluding its tests and test support and keeping its outputs under dist', () => {
     expect(projectsOf(manifest.scripts['build'])?.slice().sort()).toEqual(projects.slice().sort());
     expect(Object.keys(EXCLUDES)).toEqual(projects.slice().sort());
@@ -97,13 +99,11 @@ describe('the product build', () => {
   });
 
   it('emits no test and no test-support module, but the two kits a reader takes from dist', () => {
-    const modules = projects.flatMap(emitted);
     expect(modules.length).toBeGreaterThan(200);
     expect(modules.filter(isTestSupport)).toEqual(Object.keys(BUILT_KITS).sort());
   });
 
   it('imports no test or test-support module from any module it builds, but the consent package\'s testing entry its kit', () => {
-    const modules = projects.flatMap(emitted);
     const edges = modules.flatMap((from) => importsOf(from).map((specifier) => ({ from, to: resolve(from, specifier) })));
     expect(edges.length).toBeGreaterThan(1000);
     expect(edges.filter(({ to }) => typeof to === 'string' && isTestSupport(to)).map(({ from, to }) => `${from} imports ${to}`))
@@ -138,6 +138,11 @@ const editConfig = (root: string, dir: string, edit: (config: Record<string, any
   const config = JSON.parse(readFileSync(join(root, dir, 'tsconfig.json'), 'utf8')) as Record<string, any>;
   edit(config);
   writeFileSync(join(root, dir, 'tsconfig.json'), JSON.stringify(config));
+};
+// A project's tsconfig.json extends a base.json beside it that sets these compilerOptions.
+const inherit = (root: string, dir: string, compilerOptions: Record<string, unknown>): void => {
+  plant(root, `${dir}/base.json`, JSON.stringify({ compilerOptions }));
+  editConfig(root, dir, (config) => { config.extends = './base.json'; });
 };
 
 describe('the clean build', () => {
@@ -185,6 +190,19 @@ describe('the clean build', () => {
       symlinkSync(outside, join(root, 'packages/e'));
       KEPT_OUTSIDE.push(join(outside, 'dist/e.js'));
     }, 'packages/e: resolves outside the checkout'],
+    // syzygy-bpyt.65: options as TypeScript reads them, through `extends`, each refused before anything is removed.
+    ['reaches a project whose declarations leave dist through extends', ['packages/d'], (root) => inherit(root, 'packages/a', { declarationDir: 'types' }),
+      'packages/a/tsconfig.json: its outputs and incremental state are not both under dist'],
+    ['reaches a project that bundles its outputs into one file through extends', ['packages/d'], (root) => inherit(root, 'packages/a', { outFile: 'dist/a.js' }),
+      'packages/a/tsconfig.json: its outputs and incremental state are not both under dist'],
+    ['reaches a referenced project that is not composite', ['packages/d'], (root) => editConfig(root, 'packages/a', (config) => { config.compilerOptions.composite = false; }),
+      'packages/a/tsconfig.json: a referenced project is not composite'],
+    ['reaches a referenced project that does not set composite', ['packages/d'], (root) => editConfig(root, 'packages/a', (config) => { delete config.compilerOptions.composite; }),
+      'packages/a/tsconfig.json: a referenced project is not composite'],
+    ['reaches a referenced project that inherits composite false', ['packages/d'], (root) => {
+      editConfig(root, 'packages/a', (config) => { delete config.compilerOptions.composite; });
+      inherit(root, 'packages/a', { composite: false });
+    }, 'packages/a/tsconfig.json: a referenced project is not composite'],
   ])('refuses, removing nothing, when it %s', async (_case, projects, edit, reason) => {
     const root = scratchTree();
     edit(root);
@@ -192,6 +210,40 @@ describe('the clean build', () => {
     await expect(cleanBuild(root, ...projects)).rejects.toMatchObject({ stderr: expect.stringContaining(reason) });
     for (const path of [...KEPT.map((kept) => join(root, kept)), ...KEPT_OUTSIDE.splice(0)]) expect(readFileSync(path, 'utf8'), path).toBe('kept\n');
   }, 30_000);
+
+  // tsc -b requires composite only of a referenced project, so a named project nothing references builds without it.
+  it('builds a named project that nothing references and that is not composite', async () => {
+    const root = scratchTree();
+    editConfig(root, 'packages/c', (config) => { delete config.compilerOptions.composite; config.compilerOptions.incremental = true; });
+    await cleanBuild(root, 'packages/c');
+    expect(readFileSync(join(root, 'packages/c/dist/c.js'), 'utf8')).toContain("export const c = 'c';");
+  }, 60_000);
+
+  // Every workspace project takes composite from tsconfig.base.json, so the script reads it as TypeScript does, through extends.
+  it('builds a referenced project that inherits composite through extends', async () => {
+    const root = scratchTree();
+    editConfig(root, 'packages/a', (config) => { delete config.compilerOptions.composite; });
+    inherit(root, 'packages/a', { composite: true });
+    await cleanBuild(root, 'packages/d');
+    expect(readFileSync(join(root, 'packages/a/dist/a.js'), 'utf8')).toContain("export const a = 'a';");
+  }, 60_000);
+});
+
+describe('the emitted-set model', () => {
+  // The PR 549 review's X10: a triple-slash reference puts a module in the program, so tsc emits it, though no module imports it.
+  it('takes in a module a triple-slash reference names, as tsc --listFilesOnly does', async () => {
+    const root = scratchTree();
+    editConfig(root, 'packages/a', (config) => { config.exclude = ['src/**/*.test.ts']; });
+    plant(root, 'packages/a/src/t.test.ts', "export const t = 't';\n");
+    const tsc = createRequire(import.meta.url).resolve('typescript/bin/tsc');
+    const listed = async (): Promise<string[]> => (await run(process.execPath, [tsc, '-p', join(root, 'packages/a/tsconfig.json'), '--listFilesOnly'])).stdout
+      .split('\n').filter((file) => file.startsWith(`${root}/packages/a/src/`)).map((file) => file.slice(root.length + 1)).sort();
+    expect(emitted('packages/a', root)).toEqual(['packages/a/src/a.ts']);
+    expect(await listed()).toEqual(['packages/a/src/a.ts']);
+    plant(root, 'packages/a/src/a.ts', `/// <reference path="./t.test.ts" />\n${readFileSync(join(root, 'packages/a/src/a.ts'), 'utf8')}`);
+    expect(emitted('packages/a', root)).toEqual(['packages/a/src/a.ts', 'packages/a/src/t.test.ts']);
+    expect(await listed()).toEqual(['packages/a/src/a.ts', 'packages/a/src/t.test.ts']);
+  }, 60_000);
 });
 
 describe('the typecheck', () => {
