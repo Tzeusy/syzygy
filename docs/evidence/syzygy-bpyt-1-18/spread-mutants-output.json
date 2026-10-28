@@ -1,6 +1,6 @@
 {
  "summary": {
-  "codeCommit": "d7ffa0148cbfbc804e65ba748ef3ef478daf4e81",
+  "codeCommit": "7d4ee02d515782f26b6cfa18c0ad48223085b32e",
   "baseCommit": "8d5d4bab",
   "controlFailing": 0,
   "mutants": 6,
@@ -11,7 +11,7 @@
  "rows": [
   {
    "id": "CONTROL-code-commit",
-   "ranAt": "d7ffa0148cbfbc804e65ba748ef3ef478daf4e81",
+   "ranAt": "7d4ee02d515782f26b6cfa18c0ad48223085b32e",
    "detectors": {
     "mask": {
      "tests": 54,
@@ -22,11 +22,11 @@
      "failed": 0
     },
     "reader": {
-     "tests": 90,
+     "tests": 91,
      "failed": 0
     },
     "model": {
-     "tests": 33,
+     "tests": 34,
      "failed": 0
     }
    },
@@ -34,7 +34,7 @@
   },
   {
    "id": "MU1-mask-spread",
-   "ranAt": "d7ffa0148cbfbc804e65ba748ef3ef478daf4e81",
+   "ranAt": "7d4ee02d515782f26b6cfa18c0ad48223085b32e",
    "replacements": [
     {
      "file": "packages/three-surface-poc-core/src/markdown-code-context.ts",
@@ -57,11 +57,11 @@
      "failed": 0
     },
     "reader": {
-     "tests": 90,
+     "tests": 91,
      "failed": 9
     },
     "model": {
-     "tests": 33,
+     "tests": 34,
      "failed": 3
     }
    },
@@ -88,7 +88,7 @@
   },
   {
    "id": "MU2-extractor-spread",
-   "ranAt": "d7ffa0148cbfbc804e65ba748ef3ef478daf4e81",
+   "ranAt": "7d4ee02d515782f26b6cfa18c0ad48223085b32e",
    "replacements": [
     {
      "file": "packages/three-surface-poc-core/src/project-shape-extraction.ts",
@@ -111,11 +111,11 @@
      "failed": 1
     },
     "reader": {
-     "tests": 90,
+     "tests": 91,
      "failed": 0
     },
     "model": {
-     "tests": 33,
+     "tests": 34,
      "failed": 1
     }
    },
@@ -126,7 +126,7 @@
   },
   {
    "id": "MU3-mask-loop-drops-closer",
-   "ranAt": "d7ffa0148cbfbc804e65ba748ef3ef478daf4e81",
+   "ranAt": "7d4ee02d515782f26b6cfa18c0ad48223085b32e",
    "replacements": [
     {
      "file": "packages/three-surface-poc-core/src/markdown-code-context.ts",
@@ -149,11 +149,11 @@
      "failed": 0
     },
     "reader": {
-     "tests": 90,
+     "tests": 91,
      "failed": 1
     },
     "model": {
-     "tests": 33,
+     "tests": 34,
      "failed": 0
     }
    },
@@ -187,7 +187,7 @@
   },
   {
    "id": "MU4-extractor-loop-drops-last-item",
-   "ranAt": "d7ffa0148cbfbc804e65ba748ef3ef478daf4e81",
+   "ranAt": "7d4ee02d515782f26b6cfa18c0ad48223085b32e",
    "replacements": [
     {
      "file": "packages/three-surface-poc-core/src/project-shape-extraction.ts",
@@ -210,11 +210,11 @@
      "failed": 13
     },
     "reader": {
-     "tests": 90,
+     "tests": 91,
      "failed": 0
     },
     "model": {
-     "tests": 33,
+     "tests": 34,
      "failed": 11
     }
    },
@@ -247,7 +247,7 @@
   },
   {
    "id": "MU5-mask-loop-reversed",
-   "ranAt": "d7ffa0148cbfbc804e65ba748ef3ef478daf4e81",
+   "ranAt": "7d4ee02d515782f26b6cfa18c0ad48223085b32e",
    "replacements": [
     {
      "file": "packages/three-surface-poc-core/src/markdown-code-context.ts",
@@ -270,11 +270,11 @@
      "failed": 0
     },
     "reader": {
-     "tests": 90,
+     "tests": 91,
      "failed": 0
     },
     "model": {
-     "tests": 33,
+     "tests": 34,
      "failed": 0
     }
    },
@@ -290,7 +290,7 @@
   },
   {
    "id": "MU6-extractor-loop-reversed",
-   "ranAt": "d7ffa0148cbfbc804e65ba748ef3ef478daf4e81",
+   "ranAt": "7d4ee02d515782f26b6cfa18c0ad48223085b32e",
    "replacements": [
     {
      "file": "packages/three-surface-poc-core/src/project-shape-extraction.ts",
@@ -310,14 +310,14 @@
     },
     "extractor": {
      "tests": 89,
-     "failed": 8
+     "failed": 9
     },
     "reader": {
-     "tests": 90,
+     "tests": 91,
      "failed": 0
     },
     "model": {
-     "tests": 33,
+     "tests": 34,
      "failed": 1
     }
    },
@@ -330,12 +330,87 @@
     "PWB-REQ-002 \u2014 two independent extractors agree on every fixture hand-typed expectations pin the grammar on the vision fixture",
     "PWB-REQ-002 \u2014 two independent extractors agree on every fixture hand-typed expectations pin the grammar on the v1, lore, components, craft and roster fixtures",
     "PWB-REQ-002 \u2014 the grammar is literal keys are NFC-normalized and nothing else",
+    "a source whose class holds 130,000 items is extracted, every item kept in class order",
     "an admitted, fully readable fixture accounts for every declared identity, all modeled"
    ]
   },
   {
+   "id": "R10-extractor-size-gated-reversal",
+   "ranAt": "7d4ee02d515782f26b6cfa18c0ad48223085b32e",
+   "replacements": [
+    {
+     "file": "packages/three-surface-poc-core/src/project-shape-extraction.ts",
+     "old": "    for (const item of result.items) all.push(item);\n",
+     "new": "    for (let at = 0; at < result.items.length; at += 1) all.push(result.items[result.items.length > 100_000 ? result.items.length - 1 - at : at] as ExtractedItem);\n"
+    }
+   ],
+   "mutatedFileSha256": {
+    "packages/three-surface-poc-core/src/project-shape-extraction.ts": "3f9ee7fad03f13c9e743eeeae3048397917a3c89c21af32febd34241ec85137e"
+   },
+   "note": "review round 2: a class past 100,000 items is appended in reverse order (a size-gated fault no small fixture reaches)",
+   "outcome": "killed",
+   "detectors": {
+    "mask": {
+     "tests": 54,
+     "failed": 0
+    },
+    "extractor": {
+     "tests": 89,
+     "failed": 1
+    },
+    "reader": {
+     "tests": 91,
+     "failed": 0
+    },
+    "model": {
+     "tests": 34,
+     "failed": 0
+    }
+   },
+   "failingTests": [
+    "a source whose class holds 130,000 items is extracted, every item kept in class order"
+   ]
+  },
+  {
+   "id": "R11-extractor-chunks-last-first",
+   "ranAt": "7d4ee02d515782f26b6cfa18c0ad48223085b32e",
+   "replacements": [
+    {
+     "file": "packages/three-surface-poc-core/src/project-shape-extraction.ts",
+     "old": "    for (const item of result.items) all.push(item);\n",
+     "new": "    for (let at = Math.floor((result.items.length - 1) / 50_000) * 50_000; at >= 0; at -= 50_000) all.push(...result.items.slice(at, at + 50_000));\n"
+    }
+   ],
+   "mutatedFileSha256": {
+    "packages/three-surface-poc-core/src/project-shape-extraction.ts": "832cd6cbe6e4cc0a2bdbd0af6cfb6eeaee0617cb49f9263ec890877ef239ac4c"
+   },
+   "note": "review round 2: a chunked spread whose 50,000-item chunks are appended last-first (identical to the loop for a class of 50,000 items or fewer)",
+   "outcome": "killed",
+   "detectors": {
+    "mask": {
+     "tests": 54,
+     "failed": 0
+    },
+    "extractor": {
+     "tests": 89,
+     "failed": 1
+    },
+    "reader": {
+     "tests": 91,
+     "failed": 0
+    },
+    "model": {
+     "tests": 34,
+     "failed": 0
+    }
+   },
+   "failingTests": [
+    "a source whose class holds 130,000 items is extracted, every item kept in class order"
+   ]
+  },
+  {
    "id": "BASE-both-spreads",
-   "ranAt": "d7ffa0148cbfbc804e65ba748ef3ef478daf4e81",
+   "ranAt": "7d4ee02d515782f26b6cfa18c0ad48223085b32e",
    "replacements": "the whole of both files at 8d5d4bab",
    "mutatedFileSha256": {
     "packages/three-surface-poc-core/src/markdown-code-context.ts": "93b95f6d4eabc440344404d01040ba1f10bdceb65e69ab74c4ea59c1fa5831f7",
@@ -353,11 +428,11 @@
      "failed": 1
     },
     "reader": {
-     "tests": 90,
+     "tests": 91,
      "failed": 9
     },
     "model": {
-     "tests": 33,
+     "tests": 34,
      "failed": 4
     }
    },

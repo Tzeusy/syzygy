@@ -150,7 +150,7 @@ def main():
             with open(os.path.join(clone, file), 'w', encoding='utf8') as handle:
                 handle.write(text)
 
-    mutants = [r for r in rows if r['id'].startswith('MU')]
+    mutants = [r for r in rows if not r['id'].startswith(('CONTROL', 'BASE'))]
     base = [r for r in rows if r['id'].startswith('BASE')]
     summary = {
         'codeCommit': code_commit,
