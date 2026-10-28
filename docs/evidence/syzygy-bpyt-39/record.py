@@ -110,6 +110,8 @@ def summary():
             problems.append(f'npmrc-trace {name}: the record differs from the committed npm-alias-probe.json')
         if name.startswith('lane') and t['reference'] != 'docs/evidence/syzygy-bpyt-8-39/npm-alias-probe.json':
             problems.append(f'npmrc-trace {name}: compared with another record')
+        if name == 'root-exception-probe' and t['recordSha256'] != sha((HERE / 'root-exception-probe.json').read_bytes()):
+            problems.append('npmrc-trace root-exception-probe: the traced run did not write the committed root-exception-probe.json')
         traces[name] = {'callerNpmrc': [r['result'] for r in t['callerNpmrcOpened']], 'builtinOpens': sum(r['count'] for r in builtin),
                         'otherOutside': len(outside) - len(t['callerNpmrcOpened'])}
     only = load('comment-only.json')
@@ -176,6 +178,14 @@ SELFTEST = {
     'a predicate dropped and still unseen': {'record-predicate-mutants.json': lambda d: (next(r for r in d['rows'] if r['id'] == 'S5-path-test-dropped').update(survived=[]), d)[1]},
     'a predicate mutant of another record.py': {'record-predicate-mutants.json': lambda d: (d.update(recordSha256='0' * 64), d)[1]},
     'a product file in the subject': {'@names': lambda names: sorted([*names, 'packages/support/src/index.ts'])},
+    'a root case app does not load from the workspace': {'root-exception-probe.json': lambda d: (next(r for r in d['results'] if r['id'] == 'R3')['loads']['app'].update(path='nowhere/package.json'), d)[1]},
+    'a lane trace compared with another record': {'npmrc-trace-lane-probe-before.json': lambda d: (d.update(reference='docs/evidence/syzygy-bpyt-39/root-exception-probe.json'), d)[1]},
+    'a comment-only selftest that misses a rename': {'comment-only.json': lambda d: (d['selftest']['identifierRenamed'].update(printEqual=True), d)[1]},
+    'an unmutated predicate run that fails': {'record-predicate-mutants.json': lambda d: (next(r for r in d['rows'] if r['id'] == 'S0-unmutated').update(survived=['x'], exit=1), d)[1]},
+    'a root case npm installs as a copy': {'root-exception-probe.json': lambda d: (next(r for r in d['results'] if r['id'] == 'R5')['lockEntries']['node_modules/wlib'].update(link=False), d)[1]},
+    'a root case whose install fails': {'root-exception-probe.json': lambda d: (next(r for r in d['results'] if r['id'] == 'R2').update(installExit=1), d)[1]},
+    'a testkit that states a root exception twice': {'@kit': lambda kit: kit + "// as a directory or a file, except in the root's manifest under a workspace's own name, where npm links that workspace;\n"},
+    'a root-exception trace of another run': {'npmrc-trace-root-exception-probe.json': lambda d: (d.update(recordSha256='0' * 64), d)[1]},
 }
 
 
