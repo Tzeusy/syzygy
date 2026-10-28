@@ -20,7 +20,8 @@ export interface LiteralMutation {
   readonly description: string;
   readonly from: string;
   readonly to: string;
-  // Test full names (substrings) that MUST be among the failures.
+  // Substrings of test titles (as the plan test reads them; the runner
+  // matches them against full names) that MUST be among the failures.
   readonly mustFail: readonly string[];
 }
 
