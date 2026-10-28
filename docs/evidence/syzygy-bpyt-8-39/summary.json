@@ -311,9 +311,9 @@
   "repeat.py": "1c87146329e02d971d45eedc8da090c1fd7805dfa8869d0d4cacda99b63572af",
   "comment_only.cjs": "e987f080a7c873907ce5c3bc409bc2752b9c9a1a1d470f502a992a530f86dd8d",
   "npa_probe.cjs": "fd2e2741433b26255e92f42f4b2522f7957570d312617e7057d2926754a695cf",
-  "npm_alias_probe.py": "677b0fe2a670d02c2e279144d58a1cb33a2e829538e08b73555850ca6a56d0c6",
+  "npm_alias_probe.py": "d0681b01b953b0dcff793cb4c6331245ee3c0c101d0977909df30cd0c6444812",
   "suite_summary.py": "fab8e5251fd7b2560a2e8cb7cdcfd00d3d63b19cdb7cb91d555b479bce7eae8a",
-  "record.py": "77e830432fd94637633c08d1fa7393e737890848cf0243bbcd1e60d38a87dfec"
+  "record.py": "b3e8d599cdfd96e1fe048e8d7944d347f6a7cc58d374222f60f0c670e8f83f60"
  },
  "faithfulTree": {
   "manifests": 13,
