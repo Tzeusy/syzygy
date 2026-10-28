@@ -81,6 +81,11 @@ function selftest() {
   if (compareFiles(tbase, thead.replace('a\n\nb', 'a\nb'), 'x.ts').equal !== false) throw new Error('selftest: a blank line removed inside a template literal is not equal');
   if (compareFiles(tbase, thead.replace('a\n\nb', 'a\n\n  \n\nb'), 'x.ts').equal !== false) throw new Error('selftest: a whitespace-only line added inside a template literal is not equal');
   if (compareFiles(`${base}export const s = 'isObj';\n`, `${head}export const s = 'isRecord';\n`, 'x.ts').equal !== false) throw new Error('selftest: a string literal renamed from the old name is not equal');
+  // the isoOf import line leaves with its own line end: a local definition at the base and its import at the head are equal, a changed call is not
+  const ibase = 'const isoOf = (instant: number): string => new Date(instant).toISOString();\nexport const g = (n: number) => isoOf(n);\n';
+  const ihead = "import { isoOf } from './iso-of.js';\nexport const g = (n: number) => isoOf(n);\n";
+  if (compareFiles(ibase, ihead, 'x.ts').equal !== true) throw new Error('selftest: the isoOf definition replaced by its import is equal');
+  if (compareFiles(ibase, ihead.replace('isoOf(n)', 'isoOf(n + 1)'), 'x.ts').equal !== false) throw new Error('selftest: a changed isoOf call is not equal');
   console.log('site-equivalence selftest ok');
 }
 
