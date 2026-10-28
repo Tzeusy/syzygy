@@ -1,6 +1,6 @@
 {
  "baseTests": 241,
- "headTests": 266,
+ "headTests": 268,
  "added": [
   [
    "packages/three-surface-poc-core/src/git-object-reader.test.ts",
@@ -45,6 +45,11 @@
   [
    "packages/three-surface-poc-core/src/git-object-reader.test.ts",
    "a 200,000-line closed fence under the read limit (GP-B2 Q1) LF: scanActiveContent over a 200,000-line closed fence finds nothing inside it",
+   0
+  ],
+  [
+   "packages/three-surface-poc-core/src/git-object-reader.test.ts",
+   "a 200,000-line closed fence under the read limit (GP-B2 Q1) one spread call over 200,002 arguments still overflows the stack in this test process",
    0
   ],
   [
@@ -126,6 +131,11 @@
    "packages/three-surface-poc-core/src/project-shape-model.test.ts",
    "a very long fence or list does not abort the observation a 130,000-item success list is extracted whole",
    0
+  ],
+  [
+   "packages/three-surface-poc-core/src/project-shape-model.test.ts",
+   "a very long fence or list does not abort the observation one spread call over 200,002 arguments still overflows the stack in this test process",
+   0
   ]
  ],
  "removed": [],
@@ -145,7 +155,7 @@
   "a CRLF or CR blob gets the outcome its LF form gets > %s: a backtick opener whose info text holds a backtick is excluded as a malformed code context, with a body-free record": 3,
   "a CRLF or CR blob gets the outcome its LF form gets > %s: a script element inside a closed tilde fence reads as text, byte for byte": 3
  },
- "line": "Tests: +25 ~6 -0",
+ "line": "Tests: +27 ~6 -0",
  "allBasePassed": true,
  "allHeadPassed": true
 }

@@ -1,17 +1,17 @@
 {
  "summary": {
-  "codeCommit": "7d4ee02d515782f26b6cfa18c0ad48223085b32e",
+  "codeCommit": "674e443ce17921565d9eb709d4ce7621f9f6795e",
   "baseCommit": "8d5d4bab",
   "controlFailing": 0,
-  "mutants": 6,
-  "killed": 6,
+  "mutants": 8,
+  "killed": 8,
   "survived": [],
   "baseFailingTests": 20
  },
  "rows": [
   {
    "id": "CONTROL-code-commit",
-   "ranAt": "7d4ee02d515782f26b6cfa18c0ad48223085b32e",
+   "ranAt": "674e443ce17921565d9eb709d4ce7621f9f6795e",
    "detectors": {
     "mask": {
      "tests": 54,
@@ -34,7 +34,7 @@
   },
   {
    "id": "MU1-mask-spread",
-   "ranAt": "7d4ee02d515782f26b6cfa18c0ad48223085b32e",
+   "ranAt": "674e443ce17921565d9eb709d4ce7621f9f6795e",
    "replacements": [
     {
      "file": "packages/three-surface-poc-core/src/markdown-code-context.ts",
@@ -88,7 +88,7 @@
   },
   {
    "id": "MU2-extractor-spread",
-   "ranAt": "7d4ee02d515782f26b6cfa18c0ad48223085b32e",
+   "ranAt": "674e443ce17921565d9eb709d4ce7621f9f6795e",
    "replacements": [
     {
      "file": "packages/three-surface-poc-core/src/project-shape-extraction.ts",
@@ -126,7 +126,7 @@
   },
   {
    "id": "MU3-mask-loop-drops-closer",
-   "ranAt": "7d4ee02d515782f26b6cfa18c0ad48223085b32e",
+   "ranAt": "674e443ce17921565d9eb709d4ce7621f9f6795e",
    "replacements": [
     {
      "file": "packages/three-surface-poc-core/src/markdown-code-context.ts",
@@ -187,7 +187,7 @@
   },
   {
    "id": "MU4-extractor-loop-drops-last-item",
-   "ranAt": "7d4ee02d515782f26b6cfa18c0ad48223085b32e",
+   "ranAt": "674e443ce17921565d9eb709d4ce7621f9f6795e",
    "replacements": [
     {
      "file": "packages/three-surface-poc-core/src/project-shape-extraction.ts",
@@ -247,7 +247,7 @@
   },
   {
    "id": "MU5-mask-loop-reversed",
-   "ranAt": "7d4ee02d515782f26b6cfa18c0ad48223085b32e",
+   "ranAt": "674e443ce17921565d9eb709d4ce7621f9f6795e",
    "replacements": [
     {
      "file": "packages/three-surface-poc-core/src/markdown-code-context.ts",
@@ -290,7 +290,7 @@
   },
   {
    "id": "MU6-extractor-loop-reversed",
-   "ranAt": "7d4ee02d515782f26b6cfa18c0ad48223085b32e",
+   "ranAt": "674e443ce17921565d9eb709d4ce7621f9f6795e",
    "replacements": [
     {
      "file": "packages/three-surface-poc-core/src/project-shape-extraction.ts",
@@ -336,7 +336,7 @@
   },
   {
    "id": "R10-extractor-size-gated-reversal",
-   "ranAt": "7d4ee02d515782f26b6cfa18c0ad48223085b32e",
+   "ranAt": "674e443ce17921565d9eb709d4ce7621f9f6795e",
    "replacements": [
     {
      "file": "packages/three-surface-poc-core/src/project-shape-extraction.ts",
@@ -373,7 +373,7 @@
   },
   {
    "id": "R11-extractor-chunks-last-first",
-   "ranAt": "7d4ee02d515782f26b6cfa18c0ad48223085b32e",
+   "ranAt": "674e443ce17921565d9eb709d4ce7621f9f6795e",
    "replacements": [
     {
      "file": "packages/three-surface-poc-core/src/project-shape-extraction.ts",
@@ -410,7 +410,7 @@
   },
   {
    "id": "BASE-both-spreads",
-   "ranAt": "7d4ee02d515782f26b6cfa18c0ad48223085b32e",
+   "ranAt": "674e443ce17921565d9eb709d4ce7621f9f6795e",
    "replacements": "the whole of both files at 8d5d4bab",
    "mutatedFileSha256": {
     "packages/three-surface-poc-core/src/markdown-code-context.ts": "93b95f6d4eabc440344404d01040ba1f10bdceb65e69ab74c4ea59c1fa5831f7",
