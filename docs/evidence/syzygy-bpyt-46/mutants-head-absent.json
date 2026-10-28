@@ -1,5 +1,5 @@
 {
- "commit": "9380d2efd8f53463d006992aaf27511ad3defa28",
+ "commit": "497cf1db73b7e12c0963f8842e83180838ecea9e",
  "dist": "absent",
  "distDirs": [],
  "lane614Sha256": "133094bce703dad13917d73b4bb1dd29cc8eb43212d2ec9e307656f530f3fe4e",
@@ -13,8 +13,8 @@
  },
  "node": "v24.6.0",
  "summary": {
-  "rows": 33,
-  "asExpected": 33,
+  "rows": 42,
+  "asExpected": 42,
   "unexpected": []
  },
  "statusAfter": "",
@@ -28,9 +28,9 @@
    "failing": [],
    "asExpected": true,
    "exit": 0,
-   "passed": 43,
+   "passed": 50,
    "failed": 0,
-   "total": 43,
+   "total": 50,
    "failedFiles": [],
    "fileMessages": [],
    "error": null
@@ -73,9 +73,9 @@
    "failing": [],
    "asExpected": true,
    "exit": 0,
-   "passed": 2,
+   "passed": 4,
    "failed": 0,
-   "total": 2,
+   "total": 4,
    "failedFiles": [],
    "fileMessages": [],
    "error": null
@@ -255,9 +255,9 @@
    ],
    "asExpected": true,
    "exit": 1,
-   "passed": 46,
+   "passed": 53,
    "failed": 1,
-   "total": 47,
+   "total": 54,
    "failedFiles": [
     "packages/support/src/support-purity.test.ts"
    ],
@@ -282,9 +282,9 @@
    ],
    "asExpected": true,
    "exit": 1,
-   "passed": 42,
+   "passed": 49,
    "failed": 1,
-   "total": 43,
+   "total": 50,
    "failedFiles": [
     "packages/support/src/support-purity.test.ts"
    ],
@@ -309,9 +309,9 @@
    ],
    "asExpected": true,
    "exit": 1,
-   "passed": 42,
+   "passed": 49,
    "failed": 1,
-   "total": 43,
+   "total": 50,
    "failedFiles": [
     "packages/support/src/support-purity.test.ts"
    ],
@@ -336,9 +336,9 @@
    ],
    "asExpected": true,
    "exit": 1,
-   "passed": 42,
+   "passed": 49,
    "failed": 1,
-   "total": 43,
+   "total": 50,
    "failedFiles": [
     "packages/support/src/support-purity.test.ts"
    ],
@@ -363,9 +363,9 @@
    ],
    "asExpected": true,
    "exit": 1,
-   "passed": 42,
+   "passed": 49,
    "failed": 1,
-   "total": 43,
+   "total": 50,
    "failedFiles": [
     "packages/support/src/support-purity.test.ts"
    ],
@@ -390,9 +390,9 @@
    ],
    "asExpected": true,
    "exit": 1,
-   "passed": 42,
+   "passed": 49,
    "failed": 1,
-   "total": 43,
+   "total": 50,
    "failedFiles": [
     "packages/support/src/support-purity.test.ts"
    ],
@@ -417,9 +417,9 @@
    ],
    "asExpected": true,
    "exit": 1,
-   "passed": 42,
+   "passed": 49,
    "failed": 1,
-   "total": 43,
+   "total": 50,
    "failedFiles": [
     "packages/support/src/support-purity.test.ts"
    ],
@@ -444,9 +444,9 @@
    ],
    "asExpected": true,
    "exit": 1,
-   "passed": 42,
+   "passed": 49,
    "failed": 1,
-   "total": 43,
+   "total": 50,
    "failedFiles": [
     "packages/support/src/support-purity.test.ts"
    ],
@@ -471,9 +471,9 @@
    ],
    "asExpected": true,
    "exit": 1,
-   "passed": 42,
+   "passed": 49,
    "failed": 1,
-   "total": 43,
+   "total": 50,
    "failedFiles": [
     "packages/support/src/support-purity.test.ts"
    ],
@@ -500,9 +500,9 @@
    ],
    "asExpected": true,
    "exit": 1,
-   "passed": 41,
+   "passed": 48,
    "failed": 2,
-   "total": 43,
+   "total": 50,
    "failedFiles": [
     "packages/support/src/support-purity.test.ts"
    ],
@@ -527,9 +527,9 @@
    ],
    "asExpected": true,
    "exit": 1,
-   "passed": 42,
+   "passed": 49,
    "failed": 1,
-   "total": 43,
+   "total": 50,
    "failedFiles": [
     "packages/support/src/support-purity.test.ts"
    ],
@@ -554,9 +554,9 @@
    ],
    "asExpected": true,
    "exit": 1,
-   "passed": 42,
+   "passed": 49,
    "failed": 1,
-   "total": 43,
+   "total": 50,
    "failedFiles": [
     "packages/support/src/support-purity.test.ts"
    ],
@@ -577,9 +577,9 @@
    "failing": [],
    "asExpected": true,
    "exit": 0,
-   "passed": 43,
+   "passed": 50,
    "failed": 0,
-   "total": 43,
+   "total": 50,
    "failedFiles": [],
    "fileMessages": [],
    "error": null
@@ -598,9 +598,9 @@
    "failing": [],
    "asExpected": true,
    "exit": 0,
-   "passed": 43,
+   "passed": 50,
    "failed": 0,
-   "total": 43,
+   "total": 50,
    "failedFiles": [],
    "fileMessages": [],
    "error": null
@@ -648,6 +648,33 @@
      "path": "packages/polaris-generation-core/src/workspace-reach.testkit.ts",
      "old": "      if (JSON.stringify(entry).includes('/../')) throw new Error(`${specifier}: its entry has a /../ segment, which Node refuses`);\n",
      "new": ""
+    }
+   ],
+   "expectedFailing": [
+    "the workspace entry modules throws on a /../ segment that the resolver would join away, since Node refuses the entry"
+   ],
+   "failing": [
+    "the workspace entry modules throws on a /../ segment that the resolver would join away, since Node refuses the entry"
+   ],
+   "asExpected": true,
+   "exit": 1,
+   "passed": 56,
+   "failed": 1,
+   "total": 57,
+   "failedFiles": [
+    "packages/polaris-generation-core/src/workspace-reach.test.ts"
+   ],
+   "fileMessages": [],
+   "error": null
+  },
+  {
+   "id": "E5-dotdot-check-reads-only-a-string-entry",
+   "test": "packages/polaris-generation-core/src/workspace-reach.test.ts",
+   "edits": [
+    {
+     "path": "packages/polaris-generation-core/src/workspace-reach.testkit.ts",
+     "old": "if (JSON.stringify(entry).includes('/../'))",
+     "new": "if (typeof entry === 'string' && entry.includes('/../'))"
     }
    ],
    "expectedFailing": [
@@ -722,31 +749,59 @@
    "error": null
   },
   {
-   "id": "E4-dotdot-entry-in-the-workspace",
+   "id": "E4-uniform-dotdot-entry-in-the-workspace",
    "test": "packages/polaris-generation-core/src/root-vitest-aliases.test.ts",
    "edits": [
     {
      "path": "packages/polaris-dossier/package.json",
-     "old": "\"import\": \"./dist/state-directory.js\"",
-     "new": "\"import\": \"./dist/x/../state-directory.js\""
+     "old": "      \"import\": \"./dist/state-directory.js\",\n      \"default\": \"./dist/state-directory.js\"\n",
+     "new": "      \"import\": \"./dist/x/../state-directory.js\",\n      \"default\": \"./dist/x/../state-directory.js\"\n"
     }
    ],
    "expectedFailing": [
     "the root vitest.config.ts aliases alias each specifier to the src module its package's entry names",
-    "the root vitest.config.ts aliases leave exactly these entries to their built dist"
+    "the root vitest.config.ts aliases leave exactly these entries unaliased",
+    "the root vitest.config.ts aliases shadow exactly the two dossier subpaths, which the bare dossier alias rewrites to no module"
    ],
    "failing": [
     "the root vitest.config.ts aliases alias each specifier to the src module its package's entry names",
-    "the root vitest.config.ts aliases leave exactly these entries to their built dist"
+    "the root vitest.config.ts aliases leave exactly these entries unaliased",
+    "the root vitest.config.ts aliases shadow exactly the two dossier subpaths, which the bare dossier alias rewrites to no module"
    ],
    "asExpected": true,
    "exit": 1,
-   "passed": 0,
-   "failed": 2,
-   "total": 2,
+   "passed": 1,
+   "failed": 3,
+   "total": 4,
    "failedFiles": [
     "packages/polaris-generation-core/src/root-vitest-aliases.test.ts"
    ],
+   "fileMessages": [],
+   "error": null
+  },
+  {
+   "id": "E1E4-dotdot-check-dropped-under-a-uniform-entry",
+   "test": "packages/polaris-generation-core/src/root-vitest-aliases.test.ts",
+   "edits": [
+    {
+     "path": "packages/polaris-generation-core/src/workspace-reach.testkit.ts",
+     "old": "      if (JSON.stringify(entry).includes('/../')) throw new Error(`${specifier}: its entry has a /../ segment, which Node refuses`);\n",
+     "new": ""
+    },
+    {
+     "path": "packages/polaris-dossier/package.json",
+     "old": "      \"import\": \"./dist/state-directory.js\",\n      \"default\": \"./dist/state-directory.js\"\n",
+     "new": "      \"import\": \"./dist/x/../state-directory.js\",\n      \"default\": \"./dist/x/../state-directory.js\"\n"
+    }
+   ],
+   "expectedFailing": [],
+   "failing": [],
+   "asExpected": true,
+   "exit": 0,
+   "passed": 4,
+   "failed": 0,
+   "total": 4,
+   "failedFiles": [],
    "fileMessages": [],
    "error": null
   },
@@ -768,9 +823,9 @@
    ],
    "asExpected": true,
    "exit": 1,
-   "passed": 1,
+   "passed": 3,
    "failed": 1,
-   "total": 2,
+   "total": 4,
    "failedFiles": [
     "packages/polaris-generation-core/src/root-vitest-aliases.test.ts"
    ],
@@ -788,16 +843,18 @@
     }
    ],
    "expectedFailing": [
-    "the root vitest.config.ts aliases alias each specifier to the src module its package's entry names"
+    "the root vitest.config.ts aliases alias each specifier to the src module its package's entry names",
+    "the root vitest.config.ts aliases match each aliased specifier by its own alias first, so no shorter alias ahead of it shadows it"
    ],
    "failing": [
-    "the root vitest.config.ts aliases alias each specifier to the src module its package's entry names"
+    "the root vitest.config.ts aliases alias each specifier to the src module its package's entry names",
+    "the root vitest.config.ts aliases match each aliased specifier by its own alias first, so no shorter alias ahead of it shadows it"
    ],
    "asExpected": true,
    "exit": 1,
-   "passed": 1,
-   "failed": 1,
-   "total": 2,
+   "passed": 2,
+   "failed": 2,
+   "total": 4,
    "failedFiles": [
     "packages/polaris-generation-core/src/root-vitest-aliases.test.ts"
    ],
@@ -815,16 +872,18 @@
     }
    ],
    "expectedFailing": [
-    "the root vitest.config.ts aliases leave exactly these entries to their built dist"
+    "the root vitest.config.ts aliases leave exactly these entries unaliased",
+    "the root vitest.config.ts aliases shadow exactly the two dossier subpaths, which the bare dossier alias rewrites to no module"
    ],
    "failing": [
-    "the root vitest.config.ts aliases leave exactly these entries to their built dist"
+    "the root vitest.config.ts aliases leave exactly these entries unaliased",
+    "the root vitest.config.ts aliases shadow exactly the two dossier subpaths, which the bare dossier alias rewrites to no module"
    ],
    "asExpected": true,
    "exit": 1,
-   "passed": 1,
-   "failed": 1,
-   "total": 2,
+   "passed": 2,
+   "failed": 2,
+   "total": 4,
    "failedFiles": [
     "packages/polaris-generation-core/src/root-vitest-aliases.test.ts"
    ],
@@ -842,18 +901,215 @@
     }
    ],
    "expectedFailing": [
-    "the root vitest.config.ts aliases leave exactly these entries to their built dist"
+    "the root vitest.config.ts aliases leave exactly these entries unaliased",
+    "the root vitest.config.ts aliases shadow exactly the two dossier subpaths, which the bare dossier alias rewrites to no module"
    ],
    "failing": [
-    "the root vitest.config.ts aliases leave exactly these entries to their built dist"
+    "the root vitest.config.ts aliases leave exactly these entries unaliased",
+    "the root vitest.config.ts aliases shadow exactly the two dossier subpaths, which the bare dossier alias rewrites to no module"
    ],
    "asExpected": true,
    "exit": 1,
-   "passed": 1,
-   "failed": 1,
-   "total": 2,
+   "passed": 2,
+   "failed": 2,
+   "total": 4,
    "failedFiles": [
     "packages/polaris-generation-core/src/root-vitest-aliases.test.ts"
+   ],
+   "fileMessages": [],
+   "error": null
+  },
+  {
+   "id": "A5-config-reordered-so-core-shadows-live",
+   "test": "packages/polaris-generation-core/src/root-vitest-aliases.test.ts",
+   "edits": [
+    {
+     "path": "vitest.config.ts",
+     "old": "      '@syzygy/polaris-generation-core/live': fileURLToPath(new URL('./packages/polaris-generation-core/src/live.ts', import.meta.url)),\n      '@syzygy/polaris-generation-core': fileURLToPath(new URL('./packages/polaris-generation-core/src/index.ts', import.meta.url)),\n",
+     "new": "      '@syzygy/polaris-generation-core': fileURLToPath(new URL('./packages/polaris-generation-core/src/index.ts', import.meta.url)),\n      '@syzygy/polaris-generation-core/live': fileURLToPath(new URL('./packages/polaris-generation-core/src/live.ts', import.meta.url)),\n"
+    }
+   ],
+   "expectedFailing": [
+    "the root vitest.config.ts aliases match each aliased specifier by its own alias first, so no shorter alias ahead of it shadows it"
+   ],
+   "failing": [
+    "the root vitest.config.ts aliases match each aliased specifier by its own alias first, so no shorter alias ahead of it shadows it"
+   ],
+   "asExpected": true,
+   "exit": 1,
+   "passed": 3,
+   "failed": 1,
+   "total": 4,
+   "failedFiles": [
+    "packages/polaris-generation-core/src/root-vitest-aliases.test.ts"
+   ],
+   "fileMessages": [],
+   "error": null
+  },
+  {
+   "id": "A6-correct-alias-for-an-unaliased-entry",
+   "test": "packages/polaris-generation-core/src/root-vitest-aliases.test.ts",
+   "edits": [
+    {
+     "path": "vitest.config.ts",
+     "old": "      '@syzygy/polaris-dossier': fileURLToPath(new URL('./packages/polaris-dossier/src/index.ts', import.meta.url)),\n",
+     "new": "      '@syzygy/polaris-dossier/argv': fileURLToPath(new URL('./packages/polaris-dossier/src/argv.ts', import.meta.url)),\n      '@syzygy/polaris-dossier': fileURLToPath(new URL('./packages/polaris-dossier/src/index.ts', import.meta.url)),\n"
+    }
+   ],
+   "expectedFailing": [
+    "the root vitest.config.ts aliases leave exactly these entries unaliased",
+    "the root vitest.config.ts aliases shadow exactly the two dossier subpaths, which the bare dossier alias rewrites to no module"
+   ],
+   "failing": [
+    "the root vitest.config.ts aliases leave exactly these entries unaliased",
+    "the root vitest.config.ts aliases shadow exactly the two dossier subpaths, which the bare dossier alias rewrites to no module"
+   ],
+   "asExpected": true,
+   "exit": 1,
+   "passed": 2,
+   "failed": 2,
+   "total": 4,
+   "failedFiles": [
+    "packages/polaris-generation-core/src/root-vitest-aliases.test.ts"
+   ],
+   "fileMessages": [],
+   "error": null
+  },
+  {
+   "id": "W1-write-reader-object-pattern-arm-dropped",
+   "test": "packages/support/src/support-purity.test.ts",
+   "edits": [
+    {
+     "path": "packages/support/src/support-purity.test.ts",
+     "old": "ts.isPropertyAssignment(property) ? targets(property.initializer) : ts.isSpreadAssignment(property) ? targets(property.expression) : []",
+     "new": "[]"
+    }
+   ],
+   "expectedFailing": [
+    "the property-write reader the no-write row stands on reads \"({ value: Object.freeze } = { value: (bytes) => bytes });\""
+   ],
+   "failing": [
+    "the property-write reader the no-write row stands on reads \"({ value: Object.freeze } = { value: (bytes) => bytes });\""
+   ],
+   "asExpected": true,
+   "exit": 1,
+   "passed": 49,
+   "failed": 1,
+   "total": 50,
+   "failedFiles": [
+    "packages/support/src/support-purity.test.ts"
+   ],
+   "fileMessages": [],
+   "error": null
+  },
+  {
+   "id": "W2-write-reader-parenthesis-arm-dropped",
+   "test": "packages/support/src/support-purity.test.ts",
+   "edits": [
+    {
+     "path": "packages/support/src/support-purity.test.ts",
+     "old": "      : ts.isParenthesizedExpression(node) ? targets(node.expression)\n",
+     "new": ""
+    }
+   ],
+   "expectedFailing": [
+    "the property-write reader the no-write row stands on reads \"(Object.freeze) = (value) => value;\""
+   ],
+   "failing": [
+    "the property-write reader the no-write row stands on reads \"(Object.freeze) = (value) => value;\""
+   ],
+   "asExpected": true,
+   "exit": 1,
+   "passed": 49,
+   "failed": 1,
+   "total": 50,
+   "failedFiles": [
+    "packages/support/src/support-purity.test.ts"
+   ],
+   "fileMessages": [],
+   "error": null
+  },
+  {
+   "id": "W3-write-reader-spread-arm-dropped",
+   "test": "packages/support/src/support-purity.test.ts",
+   "edits": [
+    {
+     "path": "packages/support/src/support-purity.test.ts",
+     "old": "targets(ts.isSpreadElement(element) ? element.expression : element)",
+     "new": "targets(element)"
+    }
+   ],
+   "expectedFailing": [
+    "the property-write reader the no-write row stands on reads \"[...Object.freeze] = [];\""
+   ],
+   "failing": [
+    "the property-write reader the no-write row stands on reads \"[...Object.freeze] = [];\""
+   ],
+   "asExpected": true,
+   "exit": 1,
+   "passed": 49,
+   "failed": 1,
+   "total": 50,
+   "failedFiles": [
+    "packages/support/src/support-purity.test.ts"
+   ],
+   "fileMessages": [],
+   "error": null
+  },
+  {
+   "id": "I1-import-reader-reads-only-a-string-literal-argument",
+   "test": "packages/support/src/support-purity.test.ts",
+   "edits": [
+    {
+     "path": "packages/support/src/support-purity.test.ts",
+     "old": "if (ts.isCallExpression(node) && node.expression.kind === ts.SyntaxKind.ImportKeyword)",
+     "new": "if (ts.isCallExpression(node) && node.expression.kind === ts.SyntaxKind.ImportKeyword && node.arguments.length > 0 && ts.isStringLiteral(node.arguments[0]!))"
+    }
+   ],
+   "expectedFailing": [
+    "the import() reader the import() row stands on reads \"const value = 'node:f' + 's';\\nvoid import (value);\""
+   ],
+   "failing": [
+    "the import() reader the import() row stands on reads \"const value = 'node:f' + 's';\\nvoid import (value);\""
+   ],
+   "asExpected": true,
+   "exit": 1,
+   "passed": 49,
+   "failed": 1,
+   "total": 50,
+   "failedFiles": [
+    "packages/support/src/support-purity.test.ts"
+   ],
+   "fileMessages": [],
+   "error": null
+  },
+  {
+   "id": "I2-import-reader-without-recursion",
+   "test": "packages/support/src/support-purity.test.ts",
+   "edits": [
+    {
+     "path": "packages/support/src/support-purity.test.ts",
+     "old": "calls.push(node.getText(file));\n    ts.forEachChild(node, visit);",
+     "new": "calls.push(node.getText(file));"
+    }
+   ],
+   "expectedFailing": [
+    "the import() reader the import() row stands on reads \"export const value = () => import ('node:crypto');\"",
+    "the import() reader the import() row stands on reads \"const value = 'node:f' + 's';\\nvoid import (value);\"",
+    "the import() reader the import() row stands on reads \"void import/**/('node:fs');\""
+   ],
+   "failing": [
+    "the import() reader the import() row stands on reads \"const value = 'node:f' + 's';\\nvoid import (value);\"",
+    "the import() reader the import() row stands on reads \"export const value = () => import ('node:crypto');\"",
+    "the import() reader the import() row stands on reads \"void import/**/('node:fs');\""
+   ],
+   "asExpected": true,
+   "exit": 1,
+   "passed": 47,
+   "failed": 3,
+   "total": 50,
+   "failedFiles": [
+    "packages/support/src/support-purity.test.ts"
    ],
    "fileMessages": [],
    "error": null
