@@ -470,6 +470,11 @@ CAMPAIGNS = (
         "P-115 governedBy reference amendment",
         r"R-P115-GOVERNEDBY-REFERENCE-[1-4]-RAW\.md",
     ),
+    campaign(
+        "p115-implementation-owner-offering",
+        "P115 implementation owner offering",
+        r"R-P115-IMPLEMENTATION-OWNER-OFFERING-RAW\.md",
+    ),
 )
 
 
