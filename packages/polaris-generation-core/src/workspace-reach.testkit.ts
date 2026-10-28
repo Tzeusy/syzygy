@@ -120,10 +120,57 @@ export function resolveIn(workspace: Workspace, from: string, specifier: string)
 /** The module a specifier names in this workspace (`resolveIn` over the tree's own manifests and files). */
 export const resolve = (from: string, specifier: string): string | null | undefined => resolveIn(WORKSPACE, from, specifier);
 
+/** Node's segment rules for an `exports` target, applied to the target after its leading `./`, copied verbatim from Node 24.6.0
+ * (lib/internal/modules/esm/resolve.js, `invalidSegmentRegEx` and `deprecatedInvalidSegmentRegEx`, read in
+ * `resolvePackageTargetString`). A target the second matches (a `.`, `..` or `node_modules` segment, in any case, percent-encoded or
+ * not) Node refuses with ERR_INVALID_PACKAGE_TARGET; one only the first matches (an empty segment) it accepts with the DEP0166
+ * deprecation warning (a `//` target then loads; one that ends in `/` names a directory, which Node then fails to load). docs/evidence/syzygy-bpyt-70/node-segments.json records Node's own outcome for
+ * each case the segment rows of workspace-reach.test.ts name (syzygy-bpyt.70, the PR 554 round-1 review's N3). */
+export const INVALID_SEGMENT = /(^|\\|\/)((\.|%2e)(\.|%2e)?|(n|%6e|%4e)(o|%6f|%4f)(d|%64|%44)(e|%65|%45)(_|%5f)(m|%6d|%4d)(o|%6f|%4f)(d|%64|%44)(u|%75|%55)(l|%6c|%4c)(e|%65|%45)(s|%73|%53))?(\\|\/|$)/i;
+export const REFUSED_SEGMENT = /(^|\\|\/)((\.|%2e)(\.|%2e)?|(n|%6e|%4e)(o|%6f|%4f)(d|%64|%44)(e|%65|%45)(_|%5f)(m|%6d|%4d)(o|%6f|%4f)(d|%64|%44)(u|%75|%55)(l|%6c|%4c)(e|%65|%45)(s|%73|%53))(\\|\/|$)/i;
+/** The conditions Node 24 matches with no `--conditions` flag; `types` and `source` are read by TypeScript and the test resolver. */
+const NODE_CONDITIONS = new Set(['node', 'import', 'require', 'module-sync', 'node-addons', 'default']);
+
+/** Every target string an entry names, with the conditions that lead to it (none for a string entry or `main`). */
+function targetsOf(entry: unknown, conditions: readonly string[] = []): (readonly [readonly string[], string])[] {
+  if (typeof entry === 'string') return [[conditions, entry]];
+  if (Array.isArray(entry)) return entry.flatMap((fallback) => targetsOf(fallback, conditions));
+  if (typeof entry !== 'object' || entry === null) return [];
+  return Object.entries(entry).flatMap(([condition, target]) => targetsOf(target, [...conditions, condition]));
+}
+
+/** Every condition key an entry names, with the conditions that lead to it. */
+function conditionKeysOf(entry: unknown, conditions: readonly string[] = []): (readonly [readonly string[], string])[] {
+  if (Array.isArray(entry)) return entry.flatMap((fallback) => conditionKeysOf(fallback, conditions));
+  if (typeof entry !== 'object' || entry === null) return [];
+  return Object.entries(entry).flatMap(([condition, target]) => [[conditions, condition] as const, ...conditionKeysOf(target, [...conditions, condition])]);
+}
+
+/** Why Node's segment rules refuse one of an entry's targets, the most severe first, or undefined when they refuse none. A target
+ * under a condition Node does not read, or a `main`, which Node reads without these rules, is refused too, since the workspace's
+ * own resolution joins it away, but its message makes no claim about Node. A condition key with a `/../` segment is refused as
+ * well, as the serialized check before syzygy-bpyt.70 refused it (the PR 557 round-1 review's N2). */
+export function segmentFaultOf(entry: unknown, main: boolean): string | undefined {
+  const faults = targetsOf(entry).flatMap(([conditions, target]) => {
+    if (!INVALID_SEGMENT.test(target.replace(/^\.\//u, ''))) return [];
+    const where = main ? 'main field' : conditions.length === 0 ? 'entry' : `${conditions.join(' > ')} condition`;
+    const nodeReads = !main && conditions.every((condition) => NODE_CONDITIONS.has(condition));
+    const [rank, why] = !nodeReads ? [2, main ? 'which Node reads without its exports rules' : 'which Node does not read']
+      : REFUSED_SEGMENT.test(target.replace(/^\.\//u, '')) ? [0, 'which Node refuses (ERR_INVALID_PACKAGE_TARGET)']
+      : [1, 'which Node accepts with a deprecation warning (DEP0166)'];
+    return [{ rank, message: `its ${where} target ${JSON.stringify(target)} has an empty, '.', '..' or 'node_modules' segment, ${why}` }];
+  });
+  const keyFaults = conditionKeysOf(entry).filter(([, key]) => key.includes('/../')).map(([conditions, key]) => ({
+    rank: 2,
+    message: `its ${conditions.map((condition) => `${condition} > `).join('')}condition key ${JSON.stringify(key)} has a /../ segment, and no condition Node matches by default has one`,
+  }));
+  return [...faults, ...keyFaults].sort((a, b) => a.rank - b.rank)[0]?.message;
+}
+
 /** Every entry a workspace package's manifest names, by its specifier, with the `src` module its `exports` (or its `main`, where it
  * has no `exports`) names, read as above: the source of what Node loads for the specifier. The S10 no-egress bundle aliases by it
- * (syzygy-bpyt.46). An entry the resolver cannot read throws, and so does a target with a `/../` segment, which Node refuses
- * (ERR_INVALID_PACKAGE_TARGET) where `moduleIn` would join it away (the PR 545 round-1 review's N6). */
+ * (syzygy-bpyt.46). An entry the resolver cannot read throws, and so does one with a target Node's segment rules refuse, which
+ * `moduleIn` would join away (the PR 545 round-1 review's N6; `segmentFaultOf`, syzygy-bpyt.70). */
 export function entryModulesIn(workspace: Workspace): Record<string, string> {
   const modules: Record<string, string> = {};
   for (const manifest of workspace.manifests.values()) {
@@ -131,7 +178,8 @@ export function entryModulesIn(workspace: Workspace): Record<string, string> {
     const entries: [string, unknown][] = manifest.exports !== undefined ? Object.entries(manifest.exports) : manifest.main !== undefined ? [['.', manifest.main]] : [];
     for (const [subpath, entry] of entries) {
       const specifier = subpath === '.' ? manifest.name : `${manifest.name}${subpath.slice(1)}`;
-      if (JSON.stringify(entry).includes('/../')) throw new Error(`${specifier}: its entry has a /../ segment, which Node refuses`);
+      const fault = segmentFaultOf(entry, manifest.exports === undefined);
+      if (fault !== undefined) throw new Error(`${specifier}: ${fault}`);
       const module = resolveIn(workspace, `${manifest.dir}/package.json`, specifier);
       if (typeof module !== 'string') throw new Error(`${specifier}: its entry is not a ./dist/X.js whose src/X.ts exists`);
       modules[specifier] = module;

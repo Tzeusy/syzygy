@@ -195,6 +195,7 @@ describe('the property-write reader the no-write row stands on', () => {
     ['({ value: Object.freeze } = { value: (bytes) => bytes });', ['{ value: Object.freeze } = { value: (bytes) => bytes }']],
     ['(Object.freeze) = (value) => value;', ['(Object.freeze) = (value) => value']],
     ['[...Object.freeze] = [];', ['[...Object.freeze] = []']],
+    ['({ ...Object.freeze } = {});', ['{ ...Object.freeze } = {}']],
     ['let a = 1; a += 1; [a] = [2];', []],
   ];
   it.each(CASES)('reads %j', (source, expected) => {

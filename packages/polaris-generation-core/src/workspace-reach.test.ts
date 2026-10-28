@@ -2,7 +2,7 @@ import { readFileSync } from 'node:fs';
 import { join, posix } from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { describe, expect, it } from 'vitest';
-import { ROOT, WORKSPACE, entryModulesIn, resolve, resolveIn, type Manifest, type Workspace } from './workspace-reach.testkit.js';
+import { ROOT, WORKSPACE, entryModulesIn, resolve, resolveIn, segmentFaultOf, type Manifest, type Workspace } from './workspace-reach.testkit.js';
 
 // syzygy-bpyt.8.36 (the review of 8.34, N1): the resolver both reach guards share reads a specifier it cannot follow as Node would
 // as naming no module, so their "resolves every" rows fail on it rather than passing it as outside the workspace. The tree holds no
@@ -200,8 +200,56 @@ describe('the workspace entry modules', () => {
   it('throws on a /../ segment that the resolver would join away, since Node refuses the entry', () => {
     // The resolver alone reads the entry as the module it joins to, so the throw is the entry reader's own (the PR 545 round-1 review's N6).
     expect(resolveIn(workspace({}, './dist/x/../index.js'), 'apps/app/src/main.ts', '@syzygy/lib')).toBe('packages/lib/src/index.ts');
-    expect(() => entryModulesIn(workspace({}, './dist/x/../index.js'))).toThrow('@syzygy/lib: its entry has a /../ segment, which Node refuses');
+    expect(() => entryModulesIn(workspace({}, './dist/x/../index.js')))
+      .toThrow(`@syzygy/lib: its entry target "./dist/x/../index.js" has an empty, '.', '..' or 'node_modules' segment, which Node refuses (ERR_INVALID_PACKAGE_TARGET)`);
     expect(() => entryModulesIn(workspace({}, { types: './dist/index.d.ts', import: './dist/x/../index.js', default: './dist/x/../index.js' })))
-      .toThrow('@syzygy/lib: its entry has a /../ segment, which Node refuses');
+      .toThrow(`@syzygy/lib: its import condition target "./dist/x/../index.js" has an empty, '.', '..' or 'node_modules' segment, which Node refuses (ERR_INVALID_PACKAGE_TARGET)`);
+  });
+
+  // syzygy-bpyt.70 (the PR 554 reviews' round-1 N3 and round-2 N3): a target Node never reads is refused too, since the resolver
+  // would join it away, but its message makes no claim about Node; and the fault Node refuses is the one named.
+  it('throws on such a target under a condition Node does not read, or in a main, and names the one Node refuses first', () => {
+    expect(() => entryModulesIn(workspace({}, { types: './dist/x/../index.d.ts', import: './dist/index.js', default: './dist/index.js' })))
+      .toThrow(`@syzygy/lib: its types condition target "./dist/x/../index.d.ts" has an empty, '.', '..' or 'node_modules' segment, which Node does not read`);
+    expect(() => entryModulesIn(workspace({}, { source: './src/x/../index.ts', import: './dist/index.js', default: './dist/index.js' })))
+      .toThrow(`@syzygy/lib: its source condition target "./src/x/../index.ts" has an empty, '.', '..' or 'node_modules' segment, which Node does not read`);
+    expect(() => entryModulesIn(workspace({}, { node: { import: './dist/./index.js' }, default: './dist/index.js' })))
+      .toThrow(`@syzygy/lib: its node > import condition target "./dist/./index.js" has an empty, '.', '..' or 'node_modules' segment, which Node refuses (ERR_INVALID_PACKAGE_TARGET)`);
+    expect(() => entryModulesIn(workspace({}, { source: './src/x/../index.ts', import: './dist//index.js', default: './dist/./index.js' })))
+      .toThrow(`@syzygy/lib: its default condition target "./dist/./index.js" has an empty, '.', '..' or 'node_modules' segment, which Node refuses (ERR_INVALID_PACKAGE_TARGET)`);
+    expect(() => entryModulesIn(workspace({}, { require: './dist/./index.js', import: './dist/index.js', default: './dist/index.js' })))
+      .toThrow(`@syzygy/lib: its require condition target "./dist/./index.js" has an empty, '.', '..' or 'node_modules' segment, which Node refuses (ERR_INVALID_PACKAGE_TARGET)`);
+    const base = workspace({});
+    const app = { ...base.manifests.get('@syzygy/app')!, main: './dist/x/../main.js' };
+    expect(() => entryModulesIn({ ...base, manifests: new Map([...base.manifests, ['@syzygy/app', app]]) }))
+      .toThrow(`@syzygy/app: its main field target "./dist/x/../main.js" has an empty, '.', '..' or 'node_modules' segment, which Node reads without its exports rules`);
+  });
+
+  // The PR 557 round-1 review's N2: the check before syzygy-bpyt.70 read the serialized entry, so it refused a condition key with a
+  // /../ segment too; the target reader keeps that refusal, so nothing is newly accepted.
+  it('throws on a condition key with a /../ segment, at any depth', () => {
+    expect(() => entryModulesIn(workspace({}, { 'a/../b': './dist/index.js' })))
+      .toThrow('@syzygy/lib: its condition key "a/../b" has a /../ segment, and no condition Node matches by default has one');
+    expect(() => entryModulesIn(workspace({}, { node: { 'x/../import': './dist/index.js' }, default: './dist/index.js' })))
+      .toThrow('@syzygy/lib: its node > condition key "x/../import" has a /../ segment, and no condition Node matches by default has one');
+    expect(entryModulesIn(workspace({}, { 'a/..b': './dist/index.js', default: './dist/index.js' }))['@syzygy/lib']).toBe('packages/lib/src/index.ts');
+  });
+});
+
+describe("the segment rules the entry reader copies from Node 24's exports resolver", () => {
+  // Each expectation is Node 24.6.0's own outcome for that target under `import`, recorded by
+  // docs/evidence/syzygy-bpyt-70/tools/node_segments.mjs in node-segments.json. `warns`: Node accepts the target with DEP0166;
+  // it then loads `./dist//index.js` and fails to load `./dist/`, which names a directory.
+  const CASES: readonly (readonly [string, 'loads' | 'refuses' | 'warns'])[] = [
+    ['./dist/index.js', 'loads'], ['./dist/.hidden/index.js', 'loads'], ['./dist/..x/index.js', 'loads'], ['./dist/node_modules_x/index.js', 'loads'],
+    ['./dist/x/../index.js', 'refuses'], ['./dist/./index.js', 'refuses'], ['./dist/node_modules/index.js', 'refuses'],
+    ['./dist/NODE_MODULES/index.js', 'refuses'], ['./dist/%2e%2e/index.js', 'refuses'], ['./dist/%2E/index.js', 'refuses'],
+    ['./dist/%6eode_modules/index.js', 'refuses'], ['./dist/x\\..\\index.js', 'refuses'], ['./dist//index.js', 'warns'],
+    ['./dist/%4Eode_modules/index.js', 'refuses'], ['./dist/', 'warns'],
+  ];
+  it.each(CASES)('reads %j as Node does: it %s', (target, outcome) => {
+    const fault = segmentFaultOf({ import: target }, false);
+    expect(fault === undefined ? 'loads' : fault.endsWith('which Node refuses (ERR_INVALID_PACKAGE_TARGET)') ? 'refuses'
+      : fault.endsWith('which Node accepts with a deprecation warning (DEP0166)') ? 'warns' : fault).toBe(outcome);
   });
 });
