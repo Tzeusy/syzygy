@@ -1,7 +1,7 @@
 {
  "summary": {
-  "codeCommit": "0f0ce073046adc10c2eebe35e9867b67ec3f9e49",
-  "baseCommit": "8d5d4babc7b20c5fe64238b9e538ae1b04e5254d",
+  "codeCommit": "d7ffa0148cbfbc804e65ba748ef3ef478daf4e81",
+  "baseCommit": "8d5d4bab",
   "controlFailing": 0,
   "mutants": 6,
   "killed": 6,
@@ -11,14 +11,14 @@
  "rows": [
   {
    "id": "CONTROL-code-commit",
-   "ranAt": "0f0ce073046adc10c2eebe35e9867b67ec3f9e49",
+   "ranAt": "d7ffa0148cbfbc804e65ba748ef3ef478daf4e81",
    "detectors": {
     "mask": {
-     "tests": 53,
+     "tests": 54,
      "failed": 0
     },
     "extractor": {
-     "tests": 88,
+     "tests": 89,
      "failed": 0
     },
     "reader": {
@@ -34,7 +34,7 @@
   },
   {
    "id": "MU1-mask-spread",
-   "ranAt": "0f0ce073046adc10c2eebe35e9867b67ec3f9e49",
+   "ranAt": "d7ffa0148cbfbc804e65ba748ef3ef478daf4e81",
    "replacements": [
     {
      "file": "packages/three-surface-poc-core/src/markdown-code-context.ts",
@@ -49,11 +49,11 @@
    "outcome": "killed",
    "detectors": {
     "mask": {
-     "tests": 53,
+     "tests": 54,
      "failed": 6
     },
     "extractor": {
-     "tests": 88,
+     "tests": 89,
      "failed": 0
     },
     "reader": {
@@ -72,15 +72,15 @@
     "a very long closed fence LF: a script element inside the fence is blanked, and the line after the fence keeps its own",
     "a very long closed fence CRLF: a script element inside the fence is blanked, and the line after the fence keeps its own",
     "a very long closed fence CR: a script element inside the fence is blanked, and the line after the fence keeps its own",
-    "a CRLF or CR blob gets the outcome its LF form gets LF: a 200,000-line closed fence holding a script element reads as text, under the read limit",
-    "a CRLF or CR blob gets the outcome its LF form gets CRLF: a 200,000-line closed fence holding a script element reads as text, under the read limit",
-    "a CRLF or CR blob gets the outcome its LF form gets CR: a 200,000-line closed fence holding a script element reads as text, under the read limit",
-    "a CRLF or CR blob gets the outcome its LF form gets LF: a script element after a 200,000-line closed fence is found, with a body-free record",
-    "a CRLF or CR blob gets the outcome its LF form gets CRLF: a script element after a 200,000-line closed fence is found, with a body-free record",
-    "a CRLF or CR blob gets the outcome its LF form gets CR: a script element after a 200,000-line closed fence is found, with a body-free record",
-    "a CRLF or CR blob gets the outcome its LF form gets LF: scanActiveContent over a 200,000-line closed fence finds nothing inside it",
-    "a CRLF or CR blob gets the outcome its LF form gets CRLF: scanActiveContent over a 200,000-line closed fence finds nothing inside it",
-    "a CRLF or CR blob gets the outcome its LF form gets CR: scanActiveContent over a 200,000-line closed fence finds nothing inside it",
+    "a 200,000-line closed fence under the read limit (GP-B2 Q1) LF: a 200,000-line closed fence holding a script element reads as text, under the read limit",
+    "a 200,000-line closed fence under the read limit (GP-B2 Q1) CRLF: a 200,000-line closed fence holding a script element reads as text, under the read limit",
+    "a 200,000-line closed fence under the read limit (GP-B2 Q1) CR: a 200,000-line closed fence holding a script element reads as text, under the read limit",
+    "a 200,000-line closed fence under the read limit (GP-B2 Q1) LF: a script element after a 200,000-line closed fence is found, with a body-free record",
+    "a 200,000-line closed fence under the read limit (GP-B2 Q1) CRLF: a script element after a 200,000-line closed fence is found, with a body-free record",
+    "a 200,000-line closed fence under the read limit (GP-B2 Q1) CR: a script element after a 200,000-line closed fence is found, with a body-free record",
+    "a 200,000-line closed fence under the read limit (GP-B2 Q1) LF: scanActiveContent over a 200,000-line closed fence finds nothing inside it",
+    "a 200,000-line closed fence under the read limit (GP-B2 Q1) CRLF: scanActiveContent over a 200,000-line closed fence finds nothing inside it",
+    "a 200,000-line closed fence under the read limit (GP-B2 Q1) CR: scanActiveContent over a 200,000-line closed fence finds nothing inside it",
     "a very long fence or list does not abort the observation LF: a 200,000-line closed fence at the end of vision.md is classified as a 10-line one is",
     "a very long fence or list does not abort the observation CRLF: a 200,000-line closed fence at the end of vision.md is classified as a 10-line one is",
     "a very long fence or list does not abort the observation CR: a 200,000-line closed fence at the end of vision.md is classified as a 10-line one is"
@@ -88,7 +88,7 @@
   },
   {
    "id": "MU2-extractor-spread",
-   "ranAt": "0f0ce073046adc10c2eebe35e9867b67ec3f9e49",
+   "ranAt": "d7ffa0148cbfbc804e65ba748ef3ef478daf4e81",
    "replacements": [
     {
      "file": "packages/three-surface-poc-core/src/project-shape-extraction.ts",
@@ -103,11 +103,11 @@
    "outcome": "killed",
    "detectors": {
     "mask": {
-     "tests": 53,
+     "tests": 54,
      "failed": 0
     },
     "extractor": {
-     "tests": 88,
+     "tests": 89,
      "failed": 1
     },
     "reader": {
@@ -126,7 +126,7 @@
   },
   {
    "id": "MU3-mask-loop-drops-closer",
-   "ranAt": "0f0ce073046adc10c2eebe35e9867b67ec3f9e49",
+   "ranAt": "d7ffa0148cbfbc804e65ba748ef3ef478daf4e81",
    "replacements": [
     {
      "file": "packages/three-surface-poc-core/src/markdown-code-context.ts",
@@ -141,11 +141,11 @@
    "outcome": "killed",
    "detectors": {
     "mask": {
-     "tests": 53,
+     "tests": 54,
      "failed": 24
     },
     "extractor": {
-     "tests": 88,
+     "tests": 89,
      "failed": 0
     },
     "reader": {
@@ -187,7 +187,7 @@
   },
   {
    "id": "MU4-extractor-loop-drops-last-item",
-   "ranAt": "0f0ce073046adc10c2eebe35e9867b67ec3f9e49",
+   "ranAt": "d7ffa0148cbfbc804e65ba748ef3ef478daf4e81",
    "replacements": [
     {
      "file": "packages/three-surface-poc-core/src/project-shape-extraction.ts",
@@ -202,11 +202,11 @@
    "outcome": "killed",
    "detectors": {
     "mask": {
-     "tests": 53,
+     "tests": 54,
      "failed": 0
     },
     "extractor": {
-     "tests": 88,
+     "tests": 89,
      "failed": 13
     },
     "reader": {
@@ -247,7 +247,7 @@
   },
   {
    "id": "MU5-mask-loop-reversed",
-   "ranAt": "0f0ce073046adc10c2eebe35e9867b67ec3f9e49",
+   "ranAt": "d7ffa0148cbfbc804e65ba748ef3ef478daf4e81",
    "replacements": [
     {
      "file": "packages/three-surface-poc-core/src/markdown-code-context.ts",
@@ -262,11 +262,11 @@
    "outcome": "killed",
    "detectors": {
     "mask": {
-     "tests": 53,
+     "tests": 54,
      "failed": 7
     },
     "extractor": {
-     "tests": 88,
+     "tests": 89,
      "failed": 0
     },
     "reader": {
@@ -290,7 +290,7 @@
   },
   {
    "id": "MU6-extractor-loop-reversed",
-   "ranAt": "0f0ce073046adc10c2eebe35e9867b67ec3f9e49",
+   "ranAt": "d7ffa0148cbfbc804e65ba748ef3ef478daf4e81",
    "replacements": [
     {
      "file": "packages/three-surface-poc-core/src/project-shape-extraction.ts",
@@ -305,11 +305,11 @@
    "outcome": "killed",
    "detectors": {
     "mask": {
-     "tests": 53,
+     "tests": 54,
      "failed": 0
     },
     "extractor": {
-     "tests": 88,
+     "tests": 89,
      "failed": 8
     },
     "reader": {
@@ -335,8 +335,8 @@
   },
   {
    "id": "BASE-both-spreads",
-   "ranAt": "0f0ce073046adc10c2eebe35e9867b67ec3f9e49",
-   "replacements": "the whole of both files at 8d5d4babc7b20c5fe64238b9e538ae1b04e5254d",
+   "ranAt": "d7ffa0148cbfbc804e65ba748ef3ef478daf4e81",
+   "replacements": "the whole of both files at 8d5d4bab",
    "mutatedFileSha256": {
     "packages/three-surface-poc-core/src/markdown-code-context.ts": "93b95f6d4eabc440344404d01040ba1f10bdceb65e69ab74c4ea59c1fa5831f7",
     "packages/three-surface-poc-core/src/project-shape-extraction.ts": "642cf156ed37bfc0ced7cb338e640268fc0e02648913dd71be5dc4efe6ed0dbd"
@@ -345,11 +345,11 @@
    "outcome": "killed",
    "detectors": {
     "mask": {
-     "tests": 53,
+     "tests": 54,
      "failed": 6
     },
     "extractor": {
-     "tests": 88,
+     "tests": 89,
      "failed": 1
     },
     "reader": {
@@ -369,15 +369,15 @@
     "a very long closed fence CRLF: a script element inside the fence is blanked, and the line after the fence keeps its own",
     "a very long closed fence CR: a script element inside the fence is blanked, and the line after the fence keeps its own",
     "a source whose class holds 130,000 items is extracted, every item kept in class order",
-    "a CRLF or CR blob gets the outcome its LF form gets LF: a 200,000-line closed fence holding a script element reads as text, under the read limit",
-    "a CRLF or CR blob gets the outcome its LF form gets CRLF: a 200,000-line closed fence holding a script element reads as text, under the read limit",
-    "a CRLF or CR blob gets the outcome its LF form gets CR: a 200,000-line closed fence holding a script element reads as text, under the read limit",
-    "a CRLF or CR blob gets the outcome its LF form gets LF: a script element after a 200,000-line closed fence is found, with a body-free record",
-    "a CRLF or CR blob gets the outcome its LF form gets CRLF: a script element after a 200,000-line closed fence is found, with a body-free record",
-    "a CRLF or CR blob gets the outcome its LF form gets CR: a script element after a 200,000-line closed fence is found, with a body-free record",
-    "a CRLF or CR blob gets the outcome its LF form gets LF: scanActiveContent over a 200,000-line closed fence finds nothing inside it",
-    "a CRLF or CR blob gets the outcome its LF form gets CRLF: scanActiveContent over a 200,000-line closed fence finds nothing inside it",
-    "a CRLF or CR blob gets the outcome its LF form gets CR: scanActiveContent over a 200,000-line closed fence finds nothing inside it",
+    "a 200,000-line closed fence under the read limit (GP-B2 Q1) LF: a 200,000-line closed fence holding a script element reads as text, under the read limit",
+    "a 200,000-line closed fence under the read limit (GP-B2 Q1) CRLF: a 200,000-line closed fence holding a script element reads as text, under the read limit",
+    "a 200,000-line closed fence under the read limit (GP-B2 Q1) CR: a 200,000-line closed fence holding a script element reads as text, under the read limit",
+    "a 200,000-line closed fence under the read limit (GP-B2 Q1) LF: a script element after a 200,000-line closed fence is found, with a body-free record",
+    "a 200,000-line closed fence under the read limit (GP-B2 Q1) CRLF: a script element after a 200,000-line closed fence is found, with a body-free record",
+    "a 200,000-line closed fence under the read limit (GP-B2 Q1) CR: a script element after a 200,000-line closed fence is found, with a body-free record",
+    "a 200,000-line closed fence under the read limit (GP-B2 Q1) LF: scanActiveContent over a 200,000-line closed fence finds nothing inside it",
+    "a 200,000-line closed fence under the read limit (GP-B2 Q1) CRLF: scanActiveContent over a 200,000-line closed fence finds nothing inside it",
+    "a 200,000-line closed fence under the read limit (GP-B2 Q1) CR: scanActiveContent over a 200,000-line closed fence finds nothing inside it",
     "a very long fence or list does not abort the observation LF: a 200,000-line closed fence at the end of vision.md is classified as a 10-line one is",
     "a very long fence or list does not abort the observation CRLF: a 200,000-line closed fence at the end of vision.md is classified as a 10-line one is",
     "a very long fence or list does not abort the observation CR: a 200,000-line closed fence at the end of vision.md is classified as a 10-line one is",
