@@ -22,12 +22,12 @@
    "screen.test.ts",
    "secret-redaction.test.ts"
   ],
-  "reportSha256": "46b98243e4fbe65a26e0d86e3042d3ce04f04bab99038c464a9420cd2ed024db"
+  "reportSha256": "c6e3a86c054f4b50a8f3822f083eee8144354760c5a3638435a984724540facd"
  },
  "headTestsOnBase": {
   "checkout": "81862261ddbc2b3c8e8481851f3c27129217d477",
-  "tests": 486,
-  "passed": 485,
+  "tests": 491,
+  "passed": 490,
   "failed": [
    {
     "file": "cli.test.ts",
@@ -42,12 +42,12 @@
    "screen.test.ts",
    "secret-redaction.test.ts"
   ],
-  "reportSha256": "a9318a3a1819b30d00eedda1eb15f92467d60c6cc03195d66df5293665f3456f"
+  "reportSha256": "d27f387302fbae849ec6ba35bf1af8532c4008a040bf347faa50f15a5e077e79"
  },
  "head": {
-  "checkout": "28024ade30ac30ffeac3bb09fe0833fe63a43981",
-  "tests": 546,
-  "passed": 546,
+  "checkout": "094a3b34ce1b12faa5b977ac967cc61f1af6a3fd",
+  "tests": 551,
+  "passed": 551,
   "failed": 0,
   "testFiles": [
    "authority-artifact-fields.test.ts",
@@ -59,7 +59,7 @@
    "screen.test.ts",
    "secret-redaction.test.ts"
   ],
-  "reportSha256": "9d022d23b56f3443f06ab22cf6f2909344a94d3da2759954f24285a0cb17dfcd"
+  "reportSha256": "748ecd38f7890a5c6004de160f4bd94b8af162be7a255594d8cfa56e60443378"
  },
  "note": "base: base commit, base tests, the six existing files (the two new ones absent). headTestsOnBase: base commit with the head versions of the six existing test files. head: the repair commit, all eight files."
 }

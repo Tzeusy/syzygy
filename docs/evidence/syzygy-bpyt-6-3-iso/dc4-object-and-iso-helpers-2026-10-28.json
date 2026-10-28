@@ -41,8 +41,8 @@
   "mutants-N.json": "e9f603ef9a42c12de3adfa21a51d1bef516a36cce58536f04434c2d487fcd3fe",
   "digest-citers.json": "173134039482f8d24e1984eaa9d049367ed0312a5066f736b0e420e7db5e404e",
   "digest-citers-repair.json": "6b7e5c80984a675e6523ec59b0542bf224edf3cc766749e979ea96691d0e2432",
-  "test-delta.json": "2527609074a18585626d1c5489ff1f8e8391f716eae381a300c546a7efb4334b",
-  "test-runs-summary.json": "ff6f0975ebd77730024edd3cc88647423f0a32e5740f3d4d2e51de12239c0f86",
+  "test-delta.json": "ab06b923ef9ed790a216a0569fdc815c97387c7ad19c06abfcec9a341e6fcc4a",
+  "test-runs-summary.json": "acbe2a5dbfaa233abfc447cabab6a7f26d8891e9c49cf47fdab0c408af43be54",
   "typecheck-all-20-sites-attempt.log": "a7d4f4c337c2bf174211502800a2e9746b51853f2deee42c0f4110dce28b866f",
   "typecheck-head.log": "79b077d005b90b64757af0faa8b3899685c6eb30a652eba8969e69ec4607bc69",
   "typecheck-repair.log": "4044b85ba282dfe5b850b34b306e9b45018b715c11d364accb67fd108e7d4522"
@@ -809,7 +809,7 @@
      }
     ]
    },
-   "reading": "The a-number row is the only test that fails a string-naming test at 4 of the 12 call sites it was run at (authority-artifact-fields.ts 102, 121, 132 and screen.ts 83). At 2 sites that mutant dies of admitting undefined, and at 6 it is equivalent. None of the mutants run (A, B and D admit true and a number alike, E admits both) separates a true row from the a-number row, so the true row was dropped; a mutant that admits only booleans was not written [Inferred: a test that refuses a string and a number yet admits a boolean has to name three types]."
+   "reading": "The a-number row is the only test that fails a string-naming test at 4 of the 12 call sites it was run at (authority-artifact-fields.ts 102, 121, 132 and screen.ts 83). At 2 sites that mutant dies of admitting undefined, and at 6 it is equivalent. None of the lane's mutants (A, B and D admit true and a number alike, E admits both) separates a true row from the a-number row; round 2 of the review's mutant F, which names string and number and admits a boolean, survives at 102, 121 and 132 without the true row and is killed by it alone, so the true row stays."
   }
  },
  "digestCitersOfEditedFiles": {
@@ -894,11 +894,11 @@
   }
  },
  "tests": {
-  "line": "Tests: +132 ~1 -0",
-  "toolLine": "Tests: +132 ~51 -0",
+  "line": "Tests: +137 ~1 -0",
+  "toolLine": "Tests: +137 ~51 -0",
   "baseTests": 414,
-  "headTests": 546,
-  "added": 132,
+  "headTests": 551,
+  "added": 137,
   "removed": 0,
   "changedCalls": [
    {
@@ -936,12 +936,12 @@
      "screen.test.ts",
      "secret-redaction.test.ts"
     ],
-    "reportSha256": "46b98243e4fbe65a26e0d86e3042d3ce04f04bab99038c464a9420cd2ed024db"
+    "reportSha256": "c6e3a86c054f4b50a8f3822f083eee8144354760c5a3638435a984724540facd"
    },
    "headTestsOnBase": {
     "checkout": "81862261ddbc2b3c8e8481851f3c27129217d477",
-    "tests": 486,
-    "passed": 485,
+    "tests": 491,
+    "passed": 490,
     "failed": [
      {
       "file": "cli.test.ts",
@@ -956,12 +956,12 @@
      "screen.test.ts",
      "secret-redaction.test.ts"
     ],
-    "reportSha256": "a9318a3a1819b30d00eedda1eb15f92467d60c6cc03195d66df5293665f3456f"
+    "reportSha256": "d27f387302fbae849ec6ba35bf1af8532c4008a040bf347faa50f15a5e077e79"
    },
    "head": {
-    "checkout": "28024ade30ac30ffeac3bb09fe0833fe63a43981",
-    "tests": 546,
-    "passed": 546,
+    "checkout": "094a3b34ce1b12faa5b977ac967cc61f1af6a3fd",
+    "tests": 551,
+    "passed": 551,
     "failed": 0,
     "testFiles": [
      "authority-artifact-fields.test.ts",
@@ -973,9 +973,16 @@
      "screen.test.ts",
      "secret-redaction.test.ts"
     ],
-    "reportSha256": "9d022d23b56f3443f06ab22cf6f2909344a94d3da2759954f24285a0cb17dfcd"
+    "reportSha256": "748ecd38f7890a5c6004de160f4bd94b8af162be7a255594d8cfa56e60443378"
    },
    "note": "base: base commit, base tests, the six existing files (the two new ones absent). headTestsOnBase: base commit with the head versions of the six existing test files. head: the repair commit, all eight files."
+  },
+  "measuredAt": "094a3b34ce1b12faa5b977ac967cc61f1af6a3fd",
+  "previousMeasurement": {
+   "what": "the round-1 repair commit, before the true row was restored",
+   "headTests": 546,
+   "added": 132,
+   "headTestsOnBaseTests": 486
   },
   "reading": "the changed text is the pinned list of swept source files in cli.test.ts (iso-of.ts joins it); the 45 other generated tests the tool counts as changed are unchanged rows of the public-source-classification refusal table, which gained five rows counted in +",
   "headTestsOnBaseCode": "the call-site tests and every other test of the head pass on the base code but the one pinned list, which expects the new module"
@@ -1062,13 +1069,54 @@
    "N1 N2": "mutants.py: the occurrence note, and a --tmpdir argument or TMPDIR in place of a fixed path",
    "N3": "a function-that-carries-every-field row in secret-redaction.test.ts; mutants.repairRows.o8",
    "N5": "AGENTS.md names isRecord and why isoOf stays in polaris-dossier",
-   "N8": "the a-number row is kept in both NOT_OBJECTS tables with a comment naming the bug it catches; the true row of authority-artifact-fields.test.ts is dropped because no mutant run separates it from the a-number row; mutants.repairRows.e",
+   "N8": "the a-number row is kept in both NOT_OBJECTS tables with a comment naming the bug it catches; the true row of authority-artifact-fields.test.ts, dropped in the round-1 repair, is restored in the round-2 repair (R-GP-IMPL-OBJECT-ISO-HELPERS-2, F1, Fix A): the reviewer's mutant F survives at 102, 121 and 132 without it and is killed by it alone; mutants.repairRows.e and repair.round2Review",
    "N10": "is-record.ts: a revoked proxy of an object or an array throws",
    "N6": "the PR body Battery section states the lc63s4 result at the reviewed commit, not at the repair head",
    "classes": "ccRev1Classes.reviewerRuling",
    "notTaken": "N4, N7 and N9 are the coordinator's, by the repair list"
   },
   "followUps": [],
+  "round2Review": {
+   "review": {
+    "id": "R-GP-IMPL-OBJECT-ISO-HELPERS-2",
+    "round": 2,
+    "verdict": "REVISE",
+    "blockingFindings": [
+     "F1"
+    ],
+    "reviewedCommit": "4d92ac9518dd60cdd124525c3e36c086ccd5e425",
+    "rawSha256": "2693097ed4d5929d979d03944c39b45bba471e815dac034430727b505554590c",
+    "epistemic": "the raw is retained by the coordinator, not in this tree"
+   },
+   "digestSweep": {
+    "output": "docs/evidence/syzygy-bpyt-6-3-iso/digest-citers-repair2.json",
+    "range": {
+     "from": "4d92ac9518dd60cdd124525c3e36c086ccd5e425",
+     "to": "094a3b34ce1b12faa5b977ac967cc61f1af6a3fd"
+    },
+    "editedFiles": [
+     "packages/three-surface-poc-core/src/authority-artifact-fields.test.ts",
+     "AGENTS.md"
+    ],
+    "needles": 16,
+    "population": "7338 tracked files at the population commit, excluding docs/evidence/syzygy-bpyt-6-3-iso/",
+    "methodsAgree": true,
+    "cited": 0,
+    "note": "sha256 and git blob id, full and first twelve, of the edited test file and AGENTS.md at both ends of the range; no tracked file outside the evidence directory cites any"
+   },
+   "repairCommit": "094a3b34ce1b12faa5b977ac967cc61f1af6a3fd",
+   "noProductionByteChanged": true,
+   "changedOutsideEvidence": [
+    "AGENTS.md",
+    "packages/three-surface-poc-core/src/authority-artifact-fields.test.ts"
+   ],
+   "F1": "Fix A: the true row of NOT_OBJECTS in authority-artifact-fields.test.ts is restored with the reviewer's three lines, copied by script; the reason given in round 1 (a test refusing a string and a number yet admitting a boolean has to name three types) was false: the reviewer's mutant F (names string and number, admits a boolean) survives at authority-artifact-fields.ts 102, 121 and 132 without the row and is killed by it alone [Observed by the review, run 11, not re-run here]. The mutant outputs of this directory ran at the round-1 repair commit; the restored row adds a test and removes none, so a kill there stays a kill [Inferred]",
+   "N2": "AGENTS.md: the support note calls isRecord the shared object test (non-null, not an array; it does not check the prototype); nothing else in AGENTS.md changes",
+   "notTaken": "N1 (two more SM4 selftest cases, eight lines instead of five) is filed by the coordinator as a follow-up: it would change the SM4 bytes that round 2 reviewed",
+   "remeasured": {
+    "tests": "test-delta.json and test-runs-summary.json at 094a3b34ce1b12faa5b977ac967cc61f1af6a3fd: Tests +137 ~51 -0, 414 -> 551; the head versions of the six existing files run on the base code: 491 tests, 490 pass, the one failure the pinned list in cli.test.ts"
+   }
+  },
   "round2": {
    "what": "the steps that follow the merge of #545 (a1b9bde2), in the order the coordinator fixed: one merge of main, the five names the support purity test now meets, the SM4 self-test case. No other file changes",
    "mergeCommit": "d6242fb03b9f9f81ee95133f43fd84461da85ab4",

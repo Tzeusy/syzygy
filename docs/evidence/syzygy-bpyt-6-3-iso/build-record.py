@@ -3,10 +3,12 @@
 Every digest and total is computed; the decision table is the only hand-written part and is checked against the census.
 
 Usage: build-record.py <git repo> <base commit> <code commit> <evidence dir> <repair commit> <reviewed commit> <merge commit> <allow-list commit> <SM4 commit>
+                       <round-2 repair commit> <round-2 reviewed head>
 The code commit is the one the census, differential and equivalence results are about; the repair commit is the one that answers round 1
 of the review (R-GP-IMPL-OBJECT-ISO-HELPERS-1) and is the commit the mutants, tests, typecheck and digest sweep of the repair ran at; the
 reviewed commit is the head that review was made over. After #545 merged, three commits follow the evidence of the repair: the merge of main (merge commit), the
-allow-list names of the support purity test (allow-list commit) and the self-test case that kills SM4 (SM4 commit, the commit the equivalence mutants ran at).
+allow-list names of the support purity test (allow-list commit) and the self-test case that kills SM4 (SM4 commit, the commit the equivalence mutants ran at). The round-2 repair commit (R-GP-IMPL-OBJECT-ISO-HELPERS-2) is the commit the test
+delta and the run summary were re-measured at; the round-2 reviewed head is the head that review was made over.
 Refuses (exit 1) unless the outputs say what the record is about to say: the two census methods agree per file at both commits, every
 census row of the object-shape and ISO populations has a decision, the differential groups are the ones the decisions rest on, every
 non-equivalent mutant is killed, both digest-citer methods agree, the equivalence check names only the declared exceptions, every
@@ -18,12 +20,13 @@ import os
 import subprocess
 import sys
 
-repo, base_arg, code_arg, evidence, repair_arg, reviewed_arg, merge_arg, allow_arg, sm4_arg = sys.argv[1:]
+repo, base_arg, code_arg, evidence, repair_arg, reviewed_arg, merge_arg, allow_arg, sm4_arg, repair2_arg, reviewed2_arg = sys.argv[1:]
 REGISTRY_BOUND = 'packages/polaris-dossier/src/git-object-reader.ts'
 # The reviewer's strict file (R-GP-IMPL-OBJECT-ISO-HELPERS-1 raw, F1 fix, rev-548/tools/site-equivalence-strict.mjs), as the coordinator's repair list states it.
 # It is the tool at the repair commit; the SM4 commit adds one self-test case to it, so the tool is no longer these bytes.
 REVIEWER_STRICT_TOOL_SHA256 = 'fbcee6fc821dfb35f7461f0fa5cbab4eb7e828d9eef1d866cd48b8db51adb942'
 REVIEW_RAW_SHA256 = '157563c5e445b201d56c49ead8685d4dd0fbec3c2a80a1b215e358f5fcff56df'
+REVIEW_RAW2_SHA256 = '2693097ed4d5929d979d03944c39b45bba471e815dac034430727b505554590c'
 REPAIR_PRODUCTION_FILES = sorted([
     'AGENTS.md', 'packages/polaris-dossier/src/screen.test.ts', 'packages/polaris-generation-core/src/secret-redaction.test.ts',
     'packages/support/src/is-record.ts', 'packages/three-surface-poc-core/src/authority-artifact-fields.test.ts',
@@ -58,6 +61,8 @@ reviewed = git('rev-parse', reviewed_arg).decode().strip()
 merge = git('rev-parse', merge_arg).decode().strip()
 allow = git('rev-parse', allow_arg).decode().strip()
 sm4 = git('rev-parse', sm4_arg).decode().strip()
+repair2 = git('rev-parse', repair2_arg).decode().strip()
+reviewed2 = git('rev-parse', reviewed2_arg).decode().strip()
 problems = []
 
 census_b, census_h = load('census-base.json'), load('census-head.json')
@@ -70,6 +75,7 @@ se_mut = load('site-equivalence-mutants.json')
 se_selftest = open(os.path.join(evidence, 'site-equivalence-selftest-output.txt'), encoding='utf8').read()
 citers_repair = load('digest-citers-repair.json')
 citers = load('digest-citers.json')
+citersR2 = load('digest-citers-repair2.json')
 tests = load('test-delta.json')
 runs = load('test-runs-summary.json')
 
@@ -292,8 +298,16 @@ if not citers_repair['methodsAgree'] or citers_repair['needlesCited'] or full(ci
     problems.append('digest-citers-repair: methods disagree, a digest is cited, or another range')
 if sorted(citers_repair['editedFiles']) != REPAIR_PRODUCTION_FILES:
     problems.append('digest-citers-repair swept other files than the repair edits')
-if tests['headTests'] != 546 or runs['head']['checkout'] != repair or runs['head']['tests'] != 546:
-    problems.append('the test runs are not the 546 tests of the repair commit')
+if tests['headTests'] != 551 or runs['head']['checkout'] != repair2 or runs['head']['tests'] != 551 or len(tests['added']) != 137:
+    problems.append('the test runs are not the 551 tests (+137) of the round-2 repair commit')
+if not citersR2['methodsAgree'] or citersR2['needlesCited'] or citersR2['populationCommit'] != repair2 or citersR2['codeHeadCommit'] != repair2 or citersR2['baseCommit'] != reviewed2:
+    problems.append('the round-2 digest sweep is of another range, its methods disagree, or a digest is cited')
+ROUND2_FILES = ['AGENTS.md', 'packages/three-surface-poc-core/src/authority-artifact-fields.test.ts']
+touched2 = sorted(f for f in git('diff', '--name-only', '-z', reviewed2, repair2).decode().split('\0') if f and not f.startswith('docs/evidence/'))
+if touched2 != ROUND2_FILES:
+    problems.append(f'the round-2 repair touches {touched2}')
+if subprocess.run(['git', '-C', repo, 'merge-base', '--is-ancestor', reviewed2, repair2]).returncode != 0:
+    problems.append('the round-2 reviewed head is not an ancestor of the round-2 repair commit')
 
 
 def surface_citers(commit):
@@ -390,7 +404,7 @@ record = {
                   'killedOnlyByANumberRow': number_only,
                   'killedAlsoForAnotherReason': {m['id']: 'admits undefined (an entry with no subject, a classification with no rules), which breaks the positive cases; the a-string rows fail as collateral' for m in e_rows if m['id'] in other_killed},
                   'survivors': [{'id': m['id'], 'file': m['file'], 'line': m['line'], 'old': m['old'], 'new': m['new'], 'equivalentBecause': EQUIVALENT_N[m['id']]} for m in e_rows if not m['killed']]},
-            'reading': 'The a-number row is the only test that fails a string-naming test at 4 of the 12 call sites it was run at (authority-artifact-fields.ts 102, 121, 132 and screen.ts 83). At 2 sites that mutant dies of admitting undefined, and at 6 it is equivalent. None of the mutants run (A, B and D admit true and a number alike, E admits both) separates a true row from the a-number row, so the true row was dropped; a mutant that admits only booleans was not written [Inferred: a test that refuses a string and a number yet admits a boolean has to name three types].',
+            'reading': 'The a-number row is the only test that fails a string-naming test at 4 of the 12 call sites it was run at (authority-artifact-fields.ts 102, 121, 132 and screen.ts 83). At 2 sites that mutant dies of admitting undefined, and at 6 it is equivalent. None of the lane\'s mutants (A, B and D admit true and a number alike, E admits both) separates a true row from the a-number row; round 2 of the review\'s mutant F, which names string and number and admits a boolean, survives at 102, 121 and 132 without the true row and is killed by it alone, so the true row stays.',
         },
     },
     'digestCitersOfEditedFiles': {
@@ -403,7 +417,8 @@ record = {
                         'note': 'sha256 and git blob id, full and first twelve, of the four .ts files and AGENTS.md the repair edits, at both ends of the range; no tracked file outside the evidence directory cites any'},
     },
     'tests': {'line': f"Tests: +{len(tests['added'])} ~1 -{len(tests['removed'])}", 'toolLine': tests['line'], 'baseTests': tests['baseTests'], 'headTests': tests['headTests'], 'added': len(tests['added']), 'removed': len(tests['removed']),
-              'changedCalls': tests['changedCalls'], 'runs': runs,
+              'changedCalls': tests['changedCalls'], 'runs': runs, 'measuredAt': repair2,
+              'previousMeasurement': {'what': 'the round-1 repair commit, before the true row was restored', 'headTests': 546, 'added': 132, 'headTestsOnBaseTests': 486},
               'reading': 'the changed text is the pinned list of swept source files in cli.test.ts (iso-of.ts joins it); the 45 other generated tests the tool counts as changed are unchanged rows of the public-source-classification refusal table, which gained five rows counted in +',
               'headTestsOnBaseCode': 'the call-site tests and every other test of the head pass on the base code but the one pinned list, which expects the new module'},
     'ccRev1Classes': {
@@ -432,13 +447,24 @@ record = {
             'N1 N2': 'mutants.py: the occurrence note, and a --tmpdir argument or TMPDIR in place of a fixed path',
             'N3': 'a function-that-carries-every-field row in secret-redaction.test.ts; mutants.repairRows.o8',
             'N5': 'AGENTS.md names isRecord and why isoOf stays in polaris-dossier',
-            'N8': 'the a-number row is kept in both NOT_OBJECTS tables with a comment naming the bug it catches; the true row of authority-artifact-fields.test.ts is dropped because no mutant run separates it from the a-number row; mutants.repairRows.e',
+            'N8': 'the a-number row is kept in both NOT_OBJECTS tables with a comment naming the bug it catches; the true row of authority-artifact-fields.test.ts, dropped in the round-1 repair, is restored in the round-2 repair (R-GP-IMPL-OBJECT-ISO-HELPERS-2, F1, Fix A): the reviewer\'s mutant F survives at 102, 121 and 132 without it and is killed by it alone; mutants.repairRows.e and repair.round2Review',
             'N10': 'is-record.ts: a revoked proxy of an object or an array throws',
             'N6': 'the PR body Battery section states the lc63s4 result at the reviewed commit, not at the repair head',
             'classes': 'ccRev1Classes.reviewerRuling',
             'notTaken': 'N4, N7 and N9 are the coordinator\'s, by the repair list',
         },
         'followUps': [],
+        'round2Review': {
+            'review': {'id': 'R-GP-IMPL-OBJECT-ISO-HELPERS-2', 'round': 2, 'verdict': 'REVISE', 'blockingFindings': ['F1'], 'reviewedCommit': reviewed2, 'rawSha256': REVIEW_RAW2_SHA256,
+                       'epistemic': 'the raw is retained by the coordinator, not in this tree'},
+            'digestSweep': {'output': 'docs/evidence/syzygy-bpyt-6-3-iso/digest-citers-repair2.json', 'range': {'from': reviewed2, 'to': repair2}, 'editedFiles': citersR2['editedFiles'], 'needles': citersR2['needles'], 'population': citersR2['population'], 'methodsAgree': True, 'cited': 0,
+                            'note': 'sha256 and git blob id, full and first twelve, of the edited test file and AGENTS.md at both ends of the range; no tracked file outside the evidence directory cites any'},
+            'repairCommit': repair2, 'noProductionByteChanged': True, 'changedOutsideEvidence': touched2,
+            'F1': 'Fix A: the true row of NOT_OBJECTS in authority-artifact-fields.test.ts is restored with the reviewer\'s three lines, copied by script; the reason given in round 1 (a test refusing a string and a number yet admitting a boolean has to name three types) was false: the reviewer\'s mutant F (names string and number, admits a boolean) survives at authority-artifact-fields.ts 102, 121 and 132 without the row and is killed by it alone [Observed by the review, run 11, not re-run here]. The mutant outputs of this directory ran at the round-1 repair commit; the restored row adds a test and removes none, so a kill there stays a kill [Inferred]',
+            'N2': 'AGENTS.md: the support note calls isRecord the shared object test (non-null, not an array; it does not check the prototype); nothing else in AGENTS.md changes',
+            'notTaken': 'N1 (two more SM4 selftest cases, eight lines instead of five) is filed by the coordinator as a follow-up: it would change the SM4 bytes that round 2 reviewed',
+            'remeasured': {'tests': 'test-delta.json and test-runs-summary.json at ' + repair2 + ': Tests +137 ~51 -0, 414 -> 551; the head versions of the six existing files run on the base code: 491 tests, 490 pass, the one failure the pinned list in cli.test.ts'},
+        },
         'round2': {
             'what': 'the steps that follow the merge of #545 (a1b9bde2), in the order the coordinator fixed: one merge of main, the five names the support purity test now meets, the SM4 self-test case. No other file changes',
             'mergeCommit': merge, 'mergedMain': 'a1b9bde272f21dd5f110498c39e95f9f827344f4',
