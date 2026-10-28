@@ -7,15 +7,28 @@ After the round-3 reviewer's npm_alias_probe_r3.py (docs/evidence/guard-pins-fol
 environment: each case is a fresh project whose root lists workspaces `w` (wlib 1.0.0), `s` (@syzygy/slib 1.0.0) and `app`
 (app 0.0.0). Every npm and node call runs with an environment built from PATH alone (HOME an empty scratch home, empty user and
 global configs, a private empty cache, offline, a registry of http://127.0.0.1:9/) and with its working directory inside the
-scratch directory, the version calls included, so the one npmrc outside the scratch directory npm opens is its own builtin
-`<npm>/npmrc` (absent here), as every npm call does (the round-3 review's N3; npmrc_trace.py here traces it).
-Usage: python3 -I root_exception_probe.py <empty scratch dir> <out.json>
+scratch directory, the version calls included, which may have no package.json or node_modules in any directory above it (npm
+would take that directory as the project and read its `.npmrc`; the probe refuses one), so the one npmrc outside the scratch
+directory npm opens is its own builtin `<npm>/npmrc` (absent here), as every npm call does (the round-3 review's N3;
+npmrc_trace.py here traces it).
+The record writes the scratch path as `<scratch>` and the timestamp in each npm debug-log name as `<timestamp>`, so a re-run writes
+the same bytes (syzygy-bpyt.49, the PR 547 round-1 review's §7).
+Usage: python3 -I root_exception_probe.py <empty scratch dir, outside any npm project> <out.json>
 """
 import json, os, re, shutil, subprocess, sys
 
 scratch, out = (os.path.realpath(a) for a in sys.argv[1:3])
 if os.listdir(scratch):
     sys.exit(f'{scratch} is not empty')
+# npm takes the nearest directory above its working directory that holds a package.json or node_modules as the project, and
+# reads that directory's .npmrc; the version calls run in the scratch directory itself, so no such directory may be above it.
+up = os.path.dirname(scratch)
+while True:
+    if any(os.path.exists(os.path.join(up, name)) for name in ('package.json', 'node_modules')):
+        sys.exit(f'{up} holds a package.json or node_modules, so npm would read its .npmrc: use a scratch directory outside any npm project')
+    if up == os.path.dirname(up):
+        break
+    up = os.path.dirname(up)
 home = os.path.join(scratch, 'home')
 os.makedirs(home)
 os.makedirs(os.path.join(scratch, 'tmp'))
@@ -91,7 +104,8 @@ npm_dir = os.path.dirname(os.path.dirname(os.path.realpath(shutil.which('npm', p
 arborist = json.load(open(os.path.join(npm_dir, 'node_modules', '@npmcli', 'arborist', 'package.json')))['version']
 npa = json.load(open(os.path.join(npm_dir, 'node_modules', 'npm-package-arg', 'package.json')))['version']
 with open(out, 'w') as fh:
-    fh.write(json.dumps({'npm': version('npm', '--version'), 'arborist': arborist, 'npa': npa, 'node': version('node', '--version'),
-                         'registry': ENV['npm_config_registry'], 'offline': True, 'workspaces': WS, 'results': results},
-                        indent=1).replace(scratch, '<scratch>') + '\n')
+    fh.write(re.sub(r'/_logs/\d{4}-\d\d-\d\dT\d\d_\d\d_\d\d_\d{3}Z-debug-', '/_logs/<timestamp>-debug-',
+                    json.dumps({'npm': version('npm', '--version'), 'arborist': arborist, 'npa': npa, 'node': version('node', '--version'),
+                                'registry': ENV['npm_config_registry'], 'offline': True, 'workspaces': WS, 'results': results},
+                               indent=1).replace(scratch, '<scratch>')) + '\n')
 print('wrote', out)

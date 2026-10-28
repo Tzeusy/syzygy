@@ -443,6 +443,7 @@ CAMPAIGNS = (
         "greenfield-parity-implementation",
         "Greenfield-parity implementation",
         r"R-GP-IMPL-.*-RAW\.md",
+        r"V-CRLF-MASK-\d+-RAW\.md",
     ),
     campaign(
         "pr491-redis-remeasure",
@@ -474,6 +475,13 @@ CAMPAIGNS = (
         "p115-implementation-owner-offering",
         "P115 implementation owner offering",
         r"R-P115-IMPLEMENTATION-OWNER-OFFERING-RAW\.md",
+    ),
+    campaign(
+        "gpb2-followup-packet",
+        "GP-B2 follow-up owner packet",
+        r"V-GP-B2-[12](?:-ADDENDUM)?-RAW\.md",
+        r"V-GP-B2-RECORD-\d+-RAW\.md",
+        r"VET-GP-FOLLOWUPS-[1-4]-RAW\.md",
     ),
 )
 

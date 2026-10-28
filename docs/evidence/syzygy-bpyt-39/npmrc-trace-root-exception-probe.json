@@ -1,10 +1,10 @@
 {
  "probe": "docs/evidence/syzygy-bpyt-39/root_exception_probe.py",
- "probeSha256": "a63e3824a6ccb0236aa02e3e2850859ffba4b522154aeb0188c988e2389b60d5",
- "caller": "/tmp/la-b39/caller",
+ "probeSha256": "d7b29a5401027f1c1da70c349872b6aca915f662b9c80811f4f9138cc55b9b17",
+ "caller": "/tmp/la49/caller",
  "callerNpmrcOpened": [],
  "exit": 0,
- "recordSha256": "12d3fa182aa1fa467ff2e0e5ca7305db948cb2d20aa2c839f0465957dffe01ee",
+ "recordSha256": "cea10b3c635d0239f6dbe0796d0b0c6bf48080bd4609586720ef454e69872ab9",
  "recordEqualsReference": null,
  "reference": null,
  "npmrcOutsideScratch": [

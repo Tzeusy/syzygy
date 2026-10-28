@@ -116,7 +116,7 @@ describe('@syzygy/support stays a pure leaf', () => {
 
   it('exports exactly the "." entry, index.js, so no other module is an entry', () => {
     const manifest = JSON.parse(readFileSync(new URL('../package.json', import.meta.url), 'utf8')) as Record<string, unknown>;
-    expect(manifest['exports']).toEqual({ '.': { types: './dist/index.d.ts', import: './dist/index.js', default: './dist/index.js' } });
+    expect(manifest['exports']).toEqual({ '.': { source: './src/index.ts', types: './dist/index.d.ts', import: './dist/index.js', default: './dist/index.js' } });
   });
 });
 

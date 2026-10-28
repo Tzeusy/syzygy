@@ -176,7 +176,8 @@ export function observeObservatoryDrift(
 export function pocObserverInputsAreClean(
   observation: Pick<GitObservation, 'changedPaths'>,
 ): boolean {
-  const exactInputs = new Set(['package.json', 'package-lock.json', 'tsconfig.base.json']);
+  // scripts/clean_build.mjs holds what `build:poc` removes and how it runs tsc (syzygy-bpyt.4.2).
+  const exactInputs = new Set(['package.json', 'package-lock.json', 'tsconfig.base.json', 'scripts/clean_build.mjs']);
   // Every workspace package the daemon imports needs a prefix here; git-observation.test.ts derives that set from main.ts.
   const inputPrefixes = [
     'apps/three-surface-poc/',
