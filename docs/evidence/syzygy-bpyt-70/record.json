@@ -1,0 +1,86 @@
+{
+ "bead": "syzygy-bpyt.70",
+ "base": "c672492c",
+ "commit": "cfc79988c3e6db13038c68ed34fd654ce13ee073",
+ "subjects": {
+  "packages/polaris-generation-core/src/workspace-reach.testkit.ts": "7a82076422afa427d6fc070a649f29747f5a122c0f0fcd92717a7f4a94e7eaa4",
+  "packages/polaris-generation-core/src/workspace-reach.test.ts": "ef112c4eb6fb6849138fa5aba7a1e07435eb1d998f9516a6483878fe588ef070",
+  "apps/three-surface-poc/src/sync-child-process-guard.test.ts": "58be0f73c549579aa4c11bea6c5a69d0a6a571dea9ea8f18a100f477a3cf891e",
+  "packages/support/src/support-purity.test.ts": "d8852e281b575774d1246473428e4420c9817cd3a28101a185f8d498b779f8f0"
+ },
+ "items": {
+  "1": "moot: closed by PR 549 (the bead comment of 2026-10-28 10:12; docs/evidence/syzygy-bpyt-46/alias-shadow-probe.json)",
+  "2": "arm A: every target of every entry is read by Node 24.6.0's invalidSegmentRegEx and deprecatedInvalidSegmentRegEx, copied verbatim (node-segments.json pins both and 13 cases against the running Node)",
+  "3": "no row, by the coordinator's ruling: the bead marks it informational (\"add rows only if cheap\"); no test refuses anything new for it",
+  "4": "moot since PR 549 (round 2 N5)",
+  "5": "E4S and the E1E4S residual, in tools/mutants.py of this directory; the bpyt.46 tool is unedited",
+  "6": "the round-2 reviewer's row, inserted byte for byte (its file docs/evidence/support-leaf-followups-review-2026-10-28/r2/tools/fix-n2-object-rest-row.ts.txt, sha256 73fcffaec45f49fbd589c95c4512a5796235fcd56958b36dc02344cf7e0916f6); W4 pins it",
+  "7": "rows for a types-only, a source-only, a nested-condition and a main target, and the severity order (M4, M4b, M6, R1-R4)",
+  "8": "the guard loads vitest.config.ts and refuses an alias key at any depth (S2, S3), with a reader row for the walk (S4-S6)"
+ },
+ "newRefusals": [
+  "an exports target with a '.' or 'node_modules' segment, in any case or percent-encoded (Node refuses each with ERR_INVALID_PACKAGE_TARGET); before, only the literal '/../' threw",
+  "a '..' segment written with a backslash or percent-encoded",
+  "an empty segment ('//' or a trailing '/'), which Node loads with the DEP0166 warning",
+  "any of these under the types or source condition, or in a main field (before, the '/../' form already threw there)",
+  "an alias key anywhere in the loaded vitest config, including the shorthand form the text check misses"
+ ],
+ "residuals": [
+  "E1E4S: with the segment check dropped, a uniform '/../' entry whose source condition is '/../' too passes the S10 file, since the resolver reads the source condition and joins the segment away; only the check stops it",
+  "the case rows record Node 24.6.0 only: the test rows do not run Node, and a later Node that changes its rules is caught only when node_segments.mjs is re-run",
+  "the alias walk reads the config object; a plugin that adds an alias through a config hook is not read (the config has no plugins today)"
+ ],
+ "mutants": {
+  "absent": {
+   "rows": 29,
+   "asExpected": 29,
+   "unexpected": []
+  },
+  "present": {
+   "rows": 29,
+   "asExpected": 29,
+   "unexpected": []
+  }
+ },
+ "suite": {
+  "commit": "cfc79988c3e6db13038c68ed34fd654ce13ee073",
+  "distDirs": [],
+  "exit": 0,
+  "files": 256,
+  "total": 5803,
+  "passed": 5798,
+  "failed": 0,
+  "skipped": 5,
+  "load1": 20.2,
+  "wallSeconds": 177.5,
+  "cleanAfter": true
+ },
+ "titles": {
+  "base": "c672492caace634905b4f285434211436bb7fe24",
+  "head": "cfc79988c3e6db13038c68ed34fd654ce13ee073",
+  "baseTitles": 5781,
+  "headTitles": 5798,
+  "delta": 17,
+  "addedByFile": {
+   "apps/three-surface-poc/src/sync-child-process-guard.test.ts": 2,
+   "packages/polaris-generation-core/src/workspace-reach.test.ts": 14,
+   "packages/support/src/support-purity.test.ts": 1
+  },
+  "removed": 0
+ },
+ "surfaceVersion": {
+  "base": "polaris@5e39299adacf",
+  "head": "polaris@ceab7f47e1cf"
+ },
+ "node": "v24.6.0",
+ "files": {
+  "mutants-absent.json": "89bcc3ca2960a297b29d7c60b99980ac43d4a6845426dd0b69a7cb00d3dc0287",
+  "mutants-present.json": "fe03e0b14cdaa921dba0b097cef558006fc25addc1a78a7a7af74d11d4bf1ec1",
+  "node-segments.json": "2601cdf72e262d35bf8fff011a2382891263f4b9b87a69f35b98e8c878aedb9a",
+  "suite-absent.json": "c658e5d32d1431eafe4a3ce35dfddde74f369d95a41fee308745a63441f297e7",
+  "titles.json": "5525c2448b97f021466441edb45da3280b32dc0dfb8b2dab85b5248ed7873589",
+  "tools/mutants.py": "02ff31f55ee6f0d7d188f7aa5572f62c34efcc1bfd1f83fbcc0474f6e1563b12",
+  "tools/node_segments.mjs": "dfe88d0a8da56a0235c45c06ca4225ba4c782dad5eb5c1a3499d6e640885651c",
+  "tools/titles.py": "2358f71938e42cee633c877cc8aa4124a6395c6ed18804c6365684cfa9be761c"
+ }
+}

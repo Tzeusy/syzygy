@@ -1,0 +1,169 @@
+{
+ "subject": "packages/polaris-generation-core/src/workspace-reach.testkit.ts",
+ "subjectSha256": "7a82076422afa427d6fc070a649f29747f5a122c0f0fcd92717a7f4a94e7eaa4",
+ "casesFrom": "packages/polaris-generation-core/src/workspace-reach.test.ts",
+ "casesFromSha256": "ef112c4eb6fb6849138fa5aba7a1e07435eb1d998f9516a6483878fe588ef070",
+ "node": "v24.6.0",
+ "nodeFile": "lib/internal/modules/esm/resolve.js",
+ "regexes": [
+  {
+   "node": "invalidSegmentRegEx",
+   "nodeLiteral": "/(^|\\\\|\\/)((\\.|%2e)(\\.|%2e)?|(n|%6e|%4e)(o|%6f|%4f)(d|%64|%44)(e|%65|%45)(_|%5f)(m|%6d|%4d)(o|%6f|%4f)(d|%64|%44)(u|%75|%55)(l|%6c|%4c)(e|%65|%45)(s|%73|%53))?(\\\\|\\/|$)/i",
+   "copy": "/(^|\\\\|\\/)((\\.|%2e)(\\.|%2e)?|(n|%6e|%4e)(o|%6f|%4f)(d|%64|%44)(e|%65|%45)(_|%5f)(m|%6d|%4d)(o|%6f|%4f)(d|%64|%44)(u|%75|%55)(l|%6c|%4c)(e|%65|%45)(s|%73|%53))?(\\\\|\\/|$)/i",
+   "equal": true
+  },
+  {
+   "node": "deprecatedInvalidSegmentRegEx",
+   "nodeLiteral": "/(^|\\\\|\\/)((\\.|%2e)(\\.|%2e)?|(n|%6e|%4e)(o|%6f|%4f)(d|%64|%44)(e|%65|%45)(_|%5f)(m|%6d|%4d)(o|%6f|%4f)(d|%64|%44)(u|%75|%55)(l|%6c|%4c)(e|%65|%45)(s|%73|%53))(\\\\|\\/|$)/i",
+   "copy": "/(^|\\\\|\\/)((\\.|%2e)(\\.|%2e)?|(n|%6e|%4e)(o|%6f|%4f)(d|%64|%44)(e|%65|%45)(_|%5f)(m|%6d|%4d)(o|%6f|%4f)(d|%64|%44)(u|%75|%55)(l|%6c|%4c)(e|%65|%45)(s|%73|%53))(\\\\|\\/|$)/i",
+   "equal": true
+  }
+ ],
+ "cases": [
+  {
+   "target": "./dist/index.js",
+   "node": "loads",
+   "reader": "loads",
+   "test": "loads",
+   "equal": true,
+   "status": 0,
+   "stderr": []
+  },
+  {
+   "target": "./dist/.hidden/index.js",
+   "node": "loads",
+   "reader": "loads",
+   "test": "loads",
+   "equal": true,
+   "status": 0,
+   "stderr": []
+  },
+  {
+   "target": "./dist/..x/index.js",
+   "node": "loads",
+   "reader": "loads",
+   "test": "loads",
+   "equal": true,
+   "status": 0,
+   "stderr": []
+  },
+  {
+   "target": "./dist/node_modules_x/index.js",
+   "node": "loads",
+   "reader": "loads",
+   "test": "loads",
+   "equal": true,
+   "status": 0,
+   "stderr": []
+  },
+  {
+   "target": "./dist/x/../index.js",
+   "node": "refuses",
+   "reader": "refuses",
+   "test": "refuses",
+   "equal": true,
+   "status": 1,
+   "stderr": [
+    "node:internal/modules/esm/resolve:351",
+    "  return new ERR_INVALID_PACKAGE_TARGET("
+   ]
+  },
+  {
+   "target": "./dist/./index.js",
+   "node": "refuses",
+   "reader": "refuses",
+   "test": "refuses",
+   "equal": true,
+   "status": 1,
+   "stderr": [
+    "node:internal/modules/esm/resolve:351",
+    "  return new ERR_INVALID_PACKAGE_TARGET("
+   ]
+  },
+  {
+   "target": "./dist/node_modules/index.js",
+   "node": "refuses",
+   "reader": "refuses",
+   "test": "refuses",
+   "equal": true,
+   "status": 1,
+   "stderr": [
+    "node:internal/modules/esm/resolve:351",
+    "  return new ERR_INVALID_PACKAGE_TARGET("
+   ]
+  },
+  {
+   "target": "./dist/NODE_MODULES/index.js",
+   "node": "refuses",
+   "reader": "refuses",
+   "test": "refuses",
+   "equal": true,
+   "status": 1,
+   "stderr": [
+    "node:internal/modules/esm/resolve:351",
+    "  return new ERR_INVALID_PACKAGE_TARGET("
+   ]
+  },
+  {
+   "target": "./dist/%2e%2e/index.js",
+   "node": "refuses",
+   "reader": "refuses",
+   "test": "refuses",
+   "equal": true,
+   "status": 1,
+   "stderr": [
+    "node:internal/modules/esm/resolve:351",
+    "  return new ERR_INVALID_PACKAGE_TARGET("
+   ]
+  },
+  {
+   "target": "./dist/%2E/index.js",
+   "node": "refuses",
+   "reader": "refuses",
+   "test": "refuses",
+   "equal": true,
+   "status": 1,
+   "stderr": [
+    "node:internal/modules/esm/resolve:351",
+    "  return new ERR_INVALID_PACKAGE_TARGET("
+   ]
+  },
+  {
+   "target": "./dist/%6eode_modules/index.js",
+   "node": "refuses",
+   "reader": "refuses",
+   "test": "refuses",
+   "equal": true,
+   "status": 1,
+   "stderr": [
+    "node:internal/modules/esm/resolve:351",
+    "  return new ERR_INVALID_PACKAGE_TARGET("
+   ]
+  },
+  {
+   "target": "./dist/x\\..\\index.js",
+   "node": "refuses",
+   "reader": "refuses",
+   "test": "refuses",
+   "equal": true,
+   "status": 1,
+   "stderr": [
+    "node:internal/modules/esm/resolve:351",
+    "  return new ERR_INVALID_PACKAGE_TARGET("
+   ]
+  },
+  {
+   "target": "./dist//index.js",
+   "node": "warns",
+   "reader": "warns",
+   "test": "warns",
+   "equal": true,
+   "status": 0,
+   "stderr": [
+    "(node:1923871) [DEP0166] DeprecationWarning: Use of deprecated double slash resolving \"./dist//index.js\" for module request \".\" in the \"exports\" field module resolution of the package at /tmp/la70t/no",
+    "(Use `node --trace-deprecation ...` to show where the warning was created)"
+   ]
+  }
+ ],
+ "mismatches": 0
+}
