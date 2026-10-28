@@ -367,7 +367,7 @@
    "errorLines": [
     "npm error code EUNSUPPORTEDPROTOCOL",
     "npm error Unsupported URL Type \"link:\": link:../nowhere",
-    "npm error A complete log of this run can be found in: <scratch>/cache/_logs/2026-10-27T17_15_48_387Z-debug-0.log"
+    "npm error A complete log of this run can be found in: <scratch>/cache/_logs/<timestamp>-debug-0.log"
    ],
    "warnLines": []
   },
@@ -388,7 +388,7 @@
    "errorLines": [
     "npm error code EUNSUPPORTEDPROTOCOL",
     "npm error Unsupported URL Type \"workspace:\": workspace:*",
-    "npm error A complete log of this run can be found in: <scratch>/cache/_logs/2026-10-27T17_15_52_432Z-debug-0.log"
+    "npm error A complete log of this run can be found in: <scratch>/cache/_logs/<timestamp>-debug-0.log"
    ],
    "warnLines": []
   },
@@ -508,7 +508,7 @@
    "errorLines": [
     "npm error code EUNSUPPORTEDPROTOCOL",
     "npm error Unsupported URL Type \"link:\": link:../nowhere",
-    "npm error A complete log of this run can be found in: <scratch>/cache/_logs/2026-10-27T17_16_17_074Z-debug-0.log"
+    "npm error A complete log of this run can be found in: <scratch>/cache/_logs/<timestamp>-debug-0.log"
    ],
    "warnLines": []
   },
@@ -529,7 +529,7 @@
    "errorLines": [
     "npm error code EUNSUPPORTEDPROTOCOL",
     "npm error Unsupported URL Type \"workspace:\": workspace:*",
-    "npm error A complete log of this run can be found in: <scratch>/cache/_logs/2026-10-27T17_16_19_498Z-debug-0.log"
+    "npm error A complete log of this run can be found in: <scratch>/cache/_logs/<timestamp>-debug-0.log"
    ],
    "warnLines": []
   }
