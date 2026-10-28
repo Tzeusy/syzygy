@@ -178,7 +178,9 @@ export function pocObserverInputsAreClean(
 ): boolean {
   // scripts/clean_build.mjs holds what `build:poc` removes and how it runs tsc (syzygy-bpyt.4.2).
   const exactInputs = new Set(['package.json', 'package-lock.json', 'tsconfig.base.json', 'scripts/clean_build.mjs']);
-  // Every workspace package the daemon imports needs a prefix here; git-observation.test.ts derives that set from main.ts.
+  // Every project the POC start compiles or loads needs a prefix here (owner direction GP-B2 Q3, syzygy-bpyt.56): the projects
+  // build:poc names, every project their tsconfig references reach, and the workspaces main.ts imports. git-observation.test.ts
+  // derives that set and requires the gate to refuse exactly it.
   const inputPrefixes = [
     'apps/three-surface-poc/',
     'packages/three-surface-poc-core/',
@@ -186,6 +188,8 @@ export function pocObserverInputsAreClean(
     'packages/http-host/',
     'packages/cap1-core/',
     'packages/support/',
+    'packages/polaris-generation-core/',
+    'packages/polaris-generation-consent/',
   ];
   return observation.changedPaths.every(
     (changedPath) =>
