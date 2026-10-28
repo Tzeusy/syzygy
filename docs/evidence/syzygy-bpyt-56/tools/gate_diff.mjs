@@ -3,7 +3,8 @@
 // Each side's pocObserverInputsAreClean is read from `git show <commit>:apps/three-surface-poc/src/git-observation.ts` (the text from
 // its `export function` line to the first line that is `}`), transpiled by TypeScript and evaluated alone. The population is every path
 // `git ls-files` lists at the head commit, plus, for each apps/* and packages/* directory there, a manifest, a tsconfig, an untracked
-// module and a sibling that only shares the name's start, and scripts/clean_build.mjs.bak: the population git-observation.test.ts uses.
+// module, a sibling that only shares the name's start and a docs/<dir>/a.ts path that carries the name after its first segment, and
+// scripts/clean_build.mjs.bak: the population git-observation.test.ts uses.
 // The record lists every path the head refuses and the base accepts, and every path the base refuses and the head accepts.
 import { execFileSync } from 'node:child_process';
 import { createHash } from 'node:crypto';
