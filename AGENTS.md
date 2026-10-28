@@ -208,12 +208,17 @@ sweep lessons added 2026-09-23; the raw-head digest lesson the same day.
   says which clause governs each and where they differ; `fence-rules.test.ts`
   pins four of them (the consent reader through the probe and its own tests).
   Do not merge or "fix" one without the owner, since that changes what a gate
-  accepts. G1, the CRLF reading, is ruled by the owner (`syzygy-bpyt.1.14`)
-  and `syzygy-bpyt.16` fixes it; G2 and G3 are open owner questions.
+  accepts. The profile's mask ends a line at CRLF, CR and LF and keeps every
+  terminator (`syzygy-bpyt.16`; the differential is in
+  `docs/evidence/syzygy-bpyt-16/crlf-mask-2026-10-27.json`); the extractor and
+  the link reader split at LF only. G2 and G3 were ruled by the owner on 2026-10-28 (GP-B2 Q2, answer C; `syzygy-bpyt.55` implements it).
 - Three-Surface POC: `packages/three-surface-poc-core/` (one shared
   `PocModel`) and `apps/three-surface-poc/` read the same instance — never
-  split surface truth stores. `build:poc` keeps `tsc -b --force`: ignored
-  incremental outputs are executable inputs.
+  split surface truth stores. Ignored build outputs are executable inputs, so
+  `build` and `build:poc` run `scripts/clean_build.mjs`: it removes the dist of
+  every project `tsc -b` will build, then builds (`syzygy-bpyt.4.2`).
+  `tsc -b` alone keeps an altered output whose source is unchanged, and
+  `--force` keeps an output whose source is gone.
 - PWB pipeline (pure, injectable, in order): `body-read-authority` gates
   every Butlers read → observation → `git-object-reader` → classification
   (excluded content yields hash-not-body records) → extraction (literal
@@ -301,9 +306,12 @@ sweep lessons added 2026-09-23; the raw-head digest lesson the same day.
   stale; no evidence → Unknown.
 - Conformance expected values are hard-coded literals, never imported from
   the module under test.
-- Root Vitest `test.projects` must alias `@syzygy/cap1-core`,
-  `@syzygy/cap1-daemon` and `@syzygy/http-host` to source; verify with
-  every `dist/` absent.
+- Tests, the typecheck and the no-egress bundle load every `@syzygy/*`
+  package by the `source` condition its `exports` lists first, never its
+  `dist/` (`syzygy-bpyt.4.2`). Vitest takes it from `ssr.resolve.conditions`;
+  a top-level `resolve.conditions` never reaches the test runner. A new
+  export needs its `source` entry, or the tree's-own-exports row of
+  `workspace-reach.test.ts` fails. Verify with every `dist/` absent.
 - Butlers' pytest needs its own `.venv/bin/python`.
 - Never wire `WORKER_CHANGE_SEAM` test-artifact evidence into the unrelated
   identity-resolution entities in `model.ts` — false "Verified" (reverted
@@ -316,10 +324,16 @@ sweep lessons added 2026-09-23; the raw-head digest lesson the same day.
   (`syzygy-bpyt.7.2` removed `write-guard.ts`). `authorizeWrite` survives
   only as test support (`@syzygy/cap1-core/testing`) and compares raw
   `startsWith`; a future write path must normalize first.
-- App typecheck (`tsc --noEmit -p apps/three-surface-poc`) resolves both
-  `packages/three-surface-poc-core` and `packages/polaris-generation-core`
-  through `dist` declarations: run `tsc -b` on each (or `npm run build:poc`)
-  first after either changes, or a stale `dist` reports phantom errors.
+- `npm run typecheck` is one noEmit program over every workspace's `src/`,
+  tests among them (the root `tsconfig.json`); it reads no `dist`
+  declaration, so it needs no build first. Each package `tsconfig.json` is
+  the product build and excludes its tests and test-support modules; it
+  still emits two kits a reader takes from `dist` (`full-run.testkit.ts` for
+  `scripts/dossier_scale_measure.mjs`, `recorder-fixtures.testkit.ts` for the
+  consent package's `./testing` entry). TypeScript emits any module a built
+  one imports, so no other built module may import a test or test support
+  (`product-build.test.ts` lists the excludes per project and pins the one
+  import edge into test support, the consent `testing.ts`).
 - Ledger semantics: a refused read is not a counted pass; phase-B breaches
   are typed findings and do not set the degradation state; catalog
   extraction keys off the basename `v1.md`. The tailnet mount is detected

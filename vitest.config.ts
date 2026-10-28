@@ -2,32 +2,10 @@ import { fileURLToPath } from 'node:url';
 import { defineConfig } from 'vitest/config';
 
 export default defineConfig({
-  resolve: {
-    alias: {
-      '@syzygy/support': fileURLToPath(new URL('./packages/support/src/index.ts', import.meta.url)),
-      '@syzygy/polaris-generation-core/live': fileURLToPath(new URL('./packages/polaris-generation-core/src/live.ts', import.meta.url)),
-      '@syzygy/polaris-generation-core': fileURLToPath(new URL('./packages/polaris-generation-core/src/index.ts', import.meta.url)),
-      '@syzygy/polaris-generation-consent/live': fileURLToPath(new URL('./packages/polaris-generation-consent/src/live.ts', import.meta.url)),
-      '@syzygy/polaris-generation-consent/testing': fileURLToPath(new URL('./packages/polaris-generation-consent/src/testing.ts', import.meta.url)),
-      '@syzygy/polaris-generation-consent': fileURLToPath(new URL('./packages/polaris-generation-consent/src/index.ts', import.meta.url)),
-      '@syzygy/polaris-dossier': fileURLToPath(new URL('./packages/polaris-dossier/src/index.ts', import.meta.url)),
-      '@syzygy/cap1-core/testing': fileURLToPath(
-        new URL('./packages/cap1-core/src/testing.ts', import.meta.url),
-      ),
-      '@syzygy/cap1-core': fileURLToPath(
-        new URL('./packages/cap1-core/src/index.ts', import.meta.url),
-      ),
-      '@syzygy/cap1-daemon': fileURLToPath(
-        new URL('./packages/cap1-daemon/src/index.ts', import.meta.url),
-      ),
-      '@syzygy/http-host': fileURLToPath(
-        new URL('./packages/http-host/src/index.ts', import.meta.url),
-      ),
-      '@syzygy/three-surface-poc-core': fileURLToPath(
-        new URL('./packages/three-surface-poc-core/src/index.ts', import.meta.url),
-      ),
-    },
-  },
+  // Tests load each workspace package from its source through the `source` export condition (syzygy-bpyt.4.2), never its
+  // dist. Vitest runs test files through its server-side resolver, so the condition goes there (a top-level `resolve.conditions`
+  // does not reach it); the others are Vite 7's `defaultServerConditions`, which a list given here replaces.
+  ssr: { resolve: { conditions: ['source', 'module', 'node', 'development|production'] } },
   test: {
     // Half the cores (syzygy-w90k): several lanes run their suites on one
     // host, and a worker per core oversubscribed it. Vitest takes the bound

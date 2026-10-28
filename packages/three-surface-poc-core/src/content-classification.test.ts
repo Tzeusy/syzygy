@@ -504,6 +504,16 @@ describe('PWB-REQ-006 (amended) — phase-A seeds use the same context-aware gua
     expect(classifyPhaseASeed(detectors, '# Index\n\n```\nnever closed\n')).toEqual({ kind: 'excluded', reason: 'active-content', detail: '1' });
   });
 
+  // syzygy-bpyt.16 (ruled on syzygy-bpyt.1.14): a CRLF or CR seed gets the decision its LF form gets. The first text was admitted under
+  // CRLF and CR before the fix (a backtick opener with a backtick in its info text hides a script element as an inline span), the
+  // second excluded (a tilde fence the mask did not recognize, leaving the script element it holds in the open).
+  it.each([['LF', '\n'], ['CRLF', '\r\n'], ['CR', '\r']])('%s: a seed is excluded or kept safe as its LF form is', (_name, end) => {
+    const failOpen = ['# Index', '', '```a`b', '<script>x</script>', '```', ''].join(end);
+    const benign = ['# Index', '', '~~~', '<script>x</script>', '~~~', '', '- [a](a.md)', ''].join(end);
+    expect(classifyPhaseASeed(detectors, failOpen)).toEqual({ kind: 'excluded', reason: 'active-content', detail: '1' });
+    expect(classifyPhaseASeed(detectors, benign)).toEqual({ kind: 'safe' });
+  });
+
   it('a secret inside a code context is still a secret: detectors see the raw text', () => {
     expect(classifyPhaseASeed(detectors, `\`\`\`\n${SECRETS.awsKey}\n\`\`\`\n`)).toEqual({ kind: 'excluded', reason: 'secret-matched', detail: 'known-token-formats' });
     expect(classifyPhaseASeed(detectors, `see \`${SECRETS.url}\`\n`)).toEqual({ kind: 'excluded', reason: 'secret-matched', detail: 'credential-bearing-url' });
