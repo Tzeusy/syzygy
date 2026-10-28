@@ -2,13 +2,14 @@ import * as fs from 'node:fs';
 import * as path from 'node:path';
 import { UNKNOWN_REASONS } from '@syzygy/cap1-core';
 import { leadInQuotations, lineCount, locateQuote, normaliseTracked, parseBoundedJson, retainedWithMarkers, spanTouchesWithheld, verifiedRedactedBody, type VerifiedRedactedBody, type TrackedText } from '@syzygy/polaris-generation-core/live';
-import { sha256 } from '@syzygy/support';
+import { isRecord, sha256 } from '@syzygy/support';
 import { CREDENTIAL_CHECK_DISCLOSURE, credentialStepCheck, storedBriefArm, type CredentialStepResult } from './credential-probe.js';
 import { SESSION_ID_PATTERN, UNDERSTANDING_ITEMS, checkDraftShape, localDraftSchema, type DraftSchemaWithDefs } from './draft-schema.js';
 import { EXECUTION_FLAGS_BASIS, executionFlags, type ExecutionFlags } from './execution-flags.js';
 import type { CredentialProbe } from './execution-rule.js';
 import { RECORDS_WITHIN_REACH, type GateSources } from './gate-sources.js';
 import { GitObjectReadRefusal, openPinnedObjectReader, type PinnedObjectReader, type PinnedObjectReaderOptions, type TreeEntry } from './git-object-reader.js';
+import { isoOf } from './iso-of.js';
 import type { Outcome } from './outcome.js';
 import { reverifyPinnedRevision, type ReverifyRefusal } from './reverify.js';
 import type { RunConfig } from './run-config.js';
@@ -190,8 +191,6 @@ const DISCLOSURES = [
   'The clone read is the one the run record names, as the operator supplied it at init; the record is within the agent sessions\' write reach, so the location is Inferred, and only objects re-hashed from the pinned commit are used.',
 ];
 
-const isoOf = (instant: number): string => new Date(instant).toISOString();
-const isObj = (value: unknown): value is Readonly<Record<string, unknown>> => value !== null && typeof value === 'object' && !Array.isArray(value);
 const list = (value: unknown): readonly unknown[] => (Array.isArray(value) ? value : []);
 const text = (value: unknown): string | undefined => (typeof value === 'string' ? value : undefined);
 const line = (value: unknown): number | undefined => (typeof value === 'number' && Number.isSafeInteger(value) && value >= 1 ? value : undefined);
@@ -260,7 +259,7 @@ const DRAFT_PLAN: SubjectPlan<CheckRecord, null> = {
     draft: checked.file,
     session: { sessionId: declaredSessionId(checked.doc), declaredBy: 'the authoring session', label: 'Inferred' },
     findings: checked.findings,
-    executionFlags: executionFlags(isObj(checked.doc) ? checked.doc['executions'] : undefined, checked.clonePath, storedBriefArm(checked.run)),
+    executionFlags: executionFlags(isRecord(checked.doc) ? checked.doc['executions'] : undefined, checked.clonePath, storedBriefArm(checked.run)),
     quotations: checked.quotations,
     excludedContent: checked.excludedContent,
     citedBlobs: checked.citedBlobs,
@@ -268,7 +267,7 @@ const DRAFT_PLAN: SubjectPlan<CheckRecord, null> = {
     credential: checked.credential,
     limits: {
       repairCycles: checked.repairCycles,
-      questions: { declared: declared.maxQuestions, recorded: isObj(checked.doc) && Array.isArray(checked.doc['clarifications']) ? checked.doc['clarifications'].length : null },
+      questions: { declared: declared.maxQuestions, recorded: isRecord(checked.doc) && Array.isArray(checked.doc['clarifications']) ? checked.doc['clarifications'].length : null },
       deadline: checked.deadline,
     },
     label: 'Inferred',
@@ -279,7 +278,7 @@ const DRAFT_PLAN: SubjectPlan<CheckRecord, null> = {
 const SESSION_ID = new RegExp(SESSION_ID_PATTERN, 'u');
 /** A subject's declared session identifier when it is well formed, or null. */
 export const declaredSessionId = (doc: unknown): string | null => {
-  const id = isObj(doc) ? doc['sessionId'] : undefined;
+  const id = isRecord(doc) ? doc['sessionId'] : undefined;
   return typeof id === 'string' && id.length <= 200 && SESSION_ID.test(id) ? id : null;
 };
 
@@ -409,7 +408,7 @@ export function briefIssuedAt(run: string, pinned: string, noun = 'draft'): numb
   } catch {
     return `the run holds no readable ${RUN_LAYOUT.briefRecord}: no brief was issued, so the deadline clock has not started and no ${noun} is checked`;
   }
-  if (!isObj(record) || record['pinnedRevision'] !== pinned) return `${RUN_LAYOUT.briefRecord} does not name the pinned revision ${pinned}`;
+  if (!isRecord(record) || record['pinnedRevision'] !== pinned) return `${RUN_LAYOUT.briefRecord} does not name the pinned revision ${pinned}`;
   const issuedAt = text(record['issuedAt']);
   const instant = issuedAt === undefined || !/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/.test(issuedAt) ? Number.NaN : Date.parse(issuedAt);
   return Number.isNaN(instant) ? `${RUN_LAYOUT.briefRecord} states no issue instant, so the deadline cannot be measured` : instant;
@@ -495,7 +494,7 @@ export async function deriveFindings(subject: unknown, inputs: DeriveInputs, rul
   const add = (finding: CheckFinding): void => { findings.push(finding); };
   const { noun } = rules;
   for (const error of checkDraftShape(rules.schema, subject)) add({ kind: 'schema', at: error.path, detail: error.detail });
-  const doc: Readonly<Record<string, unknown>> = isObj(subject) ? subject : {};
+  const doc: Readonly<Record<string, unknown>> = isRecord(subject) ? subject : {};
 
   if (doc['pinnedRevision'] !== inputs.pinned) add({ kind: 'wrong-revision', at: '$.pinnedRevision', detail: `the ${noun} must name the pinned revision ${inputs.pinned}; a ${noun} naming another revision is refused` });
   const asked = list(doc['clarifications']).length;
@@ -512,7 +511,7 @@ export async function deriveFindings(subject: unknown, inputs: DeriveInputs, rul
   });
 
   rules.structural(doc, add);
-  const executionIds = new Set(list(doc['executions']).flatMap((execution) => (isObj(execution) && text(execution['id']) !== undefined ? [text(execution['id'])!] : [])));
+  const executionIds = new Set(list(doc['executions']).flatMap((execution) => (isRecord(execution) && text(execution['id']) !== undefined ? [text(execution['id'])!] : [])));
 
   // Labels, citations by block kind and the execution marking.
   const blocks = rules.blocks(doc);
@@ -564,8 +563,8 @@ export async function deriveFindings(subject: unknown, inputs: DeriveInputs, rul
       if (!span.terminated) { add({ kind: 'quotation-unterminated', at: `${at}.${block.textKey}`, ...about, detail: `quotation ${index + 1} is never closed` }); return; }
       const citationId = named[index];
       if (citationId === undefined) return;
-      const citation = (citations ?? []).find((entry) => isObj(entry) && entry['id'] === citationId);
-      if (typeof citationId !== 'string' || !isObj(citation)) {
+      const citation = (citations ?? []).find((entry) => isRecord(entry) && entry['id'] === citationId);
+      if (typeof citationId !== 'string' || !isRecord(citation)) {
         add({ kind: 'quotation-citation', at: `${at}.quotations[${index}]`, ...about, detail: 'the quotation names no citation of this block' });
         return;
       }
@@ -662,13 +661,13 @@ export async function deriveFindings(subject: unknown, inputs: DeriveInputs, rul
 
   // The self-reported account of what the session read.
   const { key } = rules.account;
-  const account = isObj(doc[key]) ? doc[key] : {};
+  const account = isRecord(doc[key]) ? doc[key] : {};
   list(account['inspected']).forEach((entry, i) => {
     if (typeof entry === 'string' && !tree.has(entry)) add({ kind: 'discovery-path-absent', at: `$.${key}.inspected[${i}]`, detail: `${pathLabel(entry)} names no file at the pinned revision` });
   });
   for (const part of rules.account.parts) {
     list(account[part]).forEach((entry, i) => {
-      const reported = isObj(entry) ? text(entry['path']) : undefined;
+      const reported = isRecord(entry) ? text(entry['path']) : undefined;
       if (reported !== undefined && !tree.has(reported)) add({ kind: 'discovery-path-absent', at: `$.${key}.${part}[${i}].path`, detail: `${pathLabel(reported)} names no file at the pinned revision` });
     });
   }
@@ -695,19 +694,19 @@ export function draftRules(pinned: string, maxQuestions: number): SubjectRules {
 
 function draftStructure(doc: Readonly<Record<string, unknown>>, add: (finding: CheckFinding) => void): void {
   // References.
-  const sectionIds = new Set(list(doc['sections']).flatMap((section) => (isObj(section) && text(section['id']) !== undefined ? [text(section['id'])!] : [])));
+  const sectionIds = new Set(list(doc['sections']).flatMap((section) => (isRecord(section) && text(section['id']) !== undefined ? [text(section['id'])!] : [])));
   for (const part of ['diagrams', 'deepDives'] as const) {
     list(doc[part]).forEach((asset, i) => {
-      if (!isObj(asset)) return;
+      if (!isRecord(asset)) return;
       const sectionId = text(asset['sectionId']);
       if (sectionId !== undefined && !sectionIds.has(sectionId)) add({ kind: 'unresolved-reference', at: `$.${part}[${i}].sectionId`, detail: `no section has the identity ${JSON.stringify(sectionId)}` });
     });
   }
   list(doc['diagrams']).forEach((diagram, i) => {
-    if (!isObj(diagram)) return;
-    const nodes = new Set(list(diagram['nodes']).flatMap((node) => (isObj(node) && text(node['id']) !== undefined ? [text(node['id'])!] : [])));
+    if (!isRecord(diagram)) return;
+    const nodes = new Set(list(diagram['nodes']).flatMap((node) => (isRecord(node) && text(node['id']) !== undefined ? [text(node['id'])!] : [])));
     list(diagram['edges']).forEach((edge, j) => {
-      if (!isObj(edge)) return;
+      if (!isRecord(edge)) return;
       for (const end of ['from', 'to'] as const) {
         const target = text(edge[end]);
         if (target !== undefined && !nodes.has(target)) add({ kind: 'unresolved-reference', at: `$.diagrams[${i}].edges[${j}].${end}`, detail: `no node of this diagram has the identity ${JSON.stringify(target)}` });
@@ -715,12 +714,12 @@ function draftStructure(doc: Readonly<Record<string, unknown>>, add: (finding: C
     });
   });
   // A produced disposition names what its own asset produced, as in the provider draft: the asset, its paragraphs, or its nodes and edges.
-  const idsOf = (values: unknown): string[] => list(values).flatMap((entry) => (isObj(entry) && text(entry['id']) !== undefined ? [text(entry['id'])!] : []));
+  const idsOf = (values: unknown): string[] => list(values).flatMap((entry) => (isRecord(entry) && text(entry['id']) !== undefined ? [text(entry['id'])!] : []));
   for (const part of ['sections', 'diagrams', 'deepDives'] as const) {
     list(doc[part]).forEach((asset, i) => {
-      if (!isObj(asset) || !isObj(asset['disposition']) || asset['disposition']['kind'] !== 'produced') return;
+      if (!isRecord(asset) || !isRecord(asset['disposition']) || asset['disposition']['kind'] !== 'produced') return;
       const paragraphs = list(asset['paragraphs']);
-      const own = new Set([...idsOf([asset]), ...idsOf(paragraphs), ...paragraphs.flatMap((p) => (isObj(p) ? idsOf(p['children']) : [])), ...idsOf(asset['nodes']), ...idsOf(asset['edges'])]);
+      const own = new Set([...idsOf([asset]), ...idsOf(paragraphs), ...paragraphs.flatMap((p) => (isRecord(p) ? idsOf(p['children']) : [])), ...idsOf(asset['nodes']), ...idsOf(asset['edges'])]);
       list(asset['disposition']['assetIds']).forEach((assetId, k) => {
         if (typeof assetId === 'string' && !own.has(assetId)) add({ kind: 'unresolved-reference', at: `$.${part}[${i}].disposition.assetIds[${k}]`, detail: `${JSON.stringify(assetId)} is not this asset or a part of it` });
       });
@@ -728,7 +727,7 @@ function draftStructure(doc: Readonly<Record<string, unknown>>, add: (finding: C
   }
 
   // The understanding record.
-  const understanding = isObj(doc['understanding']) ? doc['understanding'] : {};
+  const understanding = isRecord(doc['understanding']) ? doc['understanding'] : {};
   for (const item of UNDERSTANDING_ITEMS) {
     if (list(understanding[item]).length === 0) add({ kind: 'understanding-missing', at: `$.understanding.${item}`, detail: `the understanding record has no entry for ${item}; an item that cannot be established is an unknown entry with its reason` });
   }
@@ -744,7 +743,7 @@ const QUOTE_FAILURE: Readonly<Record<'quotation-empty' | 'quotation-elided' | 'q
 /** Call `visit` for every object in the document, with its JSON path. */
 function walk(value: unknown, at: string, visit: (value: Readonly<Record<string, unknown>>, at: string) => void): void {
   if (Array.isArray(value)) { value.forEach((item, i) => walk(item, `${at}[${i}]`, visit)); return; }
-  if (!isObj(value)) return;
+  if (!isRecord(value)) return;
   visit(value, at);
   for (const [key, child] of Object.entries(value)) walk(child, `${at}.${key}`, visit);
 }
@@ -754,21 +753,21 @@ export function collectBlocks(doc: Readonly<Record<string, unknown>>): Block[] {
   const out: Block[] = [];
   const claim = (at: string, value: Readonly<Record<string, unknown>>): Block =>
     ({ at, value, textKey: 'text', allowed: ['inferred', 'unknown', 'non-normative'], quotable: 'inferred', unquotable: CLAIM_UNQUOTABLE });
-  if (isObj(doc['introduction'])) out.push(claim('$.introduction', doc['introduction']));
+  if (isRecord(doc['introduction'])) out.push(claim('$.introduction', doc['introduction']));
   for (const part of ['sections', 'deepDives'] as const) {
     list(doc[part]).forEach((container, i) => {
-      if (!isObj(container)) return;
+      if (!isRecord(container)) return;
       list(container['paragraphs']).forEach((paragraph, j) => {
-        if (!isObj(paragraph)) return;
+        if (!isRecord(paragraph)) return;
         const at = `$.${part}[${i}].paragraphs[${j}]`;
         out.push(claim(at, paragraph));
-        list(paragraph['children']).forEach((child, k) => { if (isObj(child)) out.push(claim(`${at}.children[${k}]`, child)); });
+        list(paragraph['children']).forEach((child, k) => { if (isRecord(child)) out.push(claim(`${at}.children[${k}]`, child)); });
       });
     });
   }
-  const understanding = isObj(doc['understanding']) ? doc['understanding'] : {};
+  const understanding = isRecord(doc['understanding']) ? doc['understanding'] : {};
   for (const item of UNDERSTANDING_ITEMS) {
-    list(understanding[item]).forEach((entry, i) => { if (isObj(entry)) out.push({ at: `$.understanding.${item}[${i}]`, value: entry, textKey: 'statement', allowed: ['inferred', 'unknown'], quotable: null, unquotable: CLAIM_UNQUOTABLE }); });
+    list(understanding[item]).forEach((entry, i) => { if (isRecord(entry)) out.push({ at: `$.understanding.${item}[${i}]`, value: entry, textKey: 'statement', allowed: ['inferred', 'unknown'], quotable: null, unquotable: CLAIM_UNQUOTABLE }); });
   }
   return out;
 }
@@ -778,7 +777,7 @@ export function collectCitations(doc: Readonly<Record<string, unknown>>): Citati
   const out: Citation[] = [];
   walk(doc, '$', (value, at) => {
     for (const key of ['citations', 'evidence'] as const) {
-      list(value[key]).forEach((citation, i) => { if (isObj(citation)) out.push({ at: `${at}.${key}[${i}]`, value: citation }); });
+      list(value[key]).forEach((citation, i) => { if (isRecord(citation)) out.push({ at: `${at}.${key}[${i}]`, value: citation }); });
     }
   });
   return out;
