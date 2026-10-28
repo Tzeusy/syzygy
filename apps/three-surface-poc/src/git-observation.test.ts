@@ -9,7 +9,7 @@ import {
   writeFileSync,
 } from 'node:fs';
 import { tmpdir } from 'node:os';
-import { dirname, join } from 'node:path';
+import { dirname, join, posix } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import ts from 'typescript';
 import { afterEach, describe, expect, it } from 'vitest';
@@ -55,6 +55,56 @@ function repositoryWithFile(relativePath: string): string {
   git(root, ['add', relativePath]);
   git(root, ['commit', '-qm', 'fixture']);
   return root;
+}
+
+function repositoryWithFiles(files: Readonly<Record<string, string>>): string {
+  const root = mkdtempSync(join(tmpdir(), 'syzygy-poc-git-'));
+  cleanups.push(root);
+  for (const [relativePath, text] of Object.entries(files)) {
+    mkdirSync(dirname(join(root, relativePath)), { recursive: true });
+    writeFileSync(join(root, relativePath), text, 'utf8');
+  }
+  git(root, ['init', '-q']);
+  git(root, ['config', 'gc.auto', '0']);
+  git(root, ['config', 'maintenance.auto', 'false']);
+  git(root, ['config', 'user.email', 'poc-test@example.invalid']);
+  git(root, ['config', 'user.name', 'POC Test']);
+  git(root, ['add', '-A']);
+  git(root, ['commit', '-qm', 'fixture']);
+  return root;
+}
+
+const ROOT_FILES = ['package.json', 'package-lock.json', 'tsconfig.base.json'];
+
+/** What the POC start compiles or loads, read from the tree (syzygy-bpyt.56): the projects of the build step root package.json's
+ * `poc` script runs, every project their tsconfig references reach, and every workspace the `poc` entry's import walk reaches; and
+ * the exact inputs, the three root files plus the build step's program. A `poc` or build script of any other shape throws. */
+function pocStartInputs(): { readonly projects: readonly string[]; readonly exact: readonly string[] } {
+  const { scripts } = JSON.parse(readModule('package.json')) as { readonly scripts: Readonly<Record<string, string>> };
+  const poc = /^npm run ([\w:-]+) --silent && node ((?:apps|packages)\/[^/ ]+)\/dist\/(\S+)\.js$/u.exec(scripts['poc'] ?? '');
+  if (poc === null) throw new Error(`scripts.poc is not "npm run <build> --silent && node <project>/dist/<entry>.js": ${scripts['poc']}`);
+  const [, buildScript, app, entry] = poc as unknown as [string, string, string, string];
+  const [node, program, ...build] = (scripts[buildScript] ?? '').split(' ');
+  if (node !== 'node' || program === undefined || build.length === 0) throw new Error(`scripts.${buildScript} is not "node <program> <project>...": ${scripts[buildScript]}`);
+  const projects = new Set<string>();
+  const visit = (project: string): void => {
+    if (projects.has(project)) return;
+    projects.add(project);
+    const config = JSON.parse(readModule(`${project}/tsconfig.json`)) as { readonly references?: readonly { readonly path: string }[] };
+    for (const reference of config.references ?? []) visit(posix.normalize(posix.join(project, reference.path)));
+  };
+  build.forEach(visit);
+  const { reachable, unresolved } = reach(`${app}/src/${entry}.ts`, (file) =>
+    ts.preProcessFile(readModule(file), true, true).importedFiles.map((imported) => imported.fileName));
+  if (unresolved.length > 0) throw new Error(`unresolved: ${unresolved.map((edge) => `${edge.from} imports ${edge.specifier}`).join(', ')}`);
+  if (!reachable.includes('packages/support/src/sha256.ts')) throw new Error('the import walk does not reach packages/support/src/sha256.ts');
+  const workspaces = [...WORKSPACE.manifests.values()].map((manifest) => manifest.dir).filter((dir) => dir !== '.');
+  for (const module of reachable) {
+    const owner = workspaces.find((dir) => module.startsWith(`${dir}/`));
+    if (owner === undefined) throw new Error(`${module}: in no workspace`);
+    projects.add(owner);
+  }
+  return { projects: [...projects].sort(), exact: [...ROOT_FILES, program].sort() };
 }
 
 describe('read-only Git observation', () => {
@@ -126,36 +176,76 @@ describe('read-only Git observation', () => {
     expect(pocObserverInputsAreClean({ changedPaths: ['scripts/clean_build.mjs'] })).toBe(false);
   });
 
-  // syzygy-bpyt.6.15, the PR 535 review's N6: a protected package is protected whole. Narrowing a prefix to its src/
-  // directory, or to src/ plus its manifest, would admit a dirty build input such as its tsconfig.json.
-  it('protects every file of each protected package, its manifest and tsconfig among them', () => {
-    const prefixes = [
-      'apps/three-surface-poc/',
-      'packages/three-surface-poc-core/',
-      'packages/cap1-daemon/',
-      'packages/http-host/',
-      'packages/cap1-core/',
-      'packages/support/',
-    ];
-    for (const path of prefixes.flatMap((prefix) => [`${prefix}src/x.ts`, `${prefix}package.json`, `${prefix}tsconfig.json`])) {
-      expect(pocObserverInputsAreClean({ changedPaths: [path] }), path).toBe(false);
+  // Owner direction GP-B2 Q3, answer B (syzygy-bpyt.56): the gate protects every project the POC start compiles or loads, and this
+  // row derives that set instead of listing it. The start is root package.json's `poc` script: its build step (`build:poc`, a
+  // `node <program> <project>...` command), every project those projects' tsconfig references reach, and every workspace the
+  // `poc` entry's import walk reaches (the walk follows every edge TypeScript's preprocessor reports, as island-boundary.test.ts
+  // does). The exact inputs are the three root files and the build step's program (scripts/clean_build.mjs, syzygy-bpyt.4.2). The
+  // row requires the gate to refuse exactly those, so a prefix it lacks, one it has beyond them, or one narrowed to src/ (the PR 535
+  // review's N6) fails it, over every tracked path and, for each workspace, a manifest, a tsconfig, an untracked module and a
+  // sibling directory that only shares the name's start, and a path under docs/ that carries the name after its first segment.
+  it('refuses exactly the projects the POC start compiles or loads, and the files that define its build', () => {
+    const { projects, exact } = pocStartInputs();
+    expect(projects).toEqual([
+      'apps/three-surface-poc',
+      'packages/cap1-core',
+      'packages/cap1-daemon',
+      'packages/http-host',
+      'packages/polaris-generation-consent',
+      'packages/polaris-generation-core',
+      'packages/support',
+      'packages/three-surface-poc-core',
+    ]);
+    expect(exact).toEqual(['package-lock.json', 'package.json', 'scripts/clean_build.mjs', 'tsconfig.base.json']);
+    const workspaces = [...WORKSPACE.manifests.values()].map((manifest) => manifest.dir).filter((dir) => dir !== '.').sort();
+    expect(workspaces, 'the workspaces the probes are built over; a new workspace needs its probes reviewed').toHaveLength(12);
+    const tracked = git(REPO_ROOT, ['ls-files', '-z']).split('\0').filter((path) => path !== '');
+    const probes = [...workspaces.flatMap((dir) => [`${dir}/package.json`, `${dir}/tsconfig.json`, `${dir}/src/__untracked__.ts`, `${dir}x/a.ts`, `docs/${dir}/a.ts`]), 'scripts/clean_build.mjs.bak'];
+    expect(probes, 'five probes per workspace and the program\'s near-miss; a changed count means the probe list changed').toHaveLength(61);
+    const population = [...new Set([...tracked, ...probes])].sort();
+    const isInput = (path: string): boolean => exact.includes(path) || projects.some((dir) => path.startsWith(`${dir}/`));
+    expect(population.filter((path) => pocObserverInputsAreClean({ changedPaths: [path] }) === isInput(path))
+      .map((path) => `${path}: ${isInput(path) ? 'accepted' : 'refused'}`)).toEqual([]);
+    expect(tracked.filter(isInput).length).toBeGreaterThan(0);
+  });
+
+  // A tsconfig.base.json every protected project's own tsconfig.json extends, so the root file the gate protects is the one each
+  // build reads its options from. A protected project whose chain ends anywhere else, or passes through a file outside every protected project, fails here.
+  it('reads every protected project from tsconfig.base.json through its own extends chain', () => {
+    const { projects } = pocStartInputs();
+    for (const project of projects) {
+      const chain: string[] = [];
+      for (let config: string | undefined = `${project}/tsconfig.json`; config !== undefined;) {
+        chain.push(config);
+        const { extends: base } = JSON.parse(readModule(config)) as { readonly extends?: string };
+        config = base === undefined ? undefined : posix.normalize(posix.join(posix.dirname(config), base));
+      }
+      expect(chain.at(-1), project).toBe('tsconfig.base.json');
+      expect(chain.filter((link) => link !== 'tsconfig.base.json' && !projects.some((dir) => link.startsWith(`${dir}/`))), project).toEqual([]);
     }
   });
 
-  // syzygy-bpyt.6.15, the PR 535 review's N9: PR 530 moved sha256 into packages/support, which had no prefix, so a dirty
-  // support package read as clean. The packages the daemon runs from are derived here, not listed: the walk starts at its
-  // entry and follows every edge TypeScript's preprocessor reports (static, type-only, re-export and dynamic with a literal
-  // specifier), as island-boundary.test.ts does. It is a subset check, so the gate may protect more than the walk reaches
-  // (packages/cap1-daemon, which the daemon no longer imports, stays protected).
-  it('protects every module and package the POC daemon imports', () => {
-    const { reachable, unresolved } = reach('apps/three-surface-poc/src/main.ts', (file) =>
-      ts.preProcessFile(readModule(file), true, true).importedFiles.map((imported) => imported.fileName));
-    expect(unresolved.map((edge) => `${edge.from} imports ${edge.specifier}`)).toEqual([]);
-    expect(reachable).toContain('packages/support/src/sha256.ts');
-    const packages = [...new Set(reachable.map((module) =>
-      [...WORKSPACE.manifests.values()].find((manifest) => module.startsWith(`${manifest.dir}/`))?.dir ?? module))];
-    const inputs = [...reachable, ...packages.flatMap((dir) => [`${dir}/package.json`, `${dir}/tsconfig.json`])];
-    expect(inputs.filter((path) => pocObserverInputsAreClean({ changedPaths: [path] }))).toEqual([]);
+  // The two edits observed on 2026-10-27 (syzygy-bpyt.1.16): a protected-looking project's tsconfig.json sends its outDir into
+  // packages/http-host/dist, and an untracked module there overwrites one the daemon imports. Through polaris-generation-core the
+  // gate accepted that tree before syzygy-bpyt.56; through cap1-daemon it refused it. Both forms are planted, the project's own
+  // outDir and one inherited through `extends`, and observed as the gate observes them, untracked files included. Since #549
+  // scripts/clean_build.mjs refuses both before building too (a project's own outDir must be dist, and the inherited form sets
+  // none), so these rows pin the gate's own refusal, beside the build's.
+  it.each(['packages/polaris-generation-core', 'packages/cap1-daemon'])('refuses a tree that builds %s into another package\'s dist', (project) => {
+    const tsconfig = `${project}/tsconfig.json`;
+    const base = JSON.stringify({ extends: '../../tsconfig.base.json', compilerOptions: { outDir: 'dist', tsBuildInfoFile: 'dist/.tsbuildinfo' }, include: ['src'] });
+    const escape = JSON.stringify({ extends: '../../tsconfig.base.json', compilerOptions: { outDir: '../http-host/dist' } });
+    const planted = { [tsconfig]: { extends: '../../tsconfig.base.json', compilerOptions: { outDir: '../http-host/dist', tsBuildInfoFile: 'dist/.tsbuildinfo' }, include: ['src/escape-html.ts'] } };
+    const inherited = { [tsconfig]: { extends: './escape.json', compilerOptions: { tsBuildInfoFile: 'dist/.tsbuildinfo' }, include: ['src/escape-html.ts'] } };
+    for (const [form, config, extra] of [['own outDir', planted, {}], ['inherited outDir', inherited, { [`${project}/escape.json`]: escape }]] as const) {
+      const root = repositoryWithFiles({ [tsconfig]: base, [`${project}/src/index.ts`]: 'export const value = 1;\n' });
+      writeFileSync(join(root, tsconfig), `${JSON.stringify(config[tsconfig])}\n`, 'utf8');
+      for (const [path, text] of Object.entries(extra)) writeFileSync(join(root, path), text, 'utf8');
+      writeFileSync(join(root, project, 'src', 'escape-html.ts'), "export const escapeHtml = (text: string): string => text;\n", 'utf8');
+      const observation = observeGitRepository(root);
+      expect(observation.changedPaths, form).toEqual([tsconfig, ...Object.keys(extra), `${project}/src/escape-html.ts`].sort());
+      expect(pocObserverInputsAreClean(observation), form).toBe(false);
+    }
   });
 
   it('identifies clean and dirty states without refreshing the index', () => {
