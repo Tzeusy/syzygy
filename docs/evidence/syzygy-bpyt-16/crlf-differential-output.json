@@ -40,16 +40,26 @@
    "separators": [
     "U+2028",
     "U+2029",
-    "U+0085"
+    "U+0085",
+    "U+000B",
+    "U+000C"
    ],
-   "texts": 6079,
-   "excludedByHead": 4864
+   "texts": 10131,
+   "holdingEach": {
+    "U+2028": 2026,
+    "U+2029": 2026,
+    "U+0085": 2026,
+    "U+000B": 2026,
+    "U+000C": 2026
+   },
+   "holdingNone": 1,
+   "excludedByHead": 8044
   }
  },
  "checks": {
   "C1_lfUnchanged": {
    "texts": 1825,
-   "separatorSliceTexts": 6079,
+   "separatorSliceTexts": 10131,
    "failures": 0
   },
   "C2_renderingEqualsLf": {

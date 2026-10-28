@@ -1,6 +1,6 @@
 {
  "baseTests": 332,
- "headTests": 388,
+ "headTests": 391,
  "added": [
   [
    "apps/three-surface-poc/src/fence-rules.test.ts",
@@ -139,6 +139,10 @@
    "reported positions in CRLF and bare-CR texts CRLF as LF; a bare CR counted by the malformed line only"
   ],
   [
+   "packages/three-surface-poc-core/src/git-object-reader.test.ts",
+   "reported positions in CRLF and bare-CR texts U+2028 is line content: an LF text reports its finding on line 1"
+  ],
+  [
    "packages/three-surface-poc-core/src/markdown-code-context.test.ts",
    "closed-pwb-code-context-v1 \u2014 CRLF, CR and LF each end one line CR: a backtick opener whose info string holds a backtick is malformed at its own line"
   ],
@@ -224,6 +228,10 @@
   ],
   [
    "packages/three-surface-poc-core/src/markdown-code-context.test.ts",
+   "closed-pwb-code-context-v1 \u2014 CRLF, CR and LF each end one line U+2028, U+2029 and U+0085 after a closing fence are line content: the fence stays unclosed"
+  ],
+  [
+   "packages/three-surface-poc-core/src/markdown-code-context.test.ts",
    "closed-pwb-code-context-v1 \u2014 CRLF, CR and LF each end one line U+2028, U+2029 and U+0085 are line content, not line ends"
   ],
   [
@@ -233,6 +241,10 @@
   [
    "packages/three-surface-poc-core/src/markdown-code-context.test.ts",
    "closed-pwb-code-context-v1 \u2014 CRLF, CR and LF each end one line mixed terminators: each one ends one line, whichever kind it is"
+  ],
+  [
+   "packages/three-surface-poc-core/src/markdown-code-context.test.ts",
+   "closed-pwb-code-context-v1 \u2014 CRLF, CR and LF each end one line no code unit but CR and LF ends a line"
   ],
   [
    "packages/three-surface-poc-core/src/markdown-code-context.test.ts",
@@ -263,7 +275,7 @@
  "changedGeneratedTests": {
   "Markdown fence recognizers: what each reader treats as inside a fence > $id": 33
  },
- "line": "Tests: +59 ~33 -3",
+ "line": "Tests: +62 ~33 -3",
  "allBasePassed": true,
  "allHeadPassed": true
 }

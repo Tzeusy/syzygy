@@ -99,8 +99,24 @@
    ],
    "killed": true,
    "exact": true
+  },
+  {
+   "id": "S7",
+   "predicate": "C1 LF unchanged (separator slice)",
+   "file": "markdown-code-context.js",
+   "old": "const LINE_END = /\\r\\n|\\r|\\n/g;",
+   "new": "const LINE_END = /\\r\\n|[\\r\\n\\v\\f]/g;",
+   "exit": 1,
+   "failingChecks": [
+    "C1"
+   ],
+   "targetChecks": [
+    "C1"
+   ],
+   "killed": true,
+   "exact": true
   }
  ],
- "killed": 6,
- "total": 6
+ "killed": 7,
+ "total": 7
 }
