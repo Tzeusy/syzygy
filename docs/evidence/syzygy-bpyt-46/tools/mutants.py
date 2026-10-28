@@ -142,7 +142,9 @@ def main():
     commit = git('rev-parse', 'HEAD').strip()
     assert git('status', '--porcelain') == '', 'the clone must start clean'
     present = lane.dist_dirs(clone)
-    assert (dist == 'absent' and present == []) or (dist == 'present' and len(present) == 12), (dist, present)
+    # Since PR 549 the product build emits a dist for exactly the projects `npm run build` passes to scripts/clean_build.mjs.
+    built = sorted(f'{project}/dist' for project in json.load(open(os.path.join(clone, 'package.json')))['scripts']['build'].split()[2:])
+    assert (dist == 'absent' and present == []) or (dist == 'present' and present == built), (dist, present, built)
     drafter_rows, drafter_records = lane.reviewer_fragments(clone)
     fn_rows = {r['id']: r['edits'] for r in json.load(open(os.path.join(clone, FIX_CHECK_R2)))['sets']['N']['rows']}
     res_rows = {r['id']: r['edits'] for r in json.load(open(os.path.join(clone, RESIDUALS_614)))['rows']}
