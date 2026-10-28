@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 """Rule-6 mutants for syzygy-bpyt.70 (the PR 554 reviews' follow-ups: items 2 and 5-8), run in a clean clone.
 
+Round 1 of review R-GP-IMPL-SEGMENT-RULES-1 (REVISE over 9fd03a8e) added RX3, RX4 and RX7, from that review's tools, and K1.
+
 Usage: mutants.py <clone with node_modules> <out.json> <tmpdir> <absent|present>
 
 The edit, run and restore steps are syzygy-bpyt.6.14's (docs/evidence/syzygy-bpyt-6-14/tools/mutants.py), and the failing-set
@@ -43,6 +45,7 @@ def edit(path, old, new):
 ENTRIES = 'the workspace entry modules '
 DOTDOT_ROW = ENTRIES + 'throws on a /../ segment that the resolver would join away, since Node refuses the entry'
 UNREAD_ROW = ENTRIES + 'throws on such a target under a condition Node does not read, or in a main, and names the one Node refuses first'
+KEY_ROW = ENTRIES + 'throws on a condition key with a /../ segment, at any depth'
 LOAD_ROW = "the tree's own exports load, under the suite, each entry from its source module"
 CASE = "the segment rules the entry reader copies from Node 24's exports resolver reads "
 
@@ -73,7 +76,18 @@ ALIAS_RIGHT = ("const alias = { '@syzygy/support': fileURLToPath(new URL('./pack
                'export default defineConfig({\n  resolve: { alias },\n')
 WALK = '[[...at, key], ...keyPaths(member, [...at, key])]'
 REFUSES = ['./dist/x/../index.js', './dist/./index.js', './dist/node_modules/index.js', './dist/NODE_MODULES/index.js', './dist/%2e%2e/index.js',
-           './dist/%2E/index.js', './dist/%6eode_modules/index.js', './dist/x\\..\\index.js']
+           './dist/%2E/index.js', './dist/%6eode_modules/index.js', './dist/x\\..\\index.js', './dist/%4Eode_modules/index.js']
+WARNS = ['./dist//index.js', './dist/']
+INVALID_HEAD = "export const INVALID_SEGMENT = /(^|\\\\|\\/)((\\.|%2e)(\\.|%2e)?|(n|%6e|%4e)"
+REFUSED_HEAD = INVALID_HEAD.replace('INVALID_SEGMENT', 'REFUSED_SEGMENT')
+
+
+def app_first(clone):
+    """The PR 557 round-1 review's RX7: the POC app project, which holds the config's one globalSetup, moved to the front of
+    test.projects (its fragment derived from the config as that review's rev_mutants.py derives it)."""
+    cfg = open(os.path.join(clone, CONFIG)).read()
+    app = cfg[cfg.rindex('      {\n', 0, cfg.index("name: '@syzygy/three-surface-poc-app'")):cfg.rindex('    ],\n')]
+    return [edit(CONFIG, app + '    ],\n', '    ],\n'), edit(CONFIG, '    projects: [\n', '    projects: [\n' + app)]
 
 # (id, test file(s) or 'tool', edits, the failing test names expected ([] for a row that must pass), or for a tool row its exit).
 ROWS = [
@@ -83,18 +97,26 @@ ROWS = [
     ('G0-guard-unmutated', GUARD, [], []),
     ('T0-pin-tool-unmutated', 'tool', [], 0),
     # Item 2: the segment check and each of its predicates, alone.
-    ('E1-segment-check-dropped', REACH_TEST, [edit(REACH_KIT, CHECK, '')], [DOTDOT_ROW, UNREAD_ROW]),
+    ('E1-segment-check-dropped', REACH_TEST, [edit(REACH_KIT, CHECK, '')], [DOTDOT_ROW, UNREAD_ROW, KEY_ROW]),
     ('E5-segment-check-reads-only-a-string-entry', REACH_TEST,
      [edit(REACH_KIT, '  return Object.entries(entry).flatMap(([condition, target]) => targetsOf(target, [...conditions, condition]));\n', '  return [];\n')],
-     [DOTDOT_ROW, UNREAD_ROW, *[case(t, 'refuses') for t in REFUSES], case('./dist//index.js', 'warns')]),
+     [DOTDOT_ROW, UNREAD_ROW, *[case(t, 'refuses') for t in REFUSES], *[case(t, 'warns') for t in WARNS]]),
     ('E6-segment-check-reads-one-condition-deep', REACH_TEST,
      [edit(REACH_KIT, 'targetsOf(target, [...conditions, condition]));', "typeof target === 'string' ? [[[...conditions, condition], target] as const] : []);")],
      [UNREAD_ROW]),
     ('E7-segment-check-narrowed-to-dotdot', REACH_TEST, [edit(REACH_KIT, FIRST_TEST, "    if (!target.includes('/../')) return [];\n")],
-     [UNREAD_ROW, *[case(t, 'refuses') for t in REFUSES[1:]], case('./dist//index.js', 'warns')]),
+     [UNREAD_ROW, *[case(t, 'refuses') for t in REFUSES[1:]], *[case(t, 'warns') for t in WARNS]]),
     ('E8-refused-rule-case-sensitive', REACH_TEST, [edit(REACH_KIT, REFUSED_TAIL, REFUSED_TAIL.replace('/i;', '/;'))],
-     [case('./dist/NODE_MODULES/index.js', 'refuses'), case('./dist/%2E/index.js', 'refuses')]),
-    ('E9-empty-segment-rule-dropped', REACH_TEST, [edit(REACH_KIT, INVALID_TAIL, REFUSED_TAIL)], [case('./dist//index.js', 'warns')]),
+     [case('./dist/NODE_MODULES/index.js', 'refuses'), case('./dist/%2E/index.js', 'refuses'), case('./dist/%4Eode_modules/index.js', 'refuses')]),
+    ('E9-empty-segment-rule-dropped', REACH_TEST, [edit(REACH_KIT, INVALID_TAIL, REFUSED_TAIL)], [case(t, 'warns') for t in WARNS]),
+    # The PR 557 round-1 review's N3: RX3 (an encoded capital N dropped from both copies) and RX4 (require not a Node condition)
+    # survived the suite at 9fd03a8e; the %4E case row and the require severity row each must now kill one.
+    ('RX3-both-rules-drop-encoded-capital-n', REACH_TEST,
+     [edit(REACH_KIT, INVALID_HEAD, INVALID_HEAD.replace('(n|%6e|%4e)', '(n|%6e)')), edit(REACH_KIT, REFUSED_HEAD, REFUSED_HEAD.replace('(n|%6e|%4e)', '(n|%6e)'))],
+     [case('./dist/%4Eode_modules/index.js', 'refuses')]),
+    ('RX4-require-not-a-node-condition', REACH_TEST, [edit(REACH_KIT, "'node', 'import', 'require',", "'node', 'import',")], [UNREAD_ROW]),
+    # The review's N2: a condition key with a /../ segment stays refused; the key check dropped fails the key row alone.
+    ('K1-condition-key-check-dropped', REACH_TEST, [edit(REACH_KIT, ".filter(([, key]) => key.includes('/../'))", '.filter(() => false)')], [KEY_ROW]),
     # Item 7 (round 2's N3, the reviewer's M4): a target under a condition Node does not read, or a main, exempted.
     ('M4-types-condition-exempt', REACH_TEST, [edit(REACH_KIT, FIRST_TEST, FIRST_TEST.replace(") return [];", " || conditions.includes('types')) return [];"))],
      [UNREAD_ROW]),
@@ -102,13 +124,14 @@ ROWS = [
      [UNREAD_ROW]),
     ('M6-main-exempt', REACH_TEST, [edit(REACH_KIT, FIRST_TEST, FIRST_TEST.replace(") return [];", ' || main) return [];'))], [UNREAD_ROW]),
     # The messages and their order.
-    ('R1-severity-order-dropped', REACH_TEST, [edit(REACH_KIT, 'faults.sort((a, b) => a.rank - b.rank)[0]?.message', 'faults[0]?.message')], [UNREAD_ROW]),
+    ('R1-severity-order-dropped', REACH_TEST, [edit(REACH_KIT, '[...faults, ...keyFaults].sort((a, b) => a.rank - b.rank)[0]?.message', '[...faults, ...keyFaults][0]?.message')],
+     [UNREAD_ROW]),
     ('R2-unread-target-claims-node-refuses', REACH_TEST,
      [edit(REACH_KIT, "[2, main ? 'which Node reads without its exports rules' : 'which Node does not read']", "[0, 'which Node refuses (ERR_INVALID_PACKAGE_TARGET)']")],
      [UNREAD_ROW]),
     ('R3-empty-segment-claims-node-refuses', REACH_TEST,
-     [edit(REACH_KIT, "[1, 'which Node loads with a deprecation warning (DEP0166)']", "[0, 'which Node refuses (ERR_INVALID_PACKAGE_TARGET)']")],
-     [UNREAD_ROW, case('./dist//index.js', 'warns')]),
+     [edit(REACH_KIT, "[1, 'which Node accepts with a deprecation warning (DEP0166)']", "[0, 'which Node refuses (ERR_INVALID_PACKAGE_TARGET)']")],
+     [UNREAD_ROW, *[case(t, 'warns') for t in WARNS]]),
     ('R4-default-not-a-node-condition', REACH_TEST, [edit(REACH_KIT, "'node-addons', 'default']", "'node-addons']")], [UNREAD_ROW]),
     # Item 5 (round 2's N1): the uniform /../ entry in the real workspace, source included, fails the S10 file at load; with the
     # check dropped as well it passes, since the resolver reads the source condition and joins the segment away (the residual).
@@ -128,6 +151,8 @@ ROWS = [
      [edit(GUARD, "  if (typeof value !== 'object' || value === null) return [];\n  return Object.entries(value).flatMap(",
            "  if (typeof value !== 'object' || value === null || Array.isArray(value)) return [];\n  return Object.entries(value).flatMap(")],
      [CONFIG_ROW, WALK_ROW]),
+    # The review's F2: the config row no longer pins the globalSetup to the ninth project, so RX7 (the projects reordered) passes.
+    ('RX7-projects-reordered', GUARD, app_first, []),
     # The pin tool: a test expectation or a copied rule that disagrees with Node fails it.
     ('T1-pin-tool-test-expectation-changed', 'tool', [edit(REACH_TEST, "['./dist//index.js', 'warns']", "['./dist//index.js', 'loads']")], 1),
     ('T2-pin-tool-refused-rule-case-sensitive', 'tool', [edit(REACH_KIT, REFUSED_TAIL, REFUSED_TAIL.replace('/i;', '/;'))], 1),
@@ -157,6 +182,8 @@ def main():
     assert (dist == 'absent' and present == []) or (dist == 'present' and present == built), (dist, present, built)
     rows = []
     for rid, test, edits, want in ROWS:
+        if callable(edits):
+            edits = edits(clone)
         undo = lane614.apply(clone, edits)
         try:
             res = run_tool(clone, tmpdir) if test == 'tool' else lane614.run(clone, test, tmpdir)

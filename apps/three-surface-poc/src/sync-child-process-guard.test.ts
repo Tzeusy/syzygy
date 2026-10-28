@@ -262,7 +262,8 @@ describe('suite child processes and the vitest worker RPC', () => {
   it('loads the vitest config and finds no alias key at any depth', async () => {
     const config: unknown = (await import(pathToFileURL(join(REPO_ROOT, VITEST_CONFIG)).href)).default;
     const paths = keyPaths(config).map((path) => path.join('.'));
-    expect(paths).toEqual(expect.arrayContaining(['ssr.resolve.conditions', 'test.setupFiles', 'test.projects.8.test.globalSetup']));
+    expect(paths).toEqual(expect.arrayContaining(['ssr.resolve.conditions', 'test.setupFiles']));
+    expect(paths.some((path) => /^test\.projects\.\d+\.test\.globalSetup$/u.test(path))).toBe(true);
     expect(aliasKeys(config)).toEqual([]);
   });
 

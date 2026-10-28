@@ -5,7 +5,8 @@
 // 1. The two regexes the reader copies must equal, source and flags, the ones in Node's own
 //    lib/internal/modules/esm/resolve.js, read from the running binary.
 // 2. For each target in the test's case rows, a scratch package exports it under `import`, and a child `node` imports the
-//    package. Node's outcome (ERR_INVALID_PACKAGE_TARGET: refuses; DEP0166 on stderr: warns; else loads) must equal the
+//    package. Node's outcome (ERR_INVALID_PACKAGE_TARGET: refuses; DEP0166 on stderr: warns, that is, accepts with the
+//    warning, and `then` records whether the target then loads or which error its load fails with; else loads) must equal the
 //    reader's and the test's. The file the target names is created first, so a target Node accepts loads.
 // Exit 1 on any mismatch. With --write, the result goes to node-segments.json beside this directory.
 import { spawnSync } from 'node:child_process';
@@ -40,7 +41,7 @@ const readerOutcome = (target) => {
   const fault = kit.segmentFaultOf({ import: target }, false);
   if (fault === undefined) return 'loads';
   if (fault.endsWith('which Node refuses (ERR_INVALID_PACKAGE_TARGET)')) return 'refuses';
-  if (fault.endsWith('which Node loads with a deprecation warning (DEP0166)')) return 'warns';
+  if (fault.endsWith('which Node accepts with a deprecation warning (DEP0166)')) return 'warns';
   return fault;
 };
 
@@ -52,18 +53,25 @@ try {
     const pkg = join(dir, 'node_modules', 'pkg');
     mkdirSync(pkg, { recursive: true });
     writeFileSync(join(pkg, 'package.json'), JSON.stringify({ name: 'pkg', type: 'module', exports: { '.': { import: target } } }));
-    // The file a loading target names, as Node joins it (empty segments collapse; `.hidden`, `..x` stay).
-    const file = join(pkg, target.replace(/\/+/g, '/'));
+    // The file a loading target names, as Node joins it (empty segments collapse; `.hidden`, `..x` stay). A target ending in `/`
+    // names a directory: it gets an index.js, which Node still does not load.
+    const file = join(pkg, target.replace(/\/+/g, '/'), target.endsWith('/') ? 'index.js' : '');
     mkdirSync(dirname(file), { recursive: true });
     writeFileSync(file, 'export default "loaded";\n');
-    writeFileSync(join(dir, 'probe.mjs'), "const m = await import('pkg');\nprocess.stdout.write(String(m.default));\n");
+    // The probe catches a failed import and prints its code, so the process lives long enough to print a deprecation warning.
+    writeFileSync(join(dir, 'probe.mjs'),
+      "try {\n  process.stdout.write(String((await import('pkg')).default));\n} catch (error) {\n  process.stdout.write(`error ${error.code}`);\n}\n");
     const run = spawnSync(process.execPath, ['probe.mjs'], { cwd: dir, encoding: 'utf8' });
     const stderr = run.stderr.split('\n').filter((line) => line.trim() !== '');
-    const node = run.status === 0 && run.stdout === 'loaded'
-      ? (stderr.some((line) => line.includes('DEP0166')) ? 'warns' : stderr.length === 0 ? 'loads' : 'other')
-      : stderr.some((line) => line.includes('ERR_INVALID_PACKAGE_TARGET')) ? 'refuses' : 'other';
+    const loaded = run.status === 0 && run.stdout === 'loaded';
+    // What follows Node's resolution: the target loads, or the error the load fails with.
+    const then = loaded ? 'loads' : run.status === 0 && run.stdout.startsWith('error ') ? run.stdout.slice('error '.length) : 'unknown';
+    const warned = stderr.some((line) => line.includes('DEP0166'));
+    const node = then === 'ERR_INVALID_PACKAGE_TARGET' ? 'refuses'
+      : warned ? 'warns'
+      : loaded && stderr.length === 0 ? 'loads' : 'other';
     const reader = readerOutcome(target);
-    cases.push({ target, node, reader, test: expected, equal: node === reader && node === expected, status: run.status, stderr: stderr.slice(0, 2).map((line) => line.slice(0, 200)) });
+    cases.push({ target, node, then, reader, test: expected, equal: node === reader && node === expected, status: run.status, stderr: stderr.slice(0, 2).map((line) => line.slice(0, 200)) });
   });
 } finally {
   rmSync(scratch, { recursive: true, force: true });

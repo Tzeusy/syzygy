@@ -123,8 +123,8 @@ export const resolve = (from: string, specifier: string): string | null | undefi
 /** Node's segment rules for an `exports` target, applied to the target after its leading `./`, copied verbatim from Node 24.6.0
  * (lib/internal/modules/esm/resolve.js, `invalidSegmentRegEx` and `deprecatedInvalidSegmentRegEx`, read in
  * `resolvePackageTargetString`). A target the second matches (a `.`, `..` or `node_modules` segment, in any case, percent-encoded or
- * not) Node refuses with ERR_INVALID_PACKAGE_TARGET; one only the first matches (an empty segment) it loads with the DEP0166
- * deprecation warning. docs/evidence/syzygy-bpyt-70/node-segments.json records Node's own outcome for
+ * not) Node refuses with ERR_INVALID_PACKAGE_TARGET; one only the first matches (an empty segment) it accepts with the DEP0166
+ * deprecation warning (a `//` target then loads; one that ends in `/` names a directory, which Node then fails to load). docs/evidence/syzygy-bpyt-70/node-segments.json records Node's own outcome for
  * each case the segment rows of workspace-reach.test.ts name (syzygy-bpyt.70, the PR 554 round-1 review's N3). */
 export const INVALID_SEGMENT = /(^|\\|\/)((\.|%2e)(\.|%2e)?|(n|%6e|%4e)(o|%6f|%4f)(d|%64|%44)(e|%65|%45)(_|%5f)(m|%6d|%4d)(o|%6f|%4f)(d|%64|%44)(u|%75|%55)(l|%6c|%4c)(e|%65|%45)(s|%73|%53))?(\\|\/|$)/i;
 export const REFUSED_SEGMENT = /(^|\\|\/)((\.|%2e)(\.|%2e)?|(n|%6e|%4e)(o|%6f|%4f)(d|%64|%44)(e|%65|%45)(_|%5f)(m|%6d|%4d)(o|%6f|%4f)(d|%64|%44)(u|%75|%55)(l|%6c|%4c)(e|%65|%45)(s|%73|%53))(\\|\/|$)/i;
@@ -139,9 +139,17 @@ function targetsOf(entry: unknown, conditions: readonly string[] = []): (readonl
   return Object.entries(entry).flatMap(([condition, target]) => targetsOf(target, [...conditions, condition]));
 }
 
+/** Every condition key an entry names, with the conditions that lead to it. */
+function conditionKeysOf(entry: unknown, conditions: readonly string[] = []): (readonly [readonly string[], string])[] {
+  if (Array.isArray(entry)) return entry.flatMap((fallback) => conditionKeysOf(fallback, conditions));
+  if (typeof entry !== 'object' || entry === null) return [];
+  return Object.entries(entry).flatMap(([condition, target]) => [[conditions, condition] as const, ...conditionKeysOf(target, [...conditions, condition])]);
+}
+
 /** Why Node's segment rules refuse one of an entry's targets, the most severe first, or undefined when they refuse none. A target
  * under a condition Node does not read, or a `main`, which Node reads without these rules, is refused too, since the workspace's
- * own resolution joins it away, but its message makes no claim about Node. */
+ * own resolution joins it away, but its message makes no claim about Node. A condition key with a `/../` segment is refused as
+ * well, as the serialized check before syzygy-bpyt.70 refused it (the PR 557 round-1 review's N2). */
 export function segmentFaultOf(entry: unknown, main: boolean): string | undefined {
   const faults = targetsOf(entry).flatMap(([conditions, target]) => {
     if (!INVALID_SEGMENT.test(target.replace(/^\.\//u, ''))) return [];
@@ -149,10 +157,14 @@ export function segmentFaultOf(entry: unknown, main: boolean): string | undefine
     const nodeReads = !main && conditions.every((condition) => NODE_CONDITIONS.has(condition));
     const [rank, why] = !nodeReads ? [2, main ? 'which Node reads without its exports rules' : 'which Node does not read']
       : REFUSED_SEGMENT.test(target.replace(/^\.\//u, '')) ? [0, 'which Node refuses (ERR_INVALID_PACKAGE_TARGET)']
-      : [1, 'which Node loads with a deprecation warning (DEP0166)'];
+      : [1, 'which Node accepts with a deprecation warning (DEP0166)'];
     return [{ rank, message: `its ${where} target ${JSON.stringify(target)} has an empty, '.', '..' or 'node_modules' segment, ${why}` }];
   });
-  return faults.sort((a, b) => a.rank - b.rank)[0]?.message;
+  const keyFaults = conditionKeysOf(entry).filter(([, key]) => key.includes('/../')).map(([conditions, key]) => ({
+    rank: 2,
+    message: `its ${conditions.map((condition) => `${condition} > `).join('')}condition key ${JSON.stringify(key)} has a /../ segment, and no condition Node matches by default has one`,
+  }));
+  return [...faults, ...keyFaults].sort((a, b) => a.rank - b.rank)[0]?.message;
 }
 
 /** Every entry a workspace package's manifest names, by its specifier, with the `src` module its `exports` (or its `main`, where it
