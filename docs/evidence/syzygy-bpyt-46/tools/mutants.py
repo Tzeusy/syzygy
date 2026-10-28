@@ -1,6 +1,9 @@
 #!/usr/bin/env python3
 """Rule-6 mutants for syzygy-bpyt.46 (the PR 545 follow-ups: items 1, 3 and 5, and the round-2 review's N2-N4), run in a clean clone.
 
+Round 1 of review R-GP-IMPL-SUPPORT-LEAF-FOLLOWUPS-1 added F2's object-entry row, F3's root-alias test and N1's reader rows (the
+reviewer's fix files, byte for byte); the E, A, W and I rows below pin each of their predicates, and E4 takes N2's uniform edit.
+
 Usage: mutants.py <clone with node_modules> <out.json> <tmpdir> <absent|present>
 
 The edit, run and restore steps are syzygy-bpyt.6.14's (docs/evidence/syzygy-bpyt-6-14/tools/mutants.py, imported from the clone),
@@ -36,6 +39,7 @@ LEAF = '@syzygy/support stays a pure leaf '
 F1_ROW = LEAF + 'takes only createHash from node:crypto, by its own name, and re-exports nothing from it'
 N3_ROW = LEAF + 'assigns to no property in any source, so no allowed global is rewritten'
 IMPORT_ROW = LEAF + 'calls no import() in any source, however it is spaced or commented'
+IMPORT_READER = 'the import() reader the import() row stands on reads '
 MOD_READER = 'the module-declaration reader the createHash row stands on reads '
 WRITE_READER = 'the property-write reader the no-write row stands on reads '
 ID_READER = 'the identifier reader the allowlist stands on reads '
@@ -44,10 +48,17 @@ DRAFTER_ALLOW = 'owner-act drafter (M4 slice 7) names no identifier outside its 
 ENTRIES = 'the workspace entry modules '
 ALIASES = 'the root vitest.config.ts aliases '
 ALIAS_ROW = ALIASES + "alias each specifier to the src module its package's entry names"
-LEFT_ROW = ALIASES + 'leave exactly these entries to their built dist'
+LEFT_ROW = ALIASES + 'leave exactly these entries unaliased'
+OWN_ROW = ALIASES + 'match each aliased specifier by its own alias first, so no shorter alias ahead of it shadows it'
+SHADOW_ROW = ALIASES + 'shadow exactly the two dossier subpaths, which the bare dossier alias rewrites to no module'
 SUPPORT_ALIAS = "      '@syzygy/support': fileURLToPath(new URL('./packages/support/src/index.ts', import.meta.url)),\n"
 DOSSIER_ALIAS = "      '@syzygy/polaris-dossier': fileURLToPath(new URL('./packages/polaris-dossier/src/index.ts', import.meta.url)),\n"
 STATE_EXPORT = '      "default": "./dist/state-directory.js"\n    }\n'
+STATE_TARGETS = '      "import": "./dist/state-directory.js",\n      "default": "./dist/state-directory.js"\n'
+DOTDOT_CHECK = "      if (JSON.stringify(entry).includes('/../')) throw new Error(`${specifier}: its entry has a /../ segment, which Node refuses`);\n"
+LIVE_ALIAS = "      '@syzygy/polaris-generation-core/live': fileURLToPath(new URL('./packages/polaris-generation-core/src/live.ts', import.meta.url)),\n"
+CORE_ALIAS = "      '@syzygy/polaris-generation-core': fileURLToPath(new URL('./packages/polaris-generation-core/src/index.ts', import.meta.url)),\n"
+ARGV_ALIAS = "      '@syzygy/polaris-dossier/argv': fileURLToPath(new URL('./packages/polaris-dossier/src/argv.ts', import.meta.url)),\n"
 
 
 def edit(path, old, new):
@@ -89,8 +100,11 @@ ROWS = [
     ('Y3-R1-escalated-to-the-environment', PURITY, ('res', 'Y3-R1-escalated-to-the-environment'), []),
     ('Z7-unscoped-workspace-with-no-entry', NO_EGRESS, ('res', 'Z7-unscoped-workspace-with-no-entry'), []),
     # Item 5: the entry reader's two throws and its main fallback, each alone.
-    ('E1-dotdot-check-dropped', REACH_TEST,
-     [edit(REACH_KIT, "      if (JSON.stringify(entry).includes('/../')) throw new Error(`${specifier}: its entry has a /../ segment, which Node refuses`);\n", '')],
+    ('E1-dotdot-check-dropped', REACH_TEST, [edit(REACH_KIT, DOTDOT_CHECK, '')],
+     [ENTRIES + 'throws on a /../ segment that the resolver would join away, since Node refuses the entry']),
+    # Round 1's F2 (the reviewer's X2): the check narrowed to a string entry must fail the /../ row, by its object-entry case.
+    ('E5-dotdot-check-reads-only-a-string-entry', REACH_TEST,
+     [edit(REACH_KIT, "if (JSON.stringify(entry).includes('/../'))", "if (typeof entry === 'string' && entry.includes('/../'))")],
      [ENTRIES + 'throws on a /../ segment that the resolver would join away, since Node refuses the entry']),
     ('E2-unreadable-entry-not-thrown', REACH_TEST,
      [edit(REACH_KIT, "if (typeof module !== 'string') throw new Error(", "if (typeof module !== 'string' && false) throw new Error(")],
@@ -98,16 +112,45 @@ ROWS = [
     ('E3-main-fallback-dropped', REACH_TEST,
      [edit(REACH_KIT, " : manifest.main !== undefined ? [['.', manifest.main]] : [];", ' : [];')],
      [ENTRIES + 'reads each entry of each package, its main where it has no exports, as the src module it names']),
-    # A /../ entry in the real workspace: both rows that read the entries throw.
-    ('E4-dotdot-entry-in-the-workspace', ALIASES_TEST,
-     [edit(DOSSIER_PKG, '"import": "./dist/state-directory.js"', '"import": "./dist/x/../state-directory.js"')], [ALIAS_ROW, LEFT_ROW]),
+    # A /../ entry in the real workspace whose conditions all agree (round 1's N2): the three rows that read the entries throw, by
+    # the /../ check, since the unreadable-entry throw reads the entry's one target. With the check dropped (E1E4) the root-alias
+    # test passes: the disclosed limit, which the entry reader's own object-entry row (E1, E5) closes.
+    ('E4-uniform-dotdot-entry-in-the-workspace', ALIASES_TEST,
+     [edit(DOSSIER_PKG, STATE_TARGETS, STATE_TARGETS.replace('./dist/state-directory.js', './dist/x/../state-directory.js'))],
+     [ALIAS_ROW, LEFT_ROW, SHADOW_ROW]),
+    ('E1E4-dotdot-check-dropped-under-a-uniform-entry', ALIASES_TEST,
+     [edit(REACH_KIT, DOTDOT_CHECK, ''),
+      edit(DOSSIER_PKG, STATE_TARGETS, STATE_TARGETS.replace('./dist/state-directory.js', './dist/x/../state-directory.js'))], []),
     # Item 3: the root config's aliases against the entries.
     ('A1-alias-moved-to-another-module', ALIASES_TEST, [edit(CONFIG, SUPPORT_ALIAS, SUPPORT_ALIAS.replace('/index.ts', '/sha256.ts'))], [ALIAS_ROW]),
+    # A2's new key sits behind the bare support alias, which matches it first, so the own-alias-first row fails too.
     ('A2-alias-with-no-entry', ALIASES_TEST,
-     [edit(CONFIG, SUPPORT_ALIAS, SUPPORT_ALIAS + SUPPORT_ALIAS.replace("'@syzygy/support'", "'@syzygy/support/extra'"))], [ALIAS_ROW]),
-    ('A3-alias-removed', ALIASES_TEST, [edit(CONFIG, DOSSIER_ALIAS, '')], [LEFT_ROW]),
+     [edit(CONFIG, SUPPORT_ALIAS, SUPPORT_ALIAS + SUPPORT_ALIAS.replace("'@syzygy/support'", "'@syzygy/support/extra'"))], [ALIAS_ROW, OWN_ROW]),
+    # The bare dossier alias removed: the dossier joins the unaliased entries and its two subpaths are no longer shadowed.
+    ('A3-alias-removed', ALIASES_TEST, [edit(CONFIG, DOSSIER_ALIAS, '')], [LEFT_ROW, SHADOW_ROW]),
+    # A new dossier export with no alias is unaliased, and the bare dossier alias shadows it.
     ('A4-entry-added-without-an-alias', ALIASES_TEST,
-     [edit(DOSSIER_PKG, STATE_EXPORT, STATE_EXPORT[:-1] + ',\n    "./cli": "./dist/cli.js"\n')], [LEFT_ROW]),
+     [edit(DOSSIER_PKG, STATE_EXPORT, STATE_EXPORT[:-1] + ',\n    "./cli": "./dist/cli.js"\n')], [LEFT_ROW, SHADOW_ROW]),
+    # Round 1's F3 (the reviewer's X13): the bare core alias moved ahead of /live, so it matches /live first.
+    ('A5-config-reordered-so-core-shadows-live', ALIASES_TEST, [edit(CONFIG, LIVE_ALIAS + CORE_ALIAS, CORE_ALIAS + LIVE_ALIAS)], [OWN_ROW]),
+    # Round 1's F4 (the reviewer's X15): a correct alias for one of the six, ahead of the bare dossier alias, fails until the lists shrink.
+    ('A6-correct-alias-for-an-unaliased-entry', ALIASES_TEST, [edit(CONFIG, DOSSIER_ALIAS, ARGV_ALIAS + DOSSIER_ALIAS)], [LEFT_ROW, SHADOW_ROW]),
+    # Round 1's N1 (the reviewer's X4, X6, X12, X7 and X8): each arm of the two readers, dropped, fails its own reader row.
+    ('W1-write-reader-object-pattern-arm-dropped', PURITY,
+     [edit(PURITY, 'ts.isPropertyAssignment(property) ? targets(property.initializer) : ts.isSpreadAssignment(property) ? targets(property.expression) : []', '[]')],
+     [WRITE_READER + '"({ value: Object.freeze } = { value: (bytes) => bytes });"']),
+    ('W2-write-reader-parenthesis-arm-dropped', PURITY, [edit(PURITY, '      : ts.isParenthesizedExpression(node) ? targets(node.expression)\n', '')],
+     [WRITE_READER + '"(Object.freeze) = (value) => value;"']),
+    ('W3-write-reader-spread-arm-dropped', PURITY,
+     [edit(PURITY, 'targets(ts.isSpreadElement(element) ? element.expression : element)', 'targets(element)')], [WRITE_READER + '"[...Object.freeze] = [];"']),
+    ('I1-import-reader-reads-only-a-string-literal-argument', PURITY,
+     [edit(PURITY, 'if (ts.isCallExpression(node) && node.expression.kind === ts.SyntaxKind.ImportKeyword)',
+           'if (ts.isCallExpression(node) && node.expression.kind === ts.SyntaxKind.ImportKeyword && node.arguments.length > 0 && ts.isStringLiteral(node.arguments[0]!))')],
+     [IMPORT_READER + '"const value = \'node:f\' + \'s\';\\nvoid import (value);"']),
+    ('I2-import-reader-without-recursion', PURITY,
+     [edit(PURITY, 'calls.push(node.getText(file));\n    ts.forEachChild(node, visit);', 'calls.push(node.getText(file));')],
+     [IMPORT_READER + '"export const value = () => import (\'node:crypto\');"', IMPORT_READER + '"const value = \'node:f\' + \'s\';\\nvoid import (value);"',
+      IMPORT_READER + '"void import/**/(\'node:fs\');"']),
 ]
 
 

@@ -151,5 +151,7 @@ describe('the workspace entry modules', () => {
     // The resolver alone reads the entry as the module it joins to, so the throw is the entry reader's own (the PR 545 round-1 review's N6).
     expect(resolveIn(workspace({}, './dist/x/../index.js'), 'apps/app/src/main.ts', '@syzygy/lib')).toBe('packages/lib/src/index.ts');
     expect(() => entryModulesIn(workspace({}, './dist/x/../index.js'))).toThrow('@syzygy/lib: its entry has a /../ segment, which Node refuses');
+    expect(() => entryModulesIn(workspace({}, { types: './dist/index.d.ts', import: './dist/x/../index.js', default: './dist/x/../index.js' })))
+      .toThrow('@syzygy/lib: its entry has a /../ segment, which Node refuses');
   });
 });

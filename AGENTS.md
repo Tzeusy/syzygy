@@ -189,6 +189,12 @@ sweep lessons added 2026-09-23; the raw-head digest lesson the same day.
   remain inline or as module constants, converted by no PR yet (the sites
   are listed in `docs/evidence/syzygy-bpyt-6-3/dc3-decode-and-canonical-json-2026-10-25.json`).
   The cap1 packages never import it (`cap1-system` is an independent oracle).
+  Its own purity guard, `packages/support/src/support-purity.test.ts`, pins
+  what every importer inherits: no module but `node:crypto` (`createHash`
+  alone) and its own siblings, no identifier outside a literal list, no
+  property write, no `import()`, no dependency and the one `"."` export. A
+  helper that needs another global or module fails it until the list grows
+  in the same change (`syzygy-bpyt.6.14`, `syzygy-bpyt.46`).
   After a merge that adds a workspace package, run `npm ci` in every checkout
   that builds or serves from it: until the `node_modules/@syzygy/` link
   exists, the package does not resolve.

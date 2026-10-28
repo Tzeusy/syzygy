@@ -60,6 +60,18 @@ function propertyWritesOf(name: string, source: string): string[] {
   return writes;
 }
 
+/** Every `import()` call of a module, as written, however it is spaced or commented and whatever its argument. */
+function importCallsOf(name: string, source: string): string[] {
+  const file = ts.createSourceFile(name, source, ts.ScriptTarget.Latest, false);
+  const calls: string[] = [];
+  const visit = (node: ts.Node): void => {
+    if (ts.isCallExpression(node) && node.expression.kind === ts.SyntaxKind.ImportKeyword) calls.push(node.getText(file));
+    ts.forEachChild(node, visit);
+  };
+  visit(file);
+  return calls;
+}
+
 describe('@syzygy/support stays a pure leaf', () => {
   it('scans every source module under src, at any depth, not an empty list', () => {
     expect(SOURCES).toEqual(expect.arrayContaining(['decode-utf8.ts', 'deep-freeze.ts', 'index.ts', 'sha256.ts']));
@@ -101,16 +113,7 @@ describe('@syzygy/support stays a pure leaf', () => {
   });
 
   it('calls no import() in any source, however it is spaced or commented', () => {
-    const calls: string[] = [];
-    for (const file of SOURCES) {
-      const source = ts.createSourceFile(file, read(file), ts.ScriptTarget.Latest, false);
-      const visit = (node: ts.Node): void => {
-        if (ts.isCallExpression(node) && node.expression.kind === ts.SyntaxKind.ImportKeyword) calls.push(`${file}: ${node.getText(source)}`);
-        ts.forEachChild(node, visit);
-      };
-      visit(source);
-    }
-    expect(calls).toEqual([]);
+    expect(SOURCES.flatMap((file) => importCallsOf(file, read(file)).map((call) => `${file}: ${call}`))).toEqual([]);
   });
 
   it('names none of the forbidden tokens it shares with the owner-act drafter in any source', () => {
@@ -188,10 +191,25 @@ describe('the property-write reader the no-write row stands on', () => {
     ['Object.freeze = (value) => value;', ['Object.freeze = (value) => value']],
     ["Object['freeze'] ??= (value) => value;", ["Object['freeze'] ??= (value) => value"]],
     ['[Object.freeze] = [(value) => value];', ['[Object.freeze] = [(value) => value]']],
+    ['({ value: Object.freeze } = { value: (bytes) => bytes });', ['{ value: Object.freeze } = { value: (bytes) => bytes }']],
+    ['(Object.freeze) = (value) => value;', ['(Object.freeze) = (value) => value']],
+    ['[...Object.freeze] = [];', ['[...Object.freeze] = []']],
     ['let a = 1; a += 1; [a] = [2];', []],
   ];
   it.each(CASES)('reads %j', (source, expected) => {
     expect(propertyWritesOf('case.ts', source)).toEqual(expected);
+  });
+});
+
+describe('the import() reader the import() row stands on', () => {
+  const CASES: readonly (readonly [string, readonly string[]])[] = [
+    ["export const value = () => import ('node:crypto');", ["import ('node:crypto')"]],
+    ["const value = 'node:f' + 's';\nvoid import (value);", ['import (value)']],
+    ["void import/**/('node:fs');", ["import/**/('node:fs')"]],
+    ['const meta = import.meta.url;', []],
+  ];
+  it.each(CASES)('reads %j', (source, expected) => {
+    expect(importCallsOf('case.ts', source)).toEqual(expected);
   });
 });
 
