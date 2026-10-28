@@ -34,9 +34,10 @@ exactly as it was presented to the owner.
 
 Draft 1 and draft 2 were each vetted by an independent subagent in fresh
 context. Draft 3 applies the second vet's five exact texts (E1.9, E1.10,
-E1.11, EW1 and N1) and nothing else; no vet raw names draft 3's digest
+E1.11, EW1 and N1) and nothing else; no packet vet names draft 3's digest
 [Observed: `grep -l` for its first eight hex characters over the seven
-retained raws returns no file]. For Q2, Q3 and Q4 the packet also relied on
+packet-vet raws returns no file]. The record's own fidelity check, the last
+row below, read draft 3 as its source and was not a vet of the packet. For Q2, Q3 and Q4 the packet also relied on
 an earlier four-round vet, of 2026-10-27, over a predecessor packet that held
 those three questions as items `syzygy-bpyt.1.15`, `.1.16` and `.1.17`. The
 raw output of every round is retained verbatim in `docs/reviews/`:
@@ -46,10 +47,11 @@ raw output of every round is retained verbatim in `docs/reviews/`:
 | `docs/reviews/V-GP-B2-1-RAW.md` | Vet of GP-B2 draft 1 | "Verdict: READY WITH EDITS" (`docs/reviews/V-GP-B2-1-RAW.md:2`); "Items: Q1 EDIT, Q2 EDIT, Q3 EDIT, Q4 EDIT, Q5 EDIT, Q6 PASS, Q7 EDIT, Q8 REMOVE" (`docs/reviews/V-GP-B2-1-RAW.md:4`) |
 | `docs/reviews/V-GP-B2-2-RAW.md` | Vet of GP-B2 draft 2 | "Verdict: READY WITH EDITS" (`docs/reviews/V-GP-B2-2-RAW.md:2`); "Items: Q1 EDIT, Q2 PASS, Q3 PASS, Q4 PASS, Q5 PASS, Q6 PASS, Q7 PASS" (`docs/reviews/V-GP-B2-2-RAW.md:4`) |
 | `docs/reviews/V-GP-B2-2-ADDENDUM-RAW.md` | The same vet, over the drafter's diff and named deviations in draft 2 | "Verdict: READY WITH EDITS" (`docs/reviews/V-GP-B2-2-ADDENDUM-RAW.md:2`), unchanged from the vet it adds to |
-| `docs/reviews/VET-GP-FOLLOWUPS-1-RAW.md` | Round 1 over the predecessor packet | `.1.15` "Scope verdict: Revise" (`docs/reviews/VET-GP-FOLLOWUPS-1-RAW.md:36`); `.1.16` "Recommendation verdict: Reject" (`docs/reviews/VET-GP-FOLLOWUPS-1-RAW.md:201`); `.1.17` "Recommendation verdict: Revise" (`docs/reviews/VET-GP-FOLLOWUPS-1-RAW.md:328`) |
-| `docs/reviews/VET-GP-FOLLOWUPS-2-RAW.md` | Round 2 | `.1.15` "Recommendation verdict: Revise" (`docs/reviews/VET-GP-FOLLOWUPS-2-RAW.md:23`); `.1.16` "Recommendation verdict: Revise" (`docs/reviews/VET-GP-FOLLOWUPS-2-RAW.md:138`); `.1.17` "Recommendation verdict: Pass" (`docs/reviews/VET-GP-FOLLOWUPS-2-RAW.md:243`) |
-| `docs/reviews/VET-GP-FOLLOWUPS-3-RAW.md` | Round 3 | `.1.15` "Recommendation verdict: Revise" (`docs/reviews/VET-GP-FOLLOWUPS-3-RAW.md:45`); `.1.16` "Recommendation verdict: Pass" (`docs/reviews/VET-GP-FOLLOWUPS-3-RAW.md:147`); `.1.17` "Recommendation verdict: Revise" (`docs/reviews/VET-GP-FOLLOWUPS-3-RAW.md:190`) |
+| `docs/reviews/VET-GP-FOLLOWUPS-1-RAW.md` | Round 1 over the predecessor packet | `.1.15` "Scope verdict: Revise" (`docs/reviews/VET-GP-FOLLOWUPS-1-RAW.md:36`), "Recommendation verdict: Revise" (`docs/reviews/VET-GP-FOLLOWUPS-1-RAW.md:45`); `.1.16` "Scope verdict: Revise" (`docs/reviews/VET-GP-FOLLOWUPS-1-RAW.md:195`), "Recommendation verdict: Reject" (`docs/reviews/VET-GP-FOLLOWUPS-1-RAW.md:201`); `.1.17` "Scope verdict: Revise" (`docs/reviews/VET-GP-FOLLOWUPS-1-RAW.md:318`), "Recommendation verdict: Revise" (`docs/reviews/VET-GP-FOLLOWUPS-1-RAW.md:328`) |
+| `docs/reviews/VET-GP-FOLLOWUPS-2-RAW.md` | Round 2 | `.1.15` "Scope verdict: Pass" (`docs/reviews/VET-GP-FOLLOWUPS-2-RAW.md:19`), "Recommendation verdict: Revise" (`docs/reviews/VET-GP-FOLLOWUPS-2-RAW.md:23`); `.1.16` "Scope verdict: Pass" (`docs/reviews/VET-GP-FOLLOWUPS-2-RAW.md:129`), "Recommendation verdict: Revise" (`docs/reviews/VET-GP-FOLLOWUPS-2-RAW.md:138`); `.1.17` "Scope verdict: Revise" (`docs/reviews/VET-GP-FOLLOWUPS-2-RAW.md:228`), "Recommendation verdict: Pass" (`docs/reviews/VET-GP-FOLLOWUPS-2-RAW.md:243`) |
+| `docs/reviews/VET-GP-FOLLOWUPS-3-RAW.md` | Round 3 | `.1.15` "Scope verdict: Pass" (`docs/reviews/VET-GP-FOLLOWUPS-3-RAW.md:35`), "Recommendation verdict: Revise" (`docs/reviews/VET-GP-FOLLOWUPS-3-RAW.md:45`); `.1.16` "Scope verdict: Revise" (`docs/reviews/VET-GP-FOLLOWUPS-3-RAW.md:136`), "Recommendation verdict: Pass" (`docs/reviews/VET-GP-FOLLOWUPS-3-RAW.md:147`); `.1.17` "Scope verdict: Pass" (`docs/reviews/VET-GP-FOLLOWUPS-3-RAW.md:180`), "Recommendation verdict: Revise" (`docs/reviews/VET-GP-FOLLOWUPS-3-RAW.md:190`) |
 | `docs/reviews/VET-GP-FOLLOWUPS-4-RAW.md` | Round 4, the applied corrections only | "1.15. Scope: Pass. Recommendation: Pass." (`docs/reviews/VET-GP-FOLLOWUPS-4-RAW.md:52`), the same for `.1.16` and `.1.17` (`:53`, `:54`); "All three items pass both verdicts, so under the stopping rule they go to the owner." (`docs/reviews/VET-GP-FOLLOWUPS-4-RAW.md:56`) |
+| `docs/reviews/V-GP-B2-RECORD-1-RAW.md` | This record's own fidelity check, over its first version at PR #552 commit `4dbe653e`, against the packet, the selections and the raws above; its edits E1 to E5 and notes N1 to N3 are applied here, N4 and N5 left as notes | "Verdict: FAITHFUL WITH EDITS" (`docs/reviews/V-GP-B2-RECORD-1-RAW.md:2`) |
 
 Each raw was copied byte for byte from the vetting session's scratch file;
 only the name gained `-RAW`. The source and the copy hash the same
@@ -64,6 +66,7 @@ only the name gained `-RAW`. The source and the copy hash the same
 | `VET-GP-FOLLOWUPS-2-RAW.md` | `91a9683c0b45d3aa45694ab2445867e0ce3c085324a98c3e7571796050849203` |
 | `VET-GP-FOLLOWUPS-3-RAW.md` | `35f629a568e5dab5fa4e239c37ce4055a9d8d71e5f9a0eafb920b99dc0b68d41` |
 | `VET-GP-FOLLOWUPS-4-RAW.md` | `9f22d77ff53353940789c14e6f57b240925db6f5c7722fe7ddd14f5c6935312f` |
+| `V-GP-B2-RECORD-1-RAW.md` | `80d1464c5f634cda00d63146126025d188e764e076b07871f93e0c63589d4747` |
 
 Every answer was the recommended option. Line numbers below are at `main`
 `95c87a52` unless a pull request is named.
@@ -90,8 +93,9 @@ active-content mask pushes every line of a closed fence
 (`packages/three-surface-poc-core/src/markdown-code-context.ts:91`; `:119` on
 PR #544), and the project-shape extractor pushes every item of a source
 (`packages/three-surface-poc-core/src/project-shape-extraction.ts:647`). Past
-about 125,000 lines or items the call overflows the stack and throws, so the
-outcome depends on stack depth, an input that is not in the text. The owner
+roughly 100,000 to 125,000 lines or items, depending on how deep the caller
+is, the call overflows the stack and throws, so the outcome depends on stack
+depth, an input that is not in the text. The owner
 directs that such texts be read like any shorter text, at both sites.
 
 What the agents will do: step 2 of `syzygy-bpyt.1.18`, as its own pull
@@ -103,9 +107,13 @@ request right after PR #544 merges. It holds:
 - the differential re-run at the pull request's head.
 
 A text that crashes today gets the decision a shorter fence or list would
-get; nothing new is refused. For a list that long, `/polaris` then answers
-503 under the existing page ceiling, as it already does for 20,000 items,
-while the other pages serve.
+get; nothing new is refused. For a list that long, `/polaris` and
+`/api/poc` then answer 503, each under its own existing ceiling, as
+`/polaris` already does for 20,000 items, while the other pages serve. A
+re-observation that meets such a list answers 200 and replaces the served
+evaluation, so `/polaris` goes from 200 to 503, where today's crash answers
+502 and keeps the prior evaluation served. Option A, as presented, named
+both.
 
 Review: CC-REV-1 class 4 (security); the reviewer may add class 3
 (deterministic observation).
@@ -156,7 +164,8 @@ pull request:
 - state the stray-backtick drop as a residual.
 
 Extraction, the manifest and phase-A admissions change on the affected
-shapes. P-112 is not performed at its current bytes.
+shapes, and so which files phase B reads, always within the existing read
+authority. P-112 is not performed at its current bytes.
 
 Review: CC-REV-1 class 3 at least; the reviewer may add class 1, since phase
 A's allowlist is a read gate.
@@ -266,11 +275,16 @@ What the agents will do, under `syzygy-bpyt.50`:
 - fixed messages for a non-object detector and for an uncompilable pattern,
   tested through both wrappers, with a mutant per new check;
 - a census test that lists the 47 product sites by class (3 governed, 21
-  catch-all, 23 environment) by file and text, and fails when an unlisted
-  one appears.
+  catch-all, 23 environment) and fails when an unlisted one appears.
 
-The 21 catch-all and 23 environment texts do not change: the operating
-system's and git's words are often the only clue to what failed.
+The 21 catch-all and 23 environment texts do not change. For the
+environment sites, the operating system's and git's words are often the
+only clue to what failed.
+
+**What the owner did not select.** The packet offered D, under which each
+of the 21 catch-all handlers, among them the re-observe 502 page and the
+HTTP 500 body, would name only its stage and the error's class. The owner
+chose A, so a bug's own engine wording still reaches those pages.
 
 Review: CC-REV-1 class 4 (the screening policy).
 
@@ -325,7 +339,7 @@ agent work. The owner was told of them and answered nothing about them.
 
 | Item | Bead |
 |---|---|
-| The active-content gate's unsafe-link pattern (`UNSAFE_URL` in `packages/three-surface-poc-core/src/git-object-reader.ts`) slows faster than the square of a run of spaces after `=`; one Syzygy source took about 30 to 35 seconds in that pattern. A rewrite that matches exactly the same text, proven by a differential | `syzygy-bpyt.52` |
+| The active-content gate's unsafe-link pattern (`UNSAFE_URL` in `packages/three-surface-poc-core/src/git-object-reader.ts`) slows faster than the square of a run of spaces after `=`; one Syzygy source took about 30 to 35 seconds in that pattern. A rewrite that matches exactly the same text, proven by a differential. The one consumer that reads elapsed time is a dossier run's declared deadline, which a stall can use up | `syzygy-bpyt.52` |
 | Finding positions in bare-CR texts (the former Q8): after PR #544 a malformed-code finding counts CR, CRLF and LF as line ends while other findings count LF only, and no output shows a position. The mask's rule for every finding, beside Q7 (or alone if Q7 had not been answered A), with the pin test flipped, a mutant and an independent review | `syzygy-bpyt.1.20` |
 | The other 31 argument-spread calls in shipped code, checked for inputs that grow with an observed repository (Q1 above; a fix that turns a crash into a decision comes back under the stop clause) | `syzygy-bpyt.54` |
 

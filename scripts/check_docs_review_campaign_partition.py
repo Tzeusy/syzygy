@@ -474,6 +474,7 @@ CAMPAIGNS = (
         "gpb2-followup-packet",
         "GP-B2 follow-up owner packet",
         r"V-GP-B2-[12](?:-ADDENDUM)?-RAW\.md",
+        r"V-GP-B2-RECORD-\d+-RAW\.md",
         r"VET-GP-FOLLOWUPS-[1-4]-RAW\.md",
     ),
 )
