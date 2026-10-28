@@ -471,6 +471,11 @@ CAMPAIGNS = (
         r"R-P115-GOVERNEDBY-REFERENCE-[1-4]-RAW\.md",
     ),
     campaign(
+        "p115-implementation-owner-offering",
+        "P115 implementation owner offering",
+        r"R-P115-IMPLEMENTATION-OWNER-OFFERING-RAW\.md",
+    ),
+    campaign(
         "gpb2-followup-packet",
         "GP-B2 follow-up owner packet",
         r"V-GP-B2-[12](?:-ADDENDUM)?-RAW\.md",

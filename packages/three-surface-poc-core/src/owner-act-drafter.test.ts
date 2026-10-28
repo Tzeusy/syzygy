@@ -3,6 +3,7 @@ import { describe, expect, it } from 'vitest';
 
 import type { EpistemicState } from '@syzygy/cap1-core';
 
+import { FORBIDDEN, specifiersOf } from '../../support/src/purity.testkit.js';
 import { draftOwnerAct, type DraftableClaim } from './owner-act-drafter.js';
 
 // M4 slice 7, arm (b) (P-71 Q3): the drafter is pure and writes nothing.
@@ -51,17 +52,11 @@ describe('owner-act drafter (M4 slice 7)', () => {
 
   it('is pure: it imports no filesystem, network or process module and names no write', () => {
     const source = readFileSync(new URL('./owner-act-drafter.ts', import.meta.url), 'utf8');
-    // Every module specifier, whatever the quote: imports and re-exports
-    // with `from`, and side-effect imports. Comment lines are prose.
-    const code = source.split('\n').filter((line) => !line.trimStart().startsWith('//')).join('\n');
-    const specifiers = new Set([
-      ...[...code.matchAll(/\b(?:import|export)\b[^;]*?\bfrom\s*['"`]([^'"`]+)['"`]/g)].map((match) => match[1]),
-      ...[...code.matchAll(/^\s*import\s*['"`]([^'"`]+)['"`]/gm)].map((match) => match[1]),
-      ...[...code.matchAll(/\b(?:import|require)\s*\(\s*['"`]([^'"`]+)['"`]/g)].map((match) => match[1]),
-    ]);
-    expect([...specifiers].sort()).toEqual(['@syzygy/cap1-core', '@syzygy/support']);
+    // Every module specifier, and the forbidden tokens, by the reader and
+    // the list @syzygy/support's purity test uses (syzygy-bpyt.6.14).
+    expect([...new Set(specifiersOf(source))].sort()).toEqual(['@syzygy/cap1-core', '@syzygy/support']);
     expect(/^import type .* from '@syzygy\/cap1-core';$/m.test(source)).toBe(true);
-    for (const forbidden of [/\brequire\(/, /\bimport\(/, /\bfetch\(/, /\bwriteFile/, /\bappendFile/, /\bmkdir/, /\bprocess\./, /\bDate\b/, /\b(?:node:)?(?:fs|net|http|https|child_process|os)['"`]/]) {
+    for (const forbidden of FORBIDDEN) {
       expect(source, String(forbidden)).not.toMatch(forbidden);
     }
   });
