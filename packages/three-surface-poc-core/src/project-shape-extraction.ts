@@ -644,7 +644,8 @@ export function extractSource(
     }
     const result = extractClass(cls, path, text);
     if (result.kind === 'failed') return { kind: 'unknown', path, classes, failure: result.failure };
-    all.push(...result.items);
+    // One item at a time: a spread argument list is bounded by the stack, and a class may hold any number of items.
+    for (const item of result.items) all.push(item);
     denominators[cls] = result.items.length;
     if (result.catalogHeadings !== undefined) catalogHeadings = result.catalogHeadings;
   }

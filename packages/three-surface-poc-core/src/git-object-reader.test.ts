@@ -456,6 +456,35 @@ describe('a CRLF or CR blob gets the outcome its LF form gets', () => {
     expect(result.record.activeContent).toBeUndefined();
     if (result.kind === 'text') expect(result.text).toBe(text);
   });
+
+  // GP-B2 Q1 (syzygy-bpyt.1.18): a blob under the per-source read limit whose closed fence runs 200,000 lines used to throw a RangeError out
+  // of the reader (it rethrows everything but a parse-pass breach); it now reads, and the active-content scan decides it.
+  const LONG_LINES = 200_000;
+
+  it.each(ENDS)('%s: a 200,000-line closed fence holding a script element reads as text, under the read limit', (_name, end) => {
+    const text = `~~~${end}<script>${end}${`x${end}`.repeat(LONG_LINES)}~~~${end}after${end}`;
+    expect(enc.encode(text).byteLength).toBeLessThan(PWB_RESOURCE_LIMITS.maxBytesPerSource);
+    const result = readOne(text);
+    expect(result.kind).toBe('text');
+    expect(result.record.outcome).toBe('read');
+    expect(result.record.activeContent).toBeUndefined();
+    if (result.kind === 'text') expect(result.text === text).toBe(true);
+  });
+
+  it.each(ENDS)('%s: a script element after a 200,000-line closed fence is found, with a body-free record', (_name, end) => {
+    const text = `~~~${end}${`x${end}`.repeat(LONG_LINES)}~~~${end}<script>alert(1)</script>${end}`;
+    expect(enc.encode(text).byteLength).toBeLessThan(PWB_RESOURCE_LIMITS.maxBytesPerSource);
+    const result = readOne(text);
+    expect(result.kind).toBe('unavailable');
+    expect(result.record.outcome).toBe('active-content');
+    // Forms only: positionOf counts LF, so a bare-CR text reports line 1 (the GAP below).
+    expect(result.record.activeContent?.map((finding) => finding.form)).toEqual(['script-element', 'script-element']);
+    expect(JSON.stringify(result)).not.toContain('alert(1)');
+  });
+
+  it.each(ENDS)('%s: scanActiveContent over a 200,000-line closed fence finds nothing inside it', (_name, end) => {
+    expect(scanActiveContent(`~~~${end}<script>${end}${`x${end}`.repeat(LONG_LINES)}~~~${end}`)).toEqual([]);
+  });
 });
 
 // GAP, for the line-model follow-up of syzygy-bpyt.16: positionOf counts LF only, so a CRLF text reports its LF form's positions and

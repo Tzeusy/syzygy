@@ -1007,3 +1007,31 @@ describe('one resource envelope across both phases (PWB-REQ-006, amended)', () =
     for (const entry of allClaims(shape)) isValidClaim(entry);
   });
 });
+
+// GP-B2 Q1 (syzygy-bpyt.1.18): a closed fence of 125,285 lines or more, or a class of 130,000 items or more, made the mask and the extractor
+// throw a RangeError (node 24, default stack) that nothing between the reader and the daemon caught: startup exited 1 and a
+// re-observation kept the prior model. Both now return a decision; the limits that bound a source (bytes, parse passes) are unchanged.
+describe('a very long fence or list does not abort the observation', () => {
+  const VISION_PATH = 'about/heart-and-soul/vision.md';
+  const ENDS: readonly (readonly [string, string])[] = [['LF', '\n'], ['CRLF', '\r\n'], ['CR', '\r']];
+  const fenced = (lines: number, end: string): string => `${VISION}\n~~~${end}${`x${end}`.repeat(lines)}~~~${end}`;
+  const vision = (shape: ReturnType<typeof observed>) => shape.sources.find((source) => source.path === VISION_PATH);
+
+  it.each(ENDS)('%s: a 200,000-line closed fence at the end of vision.md is classified as a 10-line one is', (_name, end) => {
+    const short = observed({ texts: { ...BASE_TEXTS, [VISION_PATH]: fenced(10, end) } });
+    const long = observed({ texts: { ...BASE_TEXTS, [VISION_PATH]: fenced(200_000, end) } });
+    expect(vision(long)?.record.outcome).toBe(vision(short)?.record.outcome);
+    expect(vision(long)?.itemDenominator).toEqual(vision(short)?.itemDenominator);
+    expect(long.limitBreaches).toEqual(short.limitBreaches);
+    expect(long.exclusions).toEqual(short.exclusions);
+    expect(long.claim.epistemic.label).toBe(short.claim.epistemic.label);
+  });
+
+  it('a 130,000-item success list is extracted whole', () => {
+    const section = ['## What Success Looks Like', '', ...Array.from({ length: 130_000 }, () => '- x'), ''].join('\n');
+    const text = VISION.replace(/## What Success Looks Like[\s\S]*?(?=## What Butlers Is Not)/, `${section}\n`);
+    const shape = observed({ texts: { ...BASE_TEXTS, [VISION_PATH]: text } });
+    expect(shape.items.filter((item) => item.class === 'success-criterion' && item.anchors.some((anchor) => anchor.path === VISION_PATH))).toHaveLength(130_000);
+    expect(vision(shape)?.record.outcome).toBe('classified');
+  });
+});

@@ -1126,3 +1126,32 @@ describe('PWB-REQ-006 (amended) — the root index charges one fact-and-preceden
     expect('rootIndex' in r).toBe(false);
   });
 });
+
+// GP-B2 Q1 (syzygy-bpyt.1.18): the class results are appended one item at a time, not by one spread call whose argument count is the
+// class's item count. A call spreading 130,000 items or more overflows the stack on node 24 with the default stack.
+describe('a source whose class holds 130,000 items', () => {
+  const BULLETS = 130_000;
+  const CLASSES = ['project-account-section', 'principle', 'success-criterion'] as const;
+  const section = ['## What Success Looks Like', '', ...Array.from({ length: BULLETS }, () => '- x'), ''].join('\n');
+  const long = VISION.replace(/## What Success Looks Like[\s\S]*?(?=## What Butlers Is Not)/, `${section}\n`);
+
+  it('is extracted, every item kept in class order', () => {
+    const r = extractSource({ path: 'heart-and-soul/vision.md', extractionClasses: [...CLASSES] }, long);
+    expect(r.kind).toBe('extracted');
+    if (r.kind !== 'extracted') return;
+    expect(r.denominators['success-criterion']).toBe(BULLETS);
+    expect(r.items).toHaveLength(Object.values(r.denominators).reduce((sum, n) => sum + n, 0));
+    // One class alone gives the same items as its slice of the three-class result.
+    let offset = 0;
+    for (const cls of CLASSES) {
+      const alone = extractSource({ path: 'heart-and-soul/vision.md', extractionClasses: [cls] }, long);
+      expect(alone.kind).toBe('extracted');
+      if (alone.kind !== 'extracted') return;
+      expect(r.denominators[cls]).toBe(alone.items.length);
+      expect(r.items.slice(offset, offset + 3)).toEqual(alone.items.slice(0, 3));
+      expect(r.items.slice(offset + alone.items.length - 3, offset + alone.items.length)).toEqual(alone.items.slice(-3));
+      offset += alone.items.length;
+    }
+    expect(offset).toBe(r.items.length);
+  });
+});
