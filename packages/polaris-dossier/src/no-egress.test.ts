@@ -3,7 +3,7 @@ import { tmpdir } from 'node:os';
 import * as path from 'node:path';
 import { build, type Plugin } from 'esbuild';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
-import { WORKSPACE, resolve } from '../../polaris-generation-core/src/workspace-reach.testkit.js';
+import { entryModules } from '../../polaris-generation-core/src/workspace-reach.testkit.js';
 import { exited } from './child-process.testkit.js';
 import { FULL_RUN_ROOT_ENV, REAL_ROOT, makeClone } from './full-run.testkit.js';
 
@@ -23,21 +23,10 @@ const SOURCE_ROOT = fs.realpathSync(REAL_ROOT);
 
 /** The bundle's alias map, derived from each workspace package's own `exports` (or its `main`, where it has no `exports`) by the island
  * guards' resolver, which reads `./dist/X.js` as `src/X.ts`. So the proof bundles the source of the module Node loads for each
- * specifier, whatever its entry is named. An entry that resolver cannot read throws here (syzygy-bpyt.6.14, the PR 530 round-2
- * review's N10). */
+ * specifier, whatever its entry is named. An entry that resolver cannot read, or one with a `/../` segment, throws here
+ * (syzygy-bpyt.6.14, the PR 530 round-2 review's N10; `entryModules`, syzygy-bpyt.46). */
 function workspaceAliases(): Record<string, string> {
-  const aliases: Record<string, string> = {};
-  for (const manifest of WORKSPACE.manifests.values()) {
-    if (manifest.dir === '.') continue;
-    const subpaths = manifest.exports !== undefined ? Object.keys(manifest.exports) : manifest.main !== undefined ? ['.'] : [];
-    for (const subpath of subpaths) {
-      const specifier = subpath === '.' ? manifest.name : `${manifest.name}${subpath.slice(1)}`;
-      const module = resolve(`${manifest.dir}/package.json`, specifier);
-      if (typeof module !== 'string') throw new Error(`${specifier}: its entry is not a ./dist/X.js whose src/X.ts exists`);
-      aliases[specifier] = path.join(SOURCE_ROOT, module);
-    }
-  }
-  return aliases;
+  return Object.fromEntries(Object.entries(entryModules()).map(([specifier, module]) => [specifier, path.join(SOURCE_ROOT, module)]));
 }
 
 const SOURCES_ONLY = 'resolving within the workspace sources';

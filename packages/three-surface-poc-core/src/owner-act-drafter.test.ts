@@ -3,7 +3,7 @@ import { describe, expect, it } from 'vitest';
 
 import type { EpistemicState } from '@syzygy/cap1-core';
 
-import { FORBIDDEN, specifiersOf } from '../../support/src/purity.testkit.js';
+import { FORBIDDEN, identifiersOf, specifiersOf } from '../../support/src/purity.testkit.js';
 import { draftOwnerAct, type DraftableClaim } from './owner-act-drafter.js';
 
 // M4 slice 7, arm (b) (P-71 Q3): the drafter is pure and writes nothing.
@@ -17,6 +17,18 @@ const CLAIMS: readonly DraftableClaim[] = [
   { claimId: 'claim:source:a', epistemic: UNBOUND },
 ];
 const ARTIFACT = { path: '.syzygy/policies/quality.yaml', bytes: 'policies:\n  currency-bound: 30d\n' };
+// Every name the drafter's code may use: its own declarations, parameters and fields, the two types it takes from
+// `@syzygy/cap1-core`, `sha256` from `@syzygy/support`, and the array, string, Set and RegExp methods it calls. A global
+// it does not use (`globalThis`, `WebSocket`, `fetch`, `performance`) is a name not on it, which the forbidden tokens above
+// do not see (syzygy-bpyt.46, the PR 545 round-1 review's D2 and D5).
+const DRAFTER_IDENTIFIERS = new Set([
+  'DRAFTABLE_ACTS', 'DraftActType', 'DraftInput', 'DraftResult', 'DraftableClaim', 'DraftedClaimChange', 'EpistemicState', 'OwnerActDraft',
+  'Readonly', 'Record', 'Set', 'UnknownReason', 'act', 'actType', 'adjudication', 'artifact', 'artifactPath', 'bytes', 'carries',
+  'ceremonyPhrase', 'claim', 'claimId', 'claims', 'consent', 'const', 'declaration', 'draft', 'draftOwnerAct', 'epistemic', 'every', 'find',
+  'from', 'frozenDigest', 'ids', 'includes', 'input', 'kind', 'label', 'length', 'map', 'path', 'phrase', 'policy', 'primary', 'reason',
+  'reasons', 'refusal', 'relativePath', 'resolves', 'secondary', 'segment', 'sha256', 'size', 'sort', 'split', 'state', 'status', 'stray',
+  'subject', 'test', 'title', 'to', 'undefined',
+]);
 
 describe('owner-act drafter (M4 slice 7)', () => {
   it('returns the packet as data for a fixture Unknown: a hard-coded literal', () => {
@@ -59,5 +71,10 @@ describe('owner-act drafter (M4 slice 7)', () => {
     for (const forbidden of FORBIDDEN) {
       expect(source, String(forbidden)).not.toMatch(forbidden);
     }
+  });
+
+  it('names no identifier outside its literal list, so it reads no global it does not use', () => {
+    const source = readFileSync(new URL('./owner-act-drafter.ts', import.meta.url), 'utf8');
+    expect(identifiersOf('owner-act-drafter.ts', source).filter((name) => !DRAFTER_IDENTIFIERS.has(name))).toEqual([]);
   });
 });
