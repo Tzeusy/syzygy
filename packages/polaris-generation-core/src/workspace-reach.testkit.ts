@@ -120,6 +120,29 @@ export function resolveIn(workspace: Workspace, from: string, specifier: string)
 /** The module a specifier names in this workspace (`resolveIn` over the tree's own manifests and files). */
 export const resolve = (from: string, specifier: string): string | null | undefined => resolveIn(WORKSPACE, from, specifier);
 
+/** Every entry a workspace package's manifest names, by its specifier, with the `src` module its `exports` (or its `main`, where it
+ * has no `exports`) names, read as above: the source of what Node loads for the specifier. The S10 no-egress bundle aliases by it
+ * (syzygy-bpyt.46). An entry the resolver cannot read throws, and so does a target with a `/../` segment, which Node refuses
+ * (ERR_INVALID_PACKAGE_TARGET) where `moduleIn` would join it away (the PR 545 round-1 review's N6). */
+export function entryModulesIn(workspace: Workspace): Record<string, string> {
+  const modules: Record<string, string> = {};
+  for (const manifest of workspace.manifests.values()) {
+    if (manifest.dir === '.') continue;
+    const entries: [string, unknown][] = manifest.exports !== undefined ? Object.entries(manifest.exports) : manifest.main !== undefined ? [['.', manifest.main]] : [];
+    for (const [subpath, entry] of entries) {
+      const specifier = subpath === '.' ? manifest.name : `${manifest.name}${subpath.slice(1)}`;
+      if (JSON.stringify(entry).includes('/../')) throw new Error(`${specifier}: its entry has a /../ segment, which Node refuses`);
+      const module = resolveIn(workspace, `${manifest.dir}/package.json`, specifier);
+      if (typeof module !== 'string') throw new Error(`${specifier}: its entry is not a ./dist/X.js whose src/X.ts exists`);
+      modules[specifier] = module;
+    }
+  }
+  return modules;
+}
+
+/** `entryModulesIn` over this workspace. */
+export const entryModules = (): Record<string, string> => entryModulesIn(WORKSPACE);
+
 /** Every module `entry` reaches by the specifiers `specifiersOf` gives for each module, in the order it reaches them: every edge
  * between workspace modules, and any workspace specifier that names no module. */
 export function reach(entry: string, specifiersOf: (module: string) => readonly string[]): { reachable: string[]; edges: ReachEdge[]; unresolved: Omit<ReachEdge, 'to'>[] } {
