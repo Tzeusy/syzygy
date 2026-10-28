@@ -418,6 +418,19 @@ describe('active content is rejected and never reaches a sink', () => {
   });
 });
 
+const ENDS: readonly (readonly [string, string])[] = [['LF', '\n'], ['CRLF', '\r\n'], ['CR', '\r']];
+
+function readOne(text: string): ReturnType<ExactObjectReader['read']> {
+  const bytes = enc.encode(text);
+  const oid = sha1Blob(bytes);
+  const entry: GitTreeEntry = { mode: '100644', type: 'blob', objectId: oid, sizeBytes: bytes.byteLength, path: 'notes/line-ends.md' };
+  const runGit = (args: readonly string[]): Uint8Array => {
+    if (args.length !== 3 || args[0] !== 'cat-file' || args[1] !== 'blob' || args[2] !== oid) throw new Error(`spy: request escaped the object reader: git ${args.join(' ')}`);
+    return bytes;
+  };
+  return createExactObjectReader({ runGit, tree: indexGitTree([entry]), resourceLimits: PWB_RESOURCE_LIMITS }).read('notes/line-ends.md');
+}
+
 // syzygy-bpyt.16 (ruled on syzygy-bpyt.1.14): the reader hands a blob's decoded text to the scan with its line ends as they are, and the
 // code-context mask ends a line at CRLF, CR and LF alike, so a CRLF or CR blob gets the outcome its LF form gets. The first text was
 // admitted under CRLF and CR before the fix (a backtick opener whose info text holds a backtick, hiding a script element as an inline
@@ -425,18 +438,6 @@ describe('active content is rejected and never reaches a sink', () => {
 describe('a CRLF or CR blob gets the outcome its LF form gets', () => {
   const FAIL_OPEN = ['# Doc', '', '```a`b', '<script>alert(1)</script>', '```', ''];
   const BENIGN = ['# Doc', '', '~~~', '<script>alert(1)</script>', '~~~', 'after', ''];
-  const ENDS: readonly (readonly [string, string])[] = [['LF', '\n'], ['CRLF', '\r\n'], ['CR', '\r']];
-
-  function readOne(text: string): ReturnType<ExactObjectReader['read']> {
-    const bytes = enc.encode(text);
-    const oid = sha1Blob(bytes);
-    const entry: GitTreeEntry = { mode: '100644', type: 'blob', objectId: oid, sizeBytes: bytes.byteLength, path: 'notes/line-ends.md' };
-    const runGit = (args: readonly string[]): Uint8Array => {
-      if (args.length !== 3 || args[0] !== 'cat-file' || args[1] !== 'blob' || args[2] !== oid) throw new Error(`spy: request escaped the object reader: git ${args.join(' ')}`);
-      return bytes;
-    };
-    return createExactObjectReader({ runGit, tree: indexGitTree([entry]), resourceLimits: PWB_RESOURCE_LIMITS }).read('notes/line-ends.md');
-  }
 
   it.each(ENDS)('%s: a backtick opener whose info text holds a backtick is excluded as a malformed code context, with a body-free record', (_name, end) => {
     const text = FAIL_OPEN.join(end);
@@ -456,7 +457,9 @@ describe('a CRLF or CR blob gets the outcome its LF form gets', () => {
     expect(result.record.activeContent).toBeUndefined();
     if (result.kind === 'text') expect(result.text).toBe(text);
   });
+});
 
+describe('a 200,000-line closed fence under the read limit (GP-B2 Q1)', () => {
   // GP-B2 Q1 (syzygy-bpyt.1.18): a blob under the per-source read limit whose closed fence runs 200,000 lines used to throw a RangeError out
   // of the reader (it rethrows everything but a parse-pass breach); it now reads, and the active-content scan decides it.
   const LONG_LINES = 200_000;
@@ -468,7 +471,7 @@ describe('a CRLF or CR blob gets the outcome its LF form gets', () => {
     expect(result.kind).toBe('text');
     expect(result.record.outcome).toBe('read');
     expect(result.record.activeContent).toBeUndefined();
-    if (result.kind === 'text') expect(result.text === text).toBe(true);
+    if (result.kind === 'text') expect(result.text === text, 'the text read differs from the blob').toBe(true);
   });
 
   it.each(ENDS)('%s: a script element after a 200,000-line closed fence is found, with a body-free record', (_name, end) => {

@@ -1008,9 +1008,9 @@ describe('one resource envelope across both phases (PWB-REQ-006, amended)', () =
   });
 });
 
-// GP-B2 Q1 (syzygy-bpyt.1.18): a closed fence of 125,285 lines or more, or a class of 130,000 items or more, made the mask and the extractor
-// throw a RangeError (node 24, default stack) that nothing between the reader and the daemon caught: startup exited 1 and a
-// re-observation kept the prior model. Both now return a decision; the limits that bound a source (bytes, parse passes) are unchanged.
+// GP-B2 Q1 (syzygy-bpyt.1.18): a closed fence of about 125,000 lines or more, or a class of 130,000 items or more, made the mask and the extractor
+// throw a RangeError (node 24, default stack) that nothing between the reader and the daemon caught: a re-observation
+// failed and kept the prior model, and startup would exit 1 (read from poc-main.ts, not run). Both now return a decision; the limits that bound a source (bytes, parse passes) are unchanged.
 describe('a very long fence or list does not abort the observation', () => {
   const VISION_PATH = 'about/heart-and-soul/vision.md';
   const ENDS: readonly (readonly [string, string])[] = [['LF', '\n'], ['CRLF', '\r\n'], ['CR', '\r']];
@@ -1033,5 +1033,5 @@ describe('a very long fence or list does not abort the observation', () => {
     const shape = observed({ texts: { ...BASE_TEXTS, [VISION_PATH]: text } });
     expect(shape.items.filter((item) => item.class === 'success-criterion' && item.anchors.some((anchor) => anchor.path === VISION_PATH))).toHaveLength(130_000);
     expect(vision(shape)?.record.outcome).toBe('classified');
-  });
+  }, 30_000);
 });

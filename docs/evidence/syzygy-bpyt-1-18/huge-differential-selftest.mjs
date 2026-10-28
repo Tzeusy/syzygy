@@ -5,7 +5,7 @@
 // failure it names starts with the expected prefix. The mutations are applied to the compiled JavaScript of the head build.
 import { execFileSync } from 'node:child_process';
 import { cpSync, existsSync, mkdirSync, readFileSync, rmSync, symlinkSync, writeFileSync } from 'node:fs';
-import { dirname, join } from 'node:path';
+import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const here = dirname(fileURLToPath(import.meta.url));
@@ -32,7 +32,7 @@ for (const [id, predicate, file, oldText, newText, expected] of MUTANTS) {
   const dist = join(root, 'packages', 'three-surface-poc-core', 'dist');
   mkdirSync(dirname(dist), { recursive: true });
   cpSync(headDist, dist, { recursive: true });
-  symlinkSync(nodeModules, join(root, 'node_modules'));
+  symlinkSync(resolve(nodeModules), join(root, 'node_modules'));
   const path = join(dist, file);
   const source = readFileSync(path, 'utf8');
   if (source.split(oldText).length !== 2) throw new Error(`${id}: the old fragment is not in ${file} exactly once`);
@@ -40,7 +40,7 @@ for (const [id, predicate, file, oldText, newText, expected] of MUTANTS) {
   const outJson = join(root, 'out.json');
   let exit = 0;
   try {
-    execFileSync('node', [join(here, 'huge-differential.mjs'), baseDist, dist, outJson], { stdio: ['ignore', 'ignore', 'ignore'], maxBuffer: 1 << 28 });
+    execFileSync('node', [join(here, 'huge-differential.mjs'), resolve(baseDist), dist, outJson], { stdio: ['ignore', 'ignore', 'ignore'], maxBuffer: 1 << 28 });
   } catch (error) {
     exit = error.status ?? -1;
   }

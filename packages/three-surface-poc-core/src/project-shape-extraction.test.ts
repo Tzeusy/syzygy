@@ -6,6 +6,8 @@
 // per-class denominators over every fixture, and the module must yield no
 // partial set on any malformed fixture.
 
+import { isDeepStrictEqual } from 'node:util';
+
 import { describe, expect, it } from 'vitest';
 
 import { EXTRACTION_CLASSES, type ExtractionClass } from './project-shape-manifest.js';
@@ -1135,6 +1137,13 @@ describe('a source whose class holds 130,000 items', () => {
   const section = ['## What Success Looks Like', '', ...Array.from({ length: BULLETS }, () => '- x'), ''].join('\n');
   const long = VISION.replace(/## What Success Looks Like[\s\S]*?(?=## What Butlers Is Not)/, `${section}\n`);
 
+  // These sizes pin the fix only where one spread call over them overflows: a larger stack (a worker-thread pool runs at
+  // 4 MB) lets the old line pass every test here. This canary fails first if the test process stops overflowing.
+  it('one spread call over 130,002 arguments still overflows the stack in this test process', () => {
+    const sink: unknown[] = [];
+    expect(() => sink.push(...new Array<unknown>(BULLETS + 2))).toThrow(RangeError);
+  });
+
   it('is extracted, every item kept in class order', () => {
     const r = extractSource({ path: 'heart-and-soul/vision.md', extractionClasses: [...CLASSES] }, long);
     expect(r.kind).toBe('extracted');
@@ -1148,10 +1157,9 @@ describe('a source whose class holds 130,000 items', () => {
       expect(alone.kind).toBe('extracted');
       if (alone.kind !== 'extracted') return;
       expect(r.denominators[cls]).toBe(alone.items.length);
-      expect(r.items.slice(offset, offset + 3)).toEqual(alone.items.slice(0, 3));
-      expect(r.items.slice(offset + alone.items.length - 3, offset + alone.items.length)).toEqual(alone.items.slice(-3));
+      expect(isDeepStrictEqual(r.items.slice(offset, offset + alone.items.length), alone.items), `${cls} items differ from its one-class result`).toBe(true);
       offset += alone.items.length;
     }
     expect(offset).toBe(r.items.length);
-  });
+  }, 30_000);
 });

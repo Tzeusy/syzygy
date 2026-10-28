@@ -2,8 +2,8 @@
 """Builds spread-loops-2026-10-28.json, the record of syzygy-bpyt.1.18, from the tool outputs in this directory.
 
 Usage: build-record.py <repo root> <code commit> <base commit>
-Every figure is read from an output file or computed from git; nothing is typed here except the labels and the sentences that say
-what a figure means. Run it from a checkout where the code commit is reachable. The record names its subject by commit and by the
+Every figure is read from an output file or computed from git; nothing is typed here except the labels, the sentences that say
+what a figure means, and the two bullet-text byte counts of claim 4 (measured with Buffer.byteLength). Run it from a checkout where the code commit is reachable. The record names its subject by commit and by the
 sha256 of every changed file at that commit (rule 11), and lists the sha256 of every file beside it except itself.
 """
 import hashlib
@@ -88,7 +88,7 @@ record = {
         {'label': 'Observed', 'text': f'Of the {len(changed)} changed files, the production files are {production}; no other non-test file changes in the code commit. The evidence directory is added after it.'},
         {'label': 'Observed', 'text': f'The argument-spread census (spread_sweep.py, its regex verbatim) over {sweep_base["population"]} tracked files finds {sweep_base["regexHits"]} calls at the base and {sweep_head["regexHits"]} at the code commit; removed: {[list(s) for s in removed_sites]}; added: {[list(s) for s in added_sites]}. The other {sweep_head["regexHits"]} are syzygy-bpyt.54 and are untouched.'},
         {'label': 'Observed', 'text': 'At the base, scanActiveContent and buildProjectShape throw RangeError (Maximum call stack size exceeded) for a closed fence of 200,000 lines in LF, CRLF and CR, in a phase-B source (vision.md) and in the phase-A root index; at the code commit every one of those 12 builds returns an observed shape with the source classified, with the same 14 cat-file calls as the 100,000-line builds.'},
-        {'label': 'Observed', 'text': 'At the base, buildProjectShape throws for a success list of 130,000 and of 200,000 bullets (520,268 and 800,268 bytes, under maxBytesPerSource) and returns for 125,000; at the code commit all of 100,000, 125,000, 130,000 and 200,000 return an observed shape with every item.'},
+        {'label': 'Observed', 'text': 'At the base, buildProjectShape throws for a success list of 130,000 and of 200,000 bullets (520,272 and 800,272 UTF-8 bytes, under maxBytesPerSource) and returns for 125,000; at the code commit all of 100,000, 125,000, 130,000 and 200,000 return an observed shape with every item.'},
         {'label': 'Observed', 'text': 'The boundary is a measurement of a run, not a constant: the first throwing inner-line count was 125,285 (CR) to 125,287 (LF and CRLF) in a vitest process, 125,457 to 125,465 in a bare node process, and it scales with the V8 stack size (about 62,490 at --stack-size=492, 125,460 at the default 984, 251,409 at 1968).'},
         {'label': 'Observed', 'text': 'The mask differential of syzygy-bpyt.16, unchanged, run between the base build and the code commit build over its 11,054 synthetic texts, returns 0 refuses, 0 accepts, 0 same-decision-other-findings and 11,054 unchanged, with C1 to C4 at 0 failures. Every output the change alters is therefore a throw that becomes a decision, at a fence or class past the stack boundary.'},
         {'label': 'Observed', 'text': 'Rule 6: six mutants (two restore a spread, four are off-by-one or order faults of a loop) are all killed, and restoring both spreads fails 20 of the new tests; the control run at the code commit fails none.'},
