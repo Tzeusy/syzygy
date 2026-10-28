@@ -1,5 +1,5 @@
 {
- "commit": "497cf1db73b7e12c0963f8842e83180838ecea9e",
+ "commit": "e2077444dc739ea15db69f424c2372f89b1996de",
  "dist": "absent",
  "distDirs": [],
  "lane614Sha256": "133094bce703dad13917d73b4bb1dd29cc8eb43212d2ec9e307656f530f3fe4e",
@@ -13,8 +13,8 @@
  },
  "node": "v24.6.0",
  "summary": {
-  "rows": 42,
-  "asExpected": 42,
+  "rows": 34,
+  "asExpected": 34,
   "unexpected": []
  },
  "statusAfter": "",
@@ -58,24 +58,9 @@
    "failing": [],
    "asExpected": true,
    "exit": 0,
-   "passed": 57,
+   "passed": 64,
    "failed": 0,
-   "total": 57,
-   "failedFiles": [],
-   "fileMessages": [],
-   "error": null
-  },
-  {
-   "id": "A0-root-aliases-unmutated",
-   "test": "packages/polaris-generation-core/src/root-vitest-aliases.test.ts",
-   "edits": [],
-   "expectedFailing": [],
-   "failing": [],
-   "asExpected": true,
-   "exit": 0,
-   "passed": 4,
-   "failed": 0,
-   "total": 4,
+   "total": 64,
    "failedFiles": [],
    "fileMessages": [],
    "error": null
@@ -658,9 +643,9 @@
    ],
    "asExpected": true,
    "exit": 1,
-   "passed": 56,
+   "passed": 63,
    "failed": 1,
-   "total": 57,
+   "total": 64,
    "failedFiles": [
     "packages/polaris-generation-core/src/workspace-reach.test.ts"
    ],
@@ -685,9 +670,9 @@
    ],
    "asExpected": true,
    "exit": 1,
-   "passed": 56,
+   "passed": 63,
    "failed": 1,
-   "total": 57,
+   "total": 64,
    "failedFiles": [
     "packages/polaris-generation-core/src/workspace-reach.test.ts"
    ],
@@ -712,9 +697,9 @@
    ],
    "asExpected": true,
    "exit": 1,
-   "passed": 56,
+   "passed": 63,
    "failed": 1,
-   "total": 57,
+   "total": 64,
    "failedFiles": [
     "packages/polaris-generation-core/src/workspace-reach.test.ts"
    ],
@@ -739,9 +724,9 @@
    ],
    "asExpected": true,
    "exit": 1,
-   "passed": 56,
+   "passed": 63,
    "failed": 1,
-   "total": 57,
+   "total": 64,
    "failedFiles": [
     "packages/polaris-generation-core/src/workspace-reach.test.ts"
    ],
@@ -750,7 +735,7 @@
   },
   {
    "id": "E4-uniform-dotdot-entry-in-the-workspace",
-   "test": "packages/polaris-generation-core/src/root-vitest-aliases.test.ts",
+   "test": "packages/polaris-dossier/src/no-egress.test.ts",
    "edits": [
     {
      "path": "packages/polaris-dossier/package.json",
@@ -759,220 +744,22 @@
     }
    ],
    "expectedFailing": [
-    "the root vitest.config.ts aliases alias each specifier to the src module its package's entry names",
-    "the root vitest.config.ts aliases leave exactly these entries unaliased",
-    "the root vitest.config.ts aliases shadow exactly the two dossier subpaths, which the bare dossier alias rewrites to no module"
+    "file: @syzygy/polaris-dossier/state-directory: its entry has a /../ segment, which Node refuses"
    ],
    "failing": [
-    "the root vitest.config.ts aliases alias each specifier to the src module its package's entry names",
-    "the root vitest.config.ts aliases leave exactly these entries unaliased",
-    "the root vitest.config.ts aliases shadow exactly the two dossier subpaths, which the bare dossier alias rewrites to no module"
+    "file: @syzygy/polaris-dossier/state-directory: its entry has a /../ segment, which Node refuses"
    ],
    "asExpected": true,
    "exit": 1,
-   "passed": 1,
-   "failed": 3,
-   "total": 4,
-   "failedFiles": [
-    "packages/polaris-generation-core/src/root-vitest-aliases.test.ts"
-   ],
-   "fileMessages": [],
-   "error": null
-  },
-  {
-   "id": "E1E4-dotdot-check-dropped-under-a-uniform-entry",
-   "test": "packages/polaris-generation-core/src/root-vitest-aliases.test.ts",
-   "edits": [
-    {
-     "path": "packages/polaris-generation-core/src/workspace-reach.testkit.ts",
-     "old": "      if (JSON.stringify(entry).includes('/../')) throw new Error(`${specifier}: its entry has a /../ segment, which Node refuses`);\n",
-     "new": ""
-    },
-    {
-     "path": "packages/polaris-dossier/package.json",
-     "old": "      \"import\": \"./dist/state-directory.js\",\n      \"default\": \"./dist/state-directory.js\"\n",
-     "new": "      \"import\": \"./dist/x/../state-directory.js\",\n      \"default\": \"./dist/x/../state-directory.js\"\n"
-    }
-   ],
-   "expectedFailing": [],
-   "failing": [],
-   "asExpected": true,
-   "exit": 0,
-   "passed": 4,
+   "passed": 0,
    "failed": 0,
-   "total": 4,
-   "failedFiles": [],
-   "fileMessages": [],
-   "error": null
-  },
-  {
-   "id": "A1-alias-moved-to-another-module",
-   "test": "packages/polaris-generation-core/src/root-vitest-aliases.test.ts",
-   "edits": [
-    {
-     "path": "vitest.config.ts",
-     "old": "      '@syzygy/support': fileURLToPath(new URL('./packages/support/src/index.ts', import.meta.url)),\n",
-     "new": "      '@syzygy/support': fileURLToPath(new URL('./packages/support/src/sha256.ts', import.meta.url)),\n"
-    }
-   ],
-   "expectedFailing": [
-    "the root vitest.config.ts aliases alias each specifier to the src module its package's entry names"
-   ],
-   "failing": [
-    "the root vitest.config.ts aliases alias each specifier to the src module its package's entry names"
-   ],
-   "asExpected": true,
-   "exit": 1,
-   "passed": 3,
-   "failed": 1,
-   "total": 4,
+   "total": 7,
    "failedFiles": [
-    "packages/polaris-generation-core/src/root-vitest-aliases.test.ts"
+    "packages/polaris-dossier/src/no-egress.test.ts"
    ],
-   "fileMessages": [],
-   "error": null
-  },
-  {
-   "id": "A2-alias-with-no-entry",
-   "test": "packages/polaris-generation-core/src/root-vitest-aliases.test.ts",
-   "edits": [
-    {
-     "path": "vitest.config.ts",
-     "old": "      '@syzygy/support': fileURLToPath(new URL('./packages/support/src/index.ts', import.meta.url)),\n",
-     "new": "      '@syzygy/support': fileURLToPath(new URL('./packages/support/src/index.ts', import.meta.url)),\n      '@syzygy/support/extra': fileURLToPath(new URL('./packages/support/src/index.ts', import.meta.url)),\n"
-    }
+   "fileMessages": [
+    "@syzygy/polaris-dossier/state-directory: its entry has a /../ segment, which Node refuses"
    ],
-   "expectedFailing": [
-    "the root vitest.config.ts aliases alias each specifier to the src module its package's entry names",
-    "the root vitest.config.ts aliases match each aliased specifier by its own alias first, so no shorter alias ahead of it shadows it"
-   ],
-   "failing": [
-    "the root vitest.config.ts aliases alias each specifier to the src module its package's entry names",
-    "the root vitest.config.ts aliases match each aliased specifier by its own alias first, so no shorter alias ahead of it shadows it"
-   ],
-   "asExpected": true,
-   "exit": 1,
-   "passed": 2,
-   "failed": 2,
-   "total": 4,
-   "failedFiles": [
-    "packages/polaris-generation-core/src/root-vitest-aliases.test.ts"
-   ],
-   "fileMessages": [],
-   "error": null
-  },
-  {
-   "id": "A3-alias-removed",
-   "test": "packages/polaris-generation-core/src/root-vitest-aliases.test.ts",
-   "edits": [
-    {
-     "path": "vitest.config.ts",
-     "old": "      '@syzygy/polaris-dossier': fileURLToPath(new URL('./packages/polaris-dossier/src/index.ts', import.meta.url)),\n",
-     "new": ""
-    }
-   ],
-   "expectedFailing": [
-    "the root vitest.config.ts aliases leave exactly these entries unaliased",
-    "the root vitest.config.ts aliases shadow exactly the two dossier subpaths, which the bare dossier alias rewrites to no module"
-   ],
-   "failing": [
-    "the root vitest.config.ts aliases leave exactly these entries unaliased",
-    "the root vitest.config.ts aliases shadow exactly the two dossier subpaths, which the bare dossier alias rewrites to no module"
-   ],
-   "asExpected": true,
-   "exit": 1,
-   "passed": 2,
-   "failed": 2,
-   "total": 4,
-   "failedFiles": [
-    "packages/polaris-generation-core/src/root-vitest-aliases.test.ts"
-   ],
-   "fileMessages": [],
-   "error": null
-  },
-  {
-   "id": "A4-entry-added-without-an-alias",
-   "test": "packages/polaris-generation-core/src/root-vitest-aliases.test.ts",
-   "edits": [
-    {
-     "path": "packages/polaris-dossier/package.json",
-     "old": "      \"default\": \"./dist/state-directory.js\"\n    }\n",
-     "new": "      \"default\": \"./dist/state-directory.js\"\n    },\n    \"./cli\": \"./dist/cli.js\"\n"
-    }
-   ],
-   "expectedFailing": [
-    "the root vitest.config.ts aliases leave exactly these entries unaliased",
-    "the root vitest.config.ts aliases shadow exactly the two dossier subpaths, which the bare dossier alias rewrites to no module"
-   ],
-   "failing": [
-    "the root vitest.config.ts aliases leave exactly these entries unaliased",
-    "the root vitest.config.ts aliases shadow exactly the two dossier subpaths, which the bare dossier alias rewrites to no module"
-   ],
-   "asExpected": true,
-   "exit": 1,
-   "passed": 2,
-   "failed": 2,
-   "total": 4,
-   "failedFiles": [
-    "packages/polaris-generation-core/src/root-vitest-aliases.test.ts"
-   ],
-   "fileMessages": [],
-   "error": null
-  },
-  {
-   "id": "A5-config-reordered-so-core-shadows-live",
-   "test": "packages/polaris-generation-core/src/root-vitest-aliases.test.ts",
-   "edits": [
-    {
-     "path": "vitest.config.ts",
-     "old": "      '@syzygy/polaris-generation-core/live': fileURLToPath(new URL('./packages/polaris-generation-core/src/live.ts', import.meta.url)),\n      '@syzygy/polaris-generation-core': fileURLToPath(new URL('./packages/polaris-generation-core/src/index.ts', import.meta.url)),\n",
-     "new": "      '@syzygy/polaris-generation-core': fileURLToPath(new URL('./packages/polaris-generation-core/src/index.ts', import.meta.url)),\n      '@syzygy/polaris-generation-core/live': fileURLToPath(new URL('./packages/polaris-generation-core/src/live.ts', import.meta.url)),\n"
-    }
-   ],
-   "expectedFailing": [
-    "the root vitest.config.ts aliases match each aliased specifier by its own alias first, so no shorter alias ahead of it shadows it"
-   ],
-   "failing": [
-    "the root vitest.config.ts aliases match each aliased specifier by its own alias first, so no shorter alias ahead of it shadows it"
-   ],
-   "asExpected": true,
-   "exit": 1,
-   "passed": 3,
-   "failed": 1,
-   "total": 4,
-   "failedFiles": [
-    "packages/polaris-generation-core/src/root-vitest-aliases.test.ts"
-   ],
-   "fileMessages": [],
-   "error": null
-  },
-  {
-   "id": "A6-correct-alias-for-an-unaliased-entry",
-   "test": "packages/polaris-generation-core/src/root-vitest-aliases.test.ts",
-   "edits": [
-    {
-     "path": "vitest.config.ts",
-     "old": "      '@syzygy/polaris-dossier': fileURLToPath(new URL('./packages/polaris-dossier/src/index.ts', import.meta.url)),\n",
-     "new": "      '@syzygy/polaris-dossier/argv': fileURLToPath(new URL('./packages/polaris-dossier/src/argv.ts', import.meta.url)),\n      '@syzygy/polaris-dossier': fileURLToPath(new URL('./packages/polaris-dossier/src/index.ts', import.meta.url)),\n"
-    }
-   ],
-   "expectedFailing": [
-    "the root vitest.config.ts aliases leave exactly these entries unaliased",
-    "the root vitest.config.ts aliases shadow exactly the two dossier subpaths, which the bare dossier alias rewrites to no module"
-   ],
-   "failing": [
-    "the root vitest.config.ts aliases leave exactly these entries unaliased",
-    "the root vitest.config.ts aliases shadow exactly the two dossier subpaths, which the bare dossier alias rewrites to no module"
-   ],
-   "asExpected": true,
-   "exit": 1,
-   "passed": 2,
-   "failed": 2,
-   "total": 4,
-   "failedFiles": [
-    "packages/polaris-generation-core/src/root-vitest-aliases.test.ts"
-   ],
-   "fileMessages": [],
    "error": null
   },
   {
