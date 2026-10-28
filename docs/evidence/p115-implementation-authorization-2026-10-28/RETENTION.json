@@ -2,12 +2,12 @@
   "meaning": "Exact copies of approved scope, plans, original manifest and independent review. This is a selected retention, not the complete 750-payload preparation archive. Historical preparation banners and old local paths are preserved unchanged. OWNER-ANSWER.json and the canonical owner direction record the later selection.",
   "files": [
     {
-      "path": "P115-IMPLEMENTATION-AUTHORIZATION-PACKET.md",
+      "path": "P115-IMPLEMENTATION-AUTHORIZATION-PACKET.txt",
       "source": "/home/tze/.cache/syzygy-v1-drive-20261027/p115/preparation-973965a-20261027T1332/P115-IMPLEMENTATION-AUTHORIZATION-PACKET.md",
       "sha256": "1cdf0e9a3c88e55e70cf14e16c2712b1ed5530de3d5acb53e08692ed192500e3"
     },
     {
-      "path": "OWNER-DIRECTION-P115-IMPLEMENTATION-AND-CONSUMER-MIGRATION-DRAFT.md",
+      "path": "OWNER-DIRECTION-P115-IMPLEMENTATION-AND-CONSUMER-MIGRATION-DRAFT.txt",
       "source": "/home/tze/.cache/syzygy-v1-drive-20261027/p115/preparation-973965a-20261027T1332/OWNER-DIRECTION-P115-IMPLEMENTATION-AND-CONSUMER-MIGRATION-DRAFT.md",
       "sha256": "8423869fa4532419c554a14bf618edbd297f820f524c84585ecaa4ec8a4ea649"
     },
