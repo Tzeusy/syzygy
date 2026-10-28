@@ -1,6 +1,6 @@
 import { execFileSync } from 'node:child_process';
 import { readFileSync } from 'node:fs';
-import { fileURLToPath } from 'node:url';
+import { fileURLToPath, pathToFileURL } from 'node:url';
 import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
 import { WORKSPACE, resolveIn, type Workspace } from '../../../packages/polaris-generation-core/src/workspace-reach.testkit.js';
@@ -77,6 +77,14 @@ function suiteConfig(config: string): SuiteConfig {
   if (!SOURCE_CONDITION.test(config) || ALIAS_KEY.test(config)) throw new Error(`${VITEST_CONFIG}: workspace packages do not load by their source condition alone`);
   return { roots };
 }
+
+/** The path of every own key in `value`, through objects and arrays at any depth. The text checks above miss an alias written
+ * in shorthand (`resolve: { alias }`), so the loaded config is read too (syzygy-bpyt.70, the PR 554 round-2 review's N4). */
+function keyPaths(value: unknown, at: readonly string[] = []): (readonly string[])[] {
+  if (typeof value !== 'object' || value === null) return [];
+  return Object.entries(value).flatMap(([key, member]) => [[...at, key], ...keyPaths(member, [...at, key])]);
+}
+const aliasKeys = (config: unknown): string[] => keyPaths(config).filter((path) => path.at(-1) === 'alias').map((path) => path.join('.'));
 
 const lineOf = (source: string, index: number): number => source.slice(0, index).split('\n').length;
 const escape = (name: string): string => name.replace(/[$]/g, '\\$');
@@ -261,6 +269,22 @@ describe('suite child processes and the vitest worker RPC', () => {
       `${plugin('"p"')}\n${ssr}\n${project("'packages/a/src/**/*.test.ts'")}`,
       `'plugins': [],\n${ssr}\n${project("'packages/a/src/**/*.test.ts'")}`,
     ]) expect(() => suiteConfig(config), config).toThrow(/a plugin may load a workspace package by other than its source condition/);
+  });
+
+  it('loads the vitest config and finds no alias key at any depth', async () => {
+    const config: unknown = (await import(pathToFileURL(join(REPO_ROOT, VITEST_CONFIG)).href)).default;
+    const paths = keyPaths(config).map((path) => path.join('.'));
+    expect(paths).toEqual(expect.arrayContaining(['ssr.resolve.conditions', 'test.setupFiles']));
+    expect(paths.some((path) => /^test\.projects\.\d+\.test\.globalSetup$/u.test(path))).toBe(true);
+    expect(aliasKeys(config)).toEqual([]);
+  });
+
+  it('reads an alias key wherever the config holds one, and no other key', () => {
+    const alias = { '@syzygy/a': '/a/src/index.ts' };
+    expect(aliasKeys({ resolve: { alias } })).toEqual(['resolve.alias']);
+    expect(aliasKeys({ test: { projects: [{ test: {} }, { resolve: { alias: [] } }] } })).toEqual(['test.projects.1.resolve.alias']);
+    expect(aliasKeys({ alias: {}, ssr: { resolve: { alias: undefined } } })).toEqual(['alias', 'ssr.resolve.alias']);
+    expect(aliasKeys({ resolve: { aliases: {}, myalias: {}, conditions: ['alias'] }, alias_: 1, 'x.alias': 2 })).toEqual([]);
   });
 
   it('scans a helper module a test imports, through relative and workspace imports', () => {
