@@ -361,6 +361,19 @@ describe('policy residuals (the detectors see literal forms only)', () => {
     expect(corpus.sources.every(source => !source.exclusion.excluded)).toBe(true);
   });
 
+  // syzygy-bpyt.16 (ruled on syzygy-bpyt.1.14): a CRLF or CR body gets the active-content decision its LF form gets. The first body was
+  // admitted under CRLF and CR before the fix (a backtick opener with a backtick in its info text hides a script element as an inline
+  // span), the second withheld (a tilde fence the mask did not recognize, leaving the script element it holds in the open).
+  it.each([['LF', '\n'], ['CRLF', '\r\n'], ['CR', '\r']])('%s: a body is withheld as active content or admitted as its LF form is', async (_name, end) => {
+    const screen = await loadPublicSourceScreen(goodPort);
+    const failOpen = ['# Guide', '', '```a`b', '<script>alert(1)</script>', '```', ''].join(end);
+    const benign = ['# Guide', '', '~~~', '<script>alert(1)</script>', '~~~', 'after', ''].join(end);
+    expect(screen.screenBody(failOpen)).toBe('active-content');
+    expect(screen.screenBody(benign)).toBeUndefined();
+    expect(screen.screenTargetBody(failOpen, 'README.md')).toEqual({ kind: 'excluded', outcome: 'active-content' });
+    expect(screen.screenTargetBody(benign, 'README.md')).toEqual({ kind: 'admitted' });
+  });
+
   it('a path secret is caught in the file name and in a directory name, in literal form only', async () => {
     const screen = await loadPublicSourceScreen(goodPort);
     expect(screen.screenPath(`src/${PATH_TOKEN}.ts`)).toBe('secret-detector-match');

@@ -138,6 +138,18 @@ describe('the project-documentation class (syzygy-2coz)', () => {
     expect(build(true).screenBody(body)).toBe(outcome);
   });
 
+  // syzygy-bpyt.16 (ruled on syzygy-bpyt.1.14): a CRLF or CR body gets the active-content decision its LF form gets. The first body was
+  // admitted under CRLF and CR before the fix (a backtick opener with a backtick in its info text hides a script element as an inline
+  // span), the second withheld (a tilde fence the mask did not recognize, leaving the script element it holds in the open).
+  it.each([['LF', '\n'], ['CRLF', '\r\n'], ['CR', '\r']])('%s: a documentation body is withheld as active content or admitted as its LF form is', (_name, end) => {
+    const failOpen = ['# Guide', '', '```a`b', '<script>alert(1)</script>', '```', ''].join(end);
+    const benign = ['# Guide', '', '~~~', '<script>alert(1)</script>', '~~~', 'after', ''].join(end);
+    expect(build(true).screenBody(failOpen)).toBe('active-content');
+    expect(build(true).screenBody(benign)).toBeUndefined();
+    expect(build(true).screenTargetBody(failOpen, 'README.md')).toEqual({ kind: 'excluded', outcome: 'active-content' });
+    expect(build(true).screenTargetBody(benign, 'README.md')).toEqual({ kind: 'admitted' });
+  });
+
   it.each<[string, Record<string, unknown>]>([
     ['an edited path rule', { pathRules: [{ id: 'root-document', rule: 'any' }] }],
     ['an unreadable root stem list', { rootStems: 'readme' }],

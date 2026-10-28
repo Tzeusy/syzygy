@@ -208,8 +208,10 @@ sweep lessons added 2026-09-23; the raw-head digest lesson the same day.
   says which clause governs each and where they differ; `fence-rules.test.ts`
   pins four of them (the consent reader through the probe and its own tests).
   Do not merge or "fix" one without the owner, since that changes what a gate
-  accepts. G1, the CRLF reading, is ruled by the owner (`syzygy-bpyt.1.14`)
-  and `syzygy-bpyt.16` fixes it; G2 and G3 are open owner questions.
+  accepts. The profile's mask ends a line at CRLF, CR and LF and keeps every
+  terminator (`syzygy-bpyt.16`; the differential is in
+  `docs/evidence/syzygy-bpyt-16/crlf-mask-2026-10-27.json`); the extractor and
+  the link reader split at LF only. G2 and G3 were ruled by the owner on 2026-10-28 (GP-B2 Q2, answer C; `syzygy-bpyt.55` implements it).
 - Three-Surface POC: `packages/three-surface-poc-core/` (one shared
   `PocModel`) and `apps/three-surface-poc/` read the same instance — never
   split surface truth stores. `build:poc` keeps `tsc -b --force`: ignored

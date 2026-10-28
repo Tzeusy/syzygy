@@ -13,6 +13,10 @@
 //
 // The profile is UTF-8 line-oriented and closed:
 //
+//   line end       CRLF, CR or LF, each one line end; the mask keeps every
+//                  terminator where it stands (the owner's ruling on
+//                  syzygy-bpyt.1.14, implemented by syzygy-bpyt.16), so a
+//                  CRLF or CR text gets exactly the decision its LF form gets;
 //   fenced opener  zero to three spaces, then at least three identical
 //                  backticks or tildes; a backtick opener's info string
 //                  contains no backtick (else malformed);
@@ -44,8 +48,9 @@ export type CodeContextMask =
   | {
       readonly kind: 'masked';
       // `text` with every byte inside a closed code context (delimiters
-      // included) replaced by a space; newlines are kept, so every
-      // line/column position of the masked text equals the original's.
+      // included) replaced by a space; every line terminator (CRLF, CR or
+      // LF) is kept, so the masked text has the original's length and every
+      // offset, and every line/column position equals the original's.
       readonly masked: string;
       readonly fences: number;
       readonly spans: number;
@@ -53,7 +58,8 @@ export type CodeContextMask =
   | {
       readonly kind: 'malformed';
       readonly reason: MalformedCodeContext;
-      // 1-based line where the malformed context opened.
+      // 1-based line where the malformed context opened; CRLF, CR and LF
+      // each end one line.
       readonly line: number;
     };
 
@@ -66,13 +72,35 @@ function fenceCloser(line: string, char: string, length: number): boolean {
   return run[0] === char && run.length >= length;
 }
 
-// Replaces every character except `\n` by a space, so positions survive.
+// Replaces every character of a line (which holds no terminator) by a space,
+// so positions survive.
 function blank(segment: string): string {
-  return segment.replace(/[^\n]/g, ' ');
+  return ' '.repeat(segment.length);
+}
+
+// A line ends at CRLF, CR or LF: CommonMark's line ending, and the split the
+// Polaris renderer already makes. The extractor and the link reader split at
+// LF only (the extractor drops one trailing CR), which G2 and G3 decide. The
+// terminators are returned beside the lines and rejoined unchanged, so no
+// offset moves; normalizing the text first would renumber a bare-CR file.
+const LINE_END = /\r\n|\r|\n/g;
+
+function splitLines(text: string): { readonly lines: string[]; readonly terminators: string[] } {
+  const lines: string[] = [];
+  const terminators: string[] = [];
+  let start = 0;
+  for (const end of text.matchAll(LINE_END)) {
+    lines.push(text.slice(start, end.index));
+    terminators.push(end[0]);
+    start = end.index + end[0].length;
+  }
+  lines.push(text.slice(start));
+  terminators.push('');
+  return { lines, terminators };
 }
 
 export function maskMarkdownCodeContexts(text: string): CodeContextMask {
-  const lines = text.split('\n');
+  const { lines, terminators } = splitLines(text);
   const out: string[] = [];
   let fences = 0;
   let spans = 0;
@@ -142,5 +170,5 @@ export function maskMarkdownCodeContexts(text: string): CodeContextMask {
 
   if (fence !== undefined) return { kind: 'malformed', reason: 'unclosed-fence', line: fence.line };
   if (span !== undefined) return { kind: 'malformed', reason: 'unclosed-inline-span', line: span.line };
-  return { kind: 'masked', masked: out.join('\n'), fences, spans };
+  return { kind: 'masked', masked: out.map((line, index) => line + (terminators[index] ?? '')).join(''), fences, spans };
 }
