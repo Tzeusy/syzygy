@@ -6,6 +6,8 @@
 // per-class denominators over every fixture, and the module must yield no
 // partial set on any malformed fixture.
 
+import { isDeepStrictEqual } from 'node:util';
+
 import { describe, expect, it } from 'vitest';
 
 import { EXTRACTION_CLASSES, type ExtractionClass } from './project-shape-manifest.js';
@@ -1125,4 +1127,43 @@ describe('PWB-REQ-006 (amended) — the root index charges one fact-and-preceden
     expect(r).toEqual({ kind: 'over-limit', path: root.path, classes: [], pass: 'fact-and-precedence-extraction', breach });
     expect('rootIndex' in r).toBe(false);
   });
+});
+
+// GP-B2 Q1 (syzygy-bpyt.1.18): the class results are appended one item at a time, not by one spread call whose argument count is the
+// class's item count. A call spreading 130,000 items or more overflows the stack on node 24 with the default stack.
+describe('a source whose class holds 130,000 items', () => {
+  const BULLETS = 130_000;
+  const CLASSES = ['project-account-section', 'principle', 'success-criterion'] as const;
+  const section = ['## What Success Looks Like', '', ...Array.from({ length: BULLETS }, () => '- x'), ''].join('\n');
+  const long = VISION.replace(/## What Success Looks Like[\s\S]*?(?=## What Butlers Is Not)/, `${section}\n`);
+
+  // These sizes pin the fix only where one spread call over them overflows: a larger stack (a worker-thread pool runs at
+  // 4 MB) lets the old line pass every test here. This canary fails first if the test process stops overflowing.
+  it('one spread call over 130,002 arguments still overflows the stack in this test process', () => {
+    const sink: unknown[] = [];
+    expect(() => sink.push(...new Array<unknown>(BULLETS + 2))).toThrow(RangeError);
+  });
+
+  it('is extracted, every item kept in class order', () => {
+    const r = extractSource({ path: 'heart-and-soul/vision.md', extractionClasses: [...CLASSES] }, long);
+    expect(r.kind).toBe('extracted');
+    if (r.kind !== 'extracted') return;
+    expect(r.denominators['success-criterion']).toBe(BULLETS);
+    // Class order with the text as the oracle, not the module: the bullets sit on consecutive lines, so their items must too.
+    const success = r.items.filter((item) => item.class === 'success-criterion');
+    const first = success[0]?.line ?? 0;
+    expect(success.every((item, at) => item.line === first + at), 'the success-criterion items are not in line order').toBe(true);
+    expect(r.items).toHaveLength(Object.values(r.denominators).reduce((sum, n) => sum + n, 0));
+    // One class alone gives the same items as its slice of the three-class result.
+    let offset = 0;
+    for (const cls of CLASSES) {
+      const alone = extractSource({ path: 'heart-and-soul/vision.md', extractionClasses: [cls] }, long);
+      expect(alone.kind).toBe('extracted');
+      if (alone.kind !== 'extracted') return;
+      expect(r.denominators[cls]).toBe(alone.items.length);
+      expect(isDeepStrictEqual(r.items.slice(offset, offset + alone.items.length), alone.items), `${cls} items differ from its one-class result`).toBe(true);
+      offset += alone.items.length;
+    }
+    expect(offset).toBe(r.items.length);
+  }, 30_000);
 });

@@ -116,7 +116,8 @@ export function maskMarkdownCodeContexts(text: string): CodeContextMask {
     if (fence !== undefined) {
       pending.push(line);
       if (fenceCloser(line, fence.char, fence.length)) {
-        out.push(...pending.map(blank));
+        // One line at a time: a spread argument list is bounded by the stack, and a fence may hold any number of lines.
+        for (const pendingLine of pending) out.push(blank(pendingLine));
         pending = [];
         fence = undefined;
         fences += 1;

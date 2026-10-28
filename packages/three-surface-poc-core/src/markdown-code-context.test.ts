@@ -234,3 +234,43 @@ describe('closed-pwb-code-context-v1 — vocabulary and empty input', () => {
     expect(masked('# Title\n\nplain\n')).toBe('# Title\n\nplain\n');
   });
 });
+
+// GP-B2 Q1 (syzygy-bpyt.1.18): the closed fence is blanked line by line, not by one spread call whose argument count is the fence's line
+// count. A call that spreads about 125,000 lines or more (the boundary moves with the process and its stack depth) overflows the stack
+// on node 24 with the default stack, whatever the line end.
+describe('a very long closed fence', () => {
+  const LONG_ENDS: readonly (readonly [string, string])[] = [['LF', '\n'], ['CRLF', '\r\n'], ['CR', '\r']];
+  const LINES = 200_000;
+
+  // These sizes pin the fix only where one spread call over them overflows: a larger stack (a worker-thread pool runs at
+  // 4 MB) lets the old line pass every test here. This canary fails first if the test process stops overflowing.
+  it('one spread call over 200,002 arguments still overflows the stack in this test process', () => {
+    const sink: unknown[] = [];
+    expect(() => sink.push(...new Array<unknown>(LINES + 2))).toThrow(RangeError);
+  });
+
+  it.each(LONG_ENDS)('%s: 200,000 lines are blanked, every line end and the text after the fence kept', (_name, end) => {
+    const text = `\`\`\`${end}${`x${end}`.repeat(LINES)}\`\`\`${end}after`;
+    const got = maskMarkdownCodeContexts(text);
+    expect(got.kind).toBe('masked');
+    if (got.kind !== 'masked') return;
+    expect([got.fences, got.spans]).toEqual([1, 0]);
+    // Booleans, not toBe: a failing diff of a 600 KB string is unreadable.
+    expect(got.masked === `   ${end}${` ${end}`.repeat(LINES)}   ${end}after`, 'the masked text differs from every non-terminator byte blanked').toBe(true);
+  });
+
+  it.each(LONG_ENDS)('%s: a script element inside the fence is blanked, and the line after the fence keeps its own', (_name, end) => {
+    const text = `\`\`\`${end}<script>${end}${`x${end}`.repeat(LINES)}\`\`\`${end}<script>`;
+    const got = maskMarkdownCodeContexts(text);
+    expect(got.kind).toBe('masked');
+    if (got.kind !== 'masked') return;
+    expect(got.masked.endsWith(`${end}<script>`)).toBe(true);
+    expect(got.masked.slice(0, got.masked.length - 8).trim()).toBe('');
+  });
+
+  // States that nothing new is refused: an unclosed fence never reaches the blanking loop, so these pass at the base too.
+  it.each(LONG_ENDS)('%s: the same lines left unclosed are still malformed at the opener', (_name, end) => {
+    const text = `\`\`\`${end}${`x${end}`.repeat(LINES)}`;
+    expect(malformed(text)).toEqual({ reason: 'unclosed-fence', line: 1 });
+  });
+});
