@@ -42,7 +42,7 @@ const EXCLUDES: Readonly<Record<string, readonly string[]>> = {
   'packages/polaris-dossier': ['src/**/*.test.ts', 'src/child-process.testkit.ts', 'src/fs-patch.testkit.ts'],
   'packages/polaris-generation-consent': ['src/**/*.test.ts'],
   'packages/polaris-generation-core': ['src/**/*.test.ts', 'src/**/*.testkit.ts'],
-  'packages/support': ['src/**/*.test.ts'],
+  'packages/support': ['src/**/*.test.ts', 'src/**/*.testkit.ts'],
   'packages/three-surface-poc-core': ['src/**/*.test.ts', 'src/test-cleanup.ts', 'src/test-frozen.ts'],
 };
 const tracked = execFileSync('git', ['-C', ROOT, 'ls-files', '-z', '--', 'apps', 'packages'], { encoding: 'utf8' }).split('\0').filter((path) => path !== '');

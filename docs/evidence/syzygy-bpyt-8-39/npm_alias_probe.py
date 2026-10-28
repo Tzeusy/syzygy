@@ -5,8 +5,10 @@ a spec; this observes what npm then installs.
 Each case is a fresh project of three workspaces: `w` named `wlib` and `s` named `@syzygy/slib`, both at version 1.0.0, and `app`.
 The case's one dependency is declared in `app`'s manifest, in the root's (round 2: npm treats the root's differently), or in both
 (round 3: npm skips the root's and reads `app`'s by its own range). Every npm call, the version call included, runs offline, with a
-private empty cache, an empty user and global config, an empty scratch HOME,
-no inherited npm_config_* variable, and a registry of http://127.0.0.1:9/, so nothing is fetched and no npmrc of the host is read.
+private empty cache, an empty user and global config, an empty scratch HOME, no inherited npm_config_* variable, a registry of
+http://127.0.0.1:9/ and a working directory inside the scratch directory, so nothing is fetched and the one npmrc outside the scratch
+directory npm opens is its own builtin `<npm>/npmrc` (absent here). The version calls ran in the caller's directory, and so read
+its `.npmrc`, until syzygy-bpyt.39 (the round-3 review's N3); docs/evidence/syzygy-bpyt-39/ traces the files npm opens.
 A registry fetch shows as ENOTCACHED, with the URL npm would have requested. A link shows as a lockfile entry with `link: true`;
 the case then installs in full, and records where `node_modules/<name>` points and which package.json Node loads for the name from
 inside `app`. arborist's version is read beside the npm on PATH, found by resolving `npm` itself.
@@ -90,7 +92,7 @@ for index, (shows, where, name, spec) in enumerate(CASES):
                     'lockExit': lock.returncode, 'errorCode': code, 'wouldRequest': request, 'lockEntry': entry, 'installExit': install,
                     'installedLink': link, 'appLoads': loads})
     print(index, shows, '|', lock.returncode, code, request, entry, link, loads, flush=True)
-version = lambda *args: subprocess.run(args, capture_output=True, text=True, env=ENV).stdout.strip()
+version = lambda *args: subprocess.run(args, cwd=scratch, capture_output=True, text=True, env=ENV).stdout.strip()
 npm_dir = os.path.dirname(os.path.dirname(os.path.realpath(shutil.which('npm', path=ENV['PATH']))))  # <npm>/bin/npm-cli.js
 arborist = json.load(open(os.path.join(npm_dir, 'node_modules', '@npmcli', 'arborist', 'package.json')))['version']
 with open(out, 'w') as fh:
