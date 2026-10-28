@@ -418,6 +418,60 @@ describe('active content is rejected and never reaches a sink', () => {
   });
 });
 
+// syzygy-bpyt.16 (ruled on syzygy-bpyt.1.14): the reader hands a blob's decoded text to the scan with its line ends as they are, and the
+// code-context mask ends a line at CRLF, CR and LF alike, so a CRLF or CR blob gets the outcome its LF form gets. The first text was
+// admitted under CRLF and CR before the fix (a backtick opener whose info text holds a backtick, hiding a script element as an inline
+// span); the second was excluded (a tilde fence that the mask did not recognize, leaving the script element it holds in the open).
+describe('a CRLF or CR blob gets the outcome its LF form gets', () => {
+  const FAIL_OPEN = ['# Doc', '', '```a`b', '<script>alert(1)</script>', '```', ''];
+  const BENIGN = ['# Doc', '', '~~~', '<script>alert(1)</script>', '~~~', 'after', ''];
+  const ENDS: readonly (readonly [string, string])[] = [['LF', '\n'], ['CRLF', '\r\n'], ['CR', '\r']];
+
+  function readOne(text: string): ReturnType<ExactObjectReader['read']> {
+    const bytes = enc.encode(text);
+    const oid = sha1Blob(bytes);
+    const entry: GitTreeEntry = { mode: '100644', type: 'blob', objectId: oid, sizeBytes: bytes.byteLength, path: 'notes/line-ends.md' };
+    const runGit = (args: readonly string[]): Uint8Array => {
+      if (args.length !== 3 || args[0] !== 'cat-file' || args[1] !== 'blob' || args[2] !== oid) throw new Error(`spy: request escaped the object reader: git ${args.join(' ')}`);
+      return bytes;
+    };
+    return createExactObjectReader({ runGit, tree: indexGitTree([entry]), resourceLimits: PWB_RESOURCE_LIMITS }).read('notes/line-ends.md');
+  }
+
+  it.each(ENDS)('%s: a backtick opener whose info text holds a backtick is excluded as a malformed code context, with a body-free record', (_name, end) => {
+    const text = FAIL_OPEN.join(end);
+    const result = readOne(text);
+    expect(result.kind).toBe('unavailable');
+    expect(result.record.outcome).toBe('active-content');
+    expect(result.record.activeContent).toEqual([{ form: 'malformed-code-context', line: 3, column: 1, context: 'backtick-fence-with-backtick-in-info-string' }]);
+    expect(result.record.bytes).toBe(enc.encode(text).byteLength);
+    expect(JSON.stringify(result)).not.toContain('alert(1)');
+  });
+
+  it.each(ENDS)('%s: a script element inside a closed tilde fence reads as text, byte for byte', (_name, end) => {
+    const text = BENIGN.join(end);
+    const result = readOne(text);
+    expect(result.kind).toBe('text');
+    expect(result.record.outcome).toBe('read');
+    expect(result.record.activeContent).toBeUndefined();
+    if (result.kind === 'text') expect(result.text).toBe(text);
+  });
+});
+
+// GAP, for the line-model follow-up of syzygy-bpyt.16: positionOf counts LF only, so a CRLF text reports its LF form's positions and
+// a bare-CR text reports line 1 with the offset as column, while a malformed finding takes the mask's line, which counts every line end.
+describe('reported positions in CRLF and bare-CR texts', () => {
+  it('CRLF as LF; a bare CR counted by the malformed line only', () => {
+    expect(scanActiveContent('a\r\n<script>x</script>')).toEqual([{ form: 'script-element', line: 2, column: 1 }, { form: 'script-element', line: 2, column: 10 }]);
+    expect(scanActiveContent('a\r<script>x</script>')).toEqual([{ form: 'script-element', line: 1, column: 3 }, { form: 'script-element', line: 1, column: 12 }]);
+    expect(scanActiveContent('a\rb\r`x')).toEqual([{ form: 'malformed-code-context', line: 3, column: 1, context: 'unclosed-inline-span' }]);
+  });
+
+  it('U+2028 is line content: an LF text reports its finding on line 1', () => {
+    expect(scanActiveContent('a\u2028<script>x</script>')).toEqual([{ form: 'script-element', line: 1, column: 3 }, { form: 'script-element', line: 1, column: 12 }]);
+  });
+});
+
 describe('declared resource limits are evaluation inputs', () => {
   it('evaluateLimit: at the limit passes, one over breaches, for every declared limit', () => {
     const limits: PwbResourceLimits = { maxSources: 3, maxBytesPerSource: 10, maxTotalBytes: 20, maxIndexDepth: 4, maxParsePassesPerSource: 16, maxHumanResponseBytes: 100, maxMachineResponseBytes: 400 };
