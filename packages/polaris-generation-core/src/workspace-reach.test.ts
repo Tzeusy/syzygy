@@ -2,7 +2,7 @@ import { readFileSync } from 'node:fs';
 import { join, posix } from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { describe, expect, it } from 'vitest';
-import { ROOT, WORKSPACE, resolve, resolveIn, type Manifest, type Workspace } from './workspace-reach.testkit.js';
+import { ROOT, WORKSPACE, entryModulesIn, resolve, resolveIn, type Manifest, type Workspace } from './workspace-reach.testkit.js';
 
 // syzygy-bpyt.8.36 (the review of 8.34, N1): the resolver both reach guards share reads a specifier it cannot follow as Node would
 // as naming no module, so their "resolves every" rows fail on it rather than passing it as outside the workspace. The tree holds no
@@ -183,4 +183,25 @@ describe("the tree's own exports", () => {
       expect(await import(specifier), specifier).toBe(await import(pathToFileURL(join(ROOT, source)).href));
     }
   }, 60_000);
+});
+
+// syzygy-bpyt.46: the entries the S10 bundle aliases by.
+describe('the workspace entry modules', () => {
+  it('reads each entry of each package, its main where it has no exports, as the src module it names', () => {
+    expect(entryModulesIn(workspace({}))).toEqual({
+      '@syzygy/app': 'apps/app/src/main.ts', '@syzygy/lib': 'packages/lib/src/index.ts', '@syzygy/lib/argv': 'packages/lib/src/argv.ts',
+    });
+  });
+
+  it('throws on an entry the resolver cannot read', () => {
+    expect(() => entryModulesIn(workspace({}, './lib/index.js'))).toThrow('@syzygy/lib: its entry is not a ./dist/X.js whose src/X.ts exists');
+  });
+
+  it('throws on a /../ segment that the resolver would join away, since Node refuses the entry', () => {
+    // The resolver alone reads the entry as the module it joins to, so the throw is the entry reader's own (the PR 545 round-1 review's N6).
+    expect(resolveIn(workspace({}, './dist/x/../index.js'), 'apps/app/src/main.ts', '@syzygy/lib')).toBe('packages/lib/src/index.ts');
+    expect(() => entryModulesIn(workspace({}, './dist/x/../index.js'))).toThrow('@syzygy/lib: its entry has a /../ segment, which Node refuses');
+    expect(() => entryModulesIn(workspace({}, { types: './dist/index.d.ts', import: './dist/x/../index.js', default: './dist/x/../index.js' })))
+      .toThrow('@syzygy/lib: its entry has a /../ segment, which Node refuses');
+  });
 });
