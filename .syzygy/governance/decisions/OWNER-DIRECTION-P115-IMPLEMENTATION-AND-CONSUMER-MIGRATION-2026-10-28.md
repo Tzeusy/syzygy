@@ -20,8 +20,9 @@ The actual question was:
 The other offered options were B — Defer implementation and C — Revise the scope.
 The selected packet is `p115-implementation-packet-2026-10-27-r1`.
 Its exact packet, owned files, test plan, questionnaires, original manifest,
-independent raw review and actual answer are retained under
+and actual answer are retained under
 `docs/evidence/p115-implementation-authorization-2026-10-28/`.
+The independent raw review is `docs/reviews/R-P115-IMPLEMENTATION-OWNER-OFFERING-RAW.md`.
 `RETENTION.json` identifies the selected copies; historical prepared banners
 remain unchanged. The fresh owner-offering review's verdicts are
 **Scope verdict: Pass** and **Recommendation verdict: Pass**.

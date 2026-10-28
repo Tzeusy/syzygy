@@ -7,3 +7,5 @@ The packet, questionnaire and raw review are exact historical copies. Their pend
 The recording does not assert implementation, runtime conformance, payload savings or complete v1 readiness. Those remain separate verification outcomes.
 
 Two proposed documents are retained as plain text, with their original filenames in `RETENTION.json`, because their exact historical bytes refer to paths that the future implementation would create. Their bytes are unchanged; they are evidence of the approved proposal, not current navigation.
+
+The independent offering review is retained verbatim in the repository raw-review home, `docs/reviews/R-P115-IMPLEMENTATION-OWNER-OFFERING-RAW.md`. Its original local source paths describe review-time evidence; they are not checkout navigation.
