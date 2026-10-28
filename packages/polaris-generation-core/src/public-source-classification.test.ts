@@ -197,6 +197,11 @@ describe('reading the rule', () => {
     ['a separator that is a slash', withPrefix('separator', '/')],
     ['an optional flag that is a string', withPrefix('optional', 'true')],
     ['no prefix object', withField('rootStemNumericPrefix', null)],
+    ['a prefix that is an array carrying the fields', withField('rootStemNumericPrefix', Object.assign([], LIVE_DOC['rootStemNumericPrefix']))],
+    ['a prefix that is a string', withField('rootStemNumericPrefix', 'x')],
+    ['a path rule that is null', withField('pathRules', [null, ...(LIVE_DOC['pathRules'] as unknown[]).slice(1)])],
+    ['a path rule that is a string', withField('pathRules', ['x', ...(LIVE_DOC['pathRules'] as unknown[]).slice(1)])],
+    ['a path rule that is an array carrying the fields', withField('pathRules', [Object.assign([], (LIVE_DOC['pathRules'] as unknown[])[0]), ...(LIVE_DOC['pathRules'] as unknown[]).slice(1)])],
     ['no root stems', withField('rootStems', [])],
     ['an upper-case root stem', withField('rootStems', ['README'])],
     ['an empty root stem', withField('rootStems', [''])],
@@ -224,6 +229,16 @@ describe('reading the rule', () => {
     ['no licenses suffixes', withField('licenseTreeSuffixes', [])],
   ])('refuses %s', (_name, doc) => {
     expect(read(doc)).toMatchObject({ ok: false, why: expect.stringMatching(/^its project-documentation rule /u) });
+  });
+
+  // The object test in @syzygy/support decides which rules entries are rules at all (syzygy-bpyt.6.3 stack 4): an entry that is not an object
+  // is not the project-documentation rule and is passed over, never read and never thrown on; an array that carries the class by name is still
+  // an array.
+  it('passes over a rules entry that is not an object, as if it were not there', () => {
+    const others = RULES.filter(rule => rule['class'] !== 'project-documentation');
+    const noise = [null, 'x', 1, true, [], Object.assign([], { class: 'project-documentation' })];
+    expect(readProjectDocumentationRule([...noise, ...others, LIVE_DOC], LIVE_EXTENSIONS)).toEqual(read());
+    expect(readProjectDocumentationRule([...noise, ...others], LIVE_EXTENSIONS)).toEqual({ ok: true, rule: null });
   });
 
   it('refuses two project-documentation rules', () => {

@@ -1,4 +1,4 @@
-import { sha256 } from '@syzygy/support';
+import { isRecord, sha256 } from '@syzygy/support';
 
 import { digestCanonicalJson } from './canonical-json.js';
 import { parseBoundedJson } from './parse-json.js';
@@ -47,7 +47,6 @@ export interface DossierManifest {
   readonly pages: readonly { readonly path: string; readonly depth: number }[];
 }
 
-const isRecord = (value: unknown): value is Record<string, unknown> => value !== null && typeof value === 'object' && !Array.isArray(value);
 const onlyKeys = (value: Record<string, unknown>, keys: readonly string[]): boolean => Object.keys(value).every(key => keys.includes(key));
 const handle = /^[A-Za-z0-9][A-Za-z0-9_.:-]{0,99}$/u;
 
