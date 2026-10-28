@@ -3,8 +3,8 @@
 // The scratch dir is created fresh (it must not exist); the head dist is copied into it with node_modules linked beside it, one
 // mutation is applied to the copy, and the differential runs against it. A mutation is killed when the differential exits 1 and
 // its failures include the predicate the mutation targets; `exact` records whether no other check failed with it (a changed line
-// split moves every later check too, so only S1, S4, S5 and S6 isolate their predicate). S5 and S6 widen the line split to the
-// JavaScript line-terminator set and to U+0085: only the separator slice of C1 holds a text with those characters, so a kill
+// split moves every later check too, so only S1, S4, S5, S6 and S7 isolate their predicate). S5, S6 and S7 widen the line split to the
+// JavaScript line-terminator set, to U+0085 and to VT and FF: only the separator slice of C1 holds a text with those characters, so a kill
 // there proves the slice is live (R-GP-IMPL-CRLF-MASK-1, F1).
 import { execFileSync } from 'node:child_process';
 import { cpSync, existsSync, mkdirSync, readFileSync, rmSync, symlinkSync, writeFileSync } from 'node:fs';
@@ -24,6 +24,7 @@ const MUTANTS = [
   ['S4', 'C4 CRLF positions', 'git-object-reader.js', 'if (text.charCodeAt(i) === 10) {', 'if (text.charCodeAt(i) === 10 || text.charCodeAt(i) === 13) {', ['C4']],
   ['S5', 'C1 LF unchanged (separator slice)', 'markdown-code-context.js', 'const LINE_END = /\\r\\n|\\r|\\n/g;', 'const LINE_END = /\\r\\n|[\\r\\n\\u2028\\u2029]/g;', ['C1']],
   ['S6', 'C1 LF unchanged (separator slice)', 'markdown-code-context.js', 'const LINE_END = /\\r\\n|\\r|\\n/g;', 'const LINE_END = /\\r\\n|\\r|\\n|\\x85/g;', ['C1']],
+  ['S7', 'C1 LF unchanged (separator slice)', 'markdown-code-context.js', 'const LINE_END = /\\r\\n|\\r|\\n/g;', 'const LINE_END = /\\r\\n|[\\r\\n\\v\\f]/g;', ['C1']],
 ];
 
 const results = [];

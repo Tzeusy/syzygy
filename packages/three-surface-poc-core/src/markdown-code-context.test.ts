@@ -173,6 +173,23 @@ describe('closed-pwb-code-context-v1 — CRLF, CR and LF each end one line', () 
     for (const separator of ['\u2028', '\u2029', '\u0085']) expect(masked(`a \`b${separator}c\` d`), JSON.stringify(separator)).toBe('a       d');
   });
 
+  // The same three at a fence position: a closer followed by a separator is a closer followed by text, so the fence stays unclosed.
+  it('U+2028, U+2029 and U+0085 after a closing fence are line content: the fence stays unclosed', () => {
+    for (const separator of ['\u2028', '\u2029', '\u0085']) expect(malformed(['```', 'x', '```' + separator].join('\n')), JSON.stringify(separator)).toEqual({ reason: 'unclosed-fence', line: 1 });
+  });
+
+  // Every other UTF-16 code unit is line content too, so a line end widened past the three above (VT, FF, or U+001C to U+001E as
+  // Python's str.splitlines reads them) fails here; the failure lists, in hex, each unit the mask kept as a line end.
+  it('no code unit but CR and LF ends a line', () => {
+    const kept: string[] = [];
+    for (let unit = 0; unit <= 0xffff; unit += 1) {
+      if (unit === 0x0a || unit === 0x0d || unit === 0x60) continue;
+      const mask = maskMarkdownCodeContexts(`a \`b${String.fromCharCode(unit)}c\` d`);
+      if (mask.kind !== 'masked' || mask.masked !== 'a       d') kept.push(unit.toString(16));
+    }
+    expect(kept).toEqual([]);
+  });
+
   // This test compares a rendering with another, so it proves equality, not correctness: the literals above and the fixtures at the
   // call sites pin the values.
   it('a CRLF or CR text gets the structure its LF form gets, for every case here', () => {

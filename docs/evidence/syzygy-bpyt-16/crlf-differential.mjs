@@ -12,8 +12,8 @@
 //
 // For every text T, with L its LF form (the same lines, every terminator replaced by LF):
 //   C1  LF unchanged     scanActiveContent(L) and maskMarkdownCodeContexts(L) are deep-equal at BASE and HEAD. It runs over the distinct
-//                        LF forms of the rows above and over the separator slice below: LF texts whose lines hold U+2028, U+2029
-//                        and U+0085 at fence and span positions (line content under the ruling; a split widened to them, as
+//                        LF forms of the rows above and over the separator slice below: LF texts whose lines hold U+2028, U+2029,
+//                        U+0085, VT and FF at fence and span positions (line content under the ruling; a split widened to them, as
 //                        a maintainer completing the line-terminator set would write it, changes those texts' decisions).
 //   C2  rendering equals LF   at HEAD, T decides exactly as L: the same multiset of findings (form, context, and the line of a
 //                        malformed finding), and an equal mask (kind, fences, spans, reason, line; the masked text equal once
@@ -208,11 +208,12 @@ for (const text of lfTexts) {
   }
 }
 
-// The separator slice of C1: U+2028, U+2029 and U+0085 are line content, not line ends (the ruling leaves every LF reading as it was).
+// The separator slice of C1: U+2028, U+2029, U+0085, VT (U+000B) and FF (U+000C) are line content, not line ends (the ruling leaves
+// every LF reading as it was).
 // Each case of the three corpora (the vet's, the fence probe's, the N2 shapes) is joined, with and without a script element as a last
 // line, by the separator in place of every LF at once, with the separator in place of one LF, and with the separator appended to or
 // prepended to one line. No text holds a CR.
-const SEPARATORS = ['\u2028', '\u2029', '\u0085'];
+const SEPARATORS = ['\u2028', '\u2029', '\u0085', '\u000b', '\u000c'];
 const separatorSlice = (() => {
   const texts = new Set();
   for (const lines of [...VET_CASES, ...FENCE_CASES, ...N2_CASES].map((c) => c.lines)) {
@@ -350,7 +351,7 @@ const result = {
     fence: { cases: FENCE_CASES.length },
     n2: { cases: N2_CASES.length },
     renderings: Object.keys(RENDERINGS),
-    separatorSlice: { separators: SEPARATORS.map((sep) => `U+${sep.charCodeAt(0).toString(16).toUpperCase().padStart(4, '0')}`), texts: separatorSlice.length, excludedByHead: separatorSlice.filter((t) => excluded(measure('head', t).findings)).length },
+    separatorSlice: { separators: SEPARATORS.map((sep) => `U+${sep.charCodeAt(0).toString(16).toUpperCase().padStart(4, '0')}`), texts: separatorSlice.length, holdingEach: Object.fromEntries(SEPARATORS.map((sep) => [`U+${sep.charCodeAt(0).toString(16).toUpperCase().padStart(4, '0')}`, separatorSlice.filter((t) => t.includes(sep)).length])), holdingNone: separatorSlice.filter((t) => !SEPARATORS.some((sep) => t.includes(sep))).length, excludedByHead: separatorSlice.filter((t) => excluded(measure('head', t).findings)).length },
   },
   checks: {
     C1_lfUnchanged: { texts: lfTexts.length, separatorSliceTexts: separatorSlice.length, failures: byCheck('C1') },

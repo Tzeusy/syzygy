@@ -15,8 +15,10 @@ BASE is the whole mask file of the base commit: the new tests must fail on it (t
 is argued, not run to a verdict: it is expected to survive, and the argument is stored beside it.
 Each row stores the old and new fragments, the code commit it ran at and the sha256 of the mutated file, so it can be re-run.
 A mutant changes the mask file unless TARGET names another file for it (MU20 and MU21 change positionOf in the reader). A mutant
-listed in KILLER must be killed by that one test and no other: the row stores every failing test, and the run exits 1 otherwise
-(MU17 to MU19 by the U+2028 / U+2029 / U+0085 pin, MU20 and MU21 by the GAP pin on reported positions; R-GP-IMPL-CRLF-MASK-1).
+listed in KILLER must be killed by its listed pins and no other test: the row stores every failing test, and the run exits 1 otherwise
+(MU17 to MU19 by the U+2028 / U+2029 / U+0085 pin, the general pin and the fence-position pin, MU20 and MU21 by the GAP pin on reported positions;
+R-GP-IMPL-CRLF-MASK-1; MU22 by the general pin alone, MU23 by the fence-position pin alone, MU24 by the U+2028 position pin alone;
+R-GP-IMPL-CRLF-MASK-2).
 """
 import argparse
 import hashlib
@@ -67,19 +69,30 @@ MUTANTS = [
     ('MU17-u2028-is-a-line-end', [(LINE_END, 'const LINE_END = /\\r\\n|\\r|\\n|\\u2028/g;')], 'U+2028 ends a line: changes LF texts that hold one'),
     ('MU18-nel-is-a-line-end', [(LINE_END, 'const LINE_END = /\\r\\n|\\r|\\n|\\x85/g;')], 'U+0085 ends a line: changes LF texts that hold one'),
     ('MU19-js-line-terminators', [(LINE_END, 'const LINE_END = /\\r\\n|[\\r\\n\\u2028\\u2029]/g;')], 'the JavaScript line-terminator set'),
+    ('MU22-vt-ff-are-line-ends', [(LINE_END, 'const LINE_END = /\\r\\n|[\\r\\n\\v\\f]/g;')], 'RW3 of R-GP-IMPL-CRLF-MASK-2: VT and FF end a line, a widening to "the other vertical whitespace": changes LF texts that hold one'),
+    ('MU23-closer-tolerates-separators', [(CLOSER, '/^ {0,3}(`{3,}|~{3,})[ \\u2028\\u2029\\u0085]*$/')], 'RW5 of R-GP-IMPL-CRLF-MASK-2: a closer that tolerates a trailing U+2028, U+2029 or U+0085 (a separator read as a line end at fence positions only): changes LF texts that hold one'),
+    ('MU24-positionOf-counts-u2028', [(POSITION_OF, 'if (text.charCodeAt(i) === 10 || text.charCodeAt(i) === 0x2028) {')], 'RW10 of R-GP-IMPL-CRLF-MASK-2: positionOf counts U+2028 as a line end: moves an LF finding position'),
     ('MU20-positionOf-counts-bare-cr', [(POSITION_OF, 'if (text.charCodeAt(i) === 10 || (text.charCodeAt(i) === 13 && text.charCodeAt(i + 1) !== 10)) {')], 'positionOf counts a bare CR as a line end: renumbers non-malformed findings in bare-CR texts (reviewer RM8)'),
     ('MU21-positionOf-counts-every-cr', [(POSITION_OF, 'if (text.charCodeAt(i) === 10 || text.charCodeAt(i) === 13) {')], 'positionOf counts every CR as a line end: renumbers CRLF and CR findings (reviewer RM10)'),
 ]
 EQUIVALENT = {'MU16-blank-keeps-nothing-but-lf'}
-TARGET = {'MU20-positionOf-counts-bare-cr': READER, 'MU21-positionOf-counts-every-cr': READER}
+TARGET = {'MU20-positionOf-counts-bare-cr': READER, 'MU21-positionOf-counts-every-cr': READER, 'MU24-positionOf-counts-u2028': READER}
 PIN_LINE_CONTENT = 'U+2028, U+2029 and U+0085 are line content, not line ends'
 PIN_POSITIONS = 'CRLF as LF; a bare CR counted by the malformed line only'
+PIN_GENERAL = 'no code unit but CR and LF ends a line'
+PIN_FENCE_SEPARATORS = 'U+2028, U+2029 and U+0085 after a closing fence are line content: the fence stays unclosed'
+PIN_POSITION_U2028 = 'U+2028 is line content: an LF text reports its finding on line 1'
+# id -> the pins that may fail it; the first is the one it is expected to be killed by, and the run exits 1 unless every failing test
+# is one of them. Since round 2 the general pin covers every code unit the F1 pin names and the fence-position pin the three separators at a closer, so MU17 to MU19 fail all three.
 KILLER = {
-    'MU17-u2028-is-a-line-end': PIN_LINE_CONTENT,
-    'MU18-nel-is-a-line-end': PIN_LINE_CONTENT,
-    'MU19-js-line-terminators': PIN_LINE_CONTENT,
-    'MU20-positionOf-counts-bare-cr': PIN_POSITIONS,
-    'MU21-positionOf-counts-every-cr': PIN_POSITIONS,
+    'MU17-u2028-is-a-line-end': [PIN_LINE_CONTENT, PIN_GENERAL, PIN_FENCE_SEPARATORS],
+    'MU18-nel-is-a-line-end': [PIN_LINE_CONTENT, PIN_GENERAL, PIN_FENCE_SEPARATORS],
+    'MU19-js-line-terminators': [PIN_LINE_CONTENT, PIN_GENERAL, PIN_FENCE_SEPARATORS],
+    'MU20-positionOf-counts-bare-cr': [PIN_POSITIONS],
+    'MU21-positionOf-counts-every-cr': [PIN_POSITIONS],
+    'MU22-vt-ff-are-line-ends': [PIN_GENERAL],
+    'MU23-closer-tolerates-separators': [PIN_FENCE_SEPARATORS],
+    'MU24-positionOf-counts-u2028': [PIN_POSITION_U2028],
 }
 
 
@@ -183,9 +196,10 @@ def main():
                 'detectors': result,
             }
             if mid in KILLER:
-                row['expectedKiller'] = KILLER[mid]
+                row['expectedKillers'] = KILLER[mid]
                 row['failingTests'] = every_failure
-                row['killedByExpectedKillerOnly'] = bool(every_failure) and all(KILLER[mid] in name for name in every_failure)
+                row['killedByExpectedKillerOnly'] = bool(every_failure) and all(any(pin in name for pin in KILLER[mid]) for name in every_failure)
+                row['failingPins'] = [pin for pin in KILLER[mid] if any(pin in name for name in every_failure)]
             rows.append(row)
             print(mid, outcome, {k: v['failed'] for k, v in result.items()}, flush=True)
     finally:

@@ -466,6 +466,10 @@ describe('reported positions in CRLF and bare-CR texts', () => {
     expect(scanActiveContent('a\r<script>x</script>')).toEqual([{ form: 'script-element', line: 1, column: 3 }, { form: 'script-element', line: 1, column: 12 }]);
     expect(scanActiveContent('a\rb\r`x')).toEqual([{ form: 'malformed-code-context', line: 3, column: 1, context: 'unclosed-inline-span' }]);
   });
+
+  it('U+2028 is line content: an LF text reports its finding on line 1', () => {
+    expect(scanActiveContent('a\u2028<script>x</script>')).toEqual([{ form: 'script-element', line: 1, column: 3 }, { form: 'script-element', line: 1, column: 12 }]);
+  });
 });
 
 describe('declared resource limits are evaluation inputs', () => {

@@ -2,14 +2,18 @@
 """Builds crlf-mask-2026-10-27.json, the record of syzygy-bpyt.16, from the outputs beside it. Every digest and total is computed.
 
 Usage: build-record.py <git repo> <base commit> <code commit> <evidence dir> <repair commit> <remeasure base> <reviewed commit>
+                       <round-1 repair commit> <round-1 evidence commit>
   base, code   the parent of the fix and the fix commit: the subject of the production-file digests, the built modules and the
                digest-citer sweep
-  repair       the commit of the round-1 repair of R-GP-IMPL-CRLF-MASK-1 (two pins and the rows that measure them, no production
-               byte changed): the subject of the mutant runs, the differential builds and the test report
+  repair       the commit of the round-2 repair (R-GP-IMPL-CRLF-MASK-2), on top of the round-1 repair of R-GP-IMPL-CRLF-MASK-1: the
+               pins and the rows that measure them, no production byte changed. The subject of the mutant runs, the differential
+               builds and the test report
+  round-1 repair, round-1 evidence   the commit of the round-1 repair (224e8faa) and the commit that held its measurements
+               (561e4f77), the baseline of round 2
   remeasure base, reviewed   main as merged into the branch (f7ea8584) and the commit the review was bound to (c399eda9): the base
                of the test report and of the differential re-run, and the commit the repair range starts from
 Refuses (exit 1) unless the outputs say what the record is about to say: no differential failure, every non-equivalent mutant
-killed (MU17 to MU21 by their one pin), the self-test killing 6 of 6, the two digest-citer methods agreeing, the vet runner agreeing
+killed (MU17 to MU24, each only by its listed pins), the self-test killing 7 of 7, the two digest-citer methods agreeing, the vet runner agreeing
 at HEAD on every row, the repair touching no byte outside the two test files and docs/evidence, and the re-run differential equal
 to the one the review was bound to on every field but the separator slice.
 """
@@ -19,7 +23,7 @@ import os
 import subprocess
 import sys
 
-repo, base_arg, code_arg, evidence, repair_arg, remeasure_arg, reviewed_arg = sys.argv[1:]
+repo, base_arg, code_arg, evidence, repair_arg, remeasure_arg, reviewed_arg, round1_repair_arg, round1_evidence_arg = sys.argv[1:]
 MASK = 'packages/three-surface-poc-core/src/markdown-code-context.ts'
 REPAIR_TESTS = [
     'packages/three-surface-poc-core/src/git-object-reader.test.ts',
@@ -30,6 +34,15 @@ REVIEW_RAW = {
     'sha256': '1a2010ae4d7fe2de19aac036545b0ade689d69dcca0ef5c9f15333a161302964',
     'verdict': 'REVISE',
     'blockingFindings': ['F1'],
+    'inThisTree': False,
+}
+REVIEW_RAW_2 = {
+    'name': 'R-GP-IMPL-CRLF-MASK-2-RAW.md',
+    'sha256': '165b3f71212e914b8f3a36e642b8d440a36e74ed7176cbe938e4f26676c8647a',
+    'verdict': 'REVISE',
+    'blockingFindings': ['F1 (a figure in the PR body)'],
+    'notesTaken': ['N1', 'N2', 'N4', 'N5', 'N7'],
+    'notesNotTaken': {'N3': 'goes to syzygy-bpyt.41 (a mixed-terminator row)', 'N6': 'a note only: start-gates.test.ts exceeds its 5 s default under load, outside this PR'},
     'inThisTree': False,
 }
 
@@ -51,6 +64,8 @@ code = git('rev-parse', code_arg).decode().strip()
 repair = git('rev-parse', repair_arg).decode().strip()
 remeasure = git('rev-parse', remeasure_arg).decode().strip()
 reviewed = git('rev-parse', reviewed_arg).decode().strip()
+round1_repair = git('rev-parse', round1_repair_arg).decode().strip()
+round1_evidence = git('rev-parse', round1_evidence_arg).decode().strip()
 EVIDENCE_PATH = 'docs/evidence/syzygy-bpyt-16/'
 
 diff = load('crlf-differential-output.json')
@@ -64,8 +79,8 @@ if any(c['failures'] for c in diff['checks'].values()) or diff['failureCount'] !
     problems.append('the differential has failures')
 if mut['summary']['survived'] or mut['summary']['killed'] + mut['summary']['survivedEquivalent'] != mut['summary']['mutants']:
     problems.append('a non-equivalent mutant survived')
-if self_test['killed'] != self_test['total'] or self_test['total'] != 6:
-    problems.append('the differential self-test is not 6 of 6')
+if self_test['killed'] != self_test['total'] or self_test['total'] != 7:
+    problems.append('the differential self-test is not 7 of 7')
 # The sweep's subject is the digest of the edited file; the repair changes no production byte, so the sweep stands for the repair too.
 swept = {(d['at']): d['sha256'] for d in citers['digests']}
 if swept != {'base': sha(git('show', f'{base}:{MASK}')), 'head': sha(git('show', f'{repair}:{MASK}'))}:
@@ -79,8 +94,16 @@ if subprocess.run(['git', '-C', repo, 'merge-base', '--is-ancestor', reviewed, r
     problems.append('the reviewed commit is not an ancestor of the repair commit')
 if mut['summary']['codeCommit'] != repair:
     problems.append('the mutants ran at another commit than the repair commit')
-if mut['summary']['expectedKillerNotAlone'] or mut['summary']['killedByExpectedKillerOnly'] != 5:
-    problems.append('MU17 to MU21 are not each killed by their one pin')
+if mut['summary']['expectedKillerNotAlone'] or mut['summary']['killedByExpectedKillerOnly'] != 8:
+    problems.append('MU17 to MU24 are not each killed by their listed pins only')
+if [r['id'] for r in mut['rows'] if r.get('failingPins') == []]:
+    problems.append('a mutant with listed pins failed none of them')
+for r in mut['rows']:
+    if r['id'] in ('MU22-vt-ff-are-line-ends', 'MU23-closer-tolerates-separators', 'MU24-positionOf-counts-u2028') and (r['outcome'] != 'killed' or r['failingPins'] != r['expectedKillers'] or len(r['failingTests']) != 1):
+        problems.append(f'{r["id"]} is not killed by its one pin alone')
+vt_ff = load('vt-ff-slice-necessity.json')
+if vt_ff['toolWithoutVtFf']['exit'] != 0 or vt_ff['toolWithVtFf']['exit'] != 1:
+    problems.append('the VT/FF slice necessity record does not show the old tool surviving and the new tool failing')
 slice_checks = diff['checks']['C1_lfUnchanged']
 if not slice_checks.get('separatorSliceTexts'):
     problems.append('the differential has no separator slice')
@@ -122,6 +145,7 @@ for i in range(0, len(names) - 1, 2):
     before = git('show', f'{reviewed}:{path}')
     repair_changed.append({'path': path, 'status': status, 'bytesBefore': len(before), 'sha256Before': sha(before), 'bytesAtRepair': len(blob), 'sha256AtRepair': sha(blob)})
 previous_tests = json.loads(git('show', f'{reviewed}:{EVIDENCE_PATH}test-delta-output.json'))
+round1_tests = json.loads(git('show', f'{round1_evidence}:{EVIDENCE_PATH}test-delta-output.json'))
 
 # Files of this directory, except the record itself.
 own = []
@@ -154,7 +178,7 @@ record = {
     'subject': {
         'baseCommit': base,
         'codeCommit': code,
-        'note': 'The record is committed after the code commit. The code commit is the subject of every measurement here; the PR head adds only this directory.',
+        'note': 'The record is committed after the code commit. The code commit is the subject of the production-file digests, the built modules and the digest-citer sweep; the repair commit (subject.repair) is the subject of the mutant runs, the test report and the differential\'s head build, whose mask is the code commit\'s. Beyond the code commit, the PR head adds this directory, the merge of main f7ea8584 and the repair\'s two test files.',
         'productionFile': {
             'path': MASK,
             'base': {'bytes': len(base_mask), 'sha256': sha(base_mask)},
@@ -165,6 +189,14 @@ record = {
         'repair': {
             'what': 'round 1 of the CC-REV-1 review of this change (R-GP-IMPL-CRLF-MASK-1) returned REVISE with one blocking finding, F1: a mutant that widens LINE_END to U+2028, U+0085 or the JavaScript line-terminator set changes LF decisions and no test, mutant or differential row failed. The repair adds the pins and the rows that measure them; no production byte changes',
             'review': dict(REVIEW_RAW, reviewedCommit=reviewed, why='the raw is retained by the coordinator, not in this tree'),
+            'round2': {
+                'what': 'round 2 (R-GP-IMPL-CRLF-MASK-2) returned REVISE on one PR-body figure (F1) and eight notes; no production byte changed and the review found no LF decision changed. The repair takes N1 (a general pin over every UTF-16 code unit, and VT and FF in the separator slice with the self-test mutant S7), N2 (a separator after a closing fence, and a U+2028 finding position) and the wording notes N4, N5 and N7; the mutants MU22 to MU24 are the reviewer\'s RW3, RW5 and RW10',
+                'review': dict(REVIEW_RAW_2, reviewedCommit=round1_evidence, why='the raw is retained by the coordinator, not in this tree'),
+                'roundOneRepairCommit': round1_repair,
+                'roundOneEvidenceCommit': round1_evidence,
+                'range': {'from': round1_evidence, 'to': repair},
+                'vtFfSliceNecessity': {'output': 'docs/evidence/syzygy-bpyt-16/vt-ff-slice-necessity.json', 'what': 'rule 6 for the VT and FF addition to the separator slice: the round-1 differential survives a build whose LINE_END ends a line at VT and FF; the differential of this commit fails it'},
+            },
             'range': {'from': reviewed, 'to': repair},
             'productionFileUnchanged': {'path': MASK, 'sha256AtCode': sha(head_mask), 'sha256AtRepair': sha(git('show', f'{repair}:{MASK}'))},
             'changedFiles': repair_changed,
@@ -205,7 +237,7 @@ record = {
         'output': 'docs/evidence/syzygy-bpyt-16/crlf-differential-output.json',
         'checks': diff['checks'],
         'meaning': {
-            'C1': 'every LF text decides identically at BASE and HEAD: findings and mask deep-equal, over the distinct LF forms of the rows and over the separator slice (LF texts whose lines hold U+2028, U+2029 and U+0085 at fence and span positions)',
+            'C1': 'every LF text decides identically at BASE and HEAD: findings and mask deep-equal, over the distinct LF forms of the rows and over the separator slice (LF texts whose lines hold U+2028, U+2029, U+0085, VT (U+000B) or FF (U+000C) at fence and span positions)',
             'C2': 'at HEAD every CRLF, CR and mixed rendering decides as its LF form: same finding multiset (form, context, malformed line), equal mask once terminators read as LF',
             'C3': 'at HEAD the masked text has the text length, every terminator at its offset, every other byte its own or a space',
             'C4': 'at HEAD a CRLF text has findings deep-equal to its LF form, line and column included',
@@ -251,7 +283,7 @@ record = {
             'ranAt': mut['summary']['codeCommit'],
             'detectors': 'the seven test files this change adds or edits, one vitest run per mutant',
             'summary': mut['summary'],
-            'mutants': [{'id': r['id'], 'outcome': r['outcome'], 'failedTests': {k: v['failed'] for k, v in r['detectors'].items()}, **({'expectedKiller': r['expectedKiller'], 'failingTests': r['failingTests']} if 'expectedKiller' in r else {})} for r in mut['rows'] if r['id'].startswith(('MU', 'BASE'))],
+            'mutants': [{'id': r['id'], 'outcome': r['outcome'], 'failedTests': {k: v['failed'] for k, v in r['detectors'].items()}, **({'expectedKillers': r['expectedKillers'], 'failingPins': r['failingPins'], 'failingTests': r['failingTests']} if 'expectedKillers' in r else {})} for r in mut['rows'] if r['id'].startswith(('MU', 'BASE'))],
             'equivalent': 'MU16: a line holds no CR or LF now (both are split points), so blanking by [^\\n] and by length agree; no test can tell them apart',
         },
     },
@@ -270,6 +302,7 @@ record = {
         'method': 'by (file, full name) identity from vitest reports of the seven files at each commit, and by call text for a changed it.each call (tool: test-delta.py, test-inventory.mjs); a helper the callbacks call is not followed',
         'baseCommit': remeasure,
         'headCommit': repair,
+        'roundOneMeasurement': {'baseCommit': remeasure, 'headCommit': round1_repair, 'line': round1_tests['line'], 'baseTests': round1_tests['baseTests'], 'headTests': round1_tests['headTests'], 'why': 'the count at the round-1 repair commit, read from test-delta-output.json at ' + round1_evidence + '; round 2 adds the three tests of its repair'},
         'previousMeasurement': {'baseCommit': base, 'codeCommit': code, 'line': previous_tests['line'], 'baseTests': previous_tests['baseTests'], 'headTests': previous_tests['headTests'], 'why': 'the count before the repair, read from test-delta-output.json at ' + reviewed + '; the base then was the parent of the fix, which holds one test fewer in the seven files than ' + remeasure + ' (the BOM test, main)'},
         'baseTests': tests['baseTests'],
         'headTests': tests['headTests'],
