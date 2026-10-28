@@ -185,7 +185,7 @@ describe("the tree's own exports", () => {
   }, 60_000);
 });
 
-// syzygy-bpyt.46: the entries the S10 bundle aliases by, and the root vitest.config.ts aliases are checked against.
+// syzygy-bpyt.46: the entries the S10 bundle aliases by.
 describe('the workspace entry modules', () => {
   it('reads each entry of each package, its main where it has no exports, as the src module it names', () => {
     expect(entryModulesIn(workspace({}))).toEqual({

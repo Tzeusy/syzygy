@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 """Rule-6 mutants for syzygy-bpyt.46 (the PR 545 follow-ups: items 1, 3 and 5, and the round-2 review's N2-N4), run in a clean clone.
 
-Round 1 of review R-GP-IMPL-SUPPORT-LEAF-FOLLOWUPS-1 added F2's object-entry row, F3's root-alias test and N1's reader rows (the
-reviewer's fix files, byte for byte); the E, A, W and I rows below pin each of their predicates, and E4 takes N2's uniform edit.
+Round 1 of review R-GP-IMPL-SUPPORT-LEAF-FOLLOWUPS-1 added F2's object-entry row and N1's reader rows (the reviewer's fix files,
+byte for byte); the E5, W and I rows below pin each of their predicates, and E4 takes N2's uniform edit. Main a15b6a04 (PR 549)
+removed the root vitest.config.ts alias map, so item 3's root-alias test and its A rows are gone; E4 now runs against the S10 file.
 
 Usage: mutants.py <clone with node_modules> <out.json> <tmpdir> <absent|present>
 
@@ -27,9 +28,7 @@ DRAFTER_TEST = 'packages/three-surface-poc-core/src/owner-act-drafter.test.ts'
 DRAFTER = 'packages/three-surface-poc-core/src/owner-act-drafter.ts'
 REACH_TEST = 'packages/polaris-generation-core/src/workspace-reach.test.ts'
 REACH_KIT = 'packages/polaris-generation-core/src/workspace-reach.testkit.ts'
-ALIASES_TEST = 'packages/polaris-generation-core/src/root-vitest-aliases.test.ts'
 NO_EGRESS = 'packages/polaris-dossier/src/no-egress.test.ts'
-CONFIG = 'vitest.config.ts'
 DOSSIER_PKG = 'packages/polaris-dossier/package.json'
 LANE_614 = 'docs/evidence/syzygy-bpyt-6-14/tools/mutants.py'
 FIX_CHECK_R2 = 'docs/evidence/support-leaf-guards-review-2026-10-28/r2/fix-check-r2.json'
@@ -46,19 +45,8 @@ ID_READER = 'the identifier reader the allowlist stands on reads '
 DRAFTER_PURE = 'owner-act drafter (M4 slice 7) is pure: it imports no filesystem, network or process module and names no write'
 DRAFTER_ALLOW = 'owner-act drafter (M4 slice 7) names no identifier outside its literal list, so it reads no global it does not use'
 ENTRIES = 'the workspace entry modules '
-ALIASES = 'the root vitest.config.ts aliases '
-ALIAS_ROW = ALIASES + "alias each specifier to the src module its package's entry names"
-LEFT_ROW = ALIASES + 'leave exactly these entries unaliased'
-OWN_ROW = ALIASES + 'match each aliased specifier by its own alias first, so no shorter alias ahead of it shadows it'
-SHADOW_ROW = ALIASES + 'shadow exactly the two dossier subpaths, which the bare dossier alias rewrites to no module'
-SUPPORT_ALIAS = "      '@syzygy/support': fileURLToPath(new URL('./packages/support/src/index.ts', import.meta.url)),\n"
-DOSSIER_ALIAS = "      '@syzygy/polaris-dossier': fileURLToPath(new URL('./packages/polaris-dossier/src/index.ts', import.meta.url)),\n"
-STATE_EXPORT = '      "default": "./dist/state-directory.js"\n    }\n'
 STATE_TARGETS = '      "import": "./dist/state-directory.js",\n      "default": "./dist/state-directory.js"\n'
 DOTDOT_CHECK = "      if (JSON.stringify(entry).includes('/../')) throw new Error(`${specifier}: its entry has a /../ segment, which Node refuses`);\n"
-LIVE_ALIAS = "      '@syzygy/polaris-generation-core/live': fileURLToPath(new URL('./packages/polaris-generation-core/src/live.ts', import.meta.url)),\n"
-CORE_ALIAS = "      '@syzygy/polaris-generation-core': fileURLToPath(new URL('./packages/polaris-generation-core/src/index.ts', import.meta.url)),\n"
-ARGV_ALIAS = "      '@syzygy/polaris-dossier/argv': fileURLToPath(new URL('./packages/polaris-dossier/src/argv.ts', import.meta.url)),\n"
 
 
 def edit(path, old, new):
@@ -71,7 +59,6 @@ ROWS = [
     ('P0-support-unmutated', PURITY, [], []),
     ('D0-drafter-unmutated', DRAFTER_TEST, [], []),
     ('W0-entries-unmutated', REACH_TEST, [], []),
-    ('A0-root-aliases-unmutated', ALIASES_TEST, [], []),
     ('N0-no-egress-unmutated', NO_EGRESS, [], []),
     # Item 1: the drafter's allowlist. D2 and D5 survived the drafter's guard at #545; each must now fail the new row alone. DK1 and
     # DK2 must still fail the old row alone. K3 narrows the identifier reader both allowlists now share.
@@ -112,29 +99,11 @@ ROWS = [
     ('E3-main-fallback-dropped', REACH_TEST,
      [edit(REACH_KIT, " : manifest.main !== undefined ? [['.', manifest.main]] : [];", ' : [];')],
      [ENTRIES + 'reads each entry of each package, its main where it has no exports, as the src module it names']),
-    # A /../ entry in the real workspace whose conditions all agree (round 1's N2): the three rows that read the entries throw, by
-    # the /../ check, since the unreadable-entry throw reads the entry's one target. With the check dropped (E1E4) the root-alias
-    # test passes: the disclosed limit, which the entry reader's own object-entry row (E1, E5) closes.
-    ('E4-uniform-dotdot-entry-in-the-workspace', ALIASES_TEST,
+    # A /../ entry in the real workspace whose conditions all agree (round 1's N2): the S10 file fails before any row, by the /../
+    # check, since the unreadable-entry throw reads the entry's one target (the message form is the review's Z1 record's).
+    ('E4-uniform-dotdot-entry-in-the-workspace', NO_EGRESS,
      [edit(DOSSIER_PKG, STATE_TARGETS, STATE_TARGETS.replace('./dist/state-directory.js', './dist/x/../state-directory.js'))],
-     [ALIAS_ROW, LEFT_ROW, SHADOW_ROW]),
-    ('E1E4-dotdot-check-dropped-under-a-uniform-entry', ALIASES_TEST,
-     [edit(REACH_KIT, DOTDOT_CHECK, ''),
-      edit(DOSSIER_PKG, STATE_TARGETS, STATE_TARGETS.replace('./dist/state-directory.js', './dist/x/../state-directory.js'))], []),
-    # Item 3: the root config's aliases against the entries.
-    ('A1-alias-moved-to-another-module', ALIASES_TEST, [edit(CONFIG, SUPPORT_ALIAS, SUPPORT_ALIAS.replace('/index.ts', '/sha256.ts'))], [ALIAS_ROW]),
-    # A2's new key sits behind the bare support alias, which matches it first, so the own-alias-first row fails too.
-    ('A2-alias-with-no-entry', ALIASES_TEST,
-     [edit(CONFIG, SUPPORT_ALIAS, SUPPORT_ALIAS + SUPPORT_ALIAS.replace("'@syzygy/support'", "'@syzygy/support/extra'"))], [ALIAS_ROW, OWN_ROW]),
-    # The bare dossier alias removed: the dossier joins the unaliased entries and its two subpaths are no longer shadowed.
-    ('A3-alias-removed', ALIASES_TEST, [edit(CONFIG, DOSSIER_ALIAS, '')], [LEFT_ROW, SHADOW_ROW]),
-    # A new dossier export with no alias is unaliased, and the bare dossier alias shadows it.
-    ('A4-entry-added-without-an-alias', ALIASES_TEST,
-     [edit(DOSSIER_PKG, STATE_EXPORT, STATE_EXPORT[:-1] + ',\n    "./cli": "./dist/cli.js"\n')], [LEFT_ROW, SHADOW_ROW]),
-    # Round 1's F3 (the reviewer's X13): the bare core alias moved ahead of /live, so it matches /live first.
-    ('A5-config-reordered-so-core-shadows-live', ALIASES_TEST, [edit(CONFIG, LIVE_ALIAS + CORE_ALIAS, CORE_ALIAS + LIVE_ALIAS)], [OWN_ROW]),
-    # Round 1's F4 (the reviewer's X15): a correct alias for one of the six, ahead of the bare dossier alias, fails until the lists shrink.
-    ('A6-correct-alias-for-an-unaliased-entry', ALIASES_TEST, [edit(CONFIG, DOSSIER_ALIAS, ARGV_ALIAS + DOSSIER_ALIAS)], [LEFT_ROW, SHADOW_ROW]),
+     ['file: @syzygy/polaris-dossier/state-directory: its entry has a /../ segment, which Node refuses']),
     # Round 1's N1 (the reviewer's X4, X6, X12, X7 and X8): each arm of the two readers, dropped, fails its own reader row.
     ('W1-write-reader-object-pattern-arm-dropped', PURITY,
      [edit(PURITY, 'ts.isPropertyAssignment(property) ? targets(property.initializer) : ts.isSpreadAssignment(property) ? targets(property.expression) : []', '[]')],

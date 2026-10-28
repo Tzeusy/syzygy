@@ -122,9 +122,8 @@ export const resolve = (from: string, specifier: string): string | null | undefi
 
 /** Every entry a workspace package's manifest names, by its specifier, with the `src` module its `exports` (or its `main`, where it
  * has no `exports`) names, read as above: the source of what Node loads for the specifier. The S10 no-egress bundle aliases by it
- * and the root vitest.config.ts aliases are checked against it (syzygy-bpyt.46). An entry the resolver cannot read throws, and so
- * does a target with a `/../` segment, which Node refuses (ERR_INVALID_PACKAGE_TARGET) where `moduleIn` would join it away (the PR
- * 545 round-1 review's N6). */
+ * (syzygy-bpyt.46). An entry the resolver cannot read throws, and so does a target with a `/../` segment, which Node refuses
+ * (ERR_INVALID_PACKAGE_TARGET) where `moduleIn` would join it away (the PR 545 round-1 review's N6). */
 export function entryModulesIn(workspace: Workspace): Record<string, string> {
   const modules: Record<string, string> = {};
   for (const manifest of workspace.manifests.values()) {
