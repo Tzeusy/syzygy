@@ -464,6 +464,12 @@ describe('a 200,000-line closed fence under the read limit (GP-B2 Q1)', () => {
   // of the reader (it rethrows everything but a parse-pass breach); it now reads, and the active-content scan decides it.
   const LONG_LINES = 200_000;
 
+  // A larger stack (a worker-thread pool runs at 4 MB) lets the old line pass the size tests below; this canary fails first, by name.
+  it('one spread call over 200,002 arguments still overflows the stack in this test process', () => {
+    const sink: unknown[] = [];
+    expect(() => sink.push(...new Array<unknown>(LONG_LINES + 2))).toThrow(RangeError);
+  });
+
   it.each(ENDS)('%s: a 200,000-line closed fence holding a script element reads as text, under the read limit', (_name, end) => {
     const text = `~~~${end}<script>${end}${`x${end}`.repeat(LONG_LINES)}~~~${end}after${end}`;
     expect(enc.encode(text).byteLength).toBeLessThan(PWB_RESOURCE_LIMITS.maxBytesPerSource);

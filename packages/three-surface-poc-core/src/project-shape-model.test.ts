@@ -1017,6 +1017,12 @@ describe('a very long fence or list does not abort the observation', () => {
   const fenced = (lines: number, end: string): string => `${VISION}\n~~~${end}${`x${end}`.repeat(lines)}~~~${end}`;
   const vision = (shape: ReturnType<typeof observed>) => shape.sources.find((source) => source.path === VISION_PATH);
 
+  // A larger stack (a worker-thread pool runs at 4 MB) lets the old line pass the size tests below; this canary fails first, by name.
+  it('one spread call over 200,002 arguments still overflows the stack in this test process', () => {
+    const sink: unknown[] = [];
+    expect(() => sink.push(...new Array<unknown>(200_002))).toThrow(RangeError);
+  });
+
   it.each(ENDS)('%s: a 200,000-line closed fence at the end of vision.md is classified as a 10-line one is', (_name, end) => {
     const short = observed({ texts: { ...BASE_TEXTS, [VISION_PATH]: fenced(10, end) } });
     const long = observed({ texts: { ...BASE_TEXTS, [VISION_PATH]: fenced(200_000, end) } });

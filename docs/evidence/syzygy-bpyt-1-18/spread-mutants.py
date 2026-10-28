@@ -45,6 +45,8 @@ MUTANTS = [
     ('MU4-extractor-loop-drops-last-item', EXTRACTOR, [(EXTRACTOR_LOOP, '    for (const item of result.items.slice(0, -1)) all.push(item);\n')], 'the last item of each class is lost; the denominator still counts it'),
     ('MU5-mask-loop-reversed', MASK, [(MASK_LOOP, '        for (let at = pending.length - 1; at >= 0; at -= 1) out.push(blank(pending[at] ?? \'\'));\n')], 'the fence lines are blanked in reverse order'),
     ('MU6-extractor-loop-reversed', EXTRACTOR, [(EXTRACTOR_LOOP, '    for (let at = result.items.length - 1; at >= 0; at -= 1) all.push(result.items[at] as ExtractedItem);\n')], 'the items of each class are appended in reverse order'),
+    ('R10-extractor-size-gated-reversal', EXTRACTOR, [(EXTRACTOR_LOOP, '    for (let at = 0; at < result.items.length; at += 1) all.push(result.items[result.items.length > 100_000 ? result.items.length - 1 - at : at] as ExtractedItem);\n')], 'review round 2: a class past 100,000 items is appended in reverse order (a size-gated fault no small fixture reaches)'),
+    ('R11-extractor-chunks-last-first', EXTRACTOR, [(EXTRACTOR_LOOP, '    for (let at = Math.floor((result.items.length - 1) / 50_000) * 50_000; at >= 0; at -= 50_000) all.push(...result.items.slice(at, at + 50_000));\n')], 'review round 2: a chunked spread whose 50,000-item chunks are appended last-first (identical to the loop for a class of 50,000 items or fewer)'),
 ]
 
 
