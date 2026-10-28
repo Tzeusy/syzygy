@@ -7,6 +7,7 @@ import * as host from '@syzygy/http-host';
 interface PackageManifest {
   readonly exports?: {
     readonly '.': string | {
+      readonly source?: string;
       readonly types?: string;
       readonly import?: string;
       readonly default?: string;
@@ -19,13 +20,16 @@ const manifest = JSON.parse(
 ) as PackageManifest;
 
 describe('cap1-daemon package', () => {
-  it('is importable with built runtime and declaration entries', () => {
+  // Tests and tools load the source (syzygy-bpyt.4.2); Node takes the first condition it matches, so `source` comes first.
+  it('is importable with source, built runtime and declaration entries', () => {
     expect(daemon).toBeDefined();
-    expect(manifest.exports?.['.']).toEqual({
+    expect(manifest.exports?.['.']).toStrictEqual({
+      source: './src/index.ts',
       types: './dist/index.d.ts',
       import: './dist/index.js',
       default: './dist/index.js',
     });
+    expect(Object.keys(manifest.exports?.['.'] ?? {})).toEqual(['source', 'types', 'import', 'default']);
   });
 
   // The generic host moved to @syzygy/http-host (syzygy-bpyt.7.3). The barrel re-exports it, so a consumer finds every value it
