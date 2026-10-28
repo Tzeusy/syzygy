@@ -443,6 +443,7 @@ CAMPAIGNS = (
         "greenfield-parity-implementation",
         "Greenfield-parity implementation",
         r"R-GP-IMPL-.*-RAW\.md",
+        r"V-CRLF-MASK-\d+-RAW\.md",
     ),
     campaign(
         "pr491-redis-remeasure",

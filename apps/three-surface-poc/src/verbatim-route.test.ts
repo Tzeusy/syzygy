@@ -161,6 +161,30 @@ describe('verbatim route gates', () => {
     expect(inertRoute(leafOf(inertModel))).toBeInstanceOf(Uint8Array);
   });
 
+  // syzygy-bpyt.16 (ruled on syzygy-bpyt.1.14): the route's active-content scan reads a CRLF or CR spec as it reads its LF form. The first
+  // addition was admitted under CRLF and CR before the fix (a backtick opener with a backtick in its info text hides a script element as
+  // an inline span), the second refused (a tilde fence the mask did not recognize, leaving the script element it holds in the open).
+  it.each([['LF', '\n'], ['CRLF', '\r\n'], ['CR', '\r']])('%s: the spec body is refused or served as its LF form is', (_name, end) => {
+    const refusedAddition = '\n```a`b\n<script>alert(1)</script>\n```\n';
+    const servedAddition = '\n~~~\n<script>alert(1)</script>\n~~~\nAfter.\n';
+    const bodyOf = (addition: string): string => `${SPEC_TEXT}${addition}`.replace(/\r?\n/g, end);
+    const refusedTexts = { ...PROJECT_SHAPE_FIXTURE_TEXTS_WITH_BASELINE_SPEC, [SPEC]: bodyOf(refusedAddition) };
+    const refusedModel = observed(refusedTexts);
+    const refusedRoute = verbatimRouteReader(refusedModel, blobReader(refusedTexts).read);
+    if (refusedRoute === undefined) throw new Error('no route');
+    const refused = refusalOf(refusedRoute(leafOf(refusedModel)));
+    expect(refused.refused).toBe('excluded-content');
+    expect(refused.detail).toContain('malformed-code-context');
+    expect(refused.detail).not.toContain('alert');
+    const servedTexts = { ...PROJECT_SHAPE_FIXTURE_TEXTS_WITH_BASELINE_SPEC, [SPEC]: bodyOf(servedAddition) };
+    const servedModel = observed(servedTexts);
+    const servedRoute = verbatimRouteReader(servedModel, blobReader(servedTexts).read);
+    if (servedRoute === undefined) throw new Error('no route');
+    const served = servedRoute(leafOf(servedModel));
+    expect(served).toBeInstanceOf(Uint8Array);
+    expect(new TextDecoder().decode(served as Uint8Array)).toBe(bodyOf(servedAddition));
+  });
+
   it('refuses bytes that do not hash to the exact object, a body over the per-source envelope, and non-text bytes', () => {
     const model = observed();
     const leaf = leafOf(model);
