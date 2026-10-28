@@ -397,7 +397,7 @@ def main_summary():
     if suite['commit'] != REPAIR1 or not suite['cleanAfter'] or [r['label'] for r in suite['runs']] != ['whole'] or whole.get('command') != WHOLE:
         problems.append('suite: not one run of the whole suite in a clean tree at REPAIR1')
     # The suite ran at REPAIR1; HEAD may differ from it only in ` * ` lines inside the testkit's LOCAL_VERSION doc comment.
-    since = [p for p in git('diff', '--name-only', REPAIR1, HEAD).split() if not p.startswith(f'{HERE_REL}/')]
+    since = hooked('since', [p for p in git('diff', '--name-only', REPAIR1, HEAD).split() if not p.startswith(f'{HERE_REL}/')])
     late = diff_lines(KIT, REPAIR1, HEAD)
     late_spans = {'-': doc_comment_span(blob(REPAIR1, KIT) or ''), '+': spans['+']}
     if since != [KIT] or not late or any(late_spans[s] is None or not late_spans[s][0] < n <= late_spans[s][1] or not re.match(r' \* ', text)
@@ -512,6 +512,9 @@ SELFTEST = {
     'a changed line on the LOCAL_VERSION line itself': {f'@lines {KIT}': lambda lines: [*lines, ['+', 79, ' * x']]},
     'a code line changed since the suite ran': {f'@lines {KIT} {REPAIR1[:8]}': lambda lines: [*lines, ['+', 79, 'const LOCAL_VERSION = /^file:/iu;']]},
     'a comment line changed since the suite ran on the LOCAL_VERSION line': {f'@lines {KIT} {REPAIR1[:8]}': lambda lines: [*lines, ['+', 79, ' * x']]},
+    # The REPAIR1-to-HEAD check's other two predicates, each alone (syzygy-bpyt.39, the round-3 review's N1).
+    'a non-evidence path changed since the suite ran': {'@since': lambda names: [*names, 'README.md']},
+    'a non-comment line inside the span since the suite ran': {f'@lines {KIT} {REPAIR1[:8]}': lambda lines: [*lines, ['+', 70, 'const X = 1;']]},
     "a clause that is not the round-3 reviewer's file": {'@f1 sha': lambda digest: '0' * 64},
     "a testkit that keeps round 1's rule": {'@kit': lambda kit: kit + "// as for any dependency declared under a workspace's name\n"},
     "a testkit that restates round 1's rule": {'@kit': lambda kit: kit + "// unless the alias is declared under a workspace's own name and that workspace's version satisfies it\n"},

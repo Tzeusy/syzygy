@@ -542,9 +542,8 @@ describe('started(): the wait for main to serve', () => {
   it('reports a run that finished first, at once and by name', async () => {
     const fake = fakeIo();
     const run = main(['--help'], fake.io, harness().deps);
-    const began = Date.now();
-    await expect(started(run, fake)).rejects.toThrow('main finished with exit code 0 before it served');
-    expect(Date.now() - began).toBeLessThan(WAIT_MS / 2);
+    // A bound past this test's own timeout: a report made at the bound, not at once, fails as "Test timed out".
+    await expect(started(run, fake, 2 * TEST_TIMEOUT_MS)).rejects.toThrow('main finished with exit code 0 before it served');
   }, TEST_TIMEOUT_MS);
 
   it('gives up after its bound on a run that neither serves nor finishes', async () => {
