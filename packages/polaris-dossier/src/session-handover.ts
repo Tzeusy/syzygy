@@ -6,6 +6,7 @@ import {
   INVENTORY_BRIEF_FILE, LAUNCH_FORMS, buildInventoryBrief, errno, latestInventorySession, launchRecordName, logStep, openRun, promptRecordName,
   readRecord, sessionDirectory, sessionsRoot, sessionsRootViolation, type Declared, type LaunchForm, type OpenedRun,
 } from './inventory.js';
+import { isoOf } from './iso-of.js';
 import { SYZYGY_LAUNCHED, launchedMarkerState } from './launched.js';
 import type { Outcome } from './outcome.js';
 import type { ReverifyOptions, ReverifyRefusal } from './reverify.js';
@@ -40,8 +41,6 @@ import {
 export const SESSION_PROMPT_FORMAT = 'polaris-dossier-session-prompt/1';
 export const LAUNCH_FORM_FORMAT = 'polaris-dossier-launch-form/1';
 const CONTEXT_TEXT = /^[^\u0000-\u001f\u007f]{1,200}$/u;
-
-const isoOf = (instant: number): string => new Date(instant).toISOString();
 
 /** One shell word: the text in single quotes, each single quote closed, escaped and reopened. */
 export const shellQuote = (text: string): string => `'${text.replace(/'/gu, `'\\''`)}'`;

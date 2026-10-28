@@ -3,7 +3,7 @@ import * as path from 'node:path';
 import { POLICY_PATH, readClassActState, readPolicyActChain } from '@syzygy/polaris-generation-consent/live';
 import { codeContentExempt, compileEveryOffsetMatcher, publicSourceContentClass, readCodeContentExemption, readProjectDocumentationRule, readSecretRedaction, redactBody, type PublicSourceContentClass, type RedactionDetector } from '@syzygy/polaris-generation-core/live';
 import { compileDetectors, deniedPathReason, detectSecrets, scanActiveContent, type DeniedPathRules, type SecretDetector } from '@syzygy/three-surface-poc-core';
-import { sha256 } from '@syzygy/support';
+import { isRecord, sha256 } from '@syzygy/support';
 
 /** Classification and screening of every blob Syzygy reads for a check (REQ-polaris-generation-033: "every object SHALL be classified
  * and screened under the observing project's effective policies (REQ-polaris-generation-025) before its content is used in a check").
@@ -70,7 +70,6 @@ export type TargetBodyScreen =
 export type ScreenLoad = { readonly ok: true; readonly screen: DossierScreen } | { readonly ok: false; readonly why: string };
 
 const stringList = (value: unknown): value is readonly string[] => Array.isArray(value) && value.every((item) => typeof item === 'string' && item.length > 0);
-const isObject = (value: unknown): value is Readonly<Record<string, unknown>> => value !== null && typeof value === 'object' && !Array.isArray(value);
 
 /** Build the screen from the policy's bytes. Every field the rules need must be present and well formed, or the screen is refused.
  * `classActInForce` says whether the RFC5-14 project-documentation class amendment is confirmed in force; when it is not, the class's
@@ -79,16 +78,16 @@ export function buildDossierScreen(policy: Uint8Array, classActInForce = false):
   const refuse = (why: string): ScreenLoad => ({ ok: false, why: `the screening policy cannot be applied: ${why}` });
   let doc: unknown;
   try { doc = JSON.parse(new TextDecoder('utf-8', { fatal: true }).decode(policy)); } catch { return refuse('it is not UTF-8 JSON'); }
-  if (!isObject(doc) || typeof doc['policyId'] !== 'string' || typeof doc['policyVersion'] !== 'string') return refuse('its identity is unreadable');
+  if (!isRecord(doc) || typeof doc['policyId'] !== 'string' || typeof doc['policyVersion'] !== 'string') return refuse('its identity is unreadable');
   const scope = doc['publicSourceScope'], admission = doc['sourceAdmission'];
-  if (!isObject(scope)) return refuse('it carries no publicSourceScope');
-  if (!isObject(admission) || !stringList(admission['deniedPathBasenames']) || !stringList(admission['deniedPathPrefixes']) || !stringList(admission['deniedPathSuffixes'])) {
+  if (!isRecord(scope)) return refuse('it carries no publicSourceScope');
+  if (!isRecord(admission) || !stringList(admission['deniedPathBasenames']) || !stringList(admission['deniedPathPrefixes']) || !stringList(admission['deniedPathSuffixes'])) {
     return refuse('its denied-path rules are unreadable');
   }
   const classification = scope['contentClassification'];
-  const rules = isObject(classification) && Array.isArray(classification['rules']) ? classification['rules'] : [];
-  const codeContent = rules.filter((rule: unknown) => isObject(rule) && rule['class'] === 'code-content');
-  const extensions = isObject(codeContent[0]) ? codeContent[0]['sourceExtensions'] : undefined;
+  const rules = isRecord(classification) && Array.isArray(classification['rules']) ? classification['rules'] : [];
+  const codeContent = rules.filter((rule: unknown) => isRecord(rule) && rule['class'] === 'code-content');
+  const extensions = isRecord(codeContent[0]) ? codeContent[0]['sourceExtensions'] : undefined;
   if (codeContent.length !== 1 || !stringList(extensions) || extensions.length === 0 || extensions.some((extension) => !/^\.[^/\s]+$/u.test(extension) || extension.includes('..'))) {
     return refuse('its code-content sourceExtensions are unreadable');
   }
@@ -98,7 +97,7 @@ export function buildDossierScreen(policy: Uint8Array, classActInForce = false):
   const exemptionRead = readCodeContentExemption(scope, extensions);
   if (!exemptionRead.ok) return refuse(exemptionRead.why);
   const exemption = exemptionRead.exemption;
-  const detectorIds = Array.isArray(doc['detectors']) ? doc['detectors'].flatMap((d: unknown) => (isObject(d) && typeof d['id'] === 'string' ? [d['id']] : [])) : [];
+  const detectorIds = Array.isArray(doc['detectors']) ? doc['detectors'].flatMap((d: unknown) => (isRecord(d) && typeof d['id'] === 'string' ? [d['id']] : [])) : [];
   const redactionRead = readSecretRedaction(scope, detectorIds);
   if (!redactionRead.ok) return refuse(redactionRead.why);
   const redaction = redactionRead.redaction;

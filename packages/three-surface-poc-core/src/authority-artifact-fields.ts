@@ -15,7 +15,7 @@
 // validity ("malformed") and semantic agreement with the controlled
 // evaluation input ("wrong but present") are the evaluator's.
 
-import { decodeUtf8 } from '@syzygy/support';
+import { decodeUtf8, isRecord } from '@syzygy/support';
 
 export type ArtifactField = { readonly kind: 'present'; readonly value: unknown } | { readonly kind: 'missing' };
 
@@ -80,10 +80,6 @@ export function parseConsentArtifact(bytes: Uint8Array): ArtifactParse<ConsentAr
   }
 
   return { kind: 'parsed', fields: { observingProject, configuredRepository, contentClass } };
-}
-
-function isRecord(value: unknown): value is Record<string, unknown> {
-  return typeof value === 'object' && value !== null && !Array.isArray(value);
 }
 
 function parseJson(bytes: Uint8Array): { readonly ok: true; readonly value: unknown } | { readonly ok: false; readonly detail: string } {

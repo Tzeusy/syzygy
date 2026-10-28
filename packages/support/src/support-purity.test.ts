@@ -20,12 +20,13 @@ const read = (name: string): string => readFileSync(new URL(name, SRC), 'utf8');
 
 const ALLOWED_SPECIFIER = /^(?:node:crypto|\.\/[a-z0-9-]+\.js)$/u;
 // Every name the package's code may use: its own declarations and parameters, the hash's `createHash().update().digest()`,
-// `Object`'s freeze walk, and the strict decoder's `new TextDecoder('utf-8', { fatal: true }).decode()`, which reads only the
-// bytes it is given. Any other global (`globalThis`, `process`, `console`, `fetch`, `WebSocket`, `performance`), another
-// export of `node:crypto` (`randomBytes`) or a loader (`require`, `eval`, `Function`) is a name not on it.
+// `Object`'s freeze walk, the object predicate's `Array.isArray` and `Readonly<Record<string, unknown>>` type, and the strict
+// decoder's `new TextDecoder('utf-8', { fatal: true }).decode()`, which reads only the bytes it is given. Any other global
+// (`globalThis`, `process`, `console`, `fetch`, `WebSocket`, `performance`), another export of `node:crypto` (`randomBytes`) or
+// a loader (`require`, `eval`, `Function`) is a name not on it.
 const ALLOWED_IDENTIFIERS = new Set([
-  'Object', 'STRICT_UTF8', 'T', 'TextDecoder', 'Uint8Array', 'bytes', 'createHash', 'decode', 'decodeUtf8', 'deepFreeze', 'digest', 'fatal',
-  'freeze', 'isFrozen', 'member', 'sha256', 'undefined', 'update', 'value', 'values',
+  'Array', 'Object', 'Readonly', 'Record', 'STRICT_UTF8', 'T', 'TextDecoder', 'Uint8Array', 'bytes', 'createHash', 'decode', 'decodeUtf8',
+  'deepFreeze', 'digest', 'fatal', 'freeze', 'isArray', 'isFrozen', 'isRecord', 'member', 'sha256', 'undefined', 'update', 'value', 'values',
 ]);
 
 /** Every import and re-export declaration of a module, `import x = require('m')` included, by its specifier and as written. */

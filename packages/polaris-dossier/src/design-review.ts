@@ -1,7 +1,7 @@
 import * as fs from 'node:fs';
 import * as path from 'node:path';
 import { REVIEW_STATUS_REGION, isDossierPagePath, leadInQuotations, withoutReviewStatusRegion } from '@syzygy/polaris-generation-core/live';
-import { sha256 } from '@syzygy/support';
+import { isRecord, sha256 } from '@syzygy/support';
 import { declaredSessionId } from './check.js';
 import { DEFICIENT_SUBJECTS, checkDraftShape, designVerdictSchemaDocument, localDesignVerdictSchema } from './draft-schema.js';
 import { errno } from './inventory.js';
@@ -25,7 +25,6 @@ export const MACHINE_VIEW_REGION_MEMBER = 'reviewStatus';
 const SITE_MAX_FILES = 20_000;
 const SITE_MAX_BYTES = 64 * 1024 * 1024;
 
-const isObj = (value: unknown): value is Readonly<Record<string, unknown>> => value !== null && typeof value === 'object' && !Array.isArray(value);
 const list = (value: unknown): readonly unknown[] => (Array.isArray(value) ? value : []);
 const text = (value: unknown): string | undefined => (typeof value === 'string' ? value : undefined);
 const byCodeUnit = (a: string, b: string): number => (a < b ? -1 : a > b ? 1 : 0);
@@ -100,7 +99,7 @@ export function outsideRegion(files: ReadonlyMap<string, string>): { readonly ok
     } else if (file === MACHINE_VIEW_FILE) {
       let view: unknown;
       try { view = JSON.parse(content); } catch { view = undefined; }
-      if (!isObj(view) || !Object.hasOwn(view, MACHINE_VIEW_REGION_MEMBER)) return { ok: false, reason: `${file} is not a machine view with a ${MACHINE_VIEW_REGION_MEMBER} member` };
+      if (!isRecord(view) || !Object.hasOwn(view, MACHINE_VIEW_REGION_MEMBER)) return { ok: false, reason: `${file} is not a machine view with a ${MACHINE_VIEW_REGION_MEMBER} member` };
       // Only the renderer's own serialization is read, so that removing the member re-serializes nothing else: a byte changed anywhere
       // outside it either changes the packet or refuses it.
       if (content !== `${JSON.stringify(view, null, 2)}\n`) return { ok: false, reason: `${file} is not in the renderer's serialization` };
@@ -138,7 +137,7 @@ export function buildDesignPacket(input: { readonly run: string; readonly runId:
 
 /** Whether the design verdict's own rows block readiness. */
 export function designBlocking(verdict: Readonly<Record<string, unknown>>): boolean {
-  const rows = (key: string): Readonly<Record<string, unknown>>[] => list(verdict[key]).filter(isObj);
+  const rows = (key: string): Readonly<Record<string, unknown>>[] => list(verdict[key]).filter(isRecord);
   return rows('findings').some((row) => row['severity'] === 'blocking') || rows('pageReview').some((row) => row['verdict'] !== 'acceptable');
 }
 
@@ -157,7 +156,7 @@ export function validateDesignVerdict(
 
   const seen = new Set<string>();
   list(verdict['pageReview']).forEach((row, i) => {
-    const page = isObj(row) ? text(row['page']) : undefined;
+    const page = isRecord(row) ? text(row['page']) : undefined;
     if (page === undefined) return;
     if (!built.pages.includes(page)) add('unresolved-reference', `$.pageReview[${i}].page`, `no HTML page of the packet has the path ${JSON.stringify(page)}`);
     else if (seen.has(page)) add('duplicate-entry', `$.pageReview[${i}].page`, `the page ${JSON.stringify(page)} has more than one row`);
@@ -165,12 +164,12 @@ export function validateDesignVerdict(
   });
   for (const page of built.pages) if (!seen.has(page)) add('page-review-incomplete', '$.pageReview', `the page ${JSON.stringify(page)} has no row`);
   list(verdict['findings']).forEach((row, i) => {
-    const page = isObj(row) ? text(row['page']) : undefined;
+    const page = isRecord(row) ? text(row['page']) : undefined;
     if (page !== undefined && !built.files.includes(page)) add('unresolved-reference', `$.findings[${i}].page`, `the packet has no file ${JSON.stringify(page)}`);
   });
   for (const [key, field] of [['pageReview', 'reason'], ['findings', 'message']] as const) {
     list(verdict[key]).forEach((row, i) => {
-      if (isObj(row) && leadInQuotations(text(row[field]) ?? '').length > 0) {
+      if (isRecord(row) && leadInQuotations(text(row[field]) ?? '').length > 0) {
         add('quotation-unverified', `$.${key}[${i}].${field}`, 'a design verdict quotes nothing: no span of the design packet verifies a quotation, so name the page and describe what you see');
       }
     });

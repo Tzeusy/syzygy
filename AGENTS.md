@@ -182,7 +182,10 @@ sweep lessons added 2026-09-23; the raw-head digest lesson the same day.
   `packages/cap1-conformance/src/fixtures/` (inputs only, expected values
   stay literals).
 - `packages/support/` (`@syzygy/support`): the one `sha256`, the one
-  `deepFreeze` and a shared strict `decodeUtf8`, a leaf with no workspace
+  `deepFreeze`, a shared strict `decodeUtf8` and the shared object test
+  `isRecord` (non-null, not an array; it does not check the prototype)
+  (the `isoOf` formatter stays in `polaris-dossier`: the support
+  purity guard forbids `Date`), a leaf with no workspace
   dependency, imported by the PWB core, the Polaris generation packages,
   the dossier and the POC app. `decodeUtf8` is the one named helper, not
   the only strict decoder: 20 `fatal: true` `TextDecoder` constructions

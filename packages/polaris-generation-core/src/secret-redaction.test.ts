@@ -175,6 +175,29 @@ describe('readSecretRedaction refuses what it does not implement', () => {
   it('reads null for a scope without the object', () => {
     expect(readSecretRedaction({ activeContent: {} }, ['a'])).toEqual({ ok: true, redaction: null });
   });
+  // The object test in @syzygy/support decides at both reads (syzygy-bpyt.6.3 stack 4): a scope that is not an object declares nothing, and
+  // a declaration that is not an object is refused in its own words. An array that carries the field by name is still an array.
+  const validRedaction = (): Record<string, unknown> => structuredClone(scopeOf(policyDoc())['secretRedaction']) as Record<string, unknown>;
+  it.each<[string, () => unknown]>([
+    ['null', () => null],
+    ['undefined', () => undefined],
+    ['a string', () => 'x'],
+    ['a number', () => 1],
+    ['an array', () => []],
+    ['an array that carries the field', () => Object.assign([], { secretRedaction: validRedaction() })],
+  ])('reads null for a scope that is %s', (_name, scope) => {
+    expect(readSecretRedaction(scope(), ['a'])).toEqual({ ok: true, redaction: null });
+  });
+  it.each<[string, () => unknown]>([
+    ['an array', () => []],
+    ['null', () => null],
+    ['a string', () => 'x'],
+    ['a number', () => 1],
+    ['an array that carries every field', () => Object.assign([], validRedaction())],
+    ['a function that carries every field', () => Object.assign(() => 1, validRedaction())],
+  ])('refuses a declaration that is %s', (_name, declaration) => {
+    expect(readSecretRedaction({ secretRedaction: declaration() }, ['a'])).toEqual({ ok: false, why: 'its secret redaction is not an object' });
+  });
   it.each<[string, (red: Record<string, unknown>) => void]>([
     ['an edited rule text', red => { red['rule'] = `${String(red['rule'])} `; }],
     ['an edited cited-span rule', red => { red['citedSpanRule'] = 'a span shows its surviving lines'; }],
