@@ -23,7 +23,7 @@ function gate(commit) {
 }
 const tracked = execFileSync('git', ['ls-tree', '-r', '-z', '--name-only', head], { encoding: 'utf8', maxBuffer: 1 << 26 }).split('\0').filter(Boolean);
 const workspaces = [...new Set(tracked.filter((p) => /^(?:apps|packages)\/[^/]+\/package\.json$/u.test(p)).map((p) => p.slice(0, -'/package.json'.length)))].sort();
-const probes = [...workspaces.flatMap((dir) => [`${dir}/package.json`, `${dir}/tsconfig.json`, `${dir}/src/__untracked__.ts`, `${dir}x/a.ts`]), 'scripts/clean_build.mjs.bak'];
+const probes = [...workspaces.flatMap((dir) => [`${dir}/package.json`, `${dir}/tsconfig.json`, `${dir}/src/__untracked__.ts`, `${dir}x/a.ts`, `docs/${dir}/a.ts`]), 'scripts/clean_build.mjs.bak'];
 const population = [...new Set([...tracked, ...probes])].sort();
 const b = gate(base), h = gate(head);
 const refused = (g, path) => !g.fn({ changedPaths: [path] });

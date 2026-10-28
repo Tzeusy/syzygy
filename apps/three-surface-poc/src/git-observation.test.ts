@@ -183,7 +183,7 @@ describe('read-only Git observation', () => {
   // does). The exact inputs are the three root files and the build step's program (scripts/clean_build.mjs, syzygy-bpyt.4.2). The
   // row requires the gate to refuse exactly those, so a prefix it lacks, one it has beyond them, or one narrowed to src/ (the PR 535
   // review's N6) fails it, over every tracked path and, for each workspace, a manifest, a tsconfig, an untracked module and a
-  // sibling directory that only shares the name's start.
+  // sibling directory that only shares the name's start, and a path under docs/ that carries the name after its first segment.
   it('refuses exactly the projects the POC start compiles or loads, and the files that define its build', () => {
     const { projects, exact } = pocStartInputs();
     expect(projects).toEqual([
@@ -198,18 +198,19 @@ describe('read-only Git observation', () => {
     ]);
     expect(exact).toEqual(['package-lock.json', 'package.json', 'scripts/clean_build.mjs', 'tsconfig.base.json']);
     const workspaces = [...WORKSPACE.manifests.values()].map((manifest) => manifest.dir).filter((dir) => dir !== '.').sort();
-    expect(workspaces).toHaveLength(12);
+    expect(workspaces, 'the workspaces the probes are built over; a new workspace needs its probes reviewed').toHaveLength(12);
     const tracked = git(REPO_ROOT, ['ls-files', '-z']).split('\0').filter((path) => path !== '');
-    const probes = [...workspaces.flatMap((dir) => [`${dir}/package.json`, `${dir}/tsconfig.json`, `${dir}/src/__untracked__.ts`, `${dir}x/a.ts`]), 'scripts/clean_build.mjs.bak'];
-    expect(probes).toHaveLength(49);
+    const probes = [...workspaces.flatMap((dir) => [`${dir}/package.json`, `${dir}/tsconfig.json`, `${dir}/src/__untracked__.ts`, `${dir}x/a.ts`, `docs/${dir}/a.ts`]), 'scripts/clean_build.mjs.bak'];
+    expect(probes, 'five probes per workspace and the program\'s near-miss; a changed count means the probe list changed').toHaveLength(61);
     const population = [...new Set([...tracked, ...probes])].sort();
     const isInput = (path: string): boolean => exact.includes(path) || projects.some((dir) => path.startsWith(`${dir}/`));
-    expect(population.filter((path) => pocObserverInputsAreClean({ changedPaths: [path] }) === isInput(path))).toEqual([]);
+    expect(population.filter((path) => pocObserverInputsAreClean({ changedPaths: [path] }) === isInput(path))
+      .map((path) => `${path}: ${isInput(path) ? 'accepted' : 'refused'}`)).toEqual([]);
     expect(tracked.filter(isInput).length).toBeGreaterThan(0);
   });
 
   // A tsconfig.base.json every protected project's own tsconfig.json extends, so the root file the gate protects is the one each
-  // build reads its options from. A protected project that extends another file, or none, fails here.
+  // build reads its options from. A protected project whose chain ends anywhere else, or passes through a file outside every protected project, fails here.
   it('reads every protected project from tsconfig.base.json through its own extends chain', () => {
     const { projects } = pocStartInputs();
     for (const project of projects) {
@@ -220,14 +221,16 @@ describe('read-only Git observation', () => {
         config = base === undefined ? undefined : posix.normalize(posix.join(posix.dirname(config), base));
       }
       expect(chain.at(-1), project).toBe('tsconfig.base.json');
+      expect(chain.filter((link) => link !== 'tsconfig.base.json' && !projects.some((dir) => link.startsWith(`${dir}/`))), project).toEqual([]);
     }
   });
 
   // The two edits observed on 2026-10-27 (syzygy-bpyt.1.16): a protected-looking project's tsconfig.json sends its outDir into
   // packages/http-host/dist, and an untracked module there overwrites one the daemon imports. Through polaris-generation-core the
-  // gate accepted that tree before syzygy-bpyt.56; through cap1-daemon it refused it. scripts/clean_build.mjs now refuses a project's
-  // own outDir outside dist before building, but not one inherited through `extends`, so both forms are planted here and observed
-  // as the gate observes them, untracked files included.
+  // gate accepted that tree before syzygy-bpyt.56; through cap1-daemon it refused it. Both forms are planted, the project's own
+  // outDir and one inherited through `extends`, and observed as the gate observes them, untracked files included. Since #549
+  // scripts/clean_build.mjs refuses both before building too (a project's own outDir must be dist, and the inherited form sets
+  // none), so these rows pin the gate's own refusal, beside the build's.
   it.each(['packages/polaris-generation-core', 'packages/cap1-daemon'])('refuses a tree that builds %s into another package\'s dist', (project) => {
     const tsconfig = `${project}/tsconfig.json`;
     const base = JSON.stringify({ extends: '../../tsconfig.base.json', compilerOptions: { outDir: 'dist', tsBuildInfoFile: 'dist/.tsbuildinfo' }, include: ['src'] });
