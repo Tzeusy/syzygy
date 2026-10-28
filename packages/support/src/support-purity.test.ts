@@ -4,7 +4,7 @@ import { dirname, join } from 'node:path';
 import { pathToFileURL } from 'node:url';
 import ts from 'typescript';
 import { describe, expect, it } from 'vitest';
-import { FORBIDDEN, specifiersOf } from './purity.testkit.js';
+import { FORBIDDEN, identifiersOf, specifiersOf } from './purity.testkit.js';
 
 // The package is a leaf that every importer inherits (the owner-act drafter's own purity test
 // stops at `@syzygy/support`), so what it may import and name is pinned here, not left to the closure guard,
@@ -28,25 +28,36 @@ const ALLOWED_IDENTIFIERS = new Set([
   'freeze', 'isFrozen', 'member', 'sha256', 'undefined', 'update', 'value', 'values',
 ]);
 
-/** Every identifier a module's code names, sorted: declarations, references, property names and type names alike. Comments
- * and the contents of strings are not code. */
-function identifiersOf(name: string, source: string): string[] {
-  const names = new Set<string>();
-  const visit = (node: ts.Node): void => {
-    if (ts.isIdentifier(node) || ts.isPrivateIdentifier(node)) names.add(node.text);
-    ts.forEachChild(node, visit);
-  };
-  visit(ts.createSourceFile(name, source, ts.ScriptTarget.Latest, false));
-  return [...names].sort();
-}
-
-/** Every import and re-export declaration of a module, by its specifier and as written. */
+/** Every import and re-export declaration of a module, `import x = require('m')` included, by its specifier and as written. */
 function moduleDeclarationsOf(name: string, source: string): { specifier: string; text: string }[] {
   const file = ts.createSourceFile(name, source, ts.ScriptTarget.Latest, false);
-  return file.statements.flatMap((statement) =>
-    (ts.isImportDeclaration(statement) || ts.isExportDeclaration(statement)) && statement.moduleSpecifier !== undefined && ts.isStringLiteral(statement.moduleSpecifier)
-      ? [{ specifier: statement.moduleSpecifier.text, text: statement.getText(file) }]
-      : []);
+  return file.statements.flatMap((statement) => {
+    const specifier = ts.isImportDeclaration(statement) || ts.isExportDeclaration(statement) ? statement.moduleSpecifier
+      : ts.isImportEqualsDeclaration(statement) && ts.isExternalModuleReference(statement.moduleReference) ? statement.moduleReference.expression
+      : undefined;
+    return specifier !== undefined && ts.isStringLiteral(specifier) ? [{ specifier: specifier.text, text: statement.getText(file) }] : [];
+  });
+}
+
+/** Every write to a property, as written: an assignment by `=` or any compound operator whose target, or a target its
+ * destructuring pattern names, is a property or element access. */
+function propertyWritesOf(name: string, source: string): string[] {
+  const file = ts.createSourceFile(name, source, ts.ScriptTarget.Latest, false);
+  const writes: string[] = [];
+  const targets = (node: ts.Expression): ts.Expression[] =>
+    ts.isArrayLiteralExpression(node) ? node.elements.flatMap((element) => targets(ts.isSpreadElement(element) ? element.expression : element))
+      : ts.isObjectLiteralExpression(node) ? node.properties.flatMap((property) =>
+        ts.isPropertyAssignment(property) ? targets(property.initializer) : ts.isSpreadAssignment(property) ? targets(property.expression) : [])
+      : ts.isBinaryExpression(node) && node.operatorToken.kind === ts.SyntaxKind.EqualsToken ? targets(node.left)
+      : ts.isParenthesizedExpression(node) ? targets(node.expression)
+      : [node];
+  const visit = (node: ts.Node): void => {
+    if (ts.isBinaryExpression(node) && node.operatorToken.kind >= ts.SyntaxKind.FirstAssignment && node.operatorToken.kind <= ts.SyntaxKind.LastAssignment
+      && targets(node.left).some((target) => ts.isPropertyAccessExpression(target) || ts.isElementAccessExpression(target))) writes.push(node.getText(file));
+    ts.forEachChild(node, visit);
+  };
+  visit(file);
+  return writes;
 }
 
 describe('@syzygy/support stays a pure leaf', () => {
@@ -86,17 +97,20 @@ describe('@syzygy/support stays a pure leaf', () => {
   });
 
   it('assigns to no property in any source, so no allowed global is rewritten', () => {
-    const writes: string[] = [];
+    expect(SOURCES.flatMap((file) => propertyWritesOf(file, read(file)).map((write) => `${file}: ${write}`))).toEqual([]);
+  });
+
+  it('calls no import() in any source, however it is spaced or commented', () => {
+    const calls: string[] = [];
     for (const file of SOURCES) {
       const source = ts.createSourceFile(file, read(file), ts.ScriptTarget.Latest, false);
       const visit = (node: ts.Node): void => {
-        if (ts.isBinaryExpression(node) && node.operatorToken.kind >= ts.SyntaxKind.FirstAssignment && node.operatorToken.kind <= ts.SyntaxKind.LastAssignment
-          && (ts.isPropertyAccessExpression(node.left) || ts.isElementAccessExpression(node.left))) writes.push(`${file}: ${node.getText(source)}`);
+        if (ts.isCallExpression(node) && node.expression.kind === ts.SyntaxKind.ImportKeyword) calls.push(`${file}: ${node.getText(source)}`);
         ts.forEachChild(node, visit);
       };
       visit(source);
     }
-    expect(writes).toEqual([]);
+    expect(calls).toEqual([]);
   });
 
   it('names none of the forbidden tokens it shares with the owner-act drafter in any source', () => {
@@ -152,6 +166,32 @@ describe('the forbidden-token list both guards stand on', () => {
   ];
   it.each(CASES)('refuses %j', (source) => {
     expect(FORBIDDEN.filter((forbidden) => forbidden.test(source))).toHaveLength(1);
+  });
+});
+
+describe('the module-declaration reader the createHash row stands on', () => {
+  // A reader that misses a declaration form passes over the module binding it was written for.
+  const CASES: readonly (readonly [string, readonly string[]])[] = [
+    ["import { createHash } from 'node:crypto';", ["import { createHash } from 'node:crypto';"]],
+    ["export * from 'node:crypto';", ["export * from 'node:crypto';"]],
+    ["import 'node:crypto';", ["import 'node:crypto';"]],
+    ["import value = require ('node:crypto');", ["import value = require ('node:crypto');"]],
+    ["export { sha256 } from './sha256.js';\nexport { value };", ["export { sha256 } from './sha256.js';"]],
+  ];
+  it.each(CASES)('reads %j', (source, expected) => {
+    expect(moduleDeclarationsOf('case.ts', source).map(({ text }) => text)).toEqual(expected);
+  });
+});
+
+describe('the property-write reader the no-write row stands on', () => {
+  const CASES: readonly (readonly [string, readonly string[]])[] = [
+    ['Object.freeze = (value) => value;', ['Object.freeze = (value) => value']],
+    ["Object['freeze'] ??= (value) => value;", ["Object['freeze'] ??= (value) => value"]],
+    ['[Object.freeze] = [(value) => value];', ['[Object.freeze] = [(value) => value]']],
+    ['let a = 1; a += 1; [a] = [2];', []],
+  ];
+  it.each(CASES)('reads %j', (source, expected) => {
+    expect(propertyWritesOf('case.ts', source)).toEqual(expected);
   });
 });
 
