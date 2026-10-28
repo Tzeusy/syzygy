@@ -79,9 +79,9 @@ in both dist states.
 
 ## The landing
 
-The landing commit merges main `95c87a52` (PRs #546 and #547) into the
-reviewed head `12d70cf0`. Main changed none of the 30 PR paths since the
-merge base `f7ea8584`, so against main the landing commit differs in exactly
+The landing branch merges main `95c87a52` (PRs #546 and #547) into the
+reviewed head `12d70cf0`, and then main `b0d7753f` (PR #551). Main changed
+none of the 30 PR paths since the merge base `f7ea8584`, so against main the landing commit differs in exactly
 those 30 paths, each byte-equal to `12d70cf0`, plus the three raws, this
 record, the retained evidence and the README campaign row. The canonical
 battery ran in a clean clone at `12d70cf0`:
