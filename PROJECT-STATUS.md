@@ -315,6 +315,7 @@ These gates remain open; none of them is on the launch path.
 
 | Gate | State | Owning record |
 |---|---|---|
+| Shared mutation test runner (`syzygy-bpyt.4.6`) | [Observed 2026-10-29] Owner selected A for the reviewed R2 direction plus corrected consumer addendum, including recording and handoff. The bounded evidence, replay, baseline and failure/exit changes are authorized; current ownership, complete migration mapping and required review/verification remain gates. Historical tools and evidence stay preserved. Implementation, migration parity and run results remain Unknown. This is distinct from P111. | `decisions/OWNER-DIRECTION-SHARED-MUTATION-RUNNER-2026-10-29.md` |
 | Craft amendment CC-TEST-2 | Awaiting confirmation at the current digest | `INSTALL-RECORD.md` **2026-08-06** correction block |
 | Topology bundle | Candidate — no act performed | `.syzygy/map/topology-candidates/BUNDLE-MANIFEST.md` |
 | Project overview | Draft — awaiting adoption | `.syzygy/intent/OVERVIEW.md` |
