@@ -44,6 +44,11 @@ def campaign(key: str, display: str, *patterns: str) -> Campaign:
 
 
 CAMPAIGNS = (
+    campaign(
+        "shared-mutation-runner-owner",
+        "Shared mutation runner owner offering",
+        r"R-SHARED-MUTATION-RUNNER-(?:OFFERING-R2|REFRESH-[12]|QUESTIONNAIRE)-RAW\.md",
+    ),
     campaign("cap1-slices", "`R-S2` … `R-S7`", r"R-S[2567]-RISK-FLOOR-REVIEW\.md"),
     campaign("cap1-runtime", "`R-RT-*`", r"R-RT-.*\.md"),
     campaign("three-surface-poc", "`R-POC-*`", r"R-POC-.*\.md"),
